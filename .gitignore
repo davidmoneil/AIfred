@@ -1,0 +1,35 @@
+# AIfred .gitignore
+
+# Local settings (user-specific)
+.claude/settings.local.json
+
+# Logs (rotated, can be large)
+.claude/logs/*.jsonl
+.claude/logs/archive/
+.claude/logs/.current-session
+.claude/logs/.session-activity
+
+# Agent sessions (transient)
+.claude/agents/sessions/*.md
+
+# MCP configuration (may contain paths)
+.mcp.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if using node for scripts)
+node_modules/
+
+# Python (if using python for scripts)
+__pycache__/
+*.pyc
+.venv/
+venv/

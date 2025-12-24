@@ -1,0 +1,101 @@
+# AIfred Paths Registry Template
+#
+# This file is created during /setup based on system discovery.
+# Rename to paths-registry.yaml after customization.
+#
+# Source of truth for all external paths and infrastructure.
+
+version: "1.0"
+last_updated: "YYYY-MM-DD"
+created_by: "AIfred /setup"
+
+# =============================================================================
+# HOSTS
+# =============================================================================
+# Your servers and systems
+
+hosts:
+  local:
+    hostname: "HOSTNAME"
+    ip: "IP_ADDRESS"
+    role: "Primary AIfred host"
+    os: "OS_NAME OS_VERSION"
+    status: "active"
+    notes: "Configured by AIfred setup"
+
+  # Add more hosts as discovered:
+  # remote_server:
+  #   hostname: "server2"
+  #   ip: "192.168.1.x"
+  #   role: "Description"
+  #   ssh: "ssh user@server2"
+  #   status: "active"
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+# Container infrastructure
+
+docker:
+  socket: "/var/run/docker.sock"
+  compose_base: "/path/to/docker/configs"
+
+  # Populated by /discover command:
+  containers:
+    # example_service:
+    #   compose: "/path/to/compose.yml"
+    #   data: "/path/to/data"
+    #   logs: "/var/lib/docker/containers/CONTAINER_ID"
+    #   url: "http://localhost:PORT"
+    #   status: "running"
+
+# =============================================================================
+# NETWORK
+# =============================================================================
+# Network infrastructure
+
+network:
+  domain: "your-domain.com"  # Or "local" if no domain
+  dns:
+    primary: "IP_ADDRESS"
+
+  # Subdomains if applicable:
+  # subdomains:
+  #   - "service.domain.com → service:port"
+
+# =============================================================================
+# STORAGE
+# =============================================================================
+# NAS and mount points
+
+storage:
+  # NFS/CIFS mounts:
+  # nas:
+  #   mount_point: "/mnt/nas"
+  #   server: "192.168.1.x"
+  #   shares:
+  #     data: "/mnt/nas/data"
+  #     backups: "/mnt/nas/backups"
+
+# =============================================================================
+# AIFRED
+# =============================================================================
+# AIfred-specific paths
+
+aifred:
+  base_path: "/path/to/AIfred"
+  context: ".claude/context"
+  commands: ".claude/commands"
+  agents: ".claude/agents"
+  hooks: ".claude/hooks"
+  logs: ".claude/logs"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+# Discovery commands for finding more paths:
+#
+# Docker: docker inspect <container> | grep -i volume
+# Mounts: mount | grep -E "nfs|cifs"
+# Services: systemctl list-units --type=service
+# Ports: ss -tlnp
