@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly Docker Restart Timer
+Documentation=Weekly restart of Docker daemon with health verification
+
+[Timer]
+# Every Sunday at 3:00 AM
+OnCalendar=Sun *-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

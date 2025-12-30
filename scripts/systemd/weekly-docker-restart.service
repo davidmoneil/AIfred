@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly Docker Restart with Health Check
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/davidmoneil/AIProjects/Scripts/weekly-docker-restart.sh
+User=root
+Environment=HOME=/home/davidmoneil
+
+[Install]
+WantedBy=multi-user.target
