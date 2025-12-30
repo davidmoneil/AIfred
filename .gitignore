@@ -15,6 +15,12 @@
 # MCP configuration (may contain paths)
 .mcp.json
 
+# OpenCode local settings
+opencode.local.json
+
+# User-specific paths (create from template)
+paths-registry.yaml
+
 # OS files
 .DS_Store
 Thumbs.db

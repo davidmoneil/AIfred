@@ -1,0 +1,150 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "description": "AIfred - AI Infrastructure Assistant (OpenCode Edition)",
+  "version": "1.0",
+
+  // Default agent when starting OpenCode
+  "default_agent": "build",
+
+  // Instructions files to load (in addition to AGENTS.md)
+  "instructions": [
+    ".claude/context/_index.md"
+  ],
+
+  // MCP Server Configuration
+  // Configure your MCP servers here. See setup-phases/phase-2/ for examples.
+  "mcp": {
+    // Memory MCP - Knowledge graph for persistent memory
+    // Uncomment and configure when ready:
+    // "memory": {
+    //   "type": "remote",
+    //   "url": "http://localhost:8080/sse"
+    // },
+
+    // Filesystem MCP - Extended file operations
+    // "filesystem": {
+    //   "type": "local",
+    //   "command": ["npx", "-y", "@anthropic/mcp-server-filesystem", "/path/to/allowed/directory"]
+    // },
+
+    // Fetch MCP - Web content retrieval
+    // "fetch": {
+    //   "type": "local",
+    //   "command": ["npx", "-y", "@anthropic/mcp-server-fetch"]
+    // },
+
+    // Git MCP - Enhanced git operations
+    // "git": {
+    //   "type": "local",
+    //   "command": ["npx", "-y", "@anthropic/mcp-server-git"]
+    // }
+  },
+
+  // Tool Configuration
+  // Enable/disable specific tools globally or for agents
+  "tools": {
+    // Built-in tools are enabled by default
+    // Disable specific tools by setting to false:
+    // "webfetch": false
+  },
+
+  // Permission Configuration
+  // Control which operations require approval
+  "permission": {
+    // File editing
+    "edit": "ask",
+
+    // Bash commands with glob patterns
+    "bash": {
+      // Safe read-only commands - auto-allow
+      "git status": "allow",
+      "git log *": "allow",
+      "git diff *": "allow",
+      "git branch *": "allow",
+      "git fetch *": "allow",
+      "git show *": "allow",
+      "docker ps *": "allow",
+      "docker logs *": "allow",
+      "docker inspect *": "allow",
+      "docker images *": "allow",
+      "docker network ls *": "allow",
+      "docker network inspect *": "allow",
+      "docker volume ls *": "allow",
+      "ls *": "allow",
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "tree *": "allow",
+      "pwd": "allow",
+      "hostname": "allow",
+      "whoami": "allow",
+      "df *": "allow",
+      "du *": "allow",
+      "uptime": "allow",
+      "systemctl status *": "allow",
+      "systemctl is-active *": "allow",
+      "ping *": "allow",
+      "curl *": "allow",
+      "dig *": "allow",
+      "jq *": "allow",
+
+      // Dangerous commands - deny
+      "rm -rf /*": "deny",
+      "rm -rf ~/*": "deny",
+      "sudo rm -rf *": "deny",
+      "mkfs *": "deny",
+      "dd if=*": "deny",
+      "chmod -R 777 /*": "deny",
+
+      // Everything else - ask for approval
+      "*": "ask"
+    },
+
+    // Web fetch operations
+    "webfetch": "allow"
+  },
+
+  // Agent Configuration
+  // Define custom agents here, or use markdown files in .opencode/agent/
+  "agent": {
+    // Plan agent customization (read-only mode)
+    "plan": {
+      "description": "Analyze and plan without making changes",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  },
+
+  // Custom Commands
+  // Define here or use markdown files in .opencode/command/
+  "command": {
+    // Health check command
+    "health": {
+      "description": "Check system and Docker health",
+      "template": "Run a comprehensive health check: verify Docker containers are running, check system resources, and report any issues."
+    }
+  },
+
+  // Theme (optional)
+  // "theme": "catppuccin-mocha",
+
+  // TUI Settings
+  "tui": {
+    // "scroll_speed": 3,
+    // "diff_style": "unified"
+  },
+
+  // File watcher ignore patterns
+  "watcher": {
+    "ignore": [
+      "node_modules",
+      ".git",
+      "*.log",
+      ".claude/logs/*",
+      ".claude/agents/sessions/*"
+    ]
+  }
+}

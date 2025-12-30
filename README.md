@@ -1,26 +1,51 @@
 # AIfred
 
-**Your Personal AI Infrastructure Starter Kit for Claude Code**
+**Your Personal AI Infrastructure Starter Kit**
 
-AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems.
+AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
 
 ---
 
 ## Quick Start
 
+### With Claude Code
 ```bash
-# Clone the repository
 git clone https://github.com/davidmoneil/AIfred.git
 cd AIfred
-
-# Start Claude Code
 claude
-
-# Run the setup wizard
 /setup
 ```
 
-The `/setup` command will guide you through a comprehensive configuration process, asking about your goals and preferences to create a customized AI infrastructure.
+### With OpenCode
+```bash
+git clone https://github.com/davidmoneil/AIfred.git
+cd AIfred
+opencode
+/init    # Generate initial context
+/setup   # Run configuration wizard
+```
+
+The `/setup` command guides you through configuration, adapting to your goals and preferences.
+
+---
+
+## Dual CLI Support
+
+AIfred supports both **Claude Code** (Anthropic) and **OpenCode** (open source):
+
+| Feature | Claude Code | OpenCode |
+|---------|-------------|----------|
+| Instructions | `.claude/CLAUDE.md` | `AGENTS.md` |
+| Settings | `.claude/settings.json` | `opencode.json` |
+| Commands | `.claude/commands/*.md` | `.opencode/command/*.md` |
+| Agents | `.claude/agents/*.md` | `.opencode/agent/*.md` |
+| MCP Config | `.mcp.json` | `opencode.json` (mcp section) |
+
+Both CLIs share:
+- Context files in `.claude/context/`
+- Knowledge base in `knowledge/`
+- External sources in `external-sources/`
+- Path registry in `paths-registry.yaml`
 
 ---
 
@@ -41,7 +66,7 @@ The `/setup` command will guide you through a comprehensive configuration proces
 - System documentation that writes itself
 - Paths registry for external resources
 
-### Automation Hooks
+### Automation Hooks (Claude Code)
 - Audit logging for all operations
 - Security scanning before commits
 - Health checks after Docker changes
@@ -77,18 +102,23 @@ Every session leaves a trail. `session-state.md` tracks what you were doing, and
 
 ```
 AIfred/
+├── AGENTS.md               # OpenCode instructions
+├── opencode.json           # OpenCode configuration
+├── .opencode/
+│   ├── agent/              # OpenCode agent definitions
+│   └── command/            # OpenCode slash commands
 ├── .claude/
-│   ├── CLAUDE.md           # Core instructions
-│   ├── settings.json       # Permission configuration
-│   ├── context/            # Knowledge base
-│   ├── commands/           # Slash commands
-│   ├── agents/             # AI agents
+│   ├── CLAUDE.md           # Claude Code instructions
+│   ├── settings.json       # Claude Code permissions
+│   ├── context/            # Knowledge base (shared)
+│   ├── commands/           # Claude Code slash commands
+│   ├── agents/             # Claude Code agents
 │   ├── hooks/              # Automation hooks
 │   ├── jobs/               # Cron jobs
 │   └── logs/               # Audit logs
-├── knowledge/              # Documentation
-├── external-sources/       # Symlinks to external data
-├── paths-registry.yaml     # Source of truth for paths
+├── knowledge/              # Documentation (shared)
+├── external-sources/       # Symlinks to external data (shared)
+├── paths-registry.yaml     # Source of truth for paths (shared)
 └── setup-phases/           # Setup wizard definitions
 ```
 
@@ -96,7 +126,7 @@ AIfred/
 
 ## Requirements
 
-- **Claude Code**: Anthropic's CLI tool
+- **AI CLI**: Claude Code or OpenCode
 - **Git**: For version control
 - **Docker** (optional): For MCP servers and service management
 - **Linux/macOS**: Primary support (Windows experimental)
@@ -122,7 +152,7 @@ AIfred works best with the Memory MCP for persistent knowledge. During setup, yo
 - **Memory MCP**: Knowledge graph storage (recommended)
 - **Docker MCP**: Container management
 - **Filesystem MCP**: Cross-directory access
-- **Browser MCP**: Web automation
+- **Browser MCP**: Web automation (Playwright)
 
 ---
 
@@ -133,7 +163,19 @@ AIfred works best with the Memory MCP for persistent knowledge. During setup, yo
 | `/setup` | Run the setup wizard |
 | `/end-session` | Clean session exit with documentation |
 | `/discover <target>` | Discover and document services |
-| `/health-check` | System health verification |
+| `/health` | System health verification |
+
+---
+
+## Agents
+
+Use agents via `@agent-name` (OpenCode) or Task tool (Claude Code):
+
+| Agent | Purpose |
+|-------|---------|
+| `docker-deployer` | Deploy and configure Docker services |
+| `service-troubleshooter` | Diagnose infrastructure issues |
+| `deep-research` | In-depth topic investigation |
 
 ---
 
@@ -141,10 +183,17 @@ AIfred works best with the Memory MCP for persistent knowledge. During setup, yo
 
 After setup, customize by:
 
-1. **Editing CLAUDE.md**: Add project-specific instructions
-2. **Creating commands**: Add your own slash commands in `.claude/commands/`
-3. **Adding agents**: Create specialized agents in `.claude/agents/`
-4. **Configuring hooks**: Enable/disable hooks as needed
+### Claude Code
+1. Edit `.claude/CLAUDE.md` for project-specific instructions
+2. Add commands in `.claude/commands/`
+3. Create agents in `.claude/agents/`
+4. Configure hooks as needed
+
+### OpenCode
+1. Edit `AGENTS.md` for project-specific instructions
+2. Add commands in `.opencode/command/`
+3. Create agents in `.opencode/agent/`
+4. Configure MCP servers in `opencode.json`
 
 ---
 
