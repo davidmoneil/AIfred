@@ -33,3 +33,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Script configuration (contains sensitive data)
+scripts/config.sh

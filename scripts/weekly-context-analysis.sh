@@ -10,32 +10,30 @@
 # - File size analysis (CLAUDE.md, context/ files)
 # - Git churn analysis (frequently modified files)
 # - Auto-archive old logs (delete after 365 days)
-# - AUTO-REDUCE large context files using Ollama
+# - AUTO-REDUCE large context files using Ollama (optional)
 # - Memory graph placeholder (requires interactive session)
 #
 # Output: Markdown report in .claude/logs/reports/
 #
-# Created: 2025-12-26
-# Updated: 2025-12-26 - Added git churn, archive, memory placeholder
-# Updated: 2025-12-26 - Added Ollama-based context reduction
-#
-# Environment:
-#   CONTEXT_REDUCE=true   Enable auto-reduction (default: true)
-#   REDUCE_THRESHOLD=5000 Token threshold for reduction (default: 5000)
-#   OLLAMA_MODEL=...      Model for summarization (see recommendations below)
+# Configuration: Copy config.sh.template to config.sh and customize.
 #
 # Recommended Ollama Models (in order of quality):
 #   1. llama3.1:8b        - Best instruction following, recommended
 #   2. mistral:7b-instruct - Fast and reliable
 #   3. qwen2.5:7b-instruct - Good but can be slow
-#   4. phi3:medium        - Efficient, smaller context
 #
-# To install: ollama pull llama3.1:8b
-# To test: OLLAMA_MODEL=llama3.1:8b ./weekly-context-analysis.sh --test
 
 set -euo pipefail
 
-PROJECT_DIR="/home/davidmoneil/AIProjects"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source configuration if available
+if [[ -f "$SCRIPT_DIR/config.sh" ]]; then
+    source "$SCRIPT_DIR/config.sh"
+fi
+
+# Defaults (can be overridden by config.sh or environment)
+PROJECT_DIR="${AIFRED_DIR:-$HOME/Code/AIfred}"
 CONTEXT_LOGS="$PROJECT_DIR/.claude/logs/context-usage"
 SESSION_LOGS="$PROJECT_DIR/.claude/logs"
 REPORT_DIR="$PROJECT_DIR/.claude/logs/reports"
@@ -43,13 +41,13 @@ ARCHIVE_DIR="$PROJECT_DIR/.claude/logs/archive"
 BACKUP_DIR="$PROJECT_DIR/.claude/logs/backups"
 REPORT_FILE="$REPORT_DIR/context-analysis-$(date +%Y-%m-%d).md"
 
-# Configuration
-CONTEXT_REDUCE="${CONTEXT_REDUCE:-true}"
-REDUCE_THRESHOLD="${REDUCE_THRESHOLD:-5000}"  # tokens (~20KB) - minimum size to reduce
-REDUCE_MAX_SIZE="${REDUCE_MAX_SIZE:-50000}"   # tokens (~200KB) - skip files larger than this
-OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:32b}"   # Best quality for summarization
+# Configuration with defaults
+CONTEXT_REDUCE="${CONTEXT_REDUCE:-false}"
+REDUCE_THRESHOLD="${REDUCE_THRESHOLD:-5000}"
+REDUCE_MAX_SIZE="${REDUCE_MAX_SIZE:-50000}"
+OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.1:8b}"
 OLLAMA_HOST="${OLLAMA_HOST:-http://localhost:11434}"
-OLLAMA_TIMEOUT="${OLLAMA_TIMEOUT:-120}"       # seconds per file
+OLLAMA_TIMEOUT="${OLLAMA_TIMEOUT:-120}"
 
 # Test mode: just test Ollama connection and summarization
 if [ "${1:-}" = "--test" ]; then
@@ -78,445 +76,397 @@ if [ "${1:-}" = "--test" ]; then
   echo "Testing generation (10 second timeout)..."
   RESPONSE=$(curl -s --max-time 10 "$OLLAMA_HOST/api/generate" \
     -H "Content-Type: application/json" \
-    -d "{\"model\":\"$OLLAMA_MODEL\",\"prompt\":\"Say OK\",\"stream\":false,\"options\":{\"num_predict\":5}}" 2>/dev/null)
+    -d "{\"model\": \"$OLLAMA_MODEL\", \"prompt\": \"Say hello in exactly 3 words.\", \"stream\": false}" 2>&1)
 
   if echo "$RESPONSE" | jq -e '.response' >/dev/null 2>&1; then
-    echo "✓ Generation working: $(echo "$RESPONSE" | jq -r '.response')"
+    ANSWER=$(echo "$RESPONSE" | jq -r '.response')
+    echo "✓ Generation working: \"$ANSWER\""
+    echo ""
+    echo "All tests passed! Ready for context reduction."
   else
-    echo "✗ Generation failed or timed out"
-    echo "  Try: sudo systemctl restart ollama"
+    echo "✗ Generation failed: $RESPONSE"
     exit 1
   fi
-
-  echo ""
-  echo "All tests passed! Ready for context reduction."
   exit 0
 fi
 
 # Ensure directories exist
 mkdir -p "$REPORT_DIR" "$ARCHIVE_DIR" "$BACKUP_DIR"
 
-# ============================================
-# Helper: Summarize file using Ollama
-# ============================================
-summarize_file() {
-  local file="$1"
-  local content
-  content=$(cat "$file")
-
-  # Extract filename for context
-  local filename
-  filename=$(basename "$file")
-
-  # Build prompt
-  local prompt="You are a technical documentation summarizer. Your task is to reduce the following markdown document to approximately 40% of its current size while preserving:
-1. All critical technical information (paths, commands, configurations)
-2. Current status and state information
-3. Key decisions and their rationale
-4. Active todos and blockers
-
-Remove:
-- Verbose explanations that can be inferred
-- Historical information older than 30 days (unless critical)
-- Redundant examples
-- Completed items that are no longer relevant
-
-Keep the same markdown structure and headers. Output ONLY the reduced markdown, no explanations.
-
----
-FILENAME: $filename
----
-
-$content"
-
-  # Call Ollama API with timeout (120 seconds for large files)
-  local response
-  response=$(curl -s --max-time 120 "$OLLAMA_HOST/api/generate" \
-    -H "Content-Type: application/json" \
-    -d "$(jq -n --arg model "$OLLAMA_MODEL" --arg prompt "$prompt" '{
-      model: $model,
-      prompt: $prompt,
-      stream: false,
-      options: {
-        temperature: 0.3,
-        num_predict: 4000
-      }
-    }')" 2>/dev/null)
-
-  # Extract response
-  echo "$response" | jq -r '.response // empty' 2>/dev/null
-}
-
-# ============================================
-# Helper: Log message to report
-# ============================================
-log_reduction() {
-  echo "$1" >> "$REPORT_FILE"
-}
-
-# ============================================
-# Helper: Check if Ollama is available
-# ============================================
-check_ollama() {
-  curl -s --max-time 5 "$OLLAMA_HOST/api/tags" >/dev/null 2>&1
-}
-
-# Start report
-cat > "$REPORT_FILE" << 'EOF'
-# Weekly Context Analysis Report
-
-EOF
-
-echo "Generated: $(date '+%Y-%m-%d %H:%M:%S')" >> "$REPORT_FILE"
+echo "# Weekly Context Analysis Report" > "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+echo "**Generated**: $(date '+%Y-%m-%d %H:%M:%S')" >> "$REPORT_FILE"
+echo "**Project**: $PROJECT_DIR" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-# ============================================
-# Section 1: Session Statistics
-# ============================================
-echo "## Session Statistics (Last 7 Days)" >> "$REPORT_FILE"
+# ============================================================================
+# 1. SESSION STATISTICS
+# ============================================================================
+
+echo "## Session Statistics" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-if [ -d "$CONTEXT_LOGS" ]; then
-  CUTOFF=$(date -d '7 days ago' +%Y-%m-%d)
+AUDIT_LOG="$SESSION_LOGS/audit.jsonl"
+if [[ -f "$AUDIT_LOG" ]]; then
+    # Count sessions this week
+    WEEK_AGO=$(date -d '7 days ago' '+%Y-%m-%d' 2>/dev/null || date -v-7d '+%Y-%m-%d' 2>/dev/null || echo "")
 
-  # Count sessions
-  SESSION_COUNT=$(find "$CONTEXT_LOGS" -name "*.json" -newermt "$CUTOFF" 2>/dev/null | wc -l)
-  echo "- **Total sessions**: $SESSION_COUNT" >> "$REPORT_FILE"
+    if [[ -n "$WEEK_AGO" ]]; then
+        SESSION_COUNT=$(grep -c "session_start\|session.*start" "$AUDIT_LOG" 2>/dev/null | tail -1 || echo "0")
+        TOOL_CALLS=$(wc -l < "$AUDIT_LOG" | tr -d ' ')
 
-  # Aggregate tool calls
-  if [ "$SESSION_COUNT" -gt 0 ]; then
-    TOTAL_CALLS=$(find "$CONTEXT_LOGS" -name "*.json" -newermt "$CUTOFF" -exec cat {} \; 2>/dev/null | \
-      jq -s 'map(.toolCalls // 0) | add' 2>/dev/null || echo "0")
-    TOTAL_TOKENS=$(find "$CONTEXT_LOGS" -name "*.json" -newermt "$CUTOFF" -exec cat {} \; 2>/dev/null | \
-      jq -s 'map(.estimatedTokensIn // 0) | add' 2>/dev/null || echo "0")
+        echo "- **Audit log entries**: $TOOL_CALLS" >> "$REPORT_FILE"
+        echo "- **Log file size**: $(du -h "$AUDIT_LOG" | cut -f1)" >> "$REPORT_FILE"
+    else
+        echo "*Could not calculate date range*" >> "$REPORT_FILE"
+    fi
 
-    echo "- **Total tool calls**: $TOTAL_CALLS" >> "$REPORT_FILE"
-    echo "- **Estimated tokens (input)**: $TOTAL_TOKENS" >> "$REPORT_FILE"
-
-    # Top tools by usage
-    echo "" >> "$REPORT_FILE"
-    echo "### Top Tools by Call Count" >> "$REPORT_FILE"
-    echo "" >> "$REPORT_FILE"
-    find "$CONTEXT_LOGS" -name "*.json" -newermt "$CUTOFF" -exec cat {} \; 2>/dev/null | \
-      jq -s '
-        [.[].toolBreakdown | to_entries[]]
-        | group_by(.key)
-        | map({tool: .[0].key, calls: (map(.value.calls) | add), tokens: (map(.value.tokens) | add)})
-        | sort_by(-.calls)
-        | .[:10]
-        | .[]
-        | "| \(.tool) | \(.calls) | \(.tokens) |"
-      ' -r 2>/dev/null | {
-        echo "| Tool | Calls | Est. Tokens |"
-        echo "|------|-------|-------------|"
-        cat
-      } >> "$REPORT_FILE" 2>/dev/null || echo "*No tool data available*" >> "$REPORT_FILE"
-  fi
+    # Get total estimated tokens from audit log if available
+    if command -v jq &>/dev/null; then
+        TOTAL_TOKENS=$(jq -s '[.[].estimated_tokens // 0] | add' "$AUDIT_LOG" 2>/dev/null || echo "0")
+        if [[ "$TOTAL_TOKENS" != "0" && "$TOTAL_TOKENS" != "null" ]]; then
+            echo "- **Estimated tokens (input)**: $TOTAL_TOKENS" >> "$REPORT_FILE"
+        fi
+    fi
 else
-  echo "*No context usage data found. The tracking hook may need to run first.*" >> "$REPORT_FILE"
+    echo "*No audit log found at $AUDIT_LOG*" >> "$REPORT_FILE"
+fi
+echo "" >> "$REPORT_FILE"
+
+# Tool usage breakdown
+if [[ -f "$AUDIT_LOG" ]] && command -v jq &>/dev/null; then
+    echo "### Tool Usage (Top 10)" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
+    echo "| Tool | Calls | Tokens |" >> "$REPORT_FILE"
+    echo "|------|-------|--------|" >> "$REPORT_FILE"
+
+    jq -s 'group_by(.tool) 
+        | map({key: .[0].tool, value: {calls: length, tokens: ([.[].estimated_tokens // 0] | add)}})
+        | sort_by(-.value.calls)
+        | .[0:10]
+        | map({tool: .[0].key, calls: (map(.value.calls) | add), tokens: (map(.value.tokens) | add)})
+        | .[]
+        | "| \(.tool) | \(.calls) | \(.tokens) |"' "$AUDIT_LOG" 2>/dev/null >> "$REPORT_FILE" || echo "*Could not parse tool usage*" >> "$REPORT_FILE"
+
+    echo "" >> "$REPORT_FILE"
 fi
 
-echo "" >> "$REPORT_FILE"
+# ============================================================================
+# 2. FILE SIZE ANALYSIS
+# ============================================================================
 
-# ============================================
-# Section 2: File Size Analysis
-# ============================================
 echo "## Context File Sizes" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
-echo "Files that contribute to context on session startup:" >> "$REPORT_FILE"
-echo "" >> "$REPORT_FILE"
 
-# CLAUDE.md
-CLAUDE_SIZE=$(wc -c < "$PROJECT_DIR/.claude/CLAUDE.md" 2>/dev/null || echo "0")
-CLAUDE_TOKENS=$((CLAUDE_SIZE / 4))
-echo "- **CLAUDE.md**: $CLAUDE_SIZE bytes (~$CLAUDE_TOKENS tokens)" >> "$REPORT_FILE"
-
-# Context files
-if [ -d "$PROJECT_DIR/.claude/context" ]; then
-  CONTEXT_SIZE=$(du -sb "$PROJECT_DIR/.claude/context" 2>/dev/null | cut -f1 || echo "0")
-  CONTEXT_TOKENS=$((CONTEXT_SIZE / 4))
-  echo "- **context/ directory**: $CONTEXT_SIZE bytes (~$CONTEXT_TOKENS tokens)" >> "$REPORT_FILE"
-
-  # Largest context files
-  echo "" >> "$REPORT_FILE"
-  echo "### Largest Context Files" >> "$REPORT_FILE"
-  echo "" >> "$REPORT_FILE"
-  echo "| File | Size | Est. Tokens |" >> "$REPORT_FILE"
-  echo "|------|------|-------------|" >> "$REPORT_FILE"
-  find "$PROJECT_DIR/.claude/context" -type f -name "*.md" -printf '%s %p\n' 2>/dev/null | \
-    sort -rn | head -5 | while read size file; do
-      tokens=$((size / 4))
-      relpath="${file#$PROJECT_DIR/}"
-      echo "| \`$relpath\` | $size | ~$tokens |" >> "$REPORT_FILE"
-    done
+# CLAUDE.md size
+if [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
+    CLAUDE_SIZE=$(wc -c < "$PROJECT_DIR/.claude/CLAUDE.md" | tr -d ' ')
+    CLAUDE_TOKENS=$((CLAUDE_SIZE / 4))
+    echo "- **CLAUDE.md**: $CLAUDE_SIZE bytes (~$CLAUDE_TOKENS tokens)" >> "$REPORT_FILE"
 fi
 
+# Context directory total
+if [[ -d "$PROJECT_DIR/.claude/context" ]]; then
+    CONTEXT_SIZE=$(du -sb "$PROJECT_DIR/.claude/context" 2>/dev/null | cut -f1 || echo "0")
+    CONTEXT_TOKENS=$((CONTEXT_SIZE / 4))
+    echo "- **context/ directory**: $CONTEXT_SIZE bytes (~$CONTEXT_TOKENS tokens)" >> "$REPORT_FILE"
+fi
 echo "" >> "$REPORT_FILE"
 
-# ============================================
-# Section 3: Git Churn Analysis (NEW)
-# ============================================
-echo "## File Churn Analysis (Last 30 Days)" >> "$REPORT_FILE"
+# Top 10 largest context files
+echo "### Largest Context Files" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
-echo "Files modified most frequently - candidates for consolidation or splitting:" >> "$REPORT_FILE"
+echo "| File | Bytes | ~Tokens |" >> "$REPORT_FILE"
+echo "|------|-------|---------|" >> "$REPORT_FILE"
+
+if [[ -d "$PROJECT_DIR/.claude/context" ]]; then
+    find "$PROJECT_DIR/.claude/context" -name "*.md" -type f -exec wc -c {} \; 2>/dev/null \
+        | sort -rn \
+        | head -10 \
+        | while read -r size filepath; do
+            relpath="${filepath#$PROJECT_DIR/}"
+            tokens=$((size / 4))
+            echo "| \`$relpath\` | $size | ~$tokens |"
+        done >> "$REPORT_FILE"
+fi
 echo "" >> "$REPORT_FILE"
 
-cd "$PROJECT_DIR" 2>/dev/null || true
+# ============================================================================
+# 3. GIT CHURN ANALYSIS
+# ============================================================================
 
-if git rev-parse --git-dir > /dev/null 2>&1; then
-  echo "### Most Frequently Modified Files" >> "$REPORT_FILE"
-  echo "" >> "$REPORT_FILE"
-  echo "| File | Commits | Lines Changed |" >> "$REPORT_FILE"
-  echo "|------|---------|---------------|" >> "$REPORT_FILE"
+echo "## Git Churn Analysis (Last 30 Days)" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
 
-  # Get files with most commits in last 30 days (context files only)
-  git log --since="30 days ago" --name-only --pretty=format: -- ".claude/context/*.md" ".claude/CLAUDE.md" 2>/dev/null | \
-    sort | uniq -c | sort -rn | head -10 | while read count file; do
-      if [ -n "$file" ] && [ -f "$file" ]; then
-        # Get total lines changed
-        lines=$(git log --since="30 days ago" --numstat --pretty=format: -- "$file" 2>/dev/null | \
-          awk '{add+=$1; del+=$2} END {print add+del}')
-        echo "| \`$file\` | $count | ${lines:-0} |" >> "$REPORT_FILE"
-      fi
-    done
+if [[ -d "$PROJECT_DIR/.git" ]]; then
+    echo "### Most Frequently Modified Context Files" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
+    echo "| File | Commits |" >> "$REPORT_FILE"
+    echo "|------|---------|" >> "$REPORT_FILE"
 
-  echo "" >> "$REPORT_FILE"
+    # Get files with most commits in last 30 days
+    cd "$PROJECT_DIR"
+    git log --since="30 days ago" --name-only --pretty=format: -- ".claude/context/*.md" 2>/dev/null \
+        | grep -v '^$' \
+        | sort \
+        | uniq -c \
+        | sort -rn \
+        | head -10 \
+        | while read -r count filepath; do
+            echo "| \`$filepath\` | $count |"
+        done >> "$REPORT_FILE"
 
-  # Files that grew significantly
-  echo "### Files with Significant Growth" >> "$REPORT_FILE"
-  echo "" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
 
-  GROWTH_FOUND=false
-  for file in .claude/context/*.md .claude/CLAUDE.md; do
-    if [ -f "$file" ]; then
-      # Compare current size to 30 days ago
-      OLD_SIZE=$(git show HEAD~30:"$file" 2>/dev/null | wc -c || echo "0")
-      NEW_SIZE=$(wc -c < "$file" 2>/dev/null || echo "0")
-      if [ "$OLD_SIZE" -gt 0 ] && [ "$NEW_SIZE" -gt "$OLD_SIZE" ]; then
-        GROWTH=$((NEW_SIZE - OLD_SIZE))
-        GROWTH_PCT=$((GROWTH * 100 / OLD_SIZE))
-        if [ "$GROWTH_PCT" -gt 20 ]; then
-          if [ "$GROWTH_FOUND" = false ]; then
-            echo "| File | Growth | % Increase |" >> "$REPORT_FILE"
-            echo "|------|--------|------------|" >> "$REPORT_FILE"
-            GROWTH_FOUND=true
-          fi
-          echo "| \`$file\` | +$GROWTH bytes | +${GROWTH_PCT}% |" >> "$REPORT_FILE"
+    # Check for rapidly growing files
+    echo "### Files with Significant Growth" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
+
+    GROWING_FILES=0
+    while IFS= read -r file; do
+        if [[ -f "$file" ]]; then
+            CURRENT_SIZE=$(wc -c < "$file" | tr -d ' ')
+            # Get size from 30 days ago
+            OLD_CONTENT=$(git show "HEAD~30:$file" 2>/dev/null || echo "")
+            if [[ -n "$OLD_CONTENT" ]]; then
+                OLD_SIZE=${#OLD_CONTENT}
+                if [[ $OLD_SIZE -gt 0 ]]; then
+                    GROWTH=$(( (CURRENT_SIZE - OLD_SIZE) * 100 / OLD_SIZE ))
+                    if [[ $GROWTH -gt 20 ]]; then
+                        echo "- \`$file\`: +${GROWTH}% ($OLD_SIZE → $CURRENT_SIZE bytes)" >> "$REPORT_FILE"
+                        ((GROWING_FILES++))
+                    fi
+                fi
+            fi
         fi
-      fi
+    done < <(find ".claude/context" -name "*.md" -type f 2>/dev/null)
+
+    if [[ $GROWING_FILES -eq 0 ]]; then
+        echo "*No files grew more than 20% in the last 30 days.*" >> "$REPORT_FILE"
     fi
-  done
-
-  if [ "$GROWTH_FOUND" = false ]; then
-    echo "*No significant file growth detected (>20%)*" >> "$REPORT_FILE"
-  fi
+    echo "" >> "$REPORT_FILE"
 else
-  echo "*Not a git repository*" >> "$REPORT_FILE"
+    echo "*Not a git repository - skipping churn analysis*" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
 fi
 
-echo "" >> "$REPORT_FILE"
+# ============================================================================
+# 4. AUTO-ARCHIVE OLD LOGS
+# ============================================================================
 
-# ============================================
-# Section 4: Memory Graph Status (NEW)
-# ============================================
-echo "## Memory Graph Status" >> "$REPORT_FILE"
+echo "## Log Archive Status" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
-echo "> **Note**: Memory graph analysis requires an interactive Claude session." >> "$REPORT_FILE"
-echo "> Run \`/memory-review\` in Claude Code to analyze the knowledge graph." >> "$REPORT_FILE"
-echo "" >> "$REPORT_FILE"
-
-# Check if memory volume has data
-MEMORY_VOL="/var/lib/docker/volumes/mcp-memory-data/_data"
-if [ -d "$MEMORY_VOL" ] && [ "$(ls -A "$MEMORY_VOL" 2>/dev/null)" ]; then
-  MEMORY_FILES=$(find "$MEMORY_VOL" -type f 2>/dev/null | wc -l)
-  MEMORY_SIZE=$(du -sh "$MEMORY_VOL" 2>/dev/null | cut -f1)
-  echo "- **Memory volume**: $MEMORY_FILES files, $MEMORY_SIZE" >> "$REPORT_FILE"
-else
-  echo "- **Memory volume**: Empty (graph stored in-memory only)" >> "$REPORT_FILE"
-fi
-
-echo "" >> "$REPORT_FILE"
-
-# ============================================
-# Section 5: Auto-Archive & Cleanup (NEW)
-# ============================================
-echo "## Cleanup Actions Taken" >> "$REPORT_FILE"
-echo "" >> "$REPORT_FILE"
-
-ARCHIVE_COUNT=0
-DELETE_COUNT=0
 
 # Archive logs older than 30 days
-for log in $(find "$SESSION_LOGS" -maxdepth 1 -name "*.jsonl" -mtime +30 2>/dev/null); do
-  filename=$(basename "$log")
-  mv "$log" "$ARCHIVE_DIR/$filename" 2>/dev/null && ((ARCHIVE_COUNT++)) || true
-done
-
-# Archive old context-usage files
-if [ -d "$CONTEXT_LOGS" ]; then
-  for log in $(find "$CONTEXT_LOGS" -name "*.json" -mtime +30 2>/dev/null); do
-    filename=$(basename "$log")
-    mv "$log" "$ARCHIVE_DIR/context-$filename" 2>/dev/null && ((ARCHIVE_COUNT++)) || true
-  done
+ARCHIVED_COUNT=0
+if [[ -d "$SESSION_LOGS" ]]; then
+    while IFS= read -r logfile; do
+        if [[ -f "$logfile" ]]; then
+            mv "$logfile" "$ARCHIVE_DIR/"
+            ((ARCHIVED_COUNT++))
+        fi
+    done < <(find "$SESSION_LOGS" -maxdepth 1 -name "*.log" -mtime +30 2>/dev/null)
 fi
 
-# Delete archived files older than 365 days
-for old in $(find "$ARCHIVE_DIR" -type f -mtime +365 2>/dev/null); do
-  rm "$old" 2>/dev/null && ((DELETE_COUNT++)) || true
-done
-
-# Delete old reports (keep last 3 months)
-OLD_REPORTS=$(find "$REPORT_DIR" -name "*.md" -mtime +90 2>/dev/null | wc -l)
-if [ "$OLD_REPORTS" -gt 0 ]; then
-  find "$REPORT_DIR" -name "*.md" -mtime +90 -delete 2>/dev/null
-  echo "- **Deleted old reports**: $OLD_REPORTS files (>90 days)" >> "$REPORT_FILE"
+if [[ $ARCHIVED_COUNT -gt 0 ]]; then
+    echo "- **Archived**: $ARCHIVED_COUNT log files (>30 days old)" >> "$REPORT_FILE"
+else
+    echo "- **Archived**: No logs needed archiving" >> "$REPORT_FILE"
 fi
 
-echo "- **Archived to .claude/logs/archive/**: $ARCHIVE_COUNT files (>30 days)" >> "$REPORT_FILE"
-echo "- **Permanently deleted**: $DELETE_COUNT files (>365 days)" >> "$REPORT_FILE"
+# Delete archives older than 365 days
+DELETED_COUNT=0
+if [[ -d "$ARCHIVE_DIR" ]]; then
+    while IFS= read -r oldfile; do
+        rm -f "$oldfile"
+        ((DELETED_COUNT++))
+    done < <(find "$ARCHIVE_DIR" -type f -mtime +365 2>/dev/null)
+fi
 
-# Report archive size
-ARCHIVE_SIZE=$(du -sh "$ARCHIVE_DIR" 2>/dev/null | cut -f1 || echo "0")
-ARCHIVE_FILES=$(find "$ARCHIVE_DIR" -type f 2>/dev/null | wc -l)
-echo "- **Archive status**: $ARCHIVE_FILES files, $ARCHIVE_SIZE total" >> "$REPORT_FILE"
+if [[ $DELETED_COUNT -gt 0 ]]; then
+    echo "- **Deleted**: $DELETED_COUNT archive files (>365 days old)" >> "$REPORT_FILE"
+fi
 
+# Archive size
+if [[ -d "$ARCHIVE_DIR" ]]; then
+    ARCHIVE_SIZE=$(du -sh "$ARCHIVE_DIR" 2>/dev/null | cut -f1 || echo "0")
+    ARCHIVE_FILES=$(find "$ARCHIVE_DIR" -type f 2>/dev/null | wc -l | tr -d ' ')
+    echo "- **Archive**: $ARCHIVE_FILES files, $ARCHIVE_SIZE total" >> "$REPORT_FILE"
+fi
 echo "" >> "$REPORT_FILE"
 
-# ============================================
-# Section 6: Context Reduction (NEW)
-# ============================================
+# ============================================================================
+# 5. CONTEXT REDUCTION (OLLAMA)
+# ============================================================================
+
 echo "## Context Reduction" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-REDUCED_COUNT=0
-REDUCED_BYTES=0
-
-if [ "$CONTEXT_REDUCE" = "true" ]; then
-  if check_ollama; then
-    echo "Using Ollama ($OLLAMA_MODEL) for summarization..." >> "$REPORT_FILE"
+if [[ "$CONTEXT_REDUCE" == "true" ]]; then
+    echo "**Mode**: Automatic reduction enabled (Ollama: $OLLAMA_MODEL)" >> "$REPORT_FILE"
     echo "" >> "$REPORT_FILE"
 
-    # Find files exceeding threshold (excluding session-state.md which changes frequently)
-    LARGE_FILES=$(find "$PROJECT_DIR/.claude/context" -type f -name "*.md" \
-      ! -name "session-state.md" \
-      -size +$((REDUCE_THRESHOLD * 4))c 2>/dev/null)
-
-    if [ -n "$LARGE_FILES" ]; then
-      echo "| File | Before | After | Saved |" >> "$REPORT_FILE"
-      echo "|------|--------|-------|-------|" >> "$REPORT_FILE"
-
-      SKIPPED_LARGE=0
-      SKIPPED_FAILED=0
-
-      for file in $LARGE_FILES; do
-        BEFORE_SIZE=$(wc -c < "$file")
-        BEFORE_TOKENS=$((BEFORE_SIZE / 4))
-        RELPATH="${file#$PROJECT_DIR/}"
-
-        # Skip if under threshold
-        if [ "$BEFORE_TOKENS" -lt "$REDUCE_THRESHOLD" ]; then
-          continue
-        fi
-
-        # Skip if too large (would take too long)
-        if [ "$BEFORE_TOKENS" -gt "$REDUCE_MAX_SIZE" ]; then
-          ((SKIPPED_LARGE++)) || true
-          continue
-        fi
-
-        # Backup original
-        BACKUP_NAME="$(basename "$file").$(date +%Y%m%d).bak"
-        cp "$file" "$BACKUP_DIR/$BACKUP_NAME"
-
-        # Summarize (timeout is built into curl call)
-        SUMMARY=$(summarize_file "$file")
-
-        if [ -n "$SUMMARY" ] && [ ${#SUMMARY} -gt 100 ]; then
-          # Validate summary is actually smaller
-          AFTER_SIZE=${#SUMMARY}
-          if [ "$AFTER_SIZE" -lt "$BEFORE_SIZE" ]; then
-            # Write summarized content
-            echo "$SUMMARY" > "$file"
-
-            AFTER_TOKENS=$((AFTER_SIZE / 4))
-            SAVED=$((BEFORE_SIZE - AFTER_SIZE))
-            SAVED_TOKENS=$((SAVED / 4))
-
-            echo "| \`$RELPATH\` | ~$BEFORE_TOKENS | ~$AFTER_TOKENS | ~$SAVED_TOKENS |" >> "$REPORT_FILE"
-
-            ((REDUCED_COUNT++)) || true
-            REDUCED_BYTES=$((REDUCED_BYTES + SAVED))
-          else
-            # Summary was larger, restore backup
-            cp "$BACKUP_DIR/$BACKUP_NAME" "$file"
-            ((SKIPPED_FAILED++)) || true
-          fi
-        else
-          # Empty or too short response, restore backup
-          cp "$BACKUP_DIR/$BACKUP_NAME" "$file"
-          ((SKIPPED_FAILED++)) || true
-        fi
-      done
-
-      # Report skipped files
-      if [ "$SKIPPED_LARGE" -gt 0 ]; then
+    # Check Ollama availability
+    if ! curl -s --max-time 5 "$OLLAMA_HOST/api/tags" >/dev/null 2>&1; then
+        echo "⚠️ **Ollama not available** - skipping reduction" >> "$REPORT_FILE"
         echo "" >> "$REPORT_FILE"
-        echo "*Skipped $SKIPPED_LARGE files exceeding ${REDUCE_MAX_SIZE} token limit*" >> "$REPORT_FILE"
-      fi
-      if [ "$SKIPPED_FAILED" -gt 0 ]; then
-        echo "*$SKIPPED_FAILED files unchanged (summary larger or failed)*" >> "$REPORT_FILE"
-      fi
-
-      if [ "$REDUCED_COUNT" -eq 0 ]; then
-        echo "*No files needed reduction or summarization failed.*" >> "$REPORT_FILE"
-      else
-        echo "" >> "$REPORT_FILE"
-        echo "**Total reduced**: $REDUCED_COUNT files, ~$((REDUCED_BYTES / 4)) tokens saved" >> "$REPORT_FILE"
-      fi
     else
-      echo "*No files exceed the $REDUCE_THRESHOLD token threshold.*" >> "$REPORT_FILE"
-    fi
-  else
-    echo "> **Ollama not available** - Skipping auto-reduction." >> "$REPORT_FILE"
-    echo "> Start Ollama or set CONTEXT_REDUCE=false to disable." >> "$REPORT_FILE"
-  fi
-else
-  echo "*Auto-reduction disabled (CONTEXT_REDUCE=false)*" >> "$REPORT_FILE"
-fi
+        # Find large context files
+        REDUCED_COUNT=0
+        REDUCED_BYTES=0
+        SKIPPED_LARGE=0
 
+        echo "### Reduction Results" >> "$REPORT_FILE"
+        echo "" >> "$REPORT_FILE"
+
+        while IFS= read -r filepath; do
+            SIZE=$(wc -c < "$filepath" | tr -d ' ')
+            TOKENS=$((SIZE / 4))
+
+            # Skip if too small
+            [[ $TOKENS -lt $REDUCE_THRESHOLD ]] && continue
+
+            # Skip if too large (would timeout)
+            if [[ $TOKENS -gt $REDUCE_MAX_SIZE ]]; then
+                ((SKIPPED_LARGE++))
+                continue
+            fi
+
+            RELPATH="${filepath#$PROJECT_DIR/}"
+            echo "Processing: $RELPATH ($TOKENS tokens)..."
+
+            # Create backup
+            cp "$filepath" "$BACKUP_DIR/$(basename "$filepath").$(date +%Y%m%d%H%M%S).bak"
+
+            # Read content
+            CONTENT=$(cat "$filepath")
+
+            # Create prompt for summarization
+            PROMPT="You are a technical documentation summarizer. Summarize the following markdown documentation while:
+1. Preserving all essential technical details, commands, and configurations
+2. Keeping all code blocks intact
+3. Maintaining the document structure (headers, lists)
+4. Removing redundant explanations and verbose prose
+5. Keeping the summary at least 40% shorter than the original
+
+Original document:
+
+$CONTENT
+
+Provide only the summarized markdown, no explanations:"
+
+            # Call Ollama
+            RESPONSE=$(curl -s --max-time "$OLLAMA_TIMEOUT" "$OLLAMA_HOST/api/generate" \
+                -H "Content-Type: application/json" \
+                -d "$(jq -n --arg model "$OLLAMA_MODEL" --arg prompt "$PROMPT" '{model: $model, prompt: $prompt, stream: false}')" 2>&1)
+
+            SUMMARY=$(echo "$RESPONSE" | jq -r '.response // empty' 2>/dev/null)
+
+            if [[ -n "$SUMMARY" ]]; then
+                NEW_SIZE=${#SUMMARY}
+                if [[ $NEW_SIZE -lt $SIZE ]]; then
+                    echo "$SUMMARY" > "$filepath"
+                    SAVED=$((SIZE - NEW_SIZE))
+                    ((REDUCED_BYTES += SAVED))
+                    ((REDUCED_COUNT++))
+                    echo "- \`$RELPATH\`: $SIZE → $NEW_SIZE bytes (-$SAVED)" >> "$REPORT_FILE"
+                else
+                    echo "- \`$RELPATH\`: No reduction (summary larger)" >> "$REPORT_FILE"
+                    # Restore from backup
+                    cp "$BACKUP_DIR/$(basename "$filepath")."*.bak "$filepath" 2>/dev/null || true
+                fi
+            else
+                echo "- \`$RELPATH\`: Failed to summarize" >> "$REPORT_FILE"
+            fi
+
+        done < <(find "$PROJECT_DIR/.claude/context" -name "*.md" -type f 2>/dev/null)
+
+        echo "" >> "$REPORT_FILE"
+        if [[ $SKIPPED_LARGE -gt 0 ]]; then
+            echo "*Skipped $SKIPPED_LARGE files exceeding ${REDUCE_MAX_SIZE} token limit*" >> "$REPORT_FILE"
+        fi
+
+        if [[ $REDUCED_COUNT -gt 0 ]]; then
+            echo "" >> "$REPORT_FILE"
+            echo "**Total reduced**: $REDUCED_COUNT files, ~$((REDUCED_BYTES / 4)) tokens saved" >> "$REPORT_FILE"
+        fi
+    fi
+else
+    echo "**Mode**: Manual (set CONTEXT_REDUCE=true to enable)" >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
+
+    # Just report large files
+    LARGE_FILES=$(find "$PROJECT_DIR/.claude/context" -name "*.md" -type f -exec wc -c {} \; 2>/dev/null \
+        | awk -v threshold="$((REDUCE_THRESHOLD * 4))" '$1 > threshold {print}' \
+        | wc -l | tr -d ' ')
+
+    if [[ $LARGE_FILES -gt 0 ]]; then
+        echo "**$LARGE_FILES files exceed $REDUCE_THRESHOLD token threshold** - consider manual review" >> "$REPORT_FILE"
+    else
+        echo "*No files exceed the $REDUCE_THRESHOLD token threshold.*" >> "$REPORT_FILE"
+    fi
+fi
 echo "" >> "$REPORT_FILE"
 
-# ============================================
-# Section 7: Recommendations
-# ============================================
+# ============================================================================
+# 6. MEMORY GRAPH (PLACEHOLDER)
+# ============================================================================
+
+echo "## Memory Graph Status" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+echo "*Memory graph analysis requires an interactive Claude session.*" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+echo "Run \`/memory-review\` in a Claude Code session to:" >> "$REPORT_FILE"
+echo "- View entity and relation counts" >> "$REPORT_FILE"
+echo "- Identify orphaned nodes" >> "$REPORT_FILE"
+echo "- Find duplicate entities" >> "$REPORT_FILE"
+echo "- Get cleanup recommendations" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+
+# ============================================================================
+# 7. RECOMMENDATIONS
+# ============================================================================
+
 echo "## Recommendations" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-RECS_FOUND=false
+RECOMMENDATIONS=0
 
 # Check CLAUDE.md size
-if [ "$CLAUDE_TOKENS" -gt 3000 ]; then
-  echo "- [ ] **CLAUDE.md is large** (~$CLAUDE_TOKENS tokens). Consider moving detailed docs to knowledge/ and linking." >> "$REPORT_FILE"
-  RECS_FOUND=true
+if [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
+    CLAUDE_TOKENS=$(($(wc -c < "$PROJECT_DIR/.claude/CLAUDE.md" | tr -d ' ') / 4))
+    if [[ $CLAUDE_TOKENS -gt 3000 ]]; then
+        echo "- [ ] **CLAUDE.md is large** (~$CLAUDE_TOKENS tokens). Consider moving detailed docs to knowledge/ and linking." >> "$REPORT_FILE"
+        ((RECOMMENDATIONS++))
+    fi
 fi
 
-# Check for too many context files
-CONTEXT_FILES=$(find "$PROJECT_DIR/.claude/context" -type f -name "*.md" 2>/dev/null | wc -l)
-if [ "$CONTEXT_FILES" -gt 50 ]; then
-  echo "- [ ] **Many context files** ($CONTEXT_FILES). Consider consolidating related files." >> "$REPORT_FILE"
-  RECS_FOUND=true
+# Check for stale context files (not modified in 90+ days)
+STALE_FILES=$(find "$PROJECT_DIR/.claude/context" -name "*.md" -mtime +90 2>/dev/null | wc -l | tr -d ' ')
+if [[ $STALE_FILES -gt 0 ]]; then
+    echo "- [ ] **$STALE_FILES stale context files** (not modified in 90+ days). Review for archiving." >> "$REPORT_FILE"
+    ((RECOMMENDATIONS++))
 fi
 
-# Check for memory review need
-echo "- [ ] **Review memory graph** - Run \`/memory-review\` to check for stale entities." >> "$REPORT_FILE"
-RECS_FOUND=true
-
-if [ "$RECS_FOUND" = false ]; then
-  echo "*No issues detected. Context usage looks healthy!*" >> "$REPORT_FILE"
+# Check audit log size
+if [[ -f "$AUDIT_LOG" ]]; then
+    AUDIT_SIZE=$(wc -c < "$AUDIT_LOG" | tr -d ' ')
+    if [[ $AUDIT_SIZE -gt 10485760 ]]; then  # 10MB
+        echo "- [ ] **Audit log is large** ($(du -h "$AUDIT_LOG" | cut -f1)). Consider rotation." >> "$REPORT_FILE"
+        ((RECOMMENDATIONS++))
+    fi
 fi
 
+if [[ $RECOMMENDATIONS -eq 0 ]]; then
+    echo "✓ No immediate actions recommended." >> "$REPORT_FILE"
+fi
 echo "" >> "$REPORT_FILE"
+
+# ============================================================================
+# DONE
+# ============================================================================
+
 echo "---" >> "$REPORT_FILE"
 echo "*Report generated by weekly-context-analysis.sh*" >> "$REPORT_FILE"
 
-echo "Report generated: $REPORT_FILE"
+echo "Report saved to: $REPORT_FILE"

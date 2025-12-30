@@ -1,41 +1,63 @@
 #!/bin/bash
 #
-# Weekly Docker Restart with Health Verification
-# Restarts Docker daemon and verifies all services come back up
+# Weekly Docker Restart Script
 #
-# Cron: 0 3 * * 0 /home/davidmoneil/Scripts/weekly-docker-restart.sh
+# Gracefully restarts Docker containers on a schedule to prevent
+# memory leaks and ensure services stay fresh.
 #
-# Created: 2025-12-27
+# Features:
+# - Pre-restart health snapshot
+# - Ordered restart of compose stacks
+# - Post-restart health verification
+# - Webhook notification support
+# - Automatic retry for failed restarts
+#
+# Configuration: Copy config.sh.template to config.sh and customize.
+#
+# Recommended: Use systemd timer instead of cron for reliability.
+# See scripts/systemd/ for timer configuration.
+#
 
-set -uo pipefail
+set -euo pipefail
 
-LOG_DIR="$HOME/logs/weekly-restart"
-TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
-LOG_FILE="$LOG_DIR/restart-$TIMESTAMP.log"
-MAX_WAIT=120  # seconds to wait for services
-CHECK_INTERVAL=10
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Webhook configuration
-WEBHOOK_URL="https://n8n.theklyx.space/webhook/51ef8abf-c108-4c17-8fd1-011a76f69adf"
-WEBHOOK_SECRET="ebbaafd30a9ed2631e90f8f90b68fef9e112ab622e9d039a"
-NOTIFICATION_EMAIL="davidmoneil@gmail.com"
+# Source configuration if available
+if [[ -f "$SCRIPT_DIR/config.sh" ]]; then
+    source "$SCRIPT_DIR/config.sh"
+fi
 
-# Services to verify after restart
-declare -A SERVICES=(
-    ["n8n"]="http://localhost:5678/healthz"
-    ["loki"]="http://localhost:3100/ready"
-    ["prometheus"]="http://localhost:9090/-/healthy"
-    ["neo4j"]="http://localhost:7474"
-    ["postgres"]="docker:n8n_postgres:pg_isready -U postgres"
-)
+# ============================================================================
+# CONFIGURATION (override in config.sh)
+# ============================================================================
 
-# Compose stacks to start (in order)
-COMPOSE_STACKS=(
-    "/home/davidmoneil/Docker/mydocker/n8n"
-    "/home/davidmoneil/Docker/mydocker/logging"
-    "/home/davidmoneil/Docker/mydocker/mcp"
-    "/home/davidmoneil/Docker/mydocker/caddy"
-)
+# Webhook for notifications (leave empty to disable)
+WEBHOOK_URL="${WEBHOOK_URL:-}"
+
+# Notification email (for reports)
+NOTIFICATION_EMAIL="${NOTIFICATION_EMAIL:-}"
+
+# Log file
+LOG_DIR="${AIFRED_DIR:-$HOME/Code/AIfred}/.claude/logs"
+LOG_FILE="$LOG_DIR/docker-restart-$(date +%Y%m%d).log"
+
+# Docker compose directories to restart (in order)
+# Override in config.sh with DOCKER_COMPOSE_DIRS array
+if [[ -z "${DOCKER_COMPOSE_DIRS+x}" ]]; then
+    DOCKER_COMPOSE_DIRS=(
+        # Add your docker-compose directories here
+        # "$HOME/docker/app1"
+        # "$HOME/docker/app2"
+    )
+fi
+
+# Retry settings
+MAX_RETRIES=3
+RETRY_DELAY=30
+
+# ============================================================================
+# FUNCTIONS
+# ============================================================================
 
 mkdir -p "$LOG_DIR"
 
@@ -43,223 +65,161 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-check_service() {
-    local name=$1
-    local endpoint=$2
-
-    if [[ "$endpoint" == docker:* ]]; then
-        # Docker exec check (format: docker:container:command)
-        local container=$(echo "$endpoint" | cut -d: -f2)
-        local cmd=$(echo "$endpoint" | cut -d: -f3-)
-        docker exec "$container" $cmd &>/dev/null
-        return $?
-    else
-        # HTTP check
-        curl -sf --connect-timeout 5 --max-time 10 "$endpoint" &>/dev/null
-        return $?
-    fi
+get_container_health() {
+    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.State}}" 2>/dev/null || echo "Docker not available"
 }
 
-wait_for_services() {
-    local elapsed=0
-    local all_up=false
+restart_compose_stack() {
+    local dir="$1"
+    local name=$(basename "$dir")
+    local attempt=1
 
-    log "Waiting for services to come up (max ${MAX_WAIT}s)..."
+    log "Restarting stack: $name ($dir)"
 
-    while [[ $elapsed -lt $MAX_WAIT ]]; do
-        all_up=true
-        for name in "${!SERVICES[@]}"; do
-            if ! check_service "$name" "${SERVICES[$name]}"; then
-                all_up=false
-                break
-            fi
-        done
+    while [[ $attempt -le $MAX_RETRIES ]]; do
+        log "  Attempt $attempt of $MAX_RETRIES..."
 
-        if $all_up; then
-            log "All services up after ${elapsed}s"
-            return 0
+        # Stop containers
+        if docker compose -f "$dir/docker-compose.yml" down 2>&1 | tee -a "$LOG_FILE"; then
+            log "  Stopped successfully"
+        else
+            log "  Warning: Stop had issues, continuing..."
         fi
 
-        sleep $CHECK_INTERVAL
-        elapsed=$((elapsed + CHECK_INTERVAL))
+        # Wait a moment
+        sleep 5
+
+        # Start containers
+        if docker compose -f "$dir/docker-compose.yml" up -d 2>&1 | tee -a "$LOG_FILE"; then
+            log "  Started successfully"
+
+            # Wait for containers to be healthy
+            sleep 15
+
+            # Verify containers are running
+            local running=$(docker compose -f "$dir/docker-compose.yml" ps --format "{{.State}}" 2>/dev/null | grep -c "running" || echo "0")
+            local expected=$(docker compose -f "$dir/docker-compose.yml" config --services 2>/dev/null | wc -l || echo "0")
+
+            if [[ $running -ge $expected ]]; then
+                log "  ✓ Stack $name healthy ($running/$expected containers running)"
+                return 0
+            else
+                log "  ⚠ Stack $name incomplete ($running/$expected containers running)"
+            fi
+        else
+            log "  ✗ Failed to start stack $name"
+        fi
+
+        ((attempt++))
+        if [[ $attempt -le $MAX_RETRIES ]]; then
+            log "  Retrying in ${RETRY_DELAY}s..."
+            sleep "$RETRY_DELAY"
+        fi
     done
 
-    log "TIMEOUT: Not all services came up within ${MAX_WAIT}s"
+    log "  ✗ Stack $name failed after $MAX_RETRIES attempts"
     return 1
 }
 
-verify_services() {
-    local failed=0
-    local passed=0
-
-    log "=== Service Health Check ==="
-
-    for name in "${!SERVICES[@]}"; do
-        if check_service "$name" "${SERVICES[$name]}"; then
-            log "  ✓ $name: OK"
-            ((passed++))
-        else
-            log "  ✗ $name: FAILED"
-            ((failed++))
-        fi
-    done
-
-    log "Results: $passed passed, $failed failed"
-    return $failed
-}
-
-start_compose_stacks() {
-    log "Starting Docker Compose stacks..."
-
-    for stack_dir in "${COMPOSE_STACKS[@]}"; do
-        if [[ -d "$stack_dir" ]]; then
-            local stack_name=$(basename "$stack_dir")
-            log "  Starting: $stack_name"
-            cd "$stack_dir" && docker compose up -d 2>>"$LOG_FILE" || log "  Warning: $stack_name may have issues"
-        fi
-    done
-}
-
 send_notification() {
-    local status=$1      # success, warning, critical
-    local subject=$2     # Short subject like "Completed Successfully"
-    local details=$3     # Additional details
-    local containers=${4:-"unknown"}
+    local status="$1"
+    local message="$2"
 
-    log "Sending notification: $status - $subject"
+    # Build notification payload
+    local subject="Weekly Docker Restart - $status"
+    local body="$message"
 
-    # Build the full message body
-    local full_message="Weekly Docker Restart Report
-========================================
+    log "Sending notification: $subject"
 
-Status: ${status^^}
-Host: $(hostname)
-Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
-
-$details
-
-----------------------------------------
-Containers: $containers
-Log File: $LOG_FILE
-========================================
-Sent by AIServer automation"
-
-    # Send to Loki if available
-    if curl -sf http://localhost:3100/ready &>/dev/null; then
-        local loki_timestamp=$(date +%s)000000000
-        curl -s -X POST "http://localhost:3100/loki/api/v1/push" \
+    # Send to webhook if configured
+    if [[ -n "$WEBHOOK_URL" ]]; then
+        local webhook_response
+        webhook_response=$(curl -sf -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{
-                \"streams\": [{
-                    \"stream\": {
-                        \"job\": \"weekly-restart\",
-                        \"host\": \"$(hostname)\",
-                        \"level\": \"$status\"
-                    },
-                    \"values\": [[\"$loki_timestamp\", \"$subject: $details\"]]
-                }]
-            }" &>/dev/null
-        log "  Sent to Loki"
-    fi
+            -d "$(jq -n \
+                --arg category "Weekly Restart" \
+                --arg subject "$subject" \
+                --arg message "$body" \
+                '{category: $category, subject: $subject, message: $message}')" 2>&1) || true
 
-    # Send to n8n webhook for email notification
-    # Standardized format: category, subject, message
-    local json_message
-    json_message=$(echo "$full_message" | jq -Rs .)
-
-    local webhook_response
-    webhook_response=$(curl -sf -X POST "$WEBHOOK_URL" \
-        -H "Content-Type: application/json" \
-        -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
-        --connect-timeout 10 \
-        --max-time 30 \
-        -d "{
-            \"category\": \"Weekly Restart\",
-            \"subject\": \"$subject\",
-            \"message\": $json_message
-        }" 2>&1)
-
-    if [[ $? -eq 0 ]]; then
-        log "  Sent to n8n webhook"
-    else
-        log "  WARNING: Failed to send to n8n webhook: $webhook_response"
-        # Fallback to msmtp if available and webhook fails
-        if command -v msmtp &>/dev/null && [[ -f "$HOME/.msmtprc" ]]; then
-            echo -e "Subject: AIServer Message: Weekly Restart - $subject\n\n$full_message" | msmtp "$NOTIFICATION_EMAIL" 2>/dev/null
-            log "  Sent via msmtp fallback"
-        fi
-    fi
-}
-
-main() {
-    log "=========================================="
-    log "Weekly Docker Restart Starting"
-    log "=========================================="
-
-    # Record pre-restart state
-    local pre_containers=$(docker ps -q 2>/dev/null | wc -l)
-    log "Pre-restart: $pre_containers containers running"
-
-    # Stop Docker gracefully
-    log "Stopping Docker daemon..."
-    if command -v systemctl &>/dev/null; then
-        sudo systemctl stop docker 2>>"$LOG_FILE"
-    else
-        sudo service docker stop 2>>"$LOG_FILE"
-    fi
-
-    sleep 5
-
-    # Start Docker
-    log "Starting Docker daemon..."
-    if command -v systemctl &>/dev/null; then
-        sudo systemctl start docker 2>>"$LOG_FILE"
-    else
-        sudo service docker start 2>>"$LOG_FILE"
-    fi
-
-    # Wait for Docker to be ready
-    sleep 10
-
-    if ! docker info &>/dev/null; then
-        log "CRITICAL: Docker failed to start!"
-        send_notification "critical" "Docker Daemon Failed" "Docker daemon is not responding after restart. Manual intervention required immediately." "0 (Docker down)"
-        exit 1
-    fi
-
-    log "Docker daemon is up"
-
-    # Start compose stacks
-    start_compose_stacks
-
-    # Wait for services
-    if wait_for_services; then
-        # Verify all services
-        if verify_services; then
-            local post_containers=$(docker ps -q 2>/dev/null | wc -l)
-            log "=========================================="
-            log "Weekly Restart SUCCESSFUL"
-            log "Containers: $pre_containers -> $post_containers"
-            log "=========================================="
-            send_notification "success" "Completed Successfully" "All services restarted and passed health checks. System is fully operational." "$post_containers running"
-            exit 0
+        if [[ -n "$webhook_response" ]]; then
+            log "  Sent to webhook"
         else
-            local post_containers=$(docker ps -q 2>/dev/null | wc -l)
-            log "=========================================="
-            log "Weekly Restart PARTIAL - Some services failed"
-            log "=========================================="
-            send_notification "warning" "Partial Success" "Restart completed but some services failed health checks. Review the log file for details." "$post_containers running"
-            exit 1
+            log "  Warning: Webhook notification may have failed"
         fi
-    else
-        local post_containers=$(docker ps -q 2>/dev/null | wc -l)
-        log "=========================================="
-        log "Weekly Restart FAILED - Services did not come up"
-        log "=========================================="
-        send_notification "critical" "Services Failed to Start" "Services did not come up within the timeout period. Immediate attention required." "$post_containers running"
-        exit 2
     fi
+
+    # Could add email fallback here if msmtp is configured
+    # if command -v msmtp &>/dev/null && [[ -n "$NOTIFICATION_EMAIL" ]]; then
+    #     echo "$body" | msmtp "$NOTIFICATION_EMAIL"
+    # fi
 }
 
-# Run main
-main "$@"
+# ============================================================================
+# MAIN
+# ============================================================================
+
+log "=========================================="
+log "Weekly Docker Restart Starting"
+log "=========================================="
+
+# Check if we have any compose dirs configured
+if [[ ${#DOCKER_COMPOSE_DIRS[@]} -eq 0 ]]; then
+    log "No DOCKER_COMPOSE_DIRS configured. Edit config.sh to add directories."
+    log "Exiting."
+    exit 0
+fi
+
+# Pre-restart snapshot
+log ""
+log "Pre-restart container status:"
+get_container_health >> "$LOG_FILE"
+
+FAILED_STACKS=()
+SUCCESS_STACKS=()
+
+# Restart each stack
+for dir in "${DOCKER_COMPOSE_DIRS[@]}"; do
+    if [[ -d "$dir" ]] && [[ -f "$dir/docker-compose.yml" ]]; then
+        log ""
+        if restart_compose_stack "$dir"; then
+            SUCCESS_STACKS+=("$(basename "$dir")")
+        else
+            FAILED_STACKS+=("$(basename "$dir")")
+        fi
+    else
+        log "Skipping $dir (not found or no docker-compose.yml)"
+    fi
+done
+
+# Post-restart snapshot
+log ""
+log "Post-restart container status:"
+get_container_health >> "$LOG_FILE"
+
+# Summary
+log ""
+log "=========================================="
+log "Weekly Docker Restart Complete"
+log "=========================================="
+log "Successful: ${#SUCCESS_STACKS[@]} (${SUCCESS_STACKS[*]:-none})"
+log "Failed: ${#FAILED_STACKS[@]} (${FAILED_STACKS[*]:-none})"
+
+# Send notification
+if [[ ${#FAILED_STACKS[@]} -gt 0 ]]; then
+    send_notification "FAILED" "Weekly restart completed with failures.
+
+Successful: ${SUCCESS_STACKS[*]:-none}
+Failed: ${FAILED_STACKS[*]}
+
+Check logs at: $LOG_FILE"
+else
+    send_notification "SUCCESS" "Weekly restart completed successfully.
+
+Restarted: ${SUCCESS_STACKS[*]:-none}
+
+All containers healthy."
+fi
+
+log ""
+log "Log saved to: $LOG_FILE"

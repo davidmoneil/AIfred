@@ -1,0 +1,107 @@
+#!/bin/bash
+#
+# AIfred Automation Configuration Template
+#
+# Copy this file to config.sh and customize for your environment:
+#   cp config.sh.template config.sh
+#   chmod 600 config.sh  # Protect sensitive values
+#   nano config.sh
+#
+# This file is sourced by automation scripts.
+# config.sh is in .gitignore to prevent committing secrets.
+#
+
+# ============================================================================
+# PATHS
+# ============================================================================
+
+# AIfred installation directory
+export AIFRED_DIR="$HOME/Code/AIfred"
+
+# Docker compose directories (space-separated list in array)
+export DOCKER_COMPOSE_DIRS=(
+    "$HOME/docker/app1"
+    "$HOME/docker/app2"
+    # Add your docker-compose directories here
+)
+
+# Backup repository path (for restic)
+export RESTIC_REPOSITORY="/path/to/your/backup/repository"
+export RESTIC_PASSWORD_FILE="$HOME/.restic/backup-password.txt"
+
+# ============================================================================
+# INFRASTRUCTURE HOSTS
+# ============================================================================
+
+# Define your infrastructure hosts for health checks
+# Format: ["DisplayName"]="IP_ADDRESS"
+declare -A INFRASTRUCTURE_HOSTS=(
+    ["LocalServer"]="127.0.0.1"
+    # ["NAS"]="192.168.x.x"
+    # ["Router"]="192.168.x.1"
+    # Add your hosts here
+)
+
+# SSH hosts to check (must match ~/.ssh/config Host entries)
+export SSH_HOSTS=(
+    # "RemoteServer"
+    # "NAS"
+)
+
+# ============================================================================
+# SERVICES
+# ============================================================================
+
+# Critical Docker services to monitor (container name patterns)
+export CRITICAL_SERVICES=(
+    "caddy"
+    "postgres"
+    # Add your critical services here
+)
+
+# Public URL to verify (leave empty to skip)
+export PUBLIC_HEALTH_URL=""
+# Example: export PUBLIC_HEALTH_URL="https://myapp.example.com"
+
+# ============================================================================
+# NOTIFICATIONS
+# ============================================================================
+
+# Webhook URL for notifications (leave empty to disable)
+export WEBHOOK_URL=""
+# Example: export WEBHOOK_URL="https://n8n.example.com/webhook/your-webhook-id"
+
+# Notification email (used as fallback or for reports)
+export NOTIFICATION_EMAIL=""
+# Example: export NOTIFICATION_EMAIL="admin@example.com"
+
+# ============================================================================
+# OLLAMA (for context analysis)
+# ============================================================================
+
+# Ollama API endpoint
+export OLLAMA_HOST="http://localhost:11434"
+
+# Model for context summarization
+export OLLAMA_MODEL="llama3.1:8b"
+
+# Enable/disable automatic context reduction
+export CONTEXT_REDUCE="false"
+
+# ============================================================================
+# THRESHOLDS
+# ============================================================================
+
+# Backup staleness threshold (hours)
+export BACKUP_MAX_AGE_HOURS=48
+
+# Disk usage warnings
+export DISK_WARNING_PERCENT=80
+export DISK_CRITICAL_PERCENT=90
+
+# Certificate expiry warning (days)
+export CERT_WARNING_DAYS=30
+
+# Context reduction thresholds (tokens)
+export REDUCE_THRESHOLD=5000
+export REDUCE_MAX_SIZE=50000
