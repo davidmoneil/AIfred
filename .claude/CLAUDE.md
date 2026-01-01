@@ -10,6 +10,20 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 
 ---
 
+## Quick Links
+
+- @.claude/context/_index.md - Navigate the knowledge base
+- @.claude/context/session-state.md - **Current work status** (check here first when returning)
+- @.claude/context/projects/current-priorities.md - Active tasks
+- @paths-registry.yaml - Source of truth for all paths
+- @.claude/context/standards/severity-status-system.md - Severity/status terminology
+- @.claude/context/standards/model-selection.md - When to use Opus vs Sonnet vs Haiku
+- @.claude/context/patterns/agent-selection-pattern.md - **Choose agents vs subagents vs skills**
+- @.claude/context/patterns/memory-storage-pattern.md - When to use Memory MCP
+- @.claude/context/patterns/prompt-design-review.md - PARC design review pattern
+
+---
+
 ## Core Principles
 
 1. **Context-First**: Check `.claude/context/` before giving advice
@@ -17,35 +31,74 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 3. **Use Symlinks**: External data goes in `external-sources/` with paths in `paths-registry.yaml`
 4. **Ask Questions**: When unsure about paths or preferences, ask rather than assume
 5. **Memory for Decisions**: Store decisions and lessons in Memory MCP, details in context files
+6. **MCP-First Tools**: Use MCP tools before bash commands when available
 
 ---
 
-## Key Files
+## Core Workflow Patterns
 
-| File | Purpose |
-|------|---------|
-| @.claude/context/_index.md | Navigate the knowledge base |
-| @.claude/context/session-state.md | Current work status |
-| @.claude/context/projects/current-priorities.md | Active tasks |
-| @paths-registry.yaml | Source of truth for all paths |
+**PARC**: Prompt → Assess → Relate → Create (design review before implementation)
+**DDLA**: Discover → Document → Link → Automate
+**COSA**: Capture → Organize → Structure → Automate
+**Agent Selection**: Choose between custom agents, built-in subagents, skills, or direct tools
+
+### PARC Pattern (Apply Before Significant Tasks)
+
+Before implementing any significant task, run a quick PARC check:
+1. **Prompt**: What's being asked? (parse the request)
+2. **Assess**: Do existing patterns apply? (check `.claude/context/patterns/`)
+3. **Relate**: How does this fit the architecture? (scope, reuse, impact)
+4. **Create**: Apply patterns, document new discoveries
+
+**Explicit invocation**: `/design-review "<task description>"`
+**Full documentation**: @.claude/context/patterns/prompt-design-review.md
 
 ---
 
-## Workflow Patterns
+## Advanced Task Patterns
 
-### DDLA: Discover → Document → Link → Automate
-When exploring infrastructure:
-1. **Discover**: Find services, configs, paths
-2. **Document**: Create context file in `.claude/context/systems/`
-3. **Link**: Add to `paths-registry.yaml`, create symlinks if needed
-4. **Automate**: Create slash command if you'll do it again
+When handling complex multi-step tasks:
 
-### COSA: Capture → Organize → Structure → Automate
-For new information:
-1. **Capture**: Quick note in `knowledge/notes/`
-2. **Organize**: Move to appropriate location when refined
-3. **Structure**: Format properly with templates
-4. **Automate**: Build workflows for repeated tasks
+0. **Apply PARC first**: Quick design review - is there an existing pattern? (`/design-review`)
+1. **Check for patterns first**: @.claude/context/patterns/
+2. **Use structured phases**: Break tasks into Phase 1, Phase 2, etc.
+3. **Classify findings**: Use severity system from @.claude/context/standards/severity-status-system.md
+   - `[X] CRITICAL` - Immediate action required
+   - `[!] HIGH` - Address within 24h
+   - `[~] MEDIUM` - Address this week
+   - `[-] LOW` - Nice to fix
+4. **Store in Memory**: See @.claude/context/patterns/memory-storage-pattern.md for when to store
+5. **Document once used 3x**: Create slash command or workflow doc
+
+---
+
+## Built-in Subagents
+
+Claude Code includes specialized subagents that are **automatically invoked** when appropriate:
+
+### Core Subagents
+- **Explore**: Fast codebase exploration, finding files, understanding architecture
+- **Plan**: Software architect for designing implementation strategies
+- **claude-code-guide**: Documentation lookup for Claude Code, Agent SDK, API questions
+
+### Feature Development (feature-dev plugin)
+- **feature-dev:code-architect**: Design feature architectures with implementation blueprints
+- **feature-dev:code-explorer**: Analyze existing features, trace execution paths
+- **feature-dev:code-reviewer**: Review code with confidence-based issue filtering
+
+### Other Plugins
+- **hookify:conversation-analyzer**: Analyze conversations to create prevention hooks
+- **agent-sdk-dev:agent-sdk-verifier-py**: Verify Python Agent SDK applications
+- **agent-sdk-dev:agent-sdk-verifier-ts**: Verify TypeScript Agent SDK applications
+- **project-plan-validator**: Validate project plans against infrastructure patterns
+
+### Custom Agents (via `/agent`)
+Your infrastructure-specific agents with persistent memory:
+- `/agent deep-research "topic"` - Web research with multi-source validation
+- `/agent service-troubleshooter "issue"` - Systematic service diagnosis
+- `/agent docker-deployer "service"` - Guided Docker deployment
+
+**Decision Guide**: @.claude/context/patterns/agent-selection-pattern.md
 
 ---
 
@@ -90,6 +143,8 @@ Run `/end-session` which will:
 - Information already in files
 - Obvious facts
 
+See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
+
 ---
 
 ## Available Commands
@@ -98,6 +153,7 @@ Run `/end-session` which will:
 |---------|-------------|
 | `/setup` | Initial configuration wizard |
 | `/end-session` | Clean session exit |
+| `/design-review` | PARC pattern design review |
 | `/discover <target>` | Discover and document services |
 | `/health-check` | Verify system health |
 
@@ -105,13 +161,44 @@ Run `/end-session` which will:
 
 ## Agents
 
-Specialized agents available via Task tool:
+Specialized agents available via `/agent`:
 
 | Agent | Purpose |
 |-------|---------|
 | `docker-deployer` | Deploy and configure Docker services |
 | `service-troubleshooter` | Diagnose infrastructure issues |
 | `deep-research` | In-depth topic investigation |
+
+---
+
+## Audit Logging
+
+All Claude Code tool executions are **automatically logged** via the hooks system.
+
+### How It Works
+
+The `.claude/hooks/` directory contains JavaScript hooks:
+
+| Hook | Event | Purpose |
+|------|-------|---------|
+| `audit-logger.js` | PreToolUse | Logs all tool executions |
+| `session-tracker.js` | Notification | Tracks session lifecycle |
+| `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
+
+### Log Format
+
+All logs stored as JSONL in `.claude/logs/audit.jsonl`:
+
+```json
+{
+  "timestamp": "2026-01-01T14:30:00.000Z",
+  "session": "Infrastructure Review",
+  "who": "claude",
+  "type": "tool_execution",
+  "tool": "Bash",
+  "parameters": { "command": "docker ps" }
+}
+```
 
 ---
 
@@ -122,6 +209,7 @@ Specialized agents available via Task tool:
 - Ask clarifying questions about paths and preferences
 - Think in reusable patterns, not one-off solutions
 - Reference context files when giving advice
+- Propose slash commands for repeated tasks
 
 ---
 
@@ -133,4 +221,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.0 - Your Personal AI Infrastructure Assistant*
+*AIfred v1.1 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-01-01 - Added standards, patterns, PARC workflow, built-in subagents*
