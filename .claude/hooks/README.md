@@ -14,6 +14,7 @@ Automatic behaviors that run before/after tool executions.
 | `secret-scanner.js` | PreToolUse | Block commits with secrets |
 | `context-reminder.js` | PostToolUse | Prompt for documentation |
 | `docker-health-check.js` | PostToolUse | Verify container health |
+| `memory-maintenance.js` | PostToolUse | Track Memory MCP entity access for pruning |
 
 ---
 
@@ -27,21 +28,31 @@ Automatic behaviors that run before/after tool executions.
 
 ---
 
+## Memory Maintenance Hook
+
+The `memory-maintenance.js` hook automatically tracks when Memory MCP entities are accessed:
+
+**Tracked Data** (in `.claude/agents/memory/entity-metadata.json`):
+- `firstAccessed`: Date entity was first retrieved
+- `lastAccessed`: Most recent access date
+- `accessCount`: Total number of times accessed
+
+**Use Cases**:
+- Identify stale entities (not accessed in 90+ days)
+- Prioritize frequently-used entities
+- Enable intelligent pruning via `memory-prune.sh`
+
+---
+
 ## Creating New Hooks
 
 ```javascript
-module.exports = {
-  name: 'my-hook',
-  description: 'What this hook does',
-  event: 'PreToolUse',  // or PostToolUse, Notification
+module.exports = async (context) => {
+  const { tool, tool_input, result } = context;
 
-  async handler(context) {
-    const { tool, parameters } = context;
+  // Your logic here
 
-    // Your logic here
-
-    return { proceed: true };  // false to block
-  }
+  // Return nothing to continue, or throw to block
 };
 ```
 
@@ -67,7 +78,8 @@ echo "My Session" > .claude/logs/.current-session
 
 - Audit log: `.claude/logs/audit.jsonl`
 - Session activity: `.claude/logs/.session-activity`
+- Entity metadata: `.claude/agents/memory/entity-metadata.json`
 
 ---
 
-*AIfred Hooks v1.0*
+*AIfred Hooks v1.1 - Added memory maintenance tracking*
