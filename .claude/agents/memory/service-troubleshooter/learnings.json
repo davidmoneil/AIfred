@@ -1,0 +1,25 @@
+{
+  "last_updated": "2026-01-01",
+  "runs_completed": 0,
+  "learnings": [],
+  "patterns": [
+    {
+      "pattern": "Application not responding",
+      "symptoms": ["Connection timeout", "No response"],
+      "common_causes": ["Process crashed", "Port blocked", "Resource exhaustion"],
+      "diagnostic_steps": ["Check process status", "Verify port availability", "Review system resources"]
+    },
+    {
+      "pattern": "High CPU/Memory usage",
+      "symptoms": ["System slowdown", "Fan spinning", "Activity Monitor shows high usage"],
+      "common_causes": ["Runaway process", "Memory leak", "Background tasks"],
+      "diagnostic_steps": ["Identify top processes", "Check for updates", "Restart service if needed"]
+    },
+    {
+      "pattern": "Disk space issues",
+      "symptoms": ["Low disk space warning", "Operations failing"],
+      "common_causes": ["Log accumulation", "Large temp files", "Cache buildup"],
+      "diagnostic_steps": ["Check disk usage with df -h", "Identify large files/directories", "Clear unnecessary data"]
+    }
+  ]
+}

@@ -1,23 +1,18 @@
 # Getting Started with AIfred
 
-Welcome to AIfred - your personal AI infrastructure assistant.
+Your AIfred environment was configured on 2026-01-01.
 
----
+## Your Configuration
+
+- **Automation Level**: Full Automation (runs without asking)
+- **Focus Areas**: All (Home Lab, Development, System Admin, Learning & Documentation)
+- **Memory**: File-based context (using `.claude/context/` files)
+- **Session Mode**: Automated (commits changes automatically)
+- **Docker**: Not installed (MCP Gateway features unavailable)
 
 ## First Steps
 
-### 1. Run Setup
-
-```bash
-cd /path/to/AIfred
-claude
-/setup
-```
-
-The setup wizard will:
-- Discover your system
-- Ask about your goals
-- Configure AIfred for your needs
+✅ Setup complete! You're ready to use AIfred
 
 ### 2. Understand the Structure
 
