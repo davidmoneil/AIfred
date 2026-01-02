@@ -38,7 +38,26 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **NAS/network storage**
 - **Nothing yet - this is a fresh start**
 
-### Question 4: Memory & Persistence
+### Question 4: Project Management
+
+"Do you work on code projects? Where do they live?"
+
+**Context from Discovery**: [Show detected projects_root from Phase 1, e.g., "I found ~/Code with 5 projects"]
+
+**Explanation**: "AIfred is a hub that tracks your projects but doesn't contain them. Your code stays in your projects folder."
+
+**Options**:
+- **Yes, use discovered location**: [~/Code or detected path]
+- **Yes, but at a different location**: [user specifies]
+- **No, I don't work on code projects**
+
+**Follow-up** (if yes):
+"Would you like to register your existing projects now, or add them later with /register-project?"
+
+- **Register now**: [Show list from discovery, let user select]
+- **Add later**: Just set up the location, I'll register projects as needed
+
+### Question 5: Memory & Persistence
 
 "Would you like AIfred to remember things between sessions?"
 
@@ -48,7 +67,7 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **Yes, enable persistent memory** (Recommended if Docker available)
 - **No, I'll manage context files manually**
 
-### Question 5: Session Management
+### Question 6: Session Management
 
 "How should sessions be managed?"
 
@@ -57,7 +76,7 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **Prompted**: Remind me to run /end-session with a checklist
 - **Manual**: I'll handle it myself
 
-### Question 6: GitHub Integration
+### Question 7: GitHub Integration
 
 "Would you like AIfred changes tracked in GitHub?"
 
@@ -77,9 +96,11 @@ Based on answers, determine:
 | `focus_areas` | Question 1 |
 | `automation_level` | Question 2 (full/guided/manual) |
 | `enable_discovery` | Question 3 |
-| `enable_memory_mcp` | Question 4 |
-| `session_mode` | Question 5 |
-| `github_enabled` | Question 6 |
+| `projects_root` | Question 4 (e.g., ~/Code) |
+| `register_existing_projects` | Question 4 follow-up |
+| `enable_memory_mcp` | Question 5 |
+| `session_mode` | Question 6 |
+| `github_enabled` | Question 7 |
 
 ---
 
@@ -103,6 +124,10 @@ Configured during AIfred setup on [date].
 - Memory MCP: [yes/no]
 - Session Automation: [level]
 - GitHub Sync: [yes/no]
+
+## Development
+- Projects Root: [path, e.g., ~/Code]
+- Registered Projects: [count or "none yet"]
 
 ## Notes
 [Any additional context from interview]

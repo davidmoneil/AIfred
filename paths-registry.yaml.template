@@ -78,9 +78,40 @@ storage:
   #     backups: "/mnt/nas/backups"
 
 # =============================================================================
+# DEVELOPMENT
+# =============================================================================
+# Code projects and development environment
+#
+# KEY CONCEPT: AIfred is a "hub" that knows about projects but doesn't contain them.
+# Your actual code lives elsewhere (e.g., ~/Code). AIfred tracks and orchestrates.
+
+development:
+  # Where you clone/create code projects (NOT inside AIfred)
+  projects_root: "~/Code"
+
+  # Optional: Creative/writing projects (separate from code)
+  # creative_root: "~/CreativeProjects"
+
+  # Naming conventions for new projects
+  conventions:
+    naming: "lowercase-with-dashes"  # e.g., "my-new-project"
+    # Options: lowercase-with-dashes, snake_case, PascalCase
+
+  # Registered projects (populated by /create-project or manually)
+  projects:
+    # example_project:
+    #   path: "~/Code/example-project"
+    #   type: "web-app"              # web-app, api, library, cli, docker, other
+    #   language: "typescript"
+    #   repo: "github.com/user/repo"
+    #   status: "active"             # active, maintenance, archived
+    #   context_file: ".claude/context/projects/example-project.md"
+    #   notes: "Description of what this project does"
+
+# =============================================================================
 # AIFRED
 # =============================================================================
-# AIfred-specific paths
+# AIfred-specific paths (this hub installation)
 
 aifred:
   base_path: "/path/to/AIfred"

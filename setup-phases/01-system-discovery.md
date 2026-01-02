@@ -88,6 +88,32 @@ ss -tlnp 2>/dev/null | grep -E ":80|:443|:8080|:3000|:5000" | head -10
 
 **Capture**: Running services, open ports
 
+### 7. Development Environment
+
+```bash
+# Common code directory locations
+for dir in ~/Code ~/code ~/Projects ~/projects ~/src ~/dev ~/Development; do
+  if [ -d "$dir" ]; then
+    echo "Found: $dir"
+    ls -1 "$dir" 2>/dev/null | head -10
+  fi
+done
+
+# Look for existing git repositories
+find ~/ -maxdepth 3 -name ".git" -type d 2>/dev/null | head -20
+
+# Check for common development tools
+which git node npm python3 docker-compose 2>/dev/null
+```
+
+**Capture**:
+- Projects root directory (e.g., ~/Code)
+- Existing projects/repositories
+- Development tools installed
+
+**KEY CONCEPT**: AIfred is a "hub" that tracks projects but doesn't contain them.
+The user's code should stay in their projects directory (e.g., ~/Code), not inside AIfred.
+
 ---
 
 ## Discovery Summary
@@ -119,6 +145,14 @@ network:
 services:
   running: [count]
   key_ports: [list]
+
+development:
+  projects_root: [detected path, e.g., ~/Code]
+  existing_projects: [list of directory names]
+  tools:
+    git: [yes/no]
+    node: [yes/no]
+    python: [yes/no]
 ```
 
 ---
