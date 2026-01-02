@@ -32,6 +32,43 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 4. **Ask Questions**: When unsure about paths or preferences, ask rather than assume
 5. **Memory for Decisions**: Store decisions and lessons in Memory MCP, details in context files
 6. **MCP-First Tools**: Use MCP tools before bash commands when available
+7. **Hub, Not Container**: AIfred tracks code projects but doesn't contain them. Code lives in `projects_root`.
+
+---
+
+## Project Management (Automatic)
+
+**AIfred is a hub that orchestrates code projects stored elsewhere.**
+
+### When User Mentions a GitHub URL
+
+The `project-detector` hook automatically triggers. If the project isn't registered:
+1. Clone to `projects_root` (from `paths-registry.yaml`)
+2. Auto-detect language/type
+3. Add to `paths-registry.yaml` under `development.projects`
+4. Create context file at `.claude/context/projects/<name>.md`
+5. Continue with user's original request
+
+### When User Says "New Project"
+
+Clarify name/type, then:
+1. Create in `projects_root` (NOT in AIfred)
+2. Initialize: git, README, `.claude/CLAUDE.md`
+3. Register in `paths-registry.yaml`
+4. Create context file
+
+### Project Locations
+
+| What | Where |
+|------|-------|
+| Code | `projects_root/<project>/` |
+| Context/notes | `.claude/context/projects/<project>.md` |
+| Registration | `paths-registry.yaml` → `development.projects` |
+
+### Related Commands
+
+- `/create-project <name>` - Create new code project
+- `/register-project <path-or-url>` - Register existing project
 
 ---
 
@@ -184,6 +221,7 @@ The `.claude/hooks/` directory contains JavaScript hooks:
 | `audit-logger.js` | PreToolUse | Logs all tool executions |
 | `session-tracker.js` | Notification | Tracks session lifecycle |
 | `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
+| `project-detector.js` | UserPromptSubmit | Auto-detects GitHub URLs and "new project" requests |
 
 ### Log Format
 
@@ -221,5 +259,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.1 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-01 - Added standards, patterns, PARC workflow, built-in subagents*
+*AIfred v1.2 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-01-01 - Added automatic project management with hook-based detection*
