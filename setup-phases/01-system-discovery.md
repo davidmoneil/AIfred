@@ -2,6 +2,32 @@
 
 **Purpose**: Discover the user's system environment to inform setup decisions.
 
+**Prerequisite**: Complete Phase 0 (Prerequisites Check) first.
+
+---
+
+## Pre-Discovery Validation
+
+Before running discovery, confirm prerequisites from Phase 0:
+
+```bash
+# Quick validation
+echo "=== Pre-Discovery Check ==="
+echo "Git: $(git --version 2>/dev/null || echo 'NOT INSTALLED')"
+echo "Docker: $(docker --version 2>/dev/null || echo 'NOT INSTALLED')"
+
+if command -v docker &> /dev/null; then
+  if docker info &> /dev/null; then
+    echo "Docker Status: ✅ Running"
+  else
+    echo "Docker Status: ⚠️ Installed but NOT running"
+    echo "  → Start Docker before continuing for full functionality"
+  fi
+fi
+```
+
+**If Docker should be running but isn't, help user start it before proceeding.**
+
 ---
 
 ## Automatic Discovery
@@ -168,12 +194,15 @@ Options:
 - No, just this machine
 - Skip discovery entirely
 
-**Q2** (if Docker not installed): "Docker isn't installed. Would you like me to install it? This enables MCP servers and container management."
+**Q2** (if Docker not running but was expected):
+> "Docker doesn't appear to be running. It was marked as installed in Phase 0.
+> - On macOS: Open Docker.app from Applications
+> - On Linux: Run `sudo systemctl start docker`
+>
+> Would you like to try starting it now?"
 
-Options:
-- Yes, install Docker
-- No, skip Docker features
-- I'll install it manually later
+Note: Docker installation is handled in Phase 0. If Docker is not installed and
+user wants it, return to Phase 0 first.
 
 ---
 

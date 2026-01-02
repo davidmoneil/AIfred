@@ -95,7 +95,74 @@ This keeps setup files available for reference but out of active context.
 **Next Step**: Begin using AIfred - see knowledge/docs/getting-started.md
 ```
 
-### 5. Git Commit
+### 5. Register Existing Projects (Optional)
+
+Ask user:
+
+> "Would you like to register any existing code projects with AIfred?
+>
+> AIfred can track projects stored elsewhere (like ~/Code) without moving them.
+> This enables context-aware assistance when you work on those projects.
+>
+> Options:
+> - **Yes, register projects now**
+> - **No, I'll add them later** (use `/register-project` anytime)"
+
+**If yes, show discovered projects from Phase 1:**
+
+```
+I found these projects during discovery:
+
+📁 ~/Code/
+  1. [x] my-web-app (detected: typescript, web-app)
+  2. [ ] old-project (detected: python)
+  3. [x] api-service (detected: go, api)
+
+Enter numbers to register, or provide a GitHub URL:
+> 1, 3
+> github.com/username/another-repo
+```
+
+**For each selected project:**
+
+1. Add to `paths-registry.yaml` under `development.projects`
+2. Create context file at `.claude/context/projects/<name>.md`
+3. If GitHub URL: Clone to `projects_root` first
+
+**If user provides a GitHub URL:**
+
+```bash
+# Clone to projects_root
+cd [projects_root]  # e.g., ~/Code
+git clone https://github.com/username/repo.git
+
+# Auto-detect type/language
+# Register in paths-registry.yaml
+# Create context file
+```
+
+**Summary after registration:**
+
+```
+✅ Registered 3 projects:
+
+1. my-web-app
+   Path: ~/Code/my-web-app
+   Context: .claude/context/projects/my-web-app.md
+
+2. api-service
+   Path: ~/Code/api-service
+   Context: .claude/context/projects/api-service.md
+
+3. another-repo (cloned from GitHub)
+   Path: ~/Code/another-repo
+   Context: .claude/context/projects/another-repo.md
+
+When working on these projects, AIfred will automatically load
+their context for better assistance.
+```
+
+### 6. Git Commit
 
 If git enabled:
 
@@ -109,11 +176,12 @@ Configured:
 - Hooks: [count] installed
 - Agents: [count] deployed
 - Memory MCP: [status]
+- Projects registered: [count]
 
 🤖 Generated with AIfred Setup Wizard"
 ```
 
-### 6. GitHub Push (Optional)
+### 7. GitHub Push (Optional)
 
 If GitHub integration enabled:
 
@@ -159,10 +227,11 @@ Present to user:
 - [ ] CLAUDE.md updated
 - [ ] Setup files archived
 - [ ] Session state updated
+- [ ] Projects registered (or skipped)
 - [ ] Git commit created
 - [ ] GitHub push (if enabled)
 - [ ] Final summary presented
 
 ---
 
-*Phase 7 of 7 - Finalization - Setup Complete!*
+*Phase 7 of 8 (now 0-7) - Finalization - Setup Complete!*

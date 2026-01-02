@@ -10,17 +10,31 @@ You are running the AIfred setup wizard. This will configure your personal AI in
 ## Overview
 
 This setup process will:
+0. Check and install prerequisites (Git, Docker)
 1. Discover your system and existing infrastructure
 2. Understand your goals and preferences
 3. Set up the foundation (directories, paths, knowledge base)
 4. Configure MCP integration if desired
 5. Install automation hooks
 6. Deploy starter agents
-7. Finalize and document your configuration
+7. Finalize, register projects, and document your configuration
 
 ## Setup Phases
 
 Execute each phase in order. Read the phase file and follow its instructions.
+
+**IMPORTANT**: Always complete Phase 0 first. If dependencies are missing, help install them before continuing.
+
+### Phase 0: Prerequisites Check
+@setup-phases/00-prerequisites.md
+
+Check and install required dependencies:
+- Git (required)
+- Docker (recommended - includes detailed Mac/Linux/WSL instructions)
+- Node.js/Python (optional, for some MCP servers)
+
+**Note**: This phase clarifies that Homebrew is NOT required for Docker on Mac.
+Docker Desktop can be installed directly from docker.com.
 
 ### Phase 1: System Discovery
 @setup-phases/01-system-discovery.md
@@ -84,15 +98,26 @@ Complete setup:
 - Generate configuration summary
 - Move setup files to archive
 - Update CLAUDE.md with configuration
+- **Register existing projects** (from discovery or GitHub URLs)
 - Create getting-started guide
 - Optional: Initial commit and push
 
 ## Execution
 
-Begin by reading and executing Phase 1. Progress through each phase, asking user questions as specified in the phase files.
+**Begin with Phase 0 (Prerequisites Check)**. Ensure Git is installed and Docker is
+either installed & running OR explicitly skipped.
+
+Then progress through Phases 1-7, asking user questions as specified in each phase file.
+
+**Docker Validation**: After any Docker installation attempt, always re-check status
+before proceeding:
+
+```bash
+docker info &> /dev/null && echo "✅ Docker running" || echo "❌ Docker not running"
+```
 
 After all phases complete, provide a summary of what was configured and next steps.
 
 ---
 
-*AIfred Setup Wizard v1.0*
+*AIfred Setup Wizard v1.1 - Added Phase 0 Prerequisites, Project Registration*
