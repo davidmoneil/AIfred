@@ -1,5 +1,9 @@
 # AIfred .gitignore
 
+# Environment variables (contains secrets)
+.env
+.env.*
+
 # Local settings (user-specific)
 .claude/settings.local.json
 

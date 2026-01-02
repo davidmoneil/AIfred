@@ -11,6 +11,7 @@ Reusable implementation patterns extracted from recurring practices.
 | [Agent Selection](agent-selection-pattern.md) | Choose between custom agents, built-in subagents, skills, direct tools | Simple → Direct tools; Repeating → Custom agent |
 | [Memory Storage](memory-storage-pattern.md) | When/how to store in Memory MCP | Issues/decisions → Store; Routine → Skip |
 | [PARC Design Review](prompt-design-review.md) | Pre-implementation pattern check | Prompt → Assess → Relate → Create |
+| [Git Operations](git-operations-pattern.md) | Branch-aware push, credential management, validation | Branch-aware push; Validate before push; .env for secrets |
 
 ---
 

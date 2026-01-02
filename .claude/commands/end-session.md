@@ -53,13 +53,27 @@ git commit -m "Session: [brief description of work done]
 🤖 Generated with AIfred"
 ```
 
-### 5. GitHub Push (Optional)
+### 5. GitHub Push (Branch-Aware)
 
-If GitHub integration is enabled:
+**Apply Git Operations Pattern** (@.claude/context/patterns/git-operations-pattern.md):
 
 ```bash
-git push origin main
+# Detect current branch
+CURRENT_BRANCH=$(git branch --show-current)
+
+# Check if push needed (only if ahead of remote)
+if git status | grep -q "Your branch is ahead"; then
+  # Push to current branch (not hardcoded main)
+  git push origin $CURRENT_BRANCH
+elif git status | grep -q "up to date"; then
+  echo "✅ Already synced with remote"
+else
+  # No remote tracking - set up with:
+  git push -u origin $CURRENT_BRANCH
+fi
 ```
+
+**Handle auth failures**: See Git Operations Pattern for credential setup
 
 ### 6. Clear Session Activity
 

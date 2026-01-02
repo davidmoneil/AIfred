@@ -57,12 +57,21 @@ Add completed items to "Completed" section with date.
 
 ### 4. Git Status Check
 
+**Apply Git Operations Pattern** (@.claude/context/patterns/git-operations-pattern.md):
+
 ```bash
 git status
 git add -A  # if changes
 git commit -m "Session: [brief description]"
-git push origin main  # if applicable
+
+# Branch-aware push (not hardcoded to main)
+CURRENT_BRANCH=$(git branch --show-current)
+if git status | grep -q "ahead"; then
+  git push origin $CURRENT_BRANCH
+fi
 ```
+
+See [Git Operations Pattern](../patterns/git-operations-pattern.md) for credential setup and troubleshooting.
 
 ### 5. Document Follow-ups
 
