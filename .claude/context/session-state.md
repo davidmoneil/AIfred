@@ -14,6 +14,21 @@
 
 **Next Step**: Execute `/setup` command
 
+### On-Demand MCPs Enabled This Session
+
+<!--
+Track any On-Demand MCPs enabled for this session.
+At session end, these MUST be disabled (per MCP Loading Strategy pattern).
+Format: mcp-name (reason for enabling)
+-->
+
+- None
+
+<!-- If checkpoint was used:
+checkpoint_reason: [reason]
+mcp_required: [mcp-name]
+-->
+
 ---
 
 ## Session Continuity Notes

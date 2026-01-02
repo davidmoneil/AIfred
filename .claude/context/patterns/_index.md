@@ -9,6 +9,7 @@ Reusable implementation patterns extracted from recurring practices.
 | Pattern | Purpose | Quick Reference |
 |---------|---------|-----------------|
 | [Agent Selection](agent-selection-pattern.md) | Choose between custom agents, built-in subagents, skills, direct tools | Simple → Direct tools; Repeating → Custom agent |
+| [MCP Loading Strategy](mcp-loading-strategy.md) | Three strategies for MCP server loading | Always-On / On-Demand / Isolated |
 | [Memory Storage](memory-storage-pattern.md) | When/how to store in Memory MCP | Issues/decisions → Store; Routine → Skip |
 | [PARC Design Review](prompt-design-review.md) | Pre-implementation pattern check | Prompt → Assess → Relate → Create |
 
@@ -36,4 +37,4 @@ Use the existing patterns as templates.
 
 ---
 
-**Last Updated**: 2026-01-01
+**Last Updated**: 2026-01-02

@@ -20,6 +20,7 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 - @.claude/context/standards/model-selection.md - When to use Opus vs Sonnet vs Haiku
 - @.claude/context/patterns/agent-selection-pattern.md - **Choose agents vs subagents vs skills**
 - @.claude/context/patterns/memory-storage-pattern.md - When to use Memory MCP
+- @.claude/context/patterns/mcp-loading-strategy.md - **MCP loading strategies** (Always-On/On-Demand/Isolated)
 - @.claude/context/patterns/prompt-design-review.md - PARC design review pattern
 
 ---
@@ -157,6 +158,15 @@ Run `/end-session` which will:
 - Review and clear todos
 - Commit changes if needed
 - Push to GitHub if applicable
+- **Disable On-Demand MCPs** (returns to default OFF state)
+
+### When You Need an Unavailable MCP
+If you need tools from an On-Demand MCP that's not enabled:
+1. Run `/checkpoint` to save current state
+2. Provide user with enable instructions
+3. User enables MCP, restarts, continues from checkpoint
+
+See @.claude/context/patterns/mcp-loading-strategy.md for details.
 
 ---
 
@@ -190,6 +200,7 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 |---------|-------------|
 | `/setup` | Initial configuration wizard |
 | `/end-session` | Clean session exit |
+| `/checkpoint` | Save state for MCP-required restart |
 | `/design-review` | PARC pattern design review |
 | `/discover <target>` | Discover and document services |
 | `/health-check` | Verify system health |

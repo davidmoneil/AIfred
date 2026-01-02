@@ -12,6 +12,7 @@ Standard workflow for ending Claude Code sessions cleanly.
 - [ ] Update current-priorities.md with completed items
 - [ ] Commit any uncommitted changes
 - [ ] Push to GitHub if applicable
+- [ ] **Disable On-Demand MCPs** (auto-revert to default off)
 - [ ] Note any blockers or follow-ups
 ```
 
@@ -64,7 +65,21 @@ git commit -m "Session: [brief description]"
 git push origin main  # if applicable
 ```
 
-### 5. Document Follow-ups
+### 5. Disable On-Demand MCPs
+
+If any On-Demand MCPs were enabled for this session, disable them:
+
+```bash
+claude mcp list        # Check what's enabled
+claude mcp remove <mcp-name>  # Disable each On-Demand MCP
+```
+
+**On-Demand MCPs** (should be OFF by default):
+- n8n-MCP, GitHub MCP, SSH MCP, Prometheus MCP, Grafana MCP
+
+See @.claude/context/patterns/mcp-loading-strategy.md for details.
+
+### 6. Document Follow-ups
 
 Add any pending work to appropriate priority section.
 
