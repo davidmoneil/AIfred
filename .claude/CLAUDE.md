@@ -264,11 +264,31 @@ All logs stored as JSONL in `.claude/logs/audit.jsonl`:
 
 ## Project Status
 
-**Setup Status**: Not yet configured - run `/setup`
+**Setup Status**: ✅ Configured on 2026-01-03
 
-After setup, this section will be updated with your configuration details.
+### Configuration
+| Setting | Value |
+|---------|-------|
+| Automation | Full Automation |
+| Focus | Infrastructure, Development, Learning |
+| Memory MCP | Pending (enable in Docker Desktop) |
+| Session Mode | Automated |
+| Projects Root | `/Users/aircannon/Claude/Jarvis/projects` |
+
+### Quick Commands
+- `/end-session` - End work cleanly (auto-commits)
+- `/health-check` - Verify system status
+- `/discover <service>` - Document Docker services
+- `/register-project <path>` - Register a project
+
+### Installed
+- **8 hooks**: audit, session tracking, security, Docker health
+- **3 agents**: docker-deployer, service-troubleshooter, deep-research
+- **Tools**: Git, Docker, Node.js (v24 LTS), Python
+
+See @.claude/context/configuration-summary.md for full details.
 
 ---
 
 *AIfred v1.2 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-01 - Added automatic project management with hook-based detection*
+*Updated: 2026-01-03 - Initial setup complete*

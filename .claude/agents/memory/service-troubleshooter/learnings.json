@@ -1,0 +1,25 @@
+{
+  "last_updated": "2026-01-03",
+  "runs_completed": 0,
+  "learnings": [],
+  "patterns": [
+    {
+      "pattern": "Container restart loop",
+      "symptoms": ["Container status: restarting", "Exit code non-zero"],
+      "common_causes": ["Bad config", "Missing volume", "Port conflict"],
+      "diagnostic_steps": ["Check logs", "Inspect container", "Verify volumes"]
+    },
+    {
+      "pattern": "Service unreachable",
+      "symptoms": ["Connection refused", "Timeout"],
+      "common_causes": ["Container not running", "Wrong port", "Firewall"],
+      "diagnostic_steps": ["Check container status", "Verify port mapping", "Test connectivity"]
+    },
+    {
+      "pattern": "Out of memory",
+      "symptoms": ["OOMKilled", "Exit code 137"],
+      "common_causes": ["Memory limit too low", "Memory leak", "Large workload"],
+      "diagnostic_steps": ["Check docker stats", "Review memory limits", "Analyze container logs"]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+services:
+  mcp-gateway:
+    image: docker/mcp-gateway:latest
+    container_name: mcp-gateway
+    restart: unless-stopped
+    ports:
+      - "8811:8080"
+    volumes:
+      - mcp-memory-data:/data/memory
+      - ./config:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - MCP_SERVERS=memory,fetch
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mcp-memory-data:
+    name: aifred-mcp-memory
+
+networks:
+  mcp-network:
+    name: aifred-mcp-network

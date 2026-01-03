@@ -1,0 +1,17 @@
+{
+  "last_updated": "2026-01-03",
+  "runs_completed": 0,
+  "learnings": [],
+  "patterns": [
+    {
+      "pattern": "Port conflict detection",
+      "description": "Always check if target port is already in use before deploying",
+      "diagnostic_command": "ss -tlnp | grep :PORT"
+    },
+    {
+      "pattern": "Volume permission handling",
+      "description": "Ensure volume directories exist with correct permissions before mounting",
+      "common_issues": ["Permission denied", "No such file or directory"]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "last_updated": "2026-01-03",
+  "runs_completed": 0,
+  "learnings": [],
+  "research_history": [],
+  "trusted_sources": [
+    "docs.docker.com",
+    "github.com",
+    "stackoverflow.com",
+    "digitalocean.com/community",
+    "linuxize.com",
+    "nixos.wiki"
+  ],
+  "source_preferences": {
+    "prefer_official_docs": true,
+    "include_community_solutions": true,
+    "citation_style": "inline"
+  }
+}
