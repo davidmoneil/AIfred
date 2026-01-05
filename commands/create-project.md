@@ -1,11 +1,11 @@
 # /create-project
 
-Create a new project with proper structure and register it with AIfred.
+Create a new project with proper structure and register it with Jarvis.
 
 ## Usage
 
 ```
-/create-project <name> [--type <type>] [--language <lang>]
+/create-project <name> [--type <type>] [--language <lang>] [--github]
 ```
 
 **Examples**:
@@ -13,37 +13,51 @@ Create a new project with proper structure and register it with AIfred.
 /create-project my-new-api
 /create-project dashboard --type web-app --language typescript
 /create-project backup-scripts --type cli --language python
+/create-project cool-tool --github  # Also create GitHub repo
 ```
 
 ## Arguments
 
 | Argument | Required | Description |
 |----------|----------|-------------|
-| `name` | Yes | Project name (will be normalized to lowercase-with-dashes) |
+| `name` | Yes | Project name (normalized to lowercase-with-dashes) |
 | `--type` | No | Project type: web-app, api, library, cli, docker, other |
 | `--language` | No | Primary language: typescript, python, go, rust, etc. |
+| `--github` | No | Also create GitHub repository under CannonCoPilot |
+
+---
+
+## Workflow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Validate name (normalize to lowercase-with-dashes)          │
+│ 2. Create project at /Users/aircannon/Claude/<name>/           │
+│ 3. Initialize project structure                                 │
+│ 4. Create project's own .claude/CLAUDE.md                       │
+│ 5. Update paths-registry.yaml                                   │
+│ 6. Create project summary in Jarvis/projects/                   │
+│ 7. Optionally create GitHub repo and push                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ## What It Does
 
-### 1. Validates Location
+### 1. Creates Project Directory
 
-Reads `development.projects_root` from `paths-registry.yaml` (e.g., `~/Code`).
-
-**If not set**: Prompts user to set it first or uses `~/Code` as default.
-
-### 2. Creates Project Directory
+Per workspace-path-policy (PR-1.E), project code goes in the projects root:
 
 ```bash
-# In projects_root, NOT in AIfred
-mkdir -p ~/Code/my-new-project
-cd ~/Code/my-new-project
+# NOT in Jarvis!
+mkdir -p /Users/aircannon/Claude/my-new-project
+cd /Users/aircannon/Claude/my-new-project
 ```
 
-### 3. Initializes Project
+### 2. Initializes Project Structure
 
-Based on type/language, creates appropriate structure:
-
-**Default (any type)**:
+**Default structure (any type)**:
 ```
 my-new-project/
 ├── .git/                    # git init
@@ -54,13 +68,18 @@ my-new-project/
 ```
 
 **Type-specific additions**:
-- `web-app`: package.json, src/, public/
-- `api`: package.json or requirements.txt, src/, tests/
-- `cli`: src/, bin/
-- `library`: src/, tests/, docs/
-- `docker`: docker-compose.yml, Dockerfile
 
-### 4. Creates Project CLAUDE.md
+| Type | Additional Files |
+|------|------------------|
+| `web-app` | package.json, src/, public/, vite.config.js |
+| `api` | package.json or requirements.txt, src/, tests/ |
+| `cli` | src/, bin/, setup.py or package.json |
+| `library` | src/, tests/, docs/ |
+| `docker` | docker-compose.yml, Dockerfile |
+
+### 3. Creates Project's CLAUDE.md
+
+In the new project (not Jarvis):
 
 ```markdown
 # [Project Name]
@@ -68,86 +87,105 @@ my-new-project/
 **Type**: [type]
 **Language**: [language]
 **Created**: [date]
-**Hub**: [path to AIfred installation]
+**Managed By**: Jarvis (Project Aion)
 
 ## Purpose
 
-[User fills in]
+[To be filled in]
 
-## Key Commands
+## Quick Commands
 
-[Based on type - e.g., npm run dev, python main.py]
+[Based on type]
 
 ## Notes
 
-[User fills in]
+[To be filled in]
 ```
 
-### 5. Registers with AIfred
-
-Updates `paths-registry.yaml`:
+### 4. Updates paths-registry.yaml
 
 ```yaml
 development:
   projects:
     my-new-project:
-      path: "~/Code/my-new-project"
+      path: "/Users/aircannon/Claude/my-new-project"
       type: "api"
       language: "typescript"
       status: "active"
-      created: "2025-01-01"
-      context_file: ".claude/context/projects/my-new-project.md"
+      created: "2026-01-05"
+      summary_file: "projects/my-new-project.md"
 ```
 
-### 6. Creates Context File in AIfred
+### 5. Creates Project Summary in Jarvis
 
-Creates `.claude/context/projects/[name].md` in AIfred (not in the project):
+Creates `/Users/aircannon/Claude/Jarvis/projects/<name>.md` using the template from `knowledge/templates/project-summary.md`.
 
-```markdown
-# [Project Name]
+### 6. Optional GitHub Setup
 
-**Path**: ~/Code/my-new-project
-**Type**: [type]
-**Language**: [language]
-**Status**: active
-**Created**: [date]
+If `--github` flag or user confirms:
 
-## Overview
-
-[To be filled in as project develops]
-
-## Key Decisions
-
-[Log important architectural decisions here]
-
-## Current State
-
-[Updated during sessions working on this project]
+```bash
+# Create repo under CannonCoPilot
+gh repo create CannonCoPilot/my-new-project --public --source=. --push
 ```
-
-### 7. Optional: GitHub Setup
-
-If `github_enabled` is true, prompts:
-
-"Would you like to create a GitHub repo for this project?"
-- Yes, create public repo
-- Yes, create private repo
-- No, just local git
 
 ---
 
-## Key Concept
+## Path Policy (PR-1.E)
 
-**AIfred is a hub, not a container.**
+Per the workspace-path-policy:
 
-- Project code goes in `~/Code/my-new-project`
-- Project context/notes go in AIfred at `.claude/context/projects/my-new-project.md`
-- AIfred tracks and orchestrates, but doesn't hold the actual code
+| What | Where |
+|------|-------|
+| Project code | `/Users/aircannon/Claude/<project-name>/` |
+| Project's CLAUDE.md | `/Users/aircannon/Claude/<project-name>/.claude/CLAUDE.md` |
+| Project summary (in Jarvis) | `/Users/aircannon/Claude/Jarvis/projects/<project-name>.md` |
+| Registry | `paths-registry.yaml` → `development.projects` |
+
+**Key principle**: Jarvis creates and orchestrates projects stored elsewhere. Project code lives at the projects root, NOT inside Jarvis.
+
+---
+
+## Naming Conventions
+
+Project names are normalized:
+- Lowercase
+- Spaces become dashes
+- Special characters removed
+- Maximum 50 characters
+
+```
+"My New Project" → "my-new-project"
+"API_Service_v2" → "api-service-v2"
+```
+
+---
+
+## Validation
+
+After creation, verify:
+1. Project directory exists at `/Users/aircannon/Claude/<name>/`
+2. Project has `.git/` initialized
+3. Project has `.claude/CLAUDE.md`
+4. Project appears in `paths-registry.yaml`
+5. Summary exists at `Jarvis/projects/<name>.md`
+
+```bash
+# Quick validation
+ls -la /Users/aircannon/Claude/my-new-project/
+cat /Users/aircannon/Claude/my-new-project/.claude/CLAUDE.md
+cat paths-registry.yaml | grep -A5 "my-new-project"
+ls projects/my-new-project.md
+```
 
 ---
 
 ## Related Commands
 
-- `/register-project` - Register an existing project with AIfred
-- `/list-projects` - Show all registered projects
-- `/project-status` - Show status of a specific project
+- `/register-project` — Register an existing project with Jarvis
+- `/list-projects` — Show all registered projects
+- `/project-status` — Show status of a specific project
+
+---
+
+*Jarvis Project Creation — Per workspace-path-policy (PR-1.E)*

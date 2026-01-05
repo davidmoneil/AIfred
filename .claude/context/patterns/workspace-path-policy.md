@@ -47,6 +47,8 @@ This is the root directory for all Claude-assisted projects. Each project gets i
 
 When Jarvis works on external projects, it creates **summary documents** here (not code). These summaries provide context about projects without duplicating their content.
 
+**Template**: `knowledge/templates/project-summary.md`
+
 | Content Type | Location |
 |--------------|----------|
 | Project summary files | `projects/<project-name>.md` |
@@ -55,7 +57,7 @@ When Jarvis works on external projects, it creates **summary documents** here (n
 
 **Example**: Working on a project called "MyApp":
 - Code lives at: `/Users/aircannon/Claude/MyApp/`
-- Summary lives at: `/Users/aircannon/Claude/Jarvis/projects/MyApp.md`
+- Summary lives at: `/Users/aircannon/Claude/Jarvis/projects/myapp.md`
 
 ### 3. Project Aion Documentation
 

@@ -8,25 +8,20 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### PR-2: Workspace & Project Summaries
-- [ ] Create standardized "Project Summary" template
-- [ ] Refine `/register-project` command
-- [ ] Refine `/create-project` command
-- [ ] Validate project registration smoke tests
-
 ### PR-3: Upstream Sync Workflow
 - [ ] Create `/sync-aifred-baseline` command
 - [ ] Implement diff report generation
 - [ ] Create adopt/adapt/reject classification
 - [ ] Build port log tracking
+- [ ] Integrate baseline diff into session-start pattern
 
 ---
 
 ## This Week
 
-- [ ] Complete PR-2 deliverables
-- [ ] Start PR-3 upstream sync workflow
+- [ ] Complete PR-3 upstream sync workflow
 - [ ] Enable Memory MCP in Docker Desktop
+- [ ] Start PR-4 setup preflight improvements
 
 ---
 
@@ -70,8 +65,14 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
   - Archived PROJECT-PLAN.md
   - Created `Project_Aion` branch, pushed to origin
 
-- [x] **PR-2 (Partial): One-Shot PRD Template**
-  - Created docs/project-aion/one-shot-prd.md
+- [x] **PR-2: Workspace & Project Summaries** (Complete)
+  - Created Project Summary template (`knowledge/templates/project-summary.md`)
+  - Refined `/register-project` command with path policy compliance
+  - Refined `/create-project` command with path policy compliance
+  - Fixed `paths-registry.yaml` project paths
+  - Added `jarvis` and `aifred_baseline` sections to registry
+  - Created validation/smoke test document
+  - One-Shot PRD template created (`docs/project-aion/one-shot-prd.md`)
 
 ### 2026-01-03
 - [x] AIfred initial setup (all 8 phases)

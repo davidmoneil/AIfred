@@ -1,42 +1,79 @@
 # /register-project
 
-Register an existing project with AIfred so it can track and assist with it.
+Register an existing project with Jarvis so it can track and assist with it.
 
 ## Usage
 
 ```
-/register-project <path> [--type <type>] [--language <lang>]
+/register-project <path-or-url> [--type <type>] [--language <lang>]
 ```
 
 **Examples**:
 ```
-/register-project ~/Code/grc-platform
-/register-project ~/Code/time-scheduler --type web-app --language typescript
-/register-project ~/CreativeProjects --type other --language markdown
+/register-project ~/Code/my-app
+/register-project /Users/aircannon/Claude/SomeProject
+/register-project https://github.com/user/repo
+/register-project ~/Code/api --type api --language python
 ```
 
 ## Arguments
 
 | Argument | Required | Description |
 |----------|----------|-------------|
-| `path` | Yes | Path to existing project directory |
+| `path-or-url` | Yes | Path to existing project OR GitHub URL to clone |
 | `--type` | No | Project type: web-app, api, library, cli, docker, other |
 | `--language` | No | Primary language (auto-detected if not specified) |
 
+---
+
+## Workflow
+
+### If Path Provided
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Validate path exists                                         │
+│ 2. Auto-detect project properties                               │
+│ 3. Gather missing info from user                                │
+│ 4. Update paths-registry.yaml                                   │
+│ 5. Create project summary in Jarvis/projects/                   │
+│ 6. Optionally create detailed context file                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### If GitHub URL Provided
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Parse GitHub URL for repo name                               │
+│ 2. Clone to: /Users/aircannon/Claude/<repo-name>/               │
+│ 3. Auto-detect project properties                               │
+│ 4. Update paths-registry.yaml                                   │
+│ 5. Create project summary in Jarvis/projects/                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## What It Does
 
-### 1. Validates Project Exists
+### 1. Validates Project
 
+For paths:
 ```bash
-# Check path exists and is a directory
 [ -d "$path" ] || error "Directory not found"
+```
+
+For GitHub URLs:
+```bash
+# Clone to projects_root per workspace-path-policy
+git clone https://github.com/user/repo /Users/aircannon/Claude/repo
 ```
 
 ### 2. Auto-Detects Project Properties
 
 **Language detection**:
 ```bash
-# Check for language indicators
 [ -f "package.json" ] && language="javascript/typescript"
 [ -f "requirements.txt" ] && language="python"
 [ -f "go.mod" ] && language="go"
@@ -45,107 +82,93 @@ Register an existing project with AIfred so it can track and assist with it.
 
 **Type detection**:
 ```bash
-# Check for type indicators
 [ -f "docker-compose.yml" ] && type="docker"
 [ -d "src" ] && [ -f "package.json" ] && type="web-app"
 ```
 
-### 3. Gathers Project Info
-
-Prompts user for any missing information:
-
-- Project name (default: directory name)
-- Type (if not detected or specified)
-- Language (if not detected or specified)
-- Brief description
-
-### 4. Updates paths-registry.yaml
-
-Adds project to the registry:
+### 3. Updates paths-registry.yaml
 
 ```yaml
 development:
   projects:
-    grc-platform:
-      path: "~/Code/grc-platform"
+    my-app:
+      path: "/Users/aircannon/Claude/my-app"
       type: "web-app"
       language: "typescript"
-      repo: "github.com/user/grc-platform"  # if .git/config has remote
+      repo: "github.com/user/my-app"
       status: "active"
-      registered: "2025-01-01"
-      context_file: ".claude/context/projects/grc-platform.md"
-      notes: "User-provided description"
+      registered: "2026-01-05"
+      summary_file: "projects/my-app.md"
 ```
 
-### 5. Creates Context File in AIfred
+### 4. Creates Project Summary
 
-Creates `.claude/context/projects/[name].md`:
+Creates `/Users/aircannon/Claude/Jarvis/projects/<name>.md` using the template from `knowledge/templates/project-summary.md`.
 
-```markdown
-# [Project Name]
+This summary:
+- Lives in Jarvis (not the project)
+- Provides quick reference info
+- Tracks session notes and decisions
+- Links to the actual project location
 
-**Path**: [path]
-**Type**: [type]
-**Language**: [language]
-**Status**: active
-**Registered**: [date]
+### 5. Optionally Creates Context File
 
-## Overview
+If detailed documentation is needed, also creates `.claude/context/projects/<name>.md` for in-depth notes.
 
-[From user description or "To be documented"]
+---
 
-## Key Files
+## Path Policy (PR-1.E)
 
-[Auto-populated from project structure]
-- README.md (if exists)
-- package.json / requirements.txt (if exists)
-- docker-compose.yml (if exists)
+Per the workspace-path-policy:
 
-## Current State
+| What | Where |
+|------|-------|
+| Project code | `/Users/aircannon/Claude/<project-name>/` |
+| Project summary | `/Users/aircannon/Claude/Jarvis/projects/<project-name>.md` |
+| Detailed context | `.claude/context/projects/<project-name>.md` (optional) |
+| Registry | `paths-registry.yaml` → `development.projects` |
 
-[To be updated during work sessions]
+**Key principle**: Jarvis is a hub that orchestrates projects stored elsewhere. It does NOT contain project code within itself.
 
-## Key Decisions
+---
 
-[To be logged as project develops]
-```
+## Special Cases
 
-### 6. Creates Symlink (Optional)
+### Registering AIfred Baseline
 
-If user wants quick access:
+The AIfred baseline at `/Users/aircannon/Claude/AIfred` should NOT be registered as a normal project. It's tracked separately in `paths-registry.yaml` under `aifred_baseline` as a read-only reference.
+
+### Registering Jarvis Itself
+
+Jarvis (Project Aion) documentation lives at:
+- `docs/project-aion/` — Archon documentation
+- `projects/Project_Aion.md` — Development roadmap
+
+This is already configured and doesn't need /register-project.
+
+---
+
+## Validation
+
+After registration, verify:
+1. Project appears in `paths-registry.yaml`
+2. Summary exists at `Jarvis/projects/<name>.md`
+3. Project path is accessible
 
 ```bash
-ln -s ~/Code/grc-platform external-sources/projects/grc-platform
-```
-
----
-
-## Key Concept
-
-**AIfred tracks projects, it doesn't contain them.**
-
-The project stays at its original location. AIfred just knows about it and maintains context/notes in its own `.claude/context/projects/` directory.
-
----
-
-## Batch Registration
-
-To register multiple projects at once:
-
-```
-/register-project ~/Code/project1 ~/Code/project2 ~/Code/project3
-```
-
-Or register all projects in a directory:
-
-```
-/register-project ~/Code/*
+# Quick validation
+cat paths-registry.yaml | grep -A5 "my-app"
+ls projects/my-app.md
 ```
 
 ---
 
 ## Related Commands
 
-- `/create-project` - Create a new project from scratch
-- `/list-projects` - Show all registered projects
-- `/unregister-project` - Remove project from AIfred tracking
+- `/create-project` — Create a new project from scratch
+- `/list-projects` — Show all registered projects
+- `/unregister-project` — Remove project from Jarvis tracking
+
+---
+
+*Jarvis Project Registration — Per workspace-path-policy (PR-1.E)*

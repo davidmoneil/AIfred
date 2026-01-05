@@ -10,10 +10,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- **Branching Strategy**: Established `Project_Aion` branch for all Archon development
+
+#### Branching Strategy
+- Established `Project_Aion` branch for all Archon development
   - `.claude/context/patterns/branching-strategy.md`
   - `main` branch remains read-only baseline
   - All commits/pushes go to `Project_Aion` branch
+
+#### PR-2: Workspace & Project Summaries (Complete)
+- **Project Summary Template**: Standardized template for tracking projects
+  - `knowledge/templates/project-summary.md`
+  - Distinct from project-context.md (summary vs detailed notes)
+- **Refined /register-project Command**: Updated for workspace-path-policy compliance
+  - Supports both local paths and GitHub URLs
+  - Creates summary in `Jarvis/projects/`
+  - Documents path policy and special cases
+- **Refined /create-project Command**: Updated for workspace-path-policy compliance
+  - Creates projects at `/Users/aircannon/Claude/<name>/`
+  - Initializes with `.claude/CLAUDE.md`
+  - Supports `--github` flag for repo creation
+- **Updated paths-registry.yaml**: Fixed project paths
+  - `projects_root` now correctly points to `/Users/aircannon/Claude`
+  - Added `summaries_path` for clarity
+  - Added `jarvis` section with version info
+  - Added `aifred_baseline` section for read-only tracking
+- **PR-2 Validation Document**: Smoke tests for project registration
+  - `docs/project-aion/pr2-validation.md`
 
 ---
 
