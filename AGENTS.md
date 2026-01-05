@@ -1,6 +1,10 @@
-# AIfred - AI Infrastructure Assistant
+# Jarvis — Project Aion Master Archon (OpenCode)
 
-You are working in an **AIfred-configured environment** - a personal AI infrastructure hub for home lab automation, knowledge management, and system integration.
+**Version**: 1.0.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
+
+You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant.
+
+> **Note**: Jarvis is derived from AIfred baseline. The baseline is **read-only** — never edit it directly.
 
 ## Quick Start
 
@@ -120,9 +124,12 @@ Switch between **build** (full access) and **plan** (read-only) modes with Tab.
 ## Directory Structure
 
 ```
-AIfred/
+Jarvis/
+├── VERSION                 # Current version (1.0.0)
+├── CHANGELOG.md            # Release history
 ├── AGENTS.md               # This file (OpenCode instructions)
 ├── opencode.json           # OpenCode configuration
+├── docs/project-aion/      # Project Aion documentation
 ├── .opencode/
 │   ├── agent/              # Custom agent definitions
 │   └── command/            # Custom slash commands
@@ -137,14 +144,14 @@ AIfred/
 ├── knowledge/              # Documentation
 ├── external-sources/       # Symlinks to external data
 ├── paths-registry.yaml     # Source of truth for paths
-└── setup-phases/           # Setup wizard definitions
+└── scripts/                # Utility scripts
 ```
 
 ---
 
 ## Dual CLI Support
 
-AIfred supports both **Claude Code** and **OpenCode**:
+Jarvis supports both **Claude Code** and **OpenCode**:
 
 | Feature | Claude Code | OpenCode |
 |---------|-------------|----------|
@@ -180,5 +187,19 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.0 - Your Personal AI Infrastructure Assistant*
-*Compatible with Claude Code and OpenCode*
+## Project Aion
+
+Jarvis is part of **Project Aion**, a collection of specialized AI assistants (Archons):
+
+| Archon | Role | Status |
+|--------|------|--------|
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.0.0 |
+| **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
+| **Wallace** | Creative Writer — Fiction and long-form content | Concept |
+
+See `docs/project-aion/archon-identity.md` for full details.
+
+---
+
+*Jarvis v1.0.0 — Project Aion Master Archon*
+*Derived from AIfred baseline commit `dc0e8ac` (2026-01-03)*

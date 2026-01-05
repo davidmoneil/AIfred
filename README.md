@@ -1,158 +1,122 @@
-# AIfred
+# Jarvis — Project Aion Master Archon
 
-**Your Personal AI Infrastructure Starter Kit**
+**Version 1.0.0** | Derived from [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
 
-AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
+Jarvis is the master Archon of **Project Aion** — a highly autonomous, self-improving AI infrastructure and software-development assistant. Built on the [AIfred](https://github.com/davidmoneil/AIfred) foundation by David O'Neil, Jarvis extends it with enhanced tooling, stricter workflows, and self-evolution capabilities.
+
+---
+
+## What is Project Aion?
+
+Project Aion is a collection of specialized AI assistants called **Archons**, each optimized for specific domains:
+
+| Archon | Role | Status |
+|--------|------|--------|
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.0.0 |
+| **Jeeves** | Always-On — Personal automation via scheduled jobs | Concept |
+| **Wallace** | Creative Writer — Fiction and long-form content | Concept |
+
+Archons are derived from the AIfred baseline but follow a **divergent development track**. They share common ancestry but evolve independently.
+
+> **Important**: The AIfred baseline repository is **read-only** from Project Aion's perspective. Jarvis may only pull from upstream for sync/diff — never edit it directly.
 
 ---
 
 ## Quick Start
 
-### With Claude Code
 ```bash
-git clone https://github.com/davidmoneil/AIfred.git
-cd AIfred
+git clone -b Project_Aion https://github.com/davidmoneil/AIfred.git Jarvis
+cd Jarvis
 claude
 /setup
 ```
 
-### With OpenCode
-```bash
-git clone https://github.com/davidmoneil/AIfred.git
-cd AIfred
-opencode
-/init    # Generate initial context
-/setup   # Run configuration wizard
-```
+> **Note**: Development occurs on the `Project_Aion` branch. The `main` branch is the read-only AIfred baseline.
 
 The `/setup` command guides you through configuration, adapting to your goals and preferences.
 
 ---
 
-## Dual CLI Support
+## Key Capabilities
 
-AIfred supports both **Claude Code** (Anthropic) and **OpenCode** (open source):
+### Jarvis-Specific
 
-| Feature | Claude Code | OpenCode |
-|---------|-------------|----------|
-| Instructions | `.claude/CLAUDE.md` | `AGENTS.md` |
-| Settings | `.claude/settings.json` | `opencode.json` |
-| Commands | `.claude/commands/*.md` | `.opencode/command/*.md` |
-| Agents | `.claude/agents/*.md` | `.opencode/agent/*.md` |
-| MCP Config | `.mcp.json` | `opencode.json` (mcp section) |
+- **Archon Builder**: Create and configure new Archons (Jeeves, Wallace, etc.)
+- **Upstream Sync**: Controlled porting from AIfred baseline (pull → diff → propose → apply)
+- **Self-Evolution**: Reflect, propose changes, validate with benchmarks, version bump
+- **Versioning**: Semantic versioning with lineage tracking
+- **Auditability**: All operations logged with full traceability
 
-Both CLIs share:
-- Context files in `.claude/context/`
-- Knowledge base in `knowledge/`
-- External sources in `external-sources/`
-- Path registry in `paths-registry.yaml`
+### Inherited from AIfred
 
----
-
-## What You Get
-
-### Intelligent Memory
-- Persistent knowledge graph that remembers decisions, relationships, and lessons learned
-- Smart pruning that archives inactive knowledge without losing it
-- Access tracking to understand what information matters most
-
-### Session Management
-- Clean session handoffs with `/end-session`
-- Automatic state tracking so you can pick up where you left off
-- Session notes for complex work
-
-### Infrastructure Awareness
-- Auto-discovery of Docker services
-- System documentation that writes itself
-- Paths registry for external resources
-
-### Automation Hooks (Claude Code)
-- Audit logging for all operations
-- Security scanning before commits
-- Health checks after Docker changes
-- Documentation reminders
-
-### Specialized Agents
-- **docker-deployer**: Safely deploy and configure services
-- **service-troubleshooter**: Diagnose issues with learned patterns
-- **deep-research**: In-depth investigation with citations
+- **Intelligent Memory**: Persistent knowledge graph via Memory MCP
+- **Session Management**: Clean handoffs with `/end-session`
+- **Infrastructure Awareness**: Auto-discovery of Docker services
+- **Automation Hooks**: Audit logging, security scanning, health checks
+- **Specialized Agents**: docker-deployer, service-troubleshooter, deep-research
 
 ---
 
 ## Design Patterns
 
-AIfred is built on proven patterns from real-world usage:
+### PARC: Prompt → Assess → Relate → Create
+Design review before implementation — check existing patterns first.
 
 ### DDLA: Discover → Document → Link → Automate
-When you find something new, AIfred helps you discover it, document it, link it to your knowledge base, and automate interactions with it.
+When you find something new: discover, document, link to knowledge base, automate.
 
 ### COSA: Capture → Organize → Structure → Automate
-For new information: capture it quickly, organize into the right location, structure it properly, then automate if it repeats.
-
-### Session Continuity
-Every session leaves a trail. `session-state.md` tracks what you were doing, and `/end-session` ensures clean handoffs.
-
-### Memory vs Context
-- **Memory MCP**: Decisions, relationships, temporal events, lessons learned
-- **Context Files**: Detailed documentation, procedures, reference material
+For new information: capture quickly, organize properly, structure, then automate.
 
 ---
 
 ## Directory Structure
 
 ```
-AIfred/
+Jarvis/
+├── VERSION                 # Current version (1.0.0)
+├── CHANGELOG.md            # Release history
+├── README.md               # This file
 ├── AGENTS.md               # OpenCode instructions
-├── opencode.json           # OpenCode configuration
-├── .opencode/
-│   ├── agent/              # OpenCode agent definitions
-│   └── command/            # OpenCode slash commands
+├── docs/
+│   └── project-aion/       # Project Aion documentation
+│       ├── archon-identity.md    # Archon definitions
+│       └── versioning-policy.md  # Versioning rules
 ├── .claude/
 │   ├── CLAUDE.md           # Claude Code instructions
 │   ├── settings.json       # Claude Code permissions
-│   ├── context/            # Knowledge base (shared)
-│   ├── commands/           # Claude Code slash commands
-│   ├── agents/             # Claude Code agents
+│   ├── context/            # Knowledge base
+│   ├── commands/           # Slash commands
+│   ├── agents/             # Agent definitions
 │   ├── hooks/              # Automation hooks
-│   ├── jobs/               # Cron jobs
 │   └── logs/               # Audit logs
-├── knowledge/              # Documentation (shared)
-├── external-sources/       # Symlinks to external data (shared)
-├── paths-registry.yaml     # Source of truth for paths (shared)
-└── setup-phases/           # Setup wizard definitions
+├── scripts/
+│   └── bump-version.sh     # Version bump utility
+├── knowledge/              # Documentation
+├── external-sources/       # Symlinks to external data
+└── paths-registry.yaml     # Source of truth for paths
 ```
 
 ---
 
-## Requirements
+## Versioning
 
-- **AI CLI**: Claude Code or OpenCode
-- **Git**: For version control
-- **Docker** (optional): For MCP servers and service management
-- **Linux/macOS**: Primary support (Windows experimental)
+Jarvis uses semantic versioning: `MAJOR.MINOR.PATCH`
 
----
+| Bump | When |
+|------|------|
+| PATCH | Benchmarks, tests, docs, minor fixes |
+| MINOR | New features, normal development |
+| MAJOR | Breaking changes, major restructuring |
 
-## Configuration
+```bash
+# Bump version
+./scripts/bump-version.sh patch   # 1.0.0 -> 1.0.1
+./scripts/bump-version.sh minor   # 1.0.0 -> 1.1.0
+./scripts/bump-version.sh major   # 1.0.0 -> 2.0.0
+```
 
-### Automation Levels
-
-During setup, you choose your automation level:
-
-| Level | Description |
-|-------|-------------|
-| **Full** | Everything runs without prompting |
-| **Guided** | Major changes need confirmation |
-| **Manual** | Most operations prompt for approval |
-
-### MCP Integration
-
-AIfred works best with the Memory MCP for persistent knowledge. During setup, you can enable:
-
-- **Memory MCP**: Knowledge graph storage (recommended)
-- **Docker MCP**: Container management
-- **Filesystem MCP**: Cross-directory access
-- **Browser MCP**: Web automation (Playwright)
+See [docs/project-aion/versioning-policy.md](docs/project-aion/versioning-policy.md) for details.
 
 ---
 
@@ -160,16 +124,15 @@ AIfred works best with the Memory MCP for persistent knowledge. During setup, yo
 
 | Command | Description |
 |---------|-------------|
-| `/setup` | Run the setup wizard |
+| `/setup` | Initial configuration wizard |
 | `/end-session` | Clean session exit with documentation |
-| `/discover <target>` | Discover and document services |
-| `/health` | System health verification |
+| `/checkpoint` | Save state for MCP-required restart |
+| `/design-review` | PARC pattern design review |
+| `/health-check` | System health verification |
 
 ---
 
 ## Agents
-
-Use agents via `@agent-name` (OpenCode) or Task tool (Claude Code):
 
 | Agent | Purpose |
 |-------|---------|
@@ -179,31 +142,26 @@ Use agents via `@agent-name` (OpenCode) or Task tool (Claude Code):
 
 ---
 
-## Customization
+## Upstream Relationship
 
-After setup, customize by:
+Jarvis periodically syncs with the AIfred baseline through a controlled process:
 
-### Claude Code
-1. Edit `.claude/CLAUDE.md` for project-specific instructions
-2. Add commands in `.claude/commands/`
-3. Create agents in `.claude/agents/`
-4. Configure hooks as needed
+1. **Pull**: Fetch AIfred baseline main
+2. **Diff**: Compare against Jarvis
+3. **Classify**: Safe / unsafe / manual review
+4. **Propose**: Generate port with rationale
+5. **Apply**: After review, apply to Jarvis only
 
-### OpenCode
-1. Edit `AGENTS.md` for project-specific instructions
-2. Add commands in `.opencode/command/`
-3. Create agents in `.opencode/agent/`
-4. Configure MCP servers in `opencode.json`
+A port log tracks decisions with "adopt / adapt / reject" status.
 
 ---
 
-## Contributing
+## Requirements
 
-AIfred is designed to be forked and customized. If you build something useful, consider contributing back:
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
+- **Claude Code** (primary) or **OpenCode** (secondary)
+- **Git**: For version control
+- **Docker** (optional): For MCP servers and services
+- **macOS/Linux**: Primary support
 
 ---
 
@@ -215,8 +173,10 @@ MIT License - See LICENSE file for details.
 
 ## Acknowledgments
 
-Built on patterns developed for personal AI infrastructure management. Inspired by the need for repeatable, maintainable AI assistant configurations.
+- [AIfred](https://github.com/davidmoneil/AIfred) by David O'Neil — the foundation this Archon is built upon
+- Anthropic — for Claude Code and the AI tooling ecosystem
 
 ---
 
-*AIfred - Because your AI assistant should understand your infrastructure.*
+*Jarvis v1.0.0 — Project Aion Master Archon*
+*Derived from AIfred baseline commit `dc0e8ac` (2026-01-03)*
