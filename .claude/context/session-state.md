@@ -30,7 +30,7 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-05)
 
-**PR-3: Upstream Sync Workflow — In Progress**
+**PR-3: Upstream Sync Workflow — Complete (v1.2.0 Released)**
 
 Implemented controlled porting workflow from AIfred baseline:
 
@@ -58,6 +58,10 @@ Implemented controlled porting workflow from AIfred baseline:
 - `.claude/context/projects/current-priorities.md` — PR-3 progress
 - `paths-registry.yaml` — Sync tracking fields
 - `CHANGELOG.md` — PR-3 entries
+- `VERSION` — Bumped to 1.2.0
+- `README.md`, `AGENTS.md`, `archon-identity.md`, `versioning-policy.md` — Version updates
+
+**Release**: Committed as `21691ab`, tagged `v1.2.0`, pushed to `origin/Project_Aion`
 
 ### Pending Items
 - Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
@@ -80,4 +84,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-05 - PR-3 upstream sync workflow implemented*
+*Updated: 2026-01-05 - Session exit (v1.2.0 released, PR-3 complete)*
