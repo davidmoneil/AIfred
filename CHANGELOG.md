@@ -13,6 +13,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.2.2] - 2026-01-05
+
+**PR-4b: Preflight System** — Second sub-PR of Setup Preflight + Guardrails
+
+### Added
+
+#### Workspace Allowlist Configuration
+
+- **`workspace-allowlist.yaml`** (`.claude/config/`)
+  - Declarative workspace boundary definitions
+  - Used by guardrail hooks for access control
+  - Sections: core_workspaces, readonly_workspaces, project_workspaces, forbidden_paths, warn_paths
+  - Configurable hook error behavior (block/warn/allow)
+  - Support for user overrides with explicit confirmation
+
+#### Environment Preflight Phase
+
+- **`00-preflight.md`** (`.claude/archive/setup-phases/`)
+  - New Phase 0A: Environment preflight checks
+  - Validates workspace configuration before `/setup` proceeds
+  - Checks: workspace isolation, forbidden paths, required structure, git status
+  - Produces deterministic PASS/FAIL with actionable guidance
+  - Executable bash script included for automation
+
+### Changed
+
+- **`00-prerequisites.md`**: Renamed from Phase 0 to Phase 0B
+  - Now runs after preflight passes
+  - Updated header, footer, and references
+  - Changed "AIfred" references to "Jarvis"
+
+### Technical Notes
+
+- Preflight checks are **blocking** — setup cannot proceed until all required checks pass
+- Recommended checks produce warnings but don't block
+- Allowlist config is read by `workspace-guard.js` hook (from PR-4a)
+- Phase numbering now 0A-7 (was 0-7), total 8 phases
+
+---
+
 ## [1.2.1] - 2026-01-05
 
 **PR-4a: Guardrail Hooks** — First sub-PR of Setup Preflight + Guardrails

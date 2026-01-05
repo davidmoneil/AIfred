@@ -8,11 +8,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟡 Active
 
-**Current Task**: Session complete — PR-4a released (v1.2.1)
+**Current Task**: PR-4b implementation complete — ready for commit
 
-**Next Step**: Begin PR-4b (preflight system)
+**Next Step**: Commit and release v1.2.2, then begin PR-4c (readiness report)
 
 ### On-Demand MCPs Enabled This Session
 

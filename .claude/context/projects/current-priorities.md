@@ -9,12 +9,12 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## In Progress
 
 ### PR-4: Setup Preflight + Guardrails (v1.3.0 target)
-**Status**: 🟡 In Progress — PR-4a complete
+**Status**: 🟡 In Progress — PR-4a, PR-4b complete
 
 | Sub-PR | Version | Status | Description |
 |--------|---------|--------|-------------|
 | PR-4a | v1.2.1 | ✅ Complete | Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate) |
-| PR-4b | v1.2.2 | ⏳ Pending | Preflight system (workspace-allowlist.yaml, 00-preflight.md) |
+| PR-4b | v1.2.2 | ✅ Complete | Preflight system (workspace-allowlist.yaml, 00-preflight.md) |
 | PR-4c | v1.3.0 | ⏳ Pending | Readiness report (setup-readiness.md, documentation) |
 
 ---

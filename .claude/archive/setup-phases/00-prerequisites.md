@@ -1,8 +1,11 @@
-# Phase 0: Prerequisites Check
+# Phase 0B: Prerequisites Check
 
-**Purpose**: Verify and install required dependencies before starting AIfred setup.
+**Purpose**: Verify and install required dependencies before starting Jarvis setup.
 
-**Run this phase FIRST before any other setup steps.**
+**Run AFTER Phase 0A (Preflight) passes.**
+
+> **Prerequisite**: Ensure Phase 0A (Environment Preflight) has passed before running this phase.
+> See `.claude/archive/setup-phases/00-preflight.md` for preflight checks.
 
 ---
 
@@ -268,7 +271,7 @@ After checking, display summary:
 
 ```
 ╔══════════════════════════════════════════════════╗
-║            AIfred Prerequisites Check            ║
+║           Jarvis Prerequisites Check             ║
 ╠══════════════════════════════════════════════════╣
 ║ OS: [macOS/Linux/WSL]                            ║
 ╠══════════════════════════════════════════════════╣
@@ -297,4 +300,5 @@ Before moving to Phase 1:
 
 ---
 
-*Phase 0 of 7 - Prerequisites Check*
+*Phase 0B of 8 — Prerequisites Check*
+*Jarvis v1.2.2 — Project Aion Master Archon*

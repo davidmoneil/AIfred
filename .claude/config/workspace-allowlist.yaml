@@ -1,0 +1,168 @@
+# Workspace Allowlist Configuration
+#
+# Defines workspace boundaries for Jarvis operations.
+# Used by guardrail hooks (workspace-guard.js) to enforce access control.
+#
+# Part of PR-4: Setup Preflight + Guardrails
+# Created: 2026-01-05
+
+version: "1.0"
+last_updated: "2026-01-05"
+
+# =============================================================================
+# CORE WORKSPACES
+# =============================================================================
+# Primary workspaces with full read/write access
+
+core_workspaces:
+  jarvis:
+    path: "/Users/aircannon/Claude/Jarvis"
+    description: "Project Aion Master Archon - primary workspace"
+    permissions:
+      - read
+      - write
+      - execute
+    protected_subdirs:
+      # These directories require extra caution but aren't blocked
+      - ".git"           # Git internals - modify only via git commands
+      - ".claude/hooks"  # Hooks affect all operations
+      - ".claude/config" # Configuration files
+
+# =============================================================================
+# READ-ONLY WORKSPACES
+# =============================================================================
+# Workspaces that can be read but never modified
+
+readonly_workspaces:
+  aifred_baseline:
+    path: "/Users/aircannon/Claude/AIfred"
+    description: "AIfred upstream baseline - read-only reference"
+    permissions:
+      - read
+    blocked_operations:
+      - write
+      - edit
+      - delete
+      - commit
+      - push
+    enforcement: "strict"  # Always block, never warn-only
+    rationale: |
+      AIfred is the upstream baseline for Jarvis. Changes should flow
+      downstream only. Use /sync-aifred-baseline to adopt upstream changes.
+
+# =============================================================================
+# PROJECT WORKSPACES
+# =============================================================================
+# Registered project directories (populated by /register-project)
+# Projects root: /Users/aircannon/Claude
+
+project_workspaces:
+  # Format:
+  # project_name:
+  #   path: "/Users/aircannon/Claude/project-name"
+  #   permissions: [read, write, execute]
+  #   registered: "2026-01-XX"
+
+# =============================================================================
+# FORBIDDEN PATHS
+# =============================================================================
+# System paths that should NEVER be modified
+# Operations to these paths are always blocked
+
+forbidden_paths:
+  # Root and system directories
+  - path: "/"
+    reason: "Root filesystem - catastrophic if modified"
+  - path: "/etc"
+    reason: "System configuration"
+  - path: "/usr"
+    reason: "System binaries and libraries"
+  - path: "/bin"
+    reason: "Essential command binaries"
+  - path: "/sbin"
+    reason: "System binaries"
+  - path: "/var"
+    reason: "Variable system data"
+  - path: "/System"
+    reason: "macOS system files"
+  - path: "/Library"
+    reason: "System-wide library files"
+
+  # Sensitive user directories
+  - path: "~/.ssh"
+    reason: "SSH keys and configuration"
+  - path: "~/.gnupg"
+    reason: "GPG keys and configuration"
+  - path: "~/.aws"
+    reason: "AWS credentials"
+  - path: "~/.config/gh"
+    reason: "GitHub CLI authentication"
+  - path: "~/.kube"
+    reason: "Kubernetes configuration"
+
+  # Other users' home directories
+  - path: "/Users/*"
+    reason: "Other users' home directories"
+    exceptions:
+      - "/Users/aircannon"  # Current user is allowed
+
+# =============================================================================
+# WARN-ONLY PATHS
+# =============================================================================
+# Paths where operations trigger a warning but aren't blocked
+# Used for paths outside normal workspace that might be intentional
+
+warn_paths:
+  # User home directory (outside Claude workspace)
+  - path: "~"
+    exclude:
+      - "~/Claude"
+    warning: "Operation outside Claude workspace - verify this is intentional"
+
+  # Temporary directories (might be intentional for testing)
+  - path: "/tmp"
+    warning: "Writing to /tmp - ensure this is intentional"
+  - path: "/var/tmp"
+    warning: "Writing to /var/tmp - ensure this is intentional"
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+config:
+  # How to handle hook errors (e.g., can't load this file)
+  on_hook_error: "warn"  # Options: "block" | "warn" | "allow"
+
+  # Log all workspace boundary decisions
+  log_decisions: true
+
+  # Path to audit log
+  audit_log: ".claude/logs/audit.jsonl"
+
+  # Enable strict mode (block > warn)
+  strict_mode: false
+
+  # Allow override via user confirmation (for soft blocks)
+  allow_override: true
+  override_requires: "explicit_confirmation"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# This allowlist works with the following hooks:
+#   - workspace-guard.js (PreToolUse) - Enforces path restrictions
+#   - dangerous-op-guard.js (PreToolUse) - Blocks dangerous commands
+#   - permission-gate.js (UserPromptSubmit) - Soft-gates policy crossings
+#
+# To register a new project workspace:
+#   1. Use /register-project <path-or-url>
+#   2. The command updates both paths-registry.yaml AND this file
+#
+# To temporarily allow a blocked operation:
+#   1. permission-gate.js will prompt for confirmation
+#   2. User must explicitly confirm to proceed
+#   3. Decision is logged to audit.jsonl
+#
+# ---
+# Jarvis v1.2.2 — Project Aion Master Archon
