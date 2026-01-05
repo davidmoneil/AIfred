@@ -1,53 +1,97 @@
 # Current Priorities
 
-Active tasks and priorities for your AIfred environment.
+Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: Initial creation
+**Last Updated**: 2026-01-05
 
 ---
 
 ## In Progress
 
-### Initial Setup
-- [ ] Run `/setup` to configure AIfred
-- [ ] Complete the setup wizard
-- [ ] Review generated documentation
+### PR-2: Workspace & Project Summaries
+- [ ] Create standardized "Project Summary" template
+- [ ] Refine `/register-project` command
+- [ ] Refine `/create-project` command
+- [ ] Validate project registration smoke tests
+
+### PR-3: Upstream Sync Workflow
+- [ ] Create `/sync-aifred-baseline` command
+- [ ] Implement diff report generation
+- [ ] Create adopt/adapt/reject classification
+- [ ] Build port log tracking
 
 ---
 
 ## This Week
 
-(Populated after setup based on your goals)
+- [ ] Complete PR-2 deliverables
+- [ ] Start PR-3 upstream sync workflow
+- [ ] Enable Memory MCP in Docker Desktop
 
 ---
 
 ## This Month
 
-(Populated after setup based on your goals)
+### PR-4: Setup Preflight + Guardrails
+- [ ] Add prereqs & environment checks to `/setup`
+- [ ] Implement permission allowlists
+- [ ] Create setup readiness report
+
+### PR-5: Core Tooling Baseline
+- [ ] Install/enable default MCP servers
+- [ ] Create capability matrix
+- [ ] Perform overlap/conflict analysis
 
 ---
 
 ## Backlog
 
-(Future enhancements and ideas)
+See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
+- PR-6: Plugins Expansion
+- PR-7: Skills Inventory
+- PR-8: MCP Expansion
+- PR-9: Selection Intelligence
+- PR-10: Setup Upgrade
+- PR-11: Autonomy & Permission Reduction
+- PR-12: Self-Evolution Loop
+- PR-13: Benchmark Demos
+- PR-14: SOTA Research & Comparison
 
 ---
 
 ## Completed
 
-(Completed items with dates)
+### 2026-01-05
+- [x] **PR-1: Archon Identity + Versioning + Baseline Discipline** (Complete)
+  - Established Project Aion terminology (Jarvis, Jeeves, Wallace)
+  - Updated AIfred baseline to `dc0e8ac`
+  - Created session-start-checklist, workspace-path-policy, branching-strategy patterns
+  - Established VERSION, CHANGELOG.md, bump-version.sh
+  - Archived PROJECT-PLAN.md
+  - Created `Project_Aion` branch, pushed to origin
+
+- [x] **PR-2 (Partial): One-Shot PRD Template**
+  - Created docs/project-aion/one-shot-prd.md
+
+### 2026-01-03
+- [x] AIfred initial setup (all 8 phases)
+- [x] Node.js v24 LTS installed via nvm
+- [x] 8 hooks installed and validated
+- [x] 3 agents deployed with memory initialized
 
 ---
 
 ## Notes
 
-Use this file to track:
-- Current session work
-- Upcoming priorities
-- Completed milestones
+**Branch**: All work on `Project_Aion` branch (origin/Project_Aion)
+**Baseline**: `main` branch is read-only AIfred baseline
 
-Update during work sessions and at session exit.
+Development workflow:
+1. Check session-start-checklist.md at session start
+2. Work on current priorities
+3. Commit to Project_Aion branch
+4. Run /end-session when done
 
 ---
 
-*Created by AIfred - run /setup to configure*
+*Project Aion — Jarvis Development Priorities*
