@@ -30,6 +30,28 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-05)
 
+**PR-4b: Preflight System — Complete (v1.2.2)**
+
+Implemented preflight system for `/setup` validation:
+
+1. **workspace-allowlist.yaml** (`.claude/config/`)
+   - Declarative workspace boundary definitions
+   - Core, readonly, project, forbidden, and warn paths
+   - Configurable fail-open behavior for hooks
+
+2. **00-preflight.md** (Phase 0A)
+   - New pre-setup validation phase
+   - 12 checks: 6 required, 6 recommended
+   - Executable bash script with PASS/FAIL output
+
+3. **00-prerequisites.md** updated
+   - Renamed to Phase 0B
+   - References preflight as prerequisite
+
+**Release**: Committed as `a44f2d3`, tagged `v1.2.2`, pushed to `origin/Project_Aion`
+
+---
+
 **PR-4a: Guardrail Hooks — Complete (v1.2.1)**
 
 Implemented three guardrail hooks for workspace protection:
@@ -113,8 +135,8 @@ Implemented controlled porting workflow from AIfred baseline:
 - Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Begin **PR-4b: Preflight System** (workspace-allowlist.yaml, 00-preflight.md)
-2. After PR-4b, complete **PR-4c: Readiness Report** (setup-readiness.md)
+1. Begin **PR-4c: Readiness Report** (setup-readiness.md, setup-validation.md pattern)
+2. After PR-4c, bump to v1.3.0 (PR-4 milestone complete)
 3. Consider enabling Memory MCP for decision tracking
 4. Plan file available at `/Users/aircannon/.claude/plans/wild-mapping-rose.md`
 
@@ -129,4 +151,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-05 - PR-4a complete (v1.2.1), PR-3 validation verified*
+*Updated: 2026-01-05 - PR-4b complete (v1.2.2), ready for PR-4c*
