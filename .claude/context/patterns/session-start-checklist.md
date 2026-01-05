@@ -44,9 +44,24 @@ cd /Users/aircannon/Claude/AIfred && git pull origin main
 - No edits, commits, branches, hooks, or config changes are permitted
 - Only `git fetch` and `git pull` operations are allowed
 
-After pulling updates, check if any changes are relevant for porting to Jarvis:
-- Review the diff: `git log -5 --oneline`
-- If significant changes exist, note them for the upstream sync workflow (PR-3)
+#### Quick Check: Any New Changes?
+
+After pulling updates, check if any changes exist since Jarvis's last sync:
+
+```bash
+# Get last synced commit from paths-registry.yaml (aifred_baseline.last_synced_commit)
+# Compare to current HEAD
+cd /Users/aircannon/Claude/AIfred && git log --oneline <last_synced_commit>..HEAD
+```
+
+**If changes exist**, consider:
+1. **Quick review**: Note significant changes for later
+2. **Full sync**: Run `/sync-aifred-baseline` to generate a detailed adopt/adapt/reject report
+
+**Reference**:
+- Port log: `.claude/context/upstream/port-log.md`
+- Sync reports: `.claude/context/upstream/sync-report-*.md`
+- Sync command: `/sync-aifred-baseline`
 
 ### 3. Load Context
 

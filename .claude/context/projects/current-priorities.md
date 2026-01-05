@@ -8,20 +8,38 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### PR-3: Upstream Sync Workflow
-- [ ] Create `/sync-aifred-baseline` command
-- [ ] Implement diff report generation
-- [ ] Create adopt/adapt/reject classification
-- [ ] Build port log tracking
-- [ ] Integrate baseline diff into session-start pattern
+*No PR currently in progress*
+
+---
+
+## Validation Backlog
+
+> **Important**: These items require real-world validation when conditions are met.
+
+### PR-3 Validation: `/sync-aifred-baseline` Command
+**Status**: ⏳ Pending upstream changes
+
+The upstream sync workflow infrastructure is complete, but full workflow validation
+requires actual changes to exist in the AIfred baseline `main` branch.
+
+**When to validate**:
+- At session start, if `git fetch` shows new commits on AIfred baseline
+- Run `/sync-aifred-baseline` to test the full adopt/adapt/reject workflow
+
+**What to verify**:
+- [ ] Diff report correctly identifies changed files
+- [ ] Classification suggestions are reasonable
+- [ ] Port log updates properly after decisions
+- [ ] Report format is clear and actionable
 
 ---
 
 ## This Week
 
-- [ ] Complete PR-3 upstream sync workflow
+- [x] Complete PR-3 upstream sync workflow ✅ Released as v1.2.0
 - [ ] Enable Memory MCP in Docker Desktop
 - [ ] Start PR-4 setup preflight improvements
+- [ ] Validate `/sync-aifred-baseline` when baseline has updates
 
 ---
 
@@ -61,6 +79,12 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-05
+- [x] **PR-3: Upstream Sync Workflow** (Complete — v1.2.0)
+  - Created `/sync-aifred-baseline` command with adopt/adapt/reject classification
+  - Established port log tracking at `.claude/context/upstream/port-log.md`
+  - Integrated baseline diff check into session-start pattern
+  - Note: Full workflow validation pending upstream changes
+
 - [x] **PR-1: Archon Identity + Versioning + Baseline Discipline** (Complete)
   - Established Project Aion terminology (Jarvis, Jeeves, Wallace)
   - Updated AIfred baseline to `dc0e8ac`

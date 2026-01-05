@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version 1.1.0** | Derived from [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
+**Version 1.2.0** | Derived from [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
 
 Jarvis is the master Archon of **Project Aion** — a highly autonomous, self-improving AI infrastructure and software-development assistant. Built on the [AIfred](https://github.com/davidmoneil/AIfred) foundation by David O'Neil, Jarvis extends it with enhanced tooling, stricter workflows, and self-evolution capabilities.
 
@@ -12,7 +12,7 @@ Project Aion is a collection of specialized AI assistants called **Archons**, ea
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.1.0 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.2.0 |
 | **Jeeves** | Always-On — Personal automation via scheduled jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 

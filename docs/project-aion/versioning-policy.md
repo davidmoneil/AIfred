@@ -47,7 +47,7 @@ Increment the patch version when:
 
 **Example workflow**:
 ```
-Current: 1.1.0 (PR-2 complete)
+Current: 1.2.0 (PR-3 complete)
 Action:  Add PR-2 validation smoke tests
 Result:  1.1.1
 Commit:  "Release v1.1.1 - PR-2 validation tests"
@@ -75,8 +75,8 @@ Commit:  "Release v1.2.0 - PR-3 complete"
 | PR | Description | Target Version |
 |----|-------------|----------------|
 | PR-1 | Archon Identity + Versioning | 1.0.0 ✅ |
-| PR-2 | Workspace & Project Summaries | 1.1.0 |
-| PR-3 | Upstream Sync Workflow | 1.2.0 |
+| PR-2 | Workspace & Project Summaries | 1.1.0 ✅ |
+| PR-3 | Upstream Sync Workflow | 1.2.0 ✅ |
 | PR-4 | Setup Preflight + Guardrails | 1.3.0 |
 | PR-5 | Core Tooling Baseline | 1.4.0 |
 | PR-6 | Plugins Expansion | 1.5.0 |

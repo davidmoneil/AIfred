@@ -9,12 +9,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+*No unreleased changes*
+
+---
+
+## [1.2.0] - 2026-01-05
+
+**PR-3: Upstream Sync Workflow** — Controlled porting from AIfred baseline
+
 ### Added
-- **Milestone-Based Versioning**: Version bumps tied to PR/roadmap lifecycle
+
+#### `/sync-aifred-baseline` Command
+- Analyze AIfred baseline changes for controlled porting to Jarvis
+- **Dry-run mode** (default): Report only, no changes applied
+- **Full mode**: Generate patches and offer to apply with review
+- Structured adopt/adapt/reject/defer classification system
+- Location: `.claude/commands/sync-aifred-baseline.md`
+
+#### Port Log Tracking
+- Audit trail for all porting decisions at `.claude/context/upstream/port-log.md`
+- Tracks: baseline commit, Jarvis commit, classification, rationale, modifications
+- Initial fork from `dc0e8ac` documented
+
+#### Sync Report Format
+- Standardized reports at `.claude/context/upstream/sync-report-*.md`
+- Includes: summary counts, detailed analysis per file, recommended actions
+- First report generated for validation (no upstream changes at time of release)
+
+#### Session-Start Integration
+- Enhanced `session-start-checklist.md` with sync workflow reference
+- Quick check for new changes since last sync point
+- Links to `/sync-aifred-baseline` for deeper analysis
+
+#### Registry Updates
+- Extended `paths-registry.yaml` with sync tracking fields:
+  - `last_synced_commit`: Commit hash Jarvis last synced from
+  - `last_sync_date`: When sync occurred
+  - `sync_command`: Reference to the sync command
+  - `port_log`: Path to port log file
+
+### Changed
+- **Milestone-Based Versioning**: Version bumps now tied to PR/roadmap lifecycle
   - PATCH for validation/benchmarks, MINOR for PR completion, MAJOR for phase completion
-  - Updated `docs/project-aion/versioning-policy.md` with decision tree
-  - Updated `projects/Project_Aion.md` with version milestones per phase
-  - Integrated version bump check into `/end-session` workflow
+
+### Validation Status
+
+> **Note**: This release establishes the upstream sync infrastructure. Full workflow
+> validation requires upstream changes to exist in the AIfred baseline. The command
+> structure, report format, and tracking systems have been validated with a "no changes"
+> scenario. Real-world validation will occur when David O'Neil pushes updates to the
+> AIfred baseline `main` branch.
+>
+> **Action Required**: Run `/sync-aifred-baseline` when baseline updates are detected
+> to validate the full adopt/adapt/reject workflow.
 
 ---
 

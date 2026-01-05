@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: Milestone-Based Versioning Complete — v1.1.0 Released
+**Current Task**: PR-3 Complete — Released as v1.2.0
 
-**Next Step**: Begin PR-3 (Upstream Sync Workflow)
+**Next Step**: Begin PR-4 (Setup Preflight + Guardrails) or validate `/sync-aifred-baseline` when baseline updates
 
 ### On-Demand MCPs Enabled This Session
 
@@ -30,52 +30,44 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-05)
 
-**Release v1.1.0 — Milestone-Based Versioning**
+**PR-3: Upstream Sync Workflow — In Progress**
 
-- Designed milestone-based versioning scheme tied to PR/roadmap lifecycle
-  - PATCH for validation/benchmarks
-  - MINOR for PR completion
-  - MAJOR for phase completion (PR-10, PR-14)
-- Updated `docs/project-aion/versioning-policy.md` with decision tree and PR-to-version mapping
-- Updated `projects/Project_Aion.md` roadmap with version milestones per phase
-- Integrated version bump check into `/end-session` workflow (Step 4)
-- Performed first milestone version bump: 1.0.0 → 1.1.0 (PR-2 complete)
-- Updated all version references across 9 documentation files
+Implemented controlled porting workflow from AIfred baseline:
 
-**Version Milestone System**
-| PR | Target Version |
-|----|----------------|
-| PR-1 | 1.0.0 ✅ |
-| PR-2 | 1.1.0 ✅ |
-| PR-3 | 1.2.0 |
-| PR-10 | 2.0.0 (Phase 5) |
-| PR-14 | 3.0.0 (Phase 6) |
+- Created `/sync-aifred-baseline` command with:
+  - Dry-run mode (report only) and full mode (with patches)
+  - Structured adopt/adapt/reject classification system
+  - Sync report generation format
+- Established port log tracking at `.claude/context/upstream/port-log.md`
+- Created upstream context directory for sync reports
+- Integrated baseline diff check into session-start-checklist pattern
+- Extended `paths-registry.yaml` with sync tracking fields:
+  - `last_synced_commit`, `last_sync_date`, `sync_command`, `port_log`
+- Updated CLAUDE.md with new command and quick links
+- Updated context index with upstream section
+- Ran validation: baseline is current (no upstream changes since fork)
 
-### Key Files Modified
+**Files Created/Modified**
 
-- `VERSION` — 1.0.0 → 1.1.0
-- `CHANGELOG.md` — PR-2 moved to [1.1.0] section, new [Unreleased] for versioning
-- `docs/project-aion/versioning-policy.md` — Complete rewrite with milestone rules
-- `projects/Project_Aion.md` — Version milestones added to roadmap
-- `.claude/commands/end-session.md` — Version bump workflow integrated
-- `README.md` — Version updated to 1.1.0
-- `.claude/CLAUDE.md` — Version updated to 1.1.0
-- `AGENTS.md` — Version updated to 1.1.0
-- `docs/project-aion/archon-identity.md` — Version updated to 1.1.0
-- `paths-registry.yaml` — Version updated to 1.1.0
+- `.claude/commands/sync-aifred-baseline.md` — New command
+- `.claude/context/upstream/port-log.md` — Port history tracking
+- `.claude/context/upstream/sync-report-2026-01-05.md` — Validation report
+- `.claude/context/patterns/session-start-checklist.md` — Sync integration
+- `.claude/context/_index.md` — Added upstream section
+- `.claude/CLAUDE.md` — New command + quick link
+- `.claude/context/projects/current-priorities.md` — PR-3 progress
+- `paths-registry.yaml` — Sync tracking fields
+- `CHANGELOG.md` — PR-3 entries
 
 ### Pending Items
 - Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
-- Continue with PR-3, PR-4 per Project Aion roadmap
+- **Validate `/sync-aifred-baseline`** when AIfred baseline has updates (see Validation Backlog)
+- Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Check AIfred baseline for updates (per session-start-checklist)
-2. Begin PR-3: Upstream Sync Workflow
-   - Create `/sync-aifred-baseline` command
-   - Implement diff report generation
-   - Create adopt/adapt/reject classification
-   - Build port log tracking
-   - Integrate baseline diff into session-start pattern
+1. Check AIfred baseline for updates — if found, run `/sync-aifred-baseline` for real-world validation
+2. Begin PR-4: Setup Preflight + Guardrails
+3. Consider enabling Memory MCP for decision tracking
 
 ---
 
@@ -88,4 +80,4 @@ Format: mcp-name (reason for enabling)
 
 ---
 
-*Updated: 2026-01-05 - Session exit (v1.1.0 released, milestone-based versioning implemented)*
+*Updated: 2026-01-05 - PR-3 upstream sync workflow implemented*

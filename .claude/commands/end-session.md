@@ -156,4 +156,4 @@ Next Time:
 
 ---
 
-*Jarvis v1.1.0 — Project Aion Master Archon*
+*Jarvis v1.2.0 — Project Aion Master Archon*

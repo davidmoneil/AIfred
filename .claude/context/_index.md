@@ -62,7 +62,11 @@ patterns/
 ├── _index.md                    # Patterns directory index
 ├── agent-selection-pattern.md   # Choose agents vs subagents vs skills vs tools
 ├── memory-storage-pattern.md    # When/how to store in Memory MCP
-└── prompt-design-review.md      # PARC pattern for design review
+├── prompt-design-review.md      # PARC pattern for design review
+├── session-start-checklist.md   # Mandatory session start steps
+├── branching-strategy.md        # Git branching for Project Aion
+├── workspace-path-policy.md     # Where projects and docs live
+└── mcp-loading-strategy.md      # Always-On vs On-Demand MCPs
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -71,6 +75,20 @@ patterns/
 - ✅ **Agent Selection**: Choose between custom agents, built-in subagents, skills, and direct tools
 - ✅ **Memory Storage Pattern**: Decision framework for Memory MCP storage
 - ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
+- ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
+- ✅ **Workspace Path Policy**: Where projects and documentation live
+
+### Upstream (AIfred Baseline Tracking)
+```
+upstream/
+├── port-log.md               # History of porting decisions
+└── sync-report-YYYY-MM-DD.md # Generated sync reports
+```
+
+**Purpose**: Track changes from the read-only AIfred baseline for controlled porting to Jarvis.
+
+**Commands**:
+- `/sync-aifred-baseline` — Analyze baseline changes, generate adopt/adapt/reject report
 
 ### Designs (Architecture Documents)
 ```
@@ -157,6 +175,12 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
+**2026-01-05**: PR-3 Upstream Sync Workflow
+- ✅ Added `/sync-aifred-baseline` command for controlled baseline porting
+- ✅ Created `upstream/` context directory with port-log and sync reports
+- ✅ Updated session-start-checklist with sync integration
+- ✅ Extended paths-registry.yaml with sync tracking fields
+
 **2026-01-01**: Standards and Patterns
 - ✅ Added standards directory with severity-status-system.md and model-selection.md
 - ✅ Added patterns directory with agent-selection, memory-storage, and PARC patterns
@@ -166,4 +190,4 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
-*Last Updated: 2026-01-01*
+*Last Updated: 2026-01-05*
