@@ -13,6 +13,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.2.1] - 2026-01-05
+
+**PR-4a: Guardrail Hooks** — First sub-PR of Setup Preflight + Guardrails
+
+### Added
+
+#### Guardrail Hooks
+
+Three new hooks implementing workspace protection and safety guardrails:
+
+- **`workspace-guard.js`** (PreToolUse)
+  - Blocks Write/Edit operations to AIfred baseline (always)
+  - Blocks operations to forbidden system paths (`/`, `/etc`, `/usr`, `~/.ssh`, etc.)
+  - Warns on operations outside Jarvis workspace
+  - Fail-open behavior: logs warning but allows on config errors
+
+- **`dangerous-op-guard.js`** (PreToolUse)
+  - Blocks destructive patterns: `rm -rf /`, `sudo rm -rf`, `mkfs`, disk `dd`, fork bombs
+  - Blocks force push to main/master branches
+  - Warns on `rm -r`, `git reset --hard`, `git clean -fd`
+  - Fail-open behavior: logs warning but allows on pattern errors
+
+- **`permission-gate.js`** (UserPromptSubmit)
+  - Soft-gates policy-crossing operations with system reminders
+  - Detects: AIfred baseline mentions, force push, mass deletion, protected branches, credentials
+  - Formalizes the "ad-hoc permission check" pattern from PR-3 validation
+  - Suggests using AskUserQuestion for explicit confirmation
+
+#### Settings Protection
+
+- Added AIfred baseline to `settings.json` deny patterns:
+  - `Write(/Users/aircannon/Claude/AIfred/**)`
+  - `Edit(/Users/aircannon/Claude/AIfred/**)`
+
+### Changed
+
+- Updated hooks README with guardrail hook documentation
+- Renamed hooks README from "AIfred Hooks" to "Jarvis Hooks"
+- Reorganized hook table into categories: Guardrail, Security, Observability
+
+### Technical Notes
+
+- All guardrail hooks use **fail-open** pattern (prioritize availability)
+- Multi-layer baseline protection: hooks + settings.json deny patterns
+- PR-4a is the first of three sub-PRs for PR-4 (Setup Preflight + Guardrails)
+- PR-4b will add preflight system, PR-4c will add readiness report
+
+---
+
 ## [1.2.0] - 2026-01-05
 
 **PR-3: Upstream Sync Workflow** — Controlled porting from AIfred baseline

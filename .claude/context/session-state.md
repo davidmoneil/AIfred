@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-3 Complete — Released as v1.2.0
+**Current Task**: Session complete — PR-4a released (v1.2.1)
 
-**Next Step**: Begin PR-4 (Setup Preflight + Guardrails) or validate `/sync-aifred-baseline` when baseline updates
+**Next Step**: Begin PR-4b (preflight system)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -29,6 +29,49 @@ Format: mcp-name (reason for enabling)
 ## Session Continuity Notes
 
 ### What Was Accomplished (2026-01-05)
+
+**PR-4a: Guardrail Hooks — Complete (v1.2.1)**
+
+Implemented three guardrail hooks for workspace protection:
+
+1. **workspace-guard.js** (PreToolUse)
+   - Blocks Write/Edit to AIfred baseline
+   - Blocks forbidden system paths
+   - Warns on operations outside Jarvis workspace
+
+2. **dangerous-op-guard.js** (PreToolUse)
+   - Blocks destructive commands (`rm -rf /`, `mkfs`, etc.)
+   - Blocks force push to main/master
+   - Warns on `rm -r`, `git reset --hard`
+
+3. **permission-gate.js** (UserPromptSubmit)
+   - Soft-gates policy-crossing operations
+   - Formalizes ad-hoc permission pattern from PR-3 validation
+
+Also updated:
+- `settings.json` with AIfred baseline deny patterns
+- `hooks/README.md` with guardrail documentation
+- `CHANGELOG.md` with PR-4a entries
+- `VERSION` bumped to 1.2.1
+
+---
+
+**PR-3 Validation: `/sync-aifred-baseline` Verified ✅**
+
+Successfully validated the sync workflow with real upstream changes:
+
+1. **Created test file** in AIfred baseline (`sync-validation-test.md`)
+2. **Pushed to origin/main** (`dc0e8ac` → `eda82c1`)
+3. **Ran `/sync-aifred-baseline`** — workflow detected change correctly
+4. **Classification worked** — correctly identified as REJECT (test artifact)
+5. **Port-log updated** — recorded decision with rationale
+6. **paths-registry updated** — `last_synced_commit` advanced to `eda82c1`
+7. **Sync report generated** — `.claude/context/upstream/sync-report-2026-01-05-validation.md`
+
+**Ad-hoc Permission Pattern Tested**: Demonstrated ability to generate permission checks for
+policy-crossing operations (push to read-only baseline) even with bypass mode active.
+
+---
 
 **PR-3: Upstream Sync Workflow — Complete (v1.2.0 Released)**
 
@@ -65,13 +108,15 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Pending Items
 - Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
-- **Validate `/sync-aifred-baseline`** when AIfred baseline has updates (see Validation Backlog)
+- ~~**Validate `/sync-aifred-baseline`**~~ ✅ Complete — workflow verified
+- **(Optional)** Clean up test file from AIfred baseline
 - Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Check AIfred baseline for updates — if found, run `/sync-aifred-baseline` for real-world validation
-2. Begin PR-4: Setup Preflight + Guardrails
+1. Begin **PR-4b: Preflight System** (workspace-allowlist.yaml, 00-preflight.md)
+2. After PR-4b, complete **PR-4c: Readiness Report** (setup-readiness.md)
 3. Consider enabling Memory MCP for decision tracking
+4. Plan file available at `/Users/aircannon/.claude/plans/wild-mapping-rose.md`
 
 ---
 
@@ -84,4 +129,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-05 - Session exit (v1.2.0 released, PR-3 complete)*
+*Updated: 2026-01-05 - PR-4a complete (v1.2.1), PR-3 validation verified*

@@ -8,7 +8,14 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-*No PR currently in progress*
+### PR-4: Setup Preflight + Guardrails (v1.3.0 target)
+**Status**: 🟡 In Progress — PR-4a complete
+
+| Sub-PR | Version | Status | Description |
+|--------|---------|--------|-------------|
+| PR-4a | v1.2.1 | ✅ Complete | Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate) |
+| PR-4b | v1.2.2 | ⏳ Pending | Preflight system (workspace-allowlist.yaml, 00-preflight.md) |
+| PR-4c | v1.3.0 | ⏳ Pending | Readiness report (setup-readiness.md, documentation) |
 
 ---
 
@@ -17,29 +24,29 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 > **Important**: These items require real-world validation when conditions are met.
 
 ### PR-3 Validation: `/sync-aifred-baseline` Command
-**Status**: ⏳ Pending upstream changes
+**Status**: ✅ Complete (2026-01-05)
 
-The upstream sync workflow infrastructure is complete, but full workflow validation
-requires actual changes to exist in the AIfred baseline `main` branch.
+Validation performed by pushing a test file to AIfred baseline and running sync workflow.
 
-**When to validate**:
-- At session start, if `git fetch` shows new commits on AIfred baseline
-- Run `/sync-aifred-baseline` to test the full adopt/adapt/reject workflow
+**Results**:
+- [x] Diff report correctly identifies changed files
+- [x] Classification suggestions are reasonable (REJECT for test artifact)
+- [x] Port log updates properly after decisions
+- [x] Report format is clear and actionable
 
-**What to verify**:
-- [ ] Diff report correctly identifies changed files
-- [ ] Classification suggestions are reasonable
-- [ ] Port log updates properly after decisions
-- [ ] Report format is clear and actionable
+**Artifacts**:
+- Test file: AIfred `.claude/context/patterns/sync-validation-test.md`
+- Sync report: `.claude/context/upstream/sync-report-2026-01-05-validation.md`
+- Port log entry: 2026-01-05 REJECT documented
 
 ---
 
 ## This Week
 
 - [x] Complete PR-3 upstream sync workflow ✅ Released as v1.2.0
+- [x] Validate `/sync-aifred-baseline` ✅ Verified 2026-01-05
 - [ ] Enable Memory MCP in Docker Desktop
 - [ ] Start PR-4 setup preflight improvements
-- [ ] Validate `/sync-aifred-baseline` when baseline has updates
 
 ---
 

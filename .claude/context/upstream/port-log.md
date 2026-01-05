@@ -55,6 +55,28 @@ solid foundation for hooks, patterns, and session management.
 - All future changes go to Jarvis only
 - Periodic sync checks will compare against baseline `main`
 
+### 2026-01-05: Sync Validation Test — REJECT
+
+**Baseline Commit**: `eda82c1`
+**Jarvis Commit**: N/A (rejected)
+**Classification**: REJECT
+
+**Files Affected**:
+- `.claude/context/patterns/sync-validation-test.md`
+
+**Description**: New file added to AIfred baseline — a test pattern file created to validate
+the `/sync-aifred-baseline` workflow.
+
+**Rationale**: This file is a test artifact with no production value. It was intentionally
+created in the baseline to verify the sync workflow's ability to detect upstream changes,
+categorize them, and apply classification criteria. The file itself explicitly states it
+should be rejected.
+
+**Notes**:
+- First real-world validation of PR-3 sync workflow
+- Workflow correctly detected change, categorized it, and recommended rejection
+- Sync report generated: `.claude/context/upstream/sync-report-2026-01-05-validation.md`
+
 ---
 
 ## Pending Review
@@ -73,9 +95,9 @@ Items flagged for future review from sync reports:
 |----------------|-------|--------------|
 | ADOPT | 1 | 2026-01-03 |
 | ADAPT | 0 | — |
-| REJECT | 0 | — |
+| REJECT | 1 | 2026-01-05 |
 | DEFER | 0 | — |
 
 ---
 
-*Updated: 2026-01-03 — Initial fork documented*
+*Updated: 2026-01-05 — Sync validation test (REJECT)*

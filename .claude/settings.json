@@ -89,6 +89,9 @@
       "Read(**/*password*)",
       "Read(**/*token*)",
 
+      "Write(/Users/aircannon/Claude/AIfred/**)",
+      "Edit(/Users/aircannon/Claude/AIfred/**)",
+
       "Bash(rm -rf /*)",
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf /home/*)",
