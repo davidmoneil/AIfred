@@ -38,7 +38,7 @@ Jarvis is the "master" Archon: a highly autonomous, self-improving, tool-rich AI
 - Benchmarks itself against end-to-end demos
 - Builds and configures other Archons
 
-**Status**: Active (v1.0.0)
+**Status**: Active (v1.1.0)
 
 ---
 
@@ -170,7 +170,7 @@ Each Archon maintains its own version while tracking lineage:
 
 | Archon | Current Version | Created With | Baseline |
 |--------|-----------------|--------------|----------|
-| Jarvis | 1.0.0 | — | dc0e8ac |
+| Jarvis | 1.1.0 | — | dc0e8ac |
 | Jeeves | — | (pending) | — |
 | Wallace | — | (pending) | — |
 

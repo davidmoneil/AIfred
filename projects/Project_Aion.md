@@ -680,13 +680,36 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
 
 ## 5) Refactored Detailed Roadmap (Aligned to PR Order)
 
-> This roadmap intentionally builds **foundation → workspace discipline → upstream sync → setup → tools** before pushing autonomy and self-evolution.  
+> This roadmap intentionally builds **foundation → workspace discipline → upstream sync → setup → tools** before pushing autonomy and self-evolution.
 > **AIfred baseline remains read-only throughout.** The baseline is used only as an upstream mirror for diff/analysis and pull-only updates.
 
+### Version Milestones
+
+Version bumps are tied to PR/phase completion per [versioning-policy.md](./docs/project-aion/versioning-policy.md):
+
+| Milestone | Version | Trigger |
+|-----------|---------|---------|
+| PR-1 Complete | **1.0.0** ✅ | Initial release |
+| PR-2 Complete | **1.1.0** | Workspace & summaries |
+| PR-3 Complete | **1.2.0** | Upstream sync |
+| PR-4 Complete | **1.3.0** | Setup preflight |
+| Phase 5 Complete (PR-5→10) | **2.0.0** | Tooling baseline |
+| Phase 6 Complete (PR-11→14) | **3.0.0** | Autonomous operation |
+
+**Bump Rules**:
+- **PATCH** (x.x.+1): Validation tests, benchmarks, documentation
+- **MINOR** (x.+1.0): PR completion
+- **MAJOR** (+1.0.0): Phase completion (PR-10, PR-14)
+
+---
+
 ### Phase 1 — Identity, Baseline Discipline, and Doc Hygiene (PR-1)
+
+**Target Version**: 1.0.0 ✅ Complete
+
 Deliverables:
 - Jarvis Archon identity and divergence from AIfred baseline clarified in Jarvis docs.
-- Versioning and release note conventions established (including secondary archon “created using Jarvis version x.x.x” rule).
+- Versioning and release note conventions established (including secondary archon "created using Jarvis version x.x.x" rule).
 - Session-start pattern: always check/pull baseline updates into `/Users/aircannon/Claude/AIfred`.
 - Workspace rule clarifying:
   - normal projects live in `/Users/aircannon/Claude/<ProjectName>/`
@@ -700,6 +723,9 @@ Acceptance:
 ---
 
 ### Phase 2 — Workspace Discipline & Project Summaries + One-shot PRD Doc (PR-2)
+
+**Target Version**: 1.1.0
+
 Deliverables:
 - Canonical project location rules implemented and documented.
 - Project summary template created and stored in Jarvis defaults.
@@ -712,6 +738,9 @@ Acceptance:
 ---
 
 ### Phase 3 — Controlled Upstream Porting (PR-3)
+
+**Target Version**: 1.2.0
+
 Deliverables:
 - `/sync-aifred-baseline` (or equivalent) produces:
   - diff report
@@ -724,6 +753,9 @@ Acceptance:
 ---
 
 ### Phase 4 — Setup v1: Preflight + Guardrails (PR-4)
+
+**Target Version**: 1.3.0
+
 Deliverables:
 - `/setup` can run in a fresh environment and produce a readiness report.
 - Guardrailed permission model for allowlisted paths.
@@ -736,6 +768,18 @@ Acceptance:
 ---
 
 ### Phase 5 — Tooling Baseline & Incremental Expansion (PR-5 → PR-10)
+
+**Target Version**: 2.0.0 (MAJOR — Tooling Complete)
+
+| PR | Description | Version |
+|----|-------------|---------|
+| PR-5 | Core Tooling Baseline | 1.4.0 |
+| PR-6 | Plugins Expansion | 1.5.0 |
+| PR-7 | Skills Inventory | 1.6.0 |
+| PR-8 | MCP Expansion | 1.7.0 |
+| PR-9 | Selection Intelligence | 1.8.0 |
+| PR-10 | Setup Upgrade | **2.0.0** |
+
 Deliverables:
 - PR-5: Core Tooling baseline enabled + validated + overlap matrix started.
 - PR-6: Plugins expanded with adopt/adapt/reject decisions + conflicts resolved.
@@ -747,11 +791,21 @@ Deliverables:
 Acceptance:
 - Capability matrix is accurate and used.
 - Redundant/conflicting tools are either removed or rule-governed.
-- Setup can reach a stable “baseline-ready” state reproducibly.
+- Setup can reach a stable "baseline-ready" state reproducibly.
 
 ---
 
 ### Phase 6 — Autonomy, Self-Evolution, Benchmark Gates, SOTA Comparison (PR-11 → PR-14)
+
+**Target Version**: 3.0.0 (MAJOR — Autonomous Operation)
+
+| PR | Description | Version |
+|----|-------------|---------|
+| PR-11 | Autonomy & Permission Reduction | 2.1.0 |
+| PR-12 | Self-Evolution Loop | 2.2.0 |
+| PR-13 | Benchmark Demos | 2.3.0 |
+| PR-14 | SOTA Research & Comparison | **3.0.0** |
+
 Deliverables:
 - PR-11: Autonomy policy + one-shot PRD runbook + scoped permissions.
 - PR-12: Self-evolution loop established with review gates.

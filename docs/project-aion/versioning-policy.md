@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document defines the versioning scheme for Project Aion Archons, ensuring consistent tracking of changes, releases, and lineage.
+This document defines the **milestone-based versioning scheme** for Project Aion Archons. Version bumps are tied directly to the PR/roadmap lifecycle, creating predictable, auditable version increments.
 
 ---
 
@@ -17,45 +17,147 @@ Archons use **semantic versioning** with three components:
 ```
 MAJOR.MINOR.PATCH
   │     │     │
-  │     │     └── Benchmark/test reports, documentation, minor fixes
-  │     └──────── Feature additions, normal development pushes
-  └────────────── Breaking changes, major architectural shifts
+  │     │     └── Validation pushes, benchmark reports, documentation fixes
+  │     └──────── PR completion (feature delivery)
+  └────────────── Roadmap phase completion (major capability milestone)
 ```
 
 **Examples**:
-- `1.0.0` → Initial release
-- `1.1.0` → New feature added
-- `1.1.1` → Test report or documentation update
-- `2.0.0` → Breaking architectural change
+- `1.0.0` → Initial release (PR-1 complete)
+- `1.1.0` → PR-2 complete (new feature delivered)
+- `1.1.1` → PR-2 validation tests added
+- `2.0.0` → Phase 5 complete (tooling baseline established)
 
 ---
 
-## Version Bump Rules
+## Milestone-Based Version Bump Rules
 
-### When to Bump PATCH (x.x.+1)
+Version bumps are **triggered by specific milestones** in the development lifecycle:
 
-Increment the patch version for:
-- Benchmark or test report pushes
-- Documentation-only updates
+### PATCH Bump (x.x.+1) — Validation & Documentation
+
+Trigger: **Validation push** or **documentation update**
+
+Increment the patch version when:
+- Validation/smoke tests are added or updated
+- Benchmark results are recorded
+- Documentation-only updates (README, patterns, guides)
 - Typo fixes and minor corrections
 - Configuration tweaks that don't change behavior
 
-### When to Bump MINOR (x.+1.0)
+**Example workflow**:
+```
+Current: 1.1.0 (PR-2 complete)
+Action:  Add PR-2 validation smoke tests
+Result:  1.1.1
+Commit:  "Release v1.1.1 - PR-2 validation tests"
+```
 
-Increment the minor version (and reset patch to 0) for:
-- Normal development pushes with new functionality
-- New commands, agents, or skills added
-- New MCP integrations
-- Feature enhancements
-- Non-breaking refactors
+### MINOR Bump (x.+1.0) — PR Completion
 
-### When to Bump MAJOR (+1.0.0)
+Trigger: **PR fully implemented and pushed**
 
-Increment the major version (and reset minor and patch to 0) for:
-- Breaking changes to commands or APIs
-- Major architectural restructuring
-- Changes that require user migration steps
-- Significant behavioral changes
+Increment the minor version when:
+- A PR from the roadmap is fully complete
+- All PR deliverables are implemented
+- Changes are committed and pushed to `Project_Aion` branch
+
+**Example workflow**:
+```
+Current: 1.1.1
+Action:  Complete PR-3 (Upstream Sync Workflow)
+Result:  1.2.0
+Commit:  "Release v1.2.0 - PR-3 complete"
+```
+
+**PR-to-Version Mapping** (Jarvis roadmap):
+
+| PR | Description | Target Version |
+|----|-------------|----------------|
+| PR-1 | Archon Identity + Versioning | 1.0.0 ✅ |
+| PR-2 | Workspace & Project Summaries | 1.1.0 |
+| PR-3 | Upstream Sync Workflow | 1.2.0 |
+| PR-4 | Setup Preflight + Guardrails | 1.3.0 |
+| PR-5 | Core Tooling Baseline | 1.4.0 |
+| PR-6 | Plugins Expansion | 1.5.0 |
+| PR-7 | Skills Inventory | 1.6.0 |
+| PR-8 | MCP Expansion | 1.7.0 |
+| PR-9 | Selection Intelligence | 1.8.0 |
+| PR-10 | Setup Upgrade | 1.9.0 |
+| PR-11 | Autonomy & Permission Reduction | 1.10.0 |
+| PR-12 | Self-Evolution Loop | 1.11.0 |
+| PR-13 | Benchmark Demos | 1.12.0 |
+| PR-14 | SOTA Research & Comparison | 1.13.0 |
+
+### MAJOR Bump (+1.0.0) — Phase Completion
+
+Trigger: **All PRs in a roadmap phase complete**
+
+Increment the major version when:
+- An entire roadmap phase is finished
+- A significant capability milestone is reached
+- Breaking changes require user migration
+
+**Phase-to-Major-Version Mapping**:
+
+| Phase | PRs Included | Major Version |
+|-------|--------------|---------------|
+| Phase 1 | PR-1 | 1.0.0 ✅ (Initial) |
+| Phase 2 | PR-2 | 1.x.x (Minor accumulation) |
+| Phase 3 | PR-3 | 1.x.x |
+| Phase 4 | PR-4 | 1.x.x |
+| Phase 5 | PR-5 → PR-10 | **2.0.0** (Tooling Complete) |
+| Phase 6 | PR-11 → PR-14 | **3.0.0** (Autonomous Operation) |
+
+---
+
+## Version Bump Decision Tree
+
+Use this flowchart when deciding version bumps:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ What was pushed?                                        │
+└─────────────────────────────────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+   ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+   │ Validation/  │ │ PR Complete  │ │ Phase        │
+   │ Docs/Fixes   │ │ (Feature)    │ │ Complete     │
+   └──────────────┘ └──────────────┘ └──────────────┘
+          │               │               │
+          ▼               ▼               ▼
+   ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+   │ PATCH        │ │ MINOR        │ │ MAJOR        │
+   │ x.x.+1       │ │ x.+1.0       │ │ +1.0.0       │
+   └──────────────┘ └──────────────┘ └──────────────┘
+```
+
+---
+
+## Session-End Version Check
+
+At session end (`/end-session`), evaluate version bump needs:
+
+1. **Check session accomplishments**:
+   - Was a PR completed? → MINOR bump
+   - Were validation tests added? → PATCH bump
+   - Was this the final PR of a phase? → MAJOR bump
+
+2. **If version bump needed**:
+   ```bash
+   # Run appropriate bump
+   ./scripts/bump-version.sh [patch|minor|major]
+
+   # Update CHANGELOG.md
+   # Update version references in docs
+   # Commit with release message
+   ```
+
+3. **If no bump needed**:
+   - Session work is part of an in-progress PR
+   - Commit normally without version change
 
 ---
 

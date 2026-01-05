@@ -78,6 +78,15 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
   - Created validation/smoke test document
   - One-Shot PRD template created (`docs/project-aion/one-shot-prd.md`)
 
+- [x] **Release v1.1.0 — Milestone-Based Versioning** (Complete)
+  - Designed milestone-based versioning tied to PR/roadmap lifecycle
+  - PATCH for validation, MINOR for PR completion, MAJOR for phase completion
+  - Updated versioning-policy.md with decision tree and PR-to-version mapping
+  - Updated Project_Aion.md roadmap with version milestones per phase
+  - Integrated version bump check into `/end-session` workflow
+  - Bumped version 1.0.0 → 1.1.0 for PR-2 completion
+  - Updated all version references across 9 documentation files
+
 ### 2026-01-03
 - [x] AIfred initial setup (all 8 phases)
 - [x] Node.js v24 LTS installed via nvm

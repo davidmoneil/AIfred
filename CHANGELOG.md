@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Milestone-Based Versioning**: Version bumps tied to PR/roadmap lifecycle
+  - PATCH for validation/benchmarks, MINOR for PR completion, MAJOR for phase completion
+  - Updated `docs/project-aion/versioning-policy.md` with decision tree
+  - Updated `projects/Project_Aion.md` with version milestones per phase
+  - Integrated version bump check into `/end-session` workflow
+
+---
+
+## [1.1.0] - 2026-01-05
+
+### Added
 
 #### Branching Strategy
 - Established `Project_Aion` branch for all Archon development

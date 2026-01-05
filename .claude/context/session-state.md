@@ -10,7 +10,7 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-2 Complete — Ready for PR-3
+**Current Task**: Milestone-Based Versioning Complete — v1.1.0 Released
 
 **Next Step**: Begin PR-3 (Upstream Sync Workflow)
 
@@ -30,34 +30,39 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-05)
 
-**PR-2: Workspace & Project Summaries (Complete)**
+**Release v1.1.0 — Milestone-Based Versioning**
 
-- Created Project Summary template (`knowledge/templates/project-summary.md`)
-- Refined `/register-project` command with path policy compliance
-- Refined `/create-project` command with path policy compliance
-- Fixed `paths-registry.yaml`: projects_root now `/Users/aircannon/Claude`
-- Added `summaries_path`, `jarvis`, and `aifred_baseline` sections to registry
-- Created PR-2 validation smoke tests (`docs/project-aion/pr2-validation.md`)
-- Updated CHANGELOG.md with PR-2 items
-- Updated current-priorities.md: PR-2 marked complete
+- Designed milestone-based versioning scheme tied to PR/roadmap lifecycle
+  - PATCH for validation/benchmarks
+  - MINOR for PR completion
+  - MAJOR for phase completion (PR-10, PR-14)
+- Updated `docs/project-aion/versioning-policy.md` with decision tree and PR-to-version mapping
+- Updated `projects/Project_Aion.md` roadmap with version milestones per phase
+- Integrated version bump check into `/end-session` workflow (Step 4)
+- Performed first milestone version bump: 1.0.0 → 1.1.0 (PR-2 complete)
+- Updated all version references across 9 documentation files
 
-**Backlog Addition**
-- Added auto-restart after rate-limit feature to backlog
+**Version Milestone System**
+| PR | Target Version |
+|----|----------------|
+| PR-1 | 1.0.0 ✅ |
+| PR-2 | 1.1.0 ✅ |
+| PR-3 | 1.2.0 |
+| PR-10 | 2.0.0 (Phase 5) |
+| PR-14 | 3.0.0 (Phase 6) |
 
-**Commits Pushed to origin/Project_Aion**
-- `1d21aa4` — PR-2: Workspace & Project Summaries (Complete)
-- `6d644a8` — Add auto-restart after rate-limit to backlog
+### Key Files Modified
 
-### Key Files Modified/Created
-
-- `knowledge/templates/project-summary.md` — New project summary template
-- `docs/project-aion/pr2-validation.md` — PR-2 smoke tests
-- `commands/register-project.md` — Refined for path policy
-- `commands/create-project.md` — Refined for path policy
-- `paths-registry.yaml` — Fixed projects_root, added sections
-- `.claude/context/patterns/workspace-path-policy.md` — Added template reference
-- `.claude/context/projects/current-priorities.md` — PR-2 complete, backlog item added
-- `CHANGELOG.md` — PR-2 items added
+- `VERSION` — 1.0.0 → 1.1.0
+- `CHANGELOG.md` — PR-2 moved to [1.1.0] section, new [Unreleased] for versioning
+- `docs/project-aion/versioning-policy.md` — Complete rewrite with milestone rules
+- `projects/Project_Aion.md` — Version milestones added to roadmap
+- `.claude/commands/end-session.md` — Version bump workflow integrated
+- `README.md` — Version updated to 1.1.0
+- `.claude/CLAUDE.md` — Version updated to 1.1.0
+- `AGENTS.md` — Version updated to 1.1.0
+- `docs/project-aion/archon-identity.md` — Version updated to 1.1.0
+- `paths-registry.yaml` — Version updated to 1.1.0
 
 ### Pending Items
 - Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
@@ -83,4 +88,4 @@ Format: mcp-name (reason for enabling)
 
 ---
 
-*Updated: 2026-01-05 - Session exit (PR-2 complete, pushed to Project_Aion branch)*
+*Updated: 2026-01-05 - Session exit (v1.1.0 released, milestone-based versioning implemented)*
