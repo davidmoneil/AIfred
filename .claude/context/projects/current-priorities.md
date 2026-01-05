@@ -52,6 +52,10 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 - PR-13: Benchmark Demos
 - PR-14: SOTA Research & Comparison
 
+### Future Enhancements
+- [ ] **Auto-restart after rate-limit**: Design pattern for automatic session continuation
+  after API rate-limit pauses (checkpoint state → wait → resume workflow)
+
 ---
 
 ## Completed
