@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-1 Complete — Project Aion Identity Established
+**Current Task**: PR-2 Complete — Ready for PR-3
 
-**Next Step**: Continue with PR-2 (Workspace & Project Summaries) or PR-3 (Upstream Sync Workflow)
+**Next Step**: Begin PR-3 (Upstream Sync Workflow)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -30,46 +30,47 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-05)
 
-**PR-1: Archon Identity + Versioning + Baseline Discipline (Complete)**
+**PR-2: Workspace & Project Summaries (Complete)**
 
-- PR-1.A/B: Established Project Aion Archon terminology (Jarvis, Jeeves, Wallace)
-- PR-1.C: Updated AIfred baseline to commit `dc0e8ac` (2026-01-03)
-- PR-1.D: Created session-start-checklist pattern with mandatory baseline update
-- PR-1.E: Created workspace-path-policy pattern for canonical locations
-- PR-1.F/G: Established versioning policy, VERSION file, CHANGELOG.md, bump-version.sh
-- PR-1.H: Archived PROJECT-PLAN.md to docs/archive/ with archive-log.md
+- Created Project Summary template (`knowledge/templates/project-summary.md`)
+- Refined `/register-project` command with path policy compliance
+- Refined `/create-project` command with path policy compliance
+- Fixed `paths-registry.yaml`: projects_root now `/Users/aircannon/Claude`
+- Added `summaries_path`, `jarvis`, and `aifred_baseline` sections to registry
+- Created PR-2 validation smoke tests (`docs/project-aion/pr2-validation.md`)
+- Updated CHANGELOG.md with PR-2 items
+- Updated current-priorities.md: PR-2 marked complete
 
-**Branching Strategy Established**
-- Created `Project_Aion` branch for all Archon development
-- `main` branch remains read-only AIfred baseline
-- Pushed to origin/Project_Aion (commit `060fd83`)
+**Backlog Addition**
+- Added auto-restart after rate-limit feature to backlog
 
-**PR-2 (Partial): One-Shot PRD**
-- Created docs/project-aion/one-shot-prd.md template
+**Commits Pushed to origin/Project_Aion**
+- `1d21aa4` — PR-2: Workspace & Project Summaries (Complete)
+- `6d644a8` — Add auto-restart after rate-limit to backlog
 
 ### Key Files Modified/Created
 
-- `.claude/CLAUDE.md` — Updated with Archon identity
-- `README.md` — Rewritten for Project Aion
-- `AGENTS.md` — Updated with Archon terminology
-- `VERSION` — Created (1.0.0)
-- `CHANGELOG.md` — Created with PR references
-- `docs/project-aion/archon-identity.md` — Archon definitions
-- `docs/project-aion/versioning-policy.md` — Versioning rules
-- `docs/project-aion/one-shot-prd.md` — Autonomy benchmark template
-- `.claude/context/patterns/session-start-checklist.md` — Session start pattern
-- `.claude/context/patterns/workspace-path-policy.md` — Path policy
-- `.claude/context/patterns/branching-strategy.md` — Git branching strategy
-- `scripts/bump-version.sh` — Version automation
+- `knowledge/templates/project-summary.md` — New project summary template
+- `docs/project-aion/pr2-validation.md` — PR-2 smoke tests
+- `commands/register-project.md` — Refined for path policy
+- `commands/create-project.md` — Refined for path policy
+- `paths-registry.yaml` — Fixed projects_root, added sections
+- `.claude/context/patterns/workspace-path-policy.md` — Added template reference
+- `.claude/context/projects/current-priorities.md` — PR-2 complete, backlog item added
+- `CHANGELOG.md` — PR-2 items added
 
 ### Pending Items
-- Enable MCP in Docker Desktop (Settings → Features → Beta)
-- Continue with PR-2, PR-3, PR-4 per Project Aion roadmap
+- Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
+- Continue with PR-3, PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
 1. Check AIfred baseline for updates (per session-start-checklist)
-2. Continue with PR-2: Project summary template, /register-project refinement
-3. Or start PR-3: /sync-aifred-baseline command
+2. Begin PR-3: Upstream Sync Workflow
+   - Create `/sync-aifred-baseline` command
+   - Implement diff report generation
+   - Create adopt/adapt/reject classification
+   - Build port log tracking
+   - Integrate baseline diff into session-start pattern
 
 ---
 
@@ -82,4 +83,4 @@ Format: mcp-name (reason for enabling)
 
 ---
 
-*Updated: 2026-01-05 - Session exit (PR-1 complete, pushed to Project_Aion branch)*
+*Updated: 2026-01-05 - Session exit (PR-2 complete, pushed to Project_Aion branch)*
