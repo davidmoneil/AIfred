@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.3.1 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
+**Version**: 1.4.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
 
 You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant for home lab automation, knowledge management, and system integration.
 
@@ -34,6 +34,7 @@ You are working in **Jarvis**, the master Archon of Project Aion — a highly au
 - @.claude/context/standards/severity-status-system.md - Severity/status terminology
 - @.claude/context/standards/model-selection.md - When to use Opus vs Sonnet vs Haiku
 - @.claude/context/patterns/agent-selection-pattern.md - **Choose agents vs subagents vs skills**
+- @.claude/skills/session-management/SKILL.md - **Session lifecycle management** (start, track, checkpoint, exit)
 - @.claude/context/patterns/memory-storage-pattern.md - When to use Memory MCP
 - @.claude/context/patterns/mcp-loading-strategy.md - **MCP loading strategies** (Always-On/On-Demand/Isolated)
 - @.claude/context/patterns/prompt-design-review.md - PARC design review pattern
@@ -154,8 +155,36 @@ Your infrastructure-specific agents with persistent memory:
 - `/agent deep-research "topic"` - Web research with multi-source validation
 - `/agent service-troubleshooter "issue"` - Systematic service diagnosis
 - `/agent docker-deployer "service"` - Guided Docker deployment
+- `/agent memory-bank-synchronizer` - Sync docs with code changes (preserves user content)
 
 **Decision Guide**: @.claude/context/patterns/agent-selection-pattern.md
+
+---
+
+## Skills System
+
+**Skills are comprehensive workflow guides** that consolidate related commands, hooks, and patterns for end-to-end task guidance.
+
+### Available Skills
+
+| Skill | Purpose | Key Commands |
+|-------|---------|--------------|
+| [session-management](@.claude/skills/session-management/SKILL.md) | Session lifecycle management | `/checkpoint`, `/end-session` |
+
+### When to Use Skills vs Commands vs Agents
+
+```
+Need to do ONE thing?
+  └─ Use a Command (e.g., /checkpoint)
+
+Need guidance across MULTIPLE steps?
+  └─ Reference a Skill (e.g., session-management)
+
+Need autonomous COMPLEX task execution?
+  └─ Invoke an Agent (e.g., /agent memory-bank-synchronizer)
+```
+
+**Full documentation**: @.claude/skills/_index.md
 
 ---
 
@@ -244,6 +273,7 @@ Specialized agents available via `/agent`:
 | `docker-deployer` | Deploy and configure Docker services |
 | `service-troubleshooter` | Diagnose infrastructure issues |
 | `deep-research` | In-depth topic investigation |
+| `memory-bank-synchronizer` | Sync documentation with code (preserves user content) |
 
 ---
 
@@ -253,14 +283,18 @@ All Claude Code tool executions are **automatically logged** via the hooks syste
 
 ### How It Works
 
-The `.claude/hooks/` directory contains JavaScript hooks:
+The `.claude/hooks/` directory contains 18 JavaScript hooks:
 
 | Hook | Event | Purpose |
 |------|-------|---------|
+| `session-start.js` | SessionStart | Auto-load context on startup |
+| `session-stop.js` | Stop | Desktop notification when done |
 | `audit-logger.js` | PreToolUse | Logs all tool executions |
 | `session-tracker.js` | Notification | Tracks session lifecycle |
 | `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
 | `project-detector.js` | UserPromptSubmit | Auto-detects GitHub URLs and "new project" requests |
+| `doc-sync-trigger.js` | PostToolUse | Tracks code changes, suggests sync |
+| `self-correction-capture.js` | UserPromptSubmit | Captures corrections as lessons |
 
 ### Log Format
 
@@ -318,6 +352,34 @@ See @.claude/hooks/README.md for hook documentation.
 
 ---
 
+## Documentation Synchronization
+
+**Automatic** via hooks - keeps documentation aligned with code changes.
+
+### How It Works
+
+1. `doc-sync-trigger.js` tracks Write/Edit operations on significant files
+2. After 5+ changes in 24 hours, suggests running `/agent memory-bank-synchronizer`
+3. The agent syncs docs while **preserving user content** (todos, decisions, notes)
+
+### Significant Files Tracked
+
+- `.claude/commands/`, `.claude/agents/`, `.claude/hooks/`, `.claude/skills/`
+- `projects/`, `scripts/`, `docker/`
+- `docker-compose*.yaml`, `external-sources/`
+
+### Safe Updates (agent modifies)
+
+- Code examples, file paths, command syntax, version numbers, counts
+
+### Preserved Content (never modified)
+
+- Todos, decisions, troubleshooting notes, session notes, blockers
+
+**Related**: @.claude/agents/memory-bank-synchronizer.md
+
+---
+
 ## Setup Validation (PR-4)
 
 Jarvis uses a three-layer validation approach:
@@ -371,8 +433,9 @@ See @.claude/context/patterns/setup-validation.md for details.
 - `/register-project <path>` - Register a project
 
 ### Installed
-- **8 hooks**: audit, session tracking, security, Docker health
-- **3 agents**: docker-deployer, service-troubleshooter, deep-research
+- **18 hooks**: lifecycle, guardrails, observability, documentation sync
+- **4 agents**: docker-deployer, service-troubleshooter, deep-research, memory-bank-synchronizer
+- **1 skill**: session-management
 - **Tools**: Git, Docker, Node.js (v24 LTS), Python
 
 See @.claude/context/configuration-summary.md for full details.
@@ -385,7 +448,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.3.1 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.4.0 |
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
@@ -393,6 +456,6 @@ See @projects/project-aion/archon-identity.md for full details.
 
 ---
 
-*Jarvis v1.3.1 — Project Aion Master Archon*
-*Derived from AIfred baseline commit `dc0e8ac` (2026-01-03)*
-*Updated: 2026-01-06 - v1.3.1 Validation & UX Improvements*
+*Jarvis v1.4.0 — Project Aion Master Archon*
+*Derived from AIfred baseline commit `af66364` (2026-01-06)*
+*Updated: 2026-01-06 - Added Skills System, lifecycle hooks, and doc-sync from AIfred baseline*

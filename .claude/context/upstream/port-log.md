@@ -77,6 +77,55 @@ should be rejected.
 - Workflow correctly detected change, categorized it, and recommended rejection
 - Sync report generated: `.claude/context/upstream/sync-report-2026-01-05-validation.md`
 
+### 2026-01-06: Port Phase 3 & 4 Patterns from AIProjects — ADOPT/ADAPT
+
+**Baseline Commit**: `af66364`
+**Jarvis Commit**: (this session)
+**Classification**: ADOPT (8 items), ADAPT (10 items), IMPLEMENT (6 items)
+
+**Files Affected**:
+
+*ADOPT (ported directly):*
+- `.claude/hooks/doc-sync-trigger.js` — Background change tracking hook
+- `.claude/agents/results/memory-bank-synchronizer/.gitkeep` — Directory structure
+
+*ADAPT (ported with modifications):*
+- `.claude/agents/memory-bank-synchronizer.md` — Terminology: AIfred→Jarvis, paths updated
+- `.claude/skills/_index.md` — Skills directory index, customized for Jarvis
+- `.claude/skills/session-management/SKILL.md` — Session lifecycle skill, references updated
+- `.claude/skills/session-management/examples/typical-session.md` — Example adapted for Jarvis workflow
+- `.claude/hooks/README.md` — Merged new sections, kept Jarvis guardrails
+- `.claude/CLAUDE.md` — Added Skills System, Documentation Synchronization sections
+
+*IMPLEMENT (created based on AIfred specifications):*
+- `.claude/hooks/session-start.js` — Auto-load context on startup (SessionStart event)
+- `.claude/hooks/session-stop.js` — Desktop notification on exit (Stop event)
+- `.claude/hooks/self-correction-capture.js` — Capture user corrections (UserPromptSubmit event)
+- `.claude/hooks/subagent-stop.js` — Agent completion handling (SubagentStop event)
+- `.claude/hooks/pre-compact.js` — Preserve context before compaction (PreCompact event)
+- `.claude/hooks/worktree-manager.js` — Git worktree tracking (PostToolUse event)
+
+**Description**: AIfred baseline commit `af66364` ported Phase 3 & 4 patterns from AIProjects,
+adding a comprehensive Skills System, Documentation Synchronization workflow, and lifecycle hooks.
+
+**Rationale**: User requested full compliance with all baseline changes, treating all updates
+as essential or highly important. This required not just porting existing code but also
+implementing hooks that were documented but not yet coded in the AIfred baseline.
+
+**Modifications**:
+- All references to "AIfred" changed to "Jarvis"
+- Paths updated for Jarvis workspace structure (`/Users/aircannon/Claude/Jarvis`)
+- Session-start hook includes AIfred baseline status check
+- Skills adapted to reference Jarvis-specific commands and guardrails
+- Agent memory-bank-synchronizer adapted for Jarvis doc structure
+
+**Notes**:
+- Total hooks increased from 11 to 18
+- Total agents increased from 3 to 4
+- New skills directory created with 1 skill (session-management)
+- All 18 hooks pass syntax validation (`node -c`)
+- Sync report: `.claude/context/upstream/sync-report-2026-01-06.md`
+
 ---
 
 ## Pending Review
@@ -93,11 +142,12 @@ Items flagged for future review from sync reports:
 
 | Classification | Count | Last Updated |
 |----------------|-------|--------------|
-| ADOPT | 1 | 2026-01-03 |
-| ADAPT | 0 | — |
+| ADOPT | 3 | 2026-01-06 |
+| ADAPT | 10 | 2026-01-06 |
+| IMPLEMENT | 6 | 2026-01-06 |
 | REJECT | 1 | 2026-01-05 |
 | DEFER | 0 | — |
 
 ---
 
-*Updated: 2026-01-05 — Sync validation test (REJECT)*
+*Updated: 2026-01-06 — Port Phase 3 & 4 patterns (af66364)*

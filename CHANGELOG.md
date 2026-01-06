@@ -13,6 +13,117 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.0] - 2026-01-06
+
+**Skills System & Lifecycle Hooks** — Full compliance with AIfred baseline af66364
+
+### Added
+
+#### Skills System
+
+New abstraction layer for multi-step workflow guidance:
+
+- **`.claude/skills/_index.md`** — Skills directory index
+  - Documents Skills vs Commands vs Agents decision guide
+  - Directory structure and frontmatter conventions
+
+- **`.claude/skills/session-management/SKILL.md`** — Session lifecycle skill
+  - Comprehensive session management: start, during, checkpoint, end
+  - Visual workflow diagram
+  - Component references: hooks, commands, state files
+  - Integration points with Memory MCP, doc sync, guardrails
+
+- **`.claude/skills/session-management/examples/typical-session.md`** — Usage walkthrough
+  - Multi-session feature development example
+  - Demonstrates checkpoint, doc sync, and proper exit
+
+#### Lifecycle Hooks (6 new hooks)
+
+- **`session-start.js`** (SessionStart) — Auto-load context on startup
+  - Injects session-state.md, current-priorities.md
+  - Shows git branch and status
+  - Checks AIfred baseline for updates
+
+- **`session-stop.js`** (Stop) — Desktop notification on exit
+  - macOS: Uses osascript
+  - Linux: Uses notify-send
+  - Different notifications for success/error/cancel
+
+- **`self-correction-capture.js`** (UserPromptSubmit) — Capture corrections as lessons
+  - Detects patterns: "No, actually...", "That's wrong", etc.
+  - Severity levels: HIGH, MEDIUM, LOW
+  - Logs to `.claude/logs/corrections.jsonl`
+
+- **`subagent-stop.js`** (SubagentStop) — Agent completion handling
+  - Logs to `.claude/logs/agent-activity.jsonl`
+  - Detects HIGH/CRITICAL issues in output
+  - Agent-specific follow-up suggestions
+
+- **`pre-compact.js`** (PreCompact) — Preserve context before compaction
+  - Extracts key sections from session-state.md
+  - Logs to `.claude/logs/compaction-history.jsonl`
+  - Ensures critical context survives compaction
+
+- **`worktree-manager.js`** (PostToolUse) — Git worktree tracking
+  - Detects worktree vs main repo
+  - Warns about cross-worktree file access
+  - Logs state to `.claude/logs/.worktree-state.json`
+
+#### Documentation Synchronization
+
+- **`doc-sync-trigger.js`** (PostToolUse) — Track code changes
+  - Monitors Write/Edit on significant files
+  - After 5+ changes in 24 hours, suggests sync
+  - 4-hour cooldown between suggestions
+  - State persists to `.claude/logs/.doc-sync-state.json`
+
+- **`memory-bank-synchronizer`** agent — Sync documentation with code
+  - Maintains consistency between code, docs, and Memory graph
+  - CRITICAL preservation rules: never delete user content
+  - Safe updates: code examples, paths, counts, versions
+  - Results to `.claude/agents/results/memory-bank-synchronizer/`
+
+### Changed
+
+#### CLAUDE.md Enhancements
+
+- Added **Skills System** section with available skills and decision guide
+- Added **Documentation Synchronization** section
+- Added `memory-bank-synchronizer` to agents list
+- Updated hooks table (now 18 hooks)
+- Added session-management skill to Quick Links
+- Updated version to 1.4.0
+- Updated baseline reference to `af66364`
+
+#### hooks/README.md Overhaul
+
+- Reorganized into categories: Lifecycle, Guardrail, Security, Observability, Documentation, Utility
+- Added detailed descriptions for all 6 new lifecycle hooks
+- Added Documentation Sync Trigger section
+- Updated hook count to 18
+- Added new log file locations
+
+### Technical Summary
+
+| Category | Before | After |
+|----------|--------|-------|
+| Total hooks | 11 | 18 |
+| Total agents | 3 | 4 |
+| Skills | 0 | 1 |
+| Hook types | 4 | 8 |
+
+### Port Classification
+
+From AIfred baseline `af66364`:
+
+| Classification | Count | Items |
+|----------------|-------|-------|
+| ADOPT | 2 | doc-sync-trigger.js, agent results .gitkeep |
+| ADAPT | 10 | memory-bank-synchronizer, skills/*, hooks/README.md, CLAUDE.md |
+| IMPLEMENT | 6 | session-start, session-stop, self-correction-capture, subagent-stop, pre-compact, worktree-manager |
+
+---
+
 ## [1.3.1] - 2026-01-06
 
 **Validation & UX Improvements** — Post-v1.3.0 thorough validation with fixes
