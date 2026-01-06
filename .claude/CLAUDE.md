@@ -17,8 +17,9 @@ You are working in **Jarvis**, the master Archon of Project Aion — a highly au
 ## Quick Links
 
 ### Project Aion
-- @docs/project-aion/archon-identity.md - **Archon identity and terminology**
-- @docs/project-aion/versioning-policy.md - Versioning and changelog conventions
+- @projects/project-aion/archon-identity.md - **Archon identity and terminology**
+- @projects/project-aion/versioning-policy.md - Versioning and changelog conventions
+- @projects/project-aion/roadmap.md - **Full development roadmap**
 - @CHANGELOG.md - Release history
 - @VERSION - Current version
 
@@ -388,7 +389,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
-See @docs/project-aion/archon-identity.md for full details.
+See @projects/project-aion/archon-identity.md for full details.
 
 ---
 

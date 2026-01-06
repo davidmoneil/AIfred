@@ -17,9 +17,10 @@ This document defines the canonical locations for all Jarvis-managed workspaces,
 /Users/aircannon/Claude/
 ├── AIfred/                    # AIfred baseline (READ-ONLY mirror)
 ├── Jarvis/                    # Jarvis Archon workspace (this repo)
-│   ├── docs/
-│   │   └── project-aion/      # Project Aion documentation
-│   └── projects/              # Project summaries (not code)
+│   ├── .claude/
+│   │   └── context/           # BEHAVIOR: Patterns, standards, workflows
+│   └── projects/
+│       └── project-aion/      # EVOLUTION: Roadmap, plans, ideas
 ├── <ProjectName>/             # External project workspaces
 └── <OtherArchon>/             # Future Archons (Jeeves, Wallace, etc.)
 ```
@@ -59,18 +60,24 @@ When Jarvis works on external projects, it creates **summary documents** here (n
 - Code lives at: `/Users/aircannon/Claude/MyApp/`
 - Summary lives at: `/Users/aircannon/Claude/Jarvis/projects/myapp.md`
 
-### 3. Project Aion Documentation
+### 3. Project Aion Documentation (EVOLUTION)
 
-**Path**: `/Users/aircannon/Claude/Jarvis/docs/project-aion/`
+**Path**: `/Users/aircannon/Claude/Jarvis/projects/project-aion/`
 
-Project Aion is special—Jarvis is working on itself. Project Aion documentation lives within the Jarvis repo.
+Project Aion is special—Jarvis is working on itself. All evolution documentation lives here.
 
 | Document | Path |
 |----------|------|
-| Archon Identity | `docs/project-aion/archon-identity.md` |
-| Versioning Policy | `docs/project-aion/versioning-policy.md` |
-| Feature Roadmap | `projects/Project_Aion.md` |
-| Future: One-shot PRD | `docs/project-aion/one-shot-prd.md` |
+| Feature Roadmap | `projects/project-aion/roadmap.md` |
+| Archon Identity | `projects/project-aion/archon-identity.md` |
+| Versioning Policy | `projects/project-aion/versioning-policy.md` |
+| One-shot PRD | `projects/project-aion/one-shot-prd.md` |
+| PR Implementation Plans | `projects/project-aion/plans/` |
+| Brainstorms & Ideas | `projects/project-aion/ideas/` |
+
+**Design Principle**: BEHAVIOR vs EVOLUTION separation
+- **BEHAVIOR** (how Jarvis operates) → `.claude/context/`
+- **EVOLUTION** (how Jarvis improves) → `projects/project-aion/`
 
 ### 4. AIfred Baseline Mirror
 
@@ -98,7 +105,7 @@ The `paths-registry.yaml` file at Jarvis root is the source of truth for all pat
 projects_root: /Users/aircannon/Claude
 jarvis_root: /Users/aircannon/Claude/Jarvis
 jarvis_summaries: /Users/aircannon/Claude/Jarvis/projects
-jarvis_project_aion_docs: /Users/aircannon/Claude/Jarvis/docs/project-aion
+jarvis_project_aion: /Users/aircannon/Claude/Jarvis/projects/project-aion
 aifred_baseline: /Users/aircannon/Claude/AIfred  # READ-ONLY
 
 development:
@@ -124,8 +131,8 @@ development:
 | Document Type | Location |
 |---------------|----------|
 | Project context summary | `Jarvis/projects/<name>.md` |
-| Project Aion docs | `Jarvis/docs/project-aion/` |
-| Jarvis context/patterns | `Jarvis/.claude/context/` |
+| Project Aion (EVOLUTION) | `Jarvis/projects/project-aion/` |
+| Jarvis BEHAVIOR patterns | `Jarvis/.claude/context/` |
 | Project-specific docs | `<ProjectName>/docs/` |
 
 ### "Hub, Not Container" Principle
@@ -180,9 +187,9 @@ Action:
 ## Related Documents
 
 - @paths-registry.yaml — Path registry source of truth
-- @docs/project-aion/archon-identity.md — Project Aion identity
+- @projects/project-aion/archon-identity.md — Project Aion identity
 - @.claude/context/patterns/session-start-checklist.md — Session checklist including path context
 
 ---
 
-*Pattern: Workspace Path Policy — Established PR-1.E*
+*Pattern: Workspace Path Policy — Established PR-1.E, Updated PR-4c*

@@ -82,7 +82,7 @@ This pattern defines how to validate Jarvis setup at different stages and with d
 | Tier 2 (Standard) | On-demand | 5-10s | Full setup + tools |
 | Tier 3 (Deep) | Periodic | 30-60s | Smoke tests per tool |
 
-**Reference**: `.claude/context/ideas/setup-regression-testing.md`
+**Reference**: `projects/project-aion/ideas/setup-regression-testing.md`
 
 ---
 
@@ -204,7 +204,7 @@ If significant changes were made this session:
 - **Preflight checks**: `.claude/archive/setup-phases/00-preflight.md`
 - **Readiness command**: `.claude/commands/setup-readiness.md`
 - **Health check**: `.claude/commands/health-report.md`
-- **Regression testing brainstorm**: `.claude/context/ideas/setup-regression-testing.md`
+- **Regression testing brainstorm**: `projects/project-aion/ideas/setup-regression-testing.md`
 - **Session checklist**: `.claude/context/patterns/session-start-checklist.md`
 
 ---

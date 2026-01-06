@@ -129,7 +129,7 @@ Jarvis/
 ├── CHANGELOG.md            # Release history
 ├── AGENTS.md               # This file (OpenCode instructions)
 ├── opencode.json           # OpenCode configuration
-├── docs/project-aion/      # Project Aion documentation
+├── projects/project-aion/  # Project Aion evolution docs
 ├── .opencode/
 │   ├── agent/              # Custom agent definitions
 │   └── command/            # Custom slash commands
@@ -197,7 +197,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
-See `docs/project-aion/archon-identity.md` for full details.
+See `projects/project-aion/archon-identity.md` for full details.
 
 ---
 

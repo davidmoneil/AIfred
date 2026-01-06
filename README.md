@@ -116,7 +116,7 @@ Jarvis uses semantic versioning: `MAJOR.MINOR.PATCH`
 ./scripts/bump-version.sh major   # 1.0.0 -> 2.0.0
 ```
 
-See [docs/project-aion/versioning-policy.md](docs/project-aion/versioning-policy.md) for details.
+See [projects/project-aion/versioning-policy.md](projects/project-aion/versioning-policy.md) for details.
 
 ---
 

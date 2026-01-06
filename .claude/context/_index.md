@@ -114,30 +114,34 @@ learning/
 
 **Purpose**: Background knowledge that informs decisions.
 
-### Ideas (Brainstorms & Future Planning)
-```
-ideas/
-├── tool-conformity-pattern.md    # External tool behavior normalization
-└── setup-regression-testing.md   # Periodic setup validation
-```
-
-**Purpose**: Capture brainstorms, future ideas, and proposals that aren't ready for implementation. Ideas here may become patterns, PRs, or be rejected after discussion.
-
-**Active Ideas**:
-- 🧠 **Tool Conformity Pattern**: How to handle external tools that don't follow Jarvis conventions
-- 🧠 **Setup Regression Testing**: Periodic re-validation after tool additions
-
 ---
 
-## Project Aion Plans
+## Project Aion Documentation
 
-Implementation plans for Project Aion PRs are stored at:
+All Project Aion evolution documentation is now consolidated in `projects/project-aion/`:
+
 ```
-docs/project-aion/plans/
-└── pr-4-implementation-plan.md   # PR-4 master plan
+projects/project-aion/
+├── roadmap.md                    # Master development roadmap
+├── archon-identity.md            # Archon identity and terminology
+├── versioning-policy.md          # Version bumping rules
+├── one-shot-prd.md               # Benchmark specification
+├── pr2-validation.md             # Validation document
+├── ideas/                        # Brainstorms and future planning
+│   ├── tool-conformity-pattern.md
+│   ├── setup-regression-testing.md
+│   ├── testing-validation-cadence.md
+│   ├── project-structure-clarity.md
+│   └── venv-strategy.md
+└── plans/                        # PR implementation plans
+    └── pr-4-implementation-plan.md
 ```
 
-**Note**: These are moved from Claude Code's default `~/.claude/plans/` location to conform with workspace path policy.
+**Design Principle**:
+- **BEHAVIOR** (how Jarvis operates) → `.claude/context/` (patterns, standards, workflows)
+- **EVOLUTION** (how Jarvis improves) → `projects/project-aion/` (roadmap, plans, ideas)
+
+**Exception**: `current-priorities.md` stays in `.claude/context/projects/` as it's operational context.
 
 ---
 
@@ -200,12 +204,13 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
-**2026-01-05**: Ideas Directory & Plan File Conformity
-- ✅ Created `ideas/` directory for brainstorms and future planning
-- ✅ Added tool-conformity-pattern.md brainstorm (PR-9b candidate)
-- ✅ Added setup-regression-testing.md brainstorm (PR-10b candidate)
-- ✅ Moved PR-4 plan from `~/.claude/plans/` to `docs/project-aion/plans/`
-- ✅ Established convention for plan file storage
+**2026-01-05**: Project Structure Reorganization
+- ✅ Consolidated all Project Aion docs into `projects/project-aion/`
+- ✅ Moved `docs/project-aion/` contents to `projects/project-aion/`
+- ✅ Moved `Project_Aion.md` to `projects/project-aion/roadmap.md`
+- ✅ Moved ideas from `.claude/context/ideas/` to `projects/project-aion/ideas/`
+- ✅ Established BEHAVIOR vs EVOLUTION separation principle
+- ✅ Created testing-validation-cadence.md, project-structure-clarity.md, venv-strategy.md brainstorms
 
 **2026-01-05**: PR-3 Upstream Sync Workflow
 - ✅ Added `/sync-aifred-baseline` command for controlled baseline porting

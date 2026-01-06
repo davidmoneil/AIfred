@@ -65,10 +65,10 @@ Update `.claude/context/projects/current-priorities.md`:
 # 3. Update version references if needed:
 #    - README.md
 #    - .claude/CLAUDE.md (header + footer)
-#    - docs/project-aion/archon-identity.md
+#    - projects/project-aion/archon-identity.md
 ```
 
-**PR-to-Version Reference** (see `docs/project-aion/versioning-policy.md`):
+**PR-to-Version Reference** (see `projects/project-aion/versioning-policy.md`):
 
 | PR | Target Version |
 |----|----------------|

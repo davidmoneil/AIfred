@@ -152,7 +152,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ## Related Documents
 
 - @.claude/context/patterns/session-start-checklist.md — Session start with baseline check
-- @docs/project-aion/versioning-policy.md — Version bumping rules
+- @projects/project-aion/versioning-policy.md — Version bumping rules
 - @CHANGELOG.md — Release history
 
 ---

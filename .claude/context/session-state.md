@@ -44,14 +44,14 @@ Completed PR-4 milestone with readiness report system:
    - Preflight → Readiness → Health
    - Troubleshooting and integration guidance
 
-3. **Ideas Directory** (`.claude/context/ideas/`)
+3. **Ideas Directory** (`projects/project-aion/ideas/`)
    - Created brainstorm space for future planning
    - `tool-conformity-pattern.md` — Future PR-9b
    - `setup-regression-testing.md` — Future PR-10b
 
 4. **Plan File Conformity**
    - Moved `wild-mapping-rose.md` from `~/.claude/plans/`
-   - Renamed to `docs/project-aion/plans/pr-4-implementation-plan.md`
+   - Renamed to `projects/project-aion/plans/pr-4-implementation-plan.md`
    - Established convention for plan storage
 
 5. **Documentation Updates**
@@ -169,13 +169,18 @@ Implemented controlled porting workflow from AIfred baseline:
 - Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Begin **PR-5: Core Tooling Baseline** (v1.4.0 target)
+1. **Run thorough validation (Option C)** before PR-5
+   - Clone Jarvis to fresh directory
+   - Run `/setup` from Phase 0A
+   - Run `/setup-readiness`
+   - Document results
+2. Begin **PR-5: Core Tooling Baseline** (v1.4.0 target)
    - Install/enable default MCP servers
    - Create capability matrix
    - Perform overlap/conflict analysis
-2. Consider enabling Memory MCP for decision tracking
-3. Review brainstorm ideas for PR-9b (Tool Conformity) and PR-10b (Setup Regression)
-4. PR-4 plan archived at `docs/project-aion/plans/pr-4-implementation-plan.md`
+3. Consider enabling Memory MCP for decision tracking
+4. Brainstorms at `projects/project-aion/ideas/`
+5. PR-4 plan archived at `projects/project-aion/plans/pr-4-implementation-plan.md`
 
 ---
 

@@ -141,8 +141,8 @@ The AIfred baseline at `/Users/aircannon/Claude/AIfred` should NOT be registered
 ### Registering Jarvis Itself
 
 Jarvis (Project Aion) documentation lives at:
-- `docs/project-aion/` — Archon documentation
-- `projects/Project_Aion.md` — Development roadmap
+- `projects/project-aion/` — All evolution documentation (roadmap, plans, ideas)
+- `.claude/context/` — Behavioral patterns and standards
 
 This is already configured and doesn't need /register-project.
 
