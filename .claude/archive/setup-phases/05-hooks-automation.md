@@ -18,12 +18,14 @@ These hooks are essential for AIfred operation:
 
 ### Installation
 
-Copy hooks from `.claude/hooks/` templates to active hooks.
+Hooks are pre-installed in `.claude/hooks/`.
 
-Verify each hook:
+Validate all hooks:
 ```bash
-node -c .claude/hooks/audit-logger.js
+./scripts/validate-hooks.sh
 ```
+
+This validates JavaScript syntax for all hooks and shows clean pass/fail output.
 
 ---
 

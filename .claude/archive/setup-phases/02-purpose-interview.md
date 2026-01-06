@@ -40,22 +40,28 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 
 ### Question 4: Project Management
 
-"Do you work on code projects? Where do they live?"
+"Where should code projects live?"
 
-**Context from Discovery**: [Show detected projects_root from Phase 1, e.g., "I found ~/Code with 5 projects"]
+**Context from Discovery**: [Show discovered locations from Phase 1]
 
-**Explanation**: "AIfred is a hub that tracks your projects but doesn't contain them. Your code stays in your projects folder."
+**Explanation**: "Jarvis is a hub that tracks your projects but doesn't contain them. Your code stays in a dedicated projects folder."
 
 **Options**:
-- **Yes, use discovered location**: [~/Code or detected path]
-- **Yes, but at a different location**: [user specifies]
-- **No, I don't work on code projects**
+- **Use recommended location**: `~/Claude/Projects` (Recommended)
+  - Keeps projects in the Claude ecosystem alongside Jarvis
+  - Will be created if it doesn't exist
+- **Use existing location**: [~/Code or other detected path with projects]
+- **Specify custom location**: [user enters path]
+- **No code projects**: Skip project management
 
-**Follow-up** (if yes):
-"Would you like to register your existing projects now, or add them later with /register-project?"
+**Default Answer**: `~/Claude/Projects`
 
-- **Register now**: [Show list from discovery, let user select]
-- **Add later**: Just set up the location, I'll register projects as needed
+**Follow-up** (if existing projects detected elsewhere):
+"I found existing projects at [location]. Would you like to:"
+
+- **Keep them there**: Just track them, don't move anything
+- **Migrate later**: Register them from current location via /register-project
+- **Leave unregistered**: I'll manage them separately from Jarvis
 
 ### Question 5: Memory & Persistence
 

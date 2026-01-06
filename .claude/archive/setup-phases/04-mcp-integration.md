@@ -1,108 +1,150 @@
 # Phase 4: MCP Integration
 
-**Purpose**: Set up MCP servers based on user preferences from Phase 2.
+**Purpose**: Configure MCP (Model Context Protocol) servers based on user preferences.
 
 ---
 
-## Prerequisites
+## Overview
 
-- Docker must be installed (from Phase 1)
-- User opted for Memory MCP (from Phase 2)
+MCP servers extend Claude Code's capabilities by providing:
+- **Memory**: Persistent knowledge graph storage
+- **Fetch**: Web content retrieval
+- **Filesystem**: File access beyond workspace
+- **Custom tools**: Project-specific functionality
 
-If Docker not installed or Memory MCP declined, skip to Phase 5.
+**This phase is OPTIONAL.** Jarvis works without MCP servers, but some features like persistent memory between sessions require MCP.
 
 ---
 
-## MCP Gateway Deployment
-
-### 1. Create Docker Compose
-
-Create `docker/mcp-gateway/docker-compose.yml`:
-
-```yaml
-version: '3.8'
-
-services:
-  mcp-gateway:
-    image: docker/mcp-gateway:latest
-    container_name: mcp-gateway
-    restart: unless-stopped
-    ports:
-      - "8811:8080"
-    volumes:
-      - mcp-memory-data:/data/memory
-      - ./config:/config
-    environment:
-      - MCP_SERVERS=memory,fetch
-    networks:
-      - mcp-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  mcp-memory-data:
-    name: aifred-mcp-memory
-
-networks:
-  mcp-network:
-    name: aifred-mcp-network
-```
-
-### 2. Deploy MCP Gateway
+## Prerequisites Check
 
 ```bash
-cd docker/mcp-gateway
-docker-compose up -d
+# Validate Docker is available (CLI tools only - no Docker Desktop required)
+if command -v docker &> /dev/null && docker info &> /dev/null 2>&1; then
+  echo "✅ Docker available and running"
+  docker --version
+else
+  echo "⚠️ Docker not available - MCP servers using Docker will be skipped"
+fi
 ```
 
-### 3. Verify Deployment
+**If Docker is not available**: Skip to Phase 5. MCP can be configured later.
 
+---
+
+## MCP Configuration Options
+
+Present these options to the user:
+
+### Option 1: Skip MCP (Simplest)
+- No persistent memory between sessions
+- Jarvis still fully functional
+- Can add MCP later with `/setup-mcp`
+
+### Option 2: Docker Desktop MCP (Recommended if using Docker Desktop)
+- Built into Docker Desktop (Settings → Features → Beta → MCP)
+- Provides memory, fetch, and other MCP servers
+- Automatic management by Docker Desktop
+- **Note**: Requires Docker Desktop, not just Docker CLI
+
+### Option 3: Manual MCP Configuration
+- Configure MCP servers in `.mcp.json` or `~/.mcp.json`
+- Full control over which servers run
+- Requires more setup knowledge
+
+---
+
+## Option 1: Skip MCP
+
+If user chooses this option:
+
+1. Update user preferences:
+   ```yaml
+   enable_memory_mcp: false
+   mcp_configuration: "none"
+   ```
+
+2. Note in session state:
+   ```markdown
+   MCP: Not configured (can enable later with /setup-mcp)
+   ```
+
+3. Proceed to Phase 5
+
+---
+
+## Option 2: Docker Desktop MCP
+
+If user has Docker Desktop and wants MCP:
+
+### Check Docker Desktop Version
 ```bash
-# Check container running
-docker ps | grep mcp-gateway
-
-# Test health endpoint
-curl http://localhost:8811/health
+# Docker Desktop 4.40+ required for MCP
+docker version --format '{{.Server.Version}}'
 ```
 
-### 4. Configure Claude Code MCP
+### Enable MCP in Docker Desktop
+1. Open Docker Desktop
+2. Go to **Settings → Features → Beta**
+3. Enable **"Docker MCP"** (or "MCP Servers")
+4. Click **Apply & Restart**
 
-Update `.mcp.json` (in user home or project root):
+### After Enabling
+Docker Desktop MCP provides servers that appear in Claude Code automatically:
+- `mcp__docker-mcp__*` tools for container management
+- `mcp__memory__*` tools for persistent memory (if enabled)
+
+### Verify
+After enabling, test in Claude Code:
+```
+# Try calling an MCP tool - should show available tools
+Use mcp__docker-mcp__list_containers
+```
+
+**Note for setup**: Mark MCP as "pending Docker Desktop enablement" if the user needs to enable it separately.
+
+---
+
+## Option 3: Manual MCP Configuration
+
+For users who want specific MCP servers without Docker Desktop MCP:
+
+### Create .mcp.json
+
+Create `~/.mcp.json` (global) or `.mcp.json` (project-specific):
 
 ```json
 {
   "mcpServers": {
-    "mcp-gateway": {
+    "memory": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-gateway-client"],
-      "env": {
-        "MCP_GATEWAY_URL": "http://localhost:8811/sse"
-      }
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {}
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-fetch"],
+      "env": {}
     }
   }
 }
 ```
 
-### 5. Initialize Memory
+**Available MCP Servers** (npm packages):
+- `@modelcontextprotocol/server-memory` - Knowledge graph memory
+- `@anthropic/mcp-fetch` - Web fetching
+- `@modelcontextprotocol/server-filesystem` - File access
+- `@modelcontextprotocol/server-brave-search` - Brave search (needs API key)
 
-Seed initial memory entities:
+### Restart Claude Code
 
-```
-Entity: "AIfred Installation"
-Type: "Event"
-Observations:
-  - "Installed on [date]"
-  - "Host: [hostname]"
-  - "Automation level: [level]"
-  - "Focus areas: [list]"
-```
+After creating/updating `.mcp.json`, restart Claude Code to load the MCP servers.
 
 ---
 
-## Memory MCP Guidelines
+## Memory Usage Guidelines
+
+If Memory MCP is enabled (any option), create guidelines:
 
 Create `.claude/context/integrations/memory-usage.md`:
 
@@ -110,39 +152,71 @@ Create `.claude/context/integrations/memory-usage.md`:
 # Memory MCP Usage
 
 ## What to Store
-- Decisions and rationale
-- System relationships (A depends on B)
-- Temporal events (installs, incidents)
-- Lessons learned
+- **Decisions**: Why you chose approach A over B
+- **Relationships**: Service X depends on Service Y
+- **Events**: When things were installed, migrated, or broke
+- **Lessons**: Solutions that worked, patterns to follow
 
 ## What NOT to Store
-- Detailed documentation (use context files)
-- Secrets or credentials
+- Detailed documentation (use context files instead)
+- Secrets or credentials (NEVER)
 - Temporary states
 - Duplicates of file content
+- Obvious facts
 
 ## Entity Types
-- Event: Installations, migrations, incidents
-- Decision: Choices and rationale
-- Lesson: What was learned from experience
-- Relationship: How systems connect
+- **Event**: Installations, migrations, incidents
+- **Decision**: Choices and rationale
+- **Lesson**: What was learned from experience
+- **Relationship**: How systems connect
 
 ## Pruning
-- Entities inactive 90+ days are archived
+- Entities inactive 90+ days should be reviewed
 - Access tracked in metadata
-- Weekly cron job manages cleanup
+- Clean up stale entities periodically
 ```
 
 ---
 
 ## Validation
 
-- [ ] MCP Gateway container running
-- [ ] Health check passing
-- [ ] Claude Code can connect (test with `mcp__mcp-gateway__read_graph`)
-- [ ] Initial memory entities seeded
-- [ ] Memory usage guidelines created
+Before proceeding:
+
+- [ ] User selected MCP option (skip/docker-desktop/manual)
+- [ ] If Option 2: Docker Desktop MCP status documented (enabled/pending)
+- [ ] If Option 3: .mcp.json created and verified
+- [ ] If any MCP enabled: memory-usage.md created
+- [ ] paths-registry.yaml updated with MCP configuration
+
+### Quick Verification
+
+```bash
+# Check if .mcp.json exists
+[ -f ~/.mcp.json ] && echo "✅ Global .mcp.json exists" || echo "ℹ️ No global .mcp.json"
+[ -f .mcp.json ] && echo "✅ Project .mcp.json exists" || echo "ℹ️ No project .mcp.json"
+```
+
+---
+
+## Troubleshooting
+
+### MCP servers not appearing in Claude Code
+1. Verify `.mcp.json` syntax: `cat ~/.mcp.json | jq .`
+2. Restart Claude Code completely
+3. Check Claude Code logs for MCP errors
+
+### Docker Desktop MCP not working
+1. Verify Docker Desktop version 4.40+
+2. Check Settings → Features → Beta → MCP is enabled
+3. Restart Docker Desktop
+4. Restart Claude Code
+
+### Memory not persisting
+1. Verify memory server is running
+2. Check that memory tools (`mcp__memory__*`) are available
+3. Test with `mcp__memory__read_graph`
 
 ---
 
 *Phase 4 of 7 - MCP Integration*
+*Docker is optional. MCP is optional. Both can be added later.*

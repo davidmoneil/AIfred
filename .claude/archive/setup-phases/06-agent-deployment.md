@@ -1,18 +1,57 @@
 # Phase 6: Agent Deployment
 
-**Purpose**: Deploy starter agents based on user focus areas.
+**Purpose**: Deploy starter agents based on user preferences.
 
 ---
 
-## Agent Selection
+## Agent Selection Interview
 
-Based on Phase 2 interview:
+Present available agents to the user and let them choose which to install.
 
-| Focus Area | Agents to Deploy |
-|------------|------------------|
-| Home Lab / Infrastructure | docker-deployer, service-troubleshooter |
-| Development | (code agents if requested) |
-| All | docker-deployer, service-troubleshooter, deep-research |
+### Core Agents (Recommended)
+
+| Agent | Description | Default |
+|-------|-------------|---------|
+| `docker-deployer` | Deploy and configure Docker services safely | ✅ Install |
+| `service-troubleshooter` | Diagnose infrastructure issues with learned patterns | ✅ Install |
+| `deep-research` | In-depth investigation with web research and citations | ✅ Install |
+
+### Interview Question
+
+"Which agents would you like to install?"
+
+**Options**:
+- **Install all core agents** (Recommended) - All 3 agents above
+- **Select specific agents** - Choose from the list
+- **Skip agent deployment** - Can install later with `/install-agent`
+
+**If "Select specific agents"**:
+Present checkboxes for each agent with descriptions:
+- [ ] docker-deployer - For Docker service deployment
+- [ ] service-troubleshooter - For diagnosing infrastructure issues
+- [ ] deep-research - For in-depth web research
+
+**Default**: Install all core agents
+
+### Follow-up
+
+"Additional agents can be installed anytime using `/install-agent <name>`.
+Would you like to see available optional agents?"
+
+If yes, mention:
+- Custom agents can be created from `.claude/agents/_template-agent.md`
+- Agent marketplace/registry planned for future
+
+---
+
+## Deployment Process
+
+For each selected agent:
+
+1. Verify agent definition exists in `.claude/agents/`
+2. Initialize agent memory directory
+3. Create results directory
+4. Log deployment
 
 ---
 

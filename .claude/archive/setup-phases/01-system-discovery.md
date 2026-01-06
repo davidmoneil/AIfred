@@ -117,15 +117,28 @@ ss -tlnp 2>/dev/null | grep -E ":80|:443|:8080|:3000|:5000" | head -10
 ### 7. Development Environment
 
 ```bash
-# Common code directory locations
+# Check for the RECOMMENDED projects location first
+RECOMMENDED_ROOT="$HOME/Claude/Projects"
+if [ -d "$RECOMMENDED_ROOT" ]; then
+  echo "✅ Recommended: $RECOMMENDED_ROOT (exists)"
+  ls -1 "$RECOMMENDED_ROOT" 2>/dev/null | head -10
+else
+  echo "📁 Recommended: $RECOMMENDED_ROOT (will create)"
+fi
+
+# Also check other common locations for existing projects
+echo ""
+echo "Other locations with projects:"
 for dir in ~/Code ~/code ~/Projects ~/projects ~/src ~/dev ~/Development; do
-  if [ -d "$dir" ]; then
-    echo "Found: $dir"
-    ls -1 "$dir" 2>/dev/null | head -10
+  if [ -d "$dir" ] && [ "$dir" != "$RECOMMENDED_ROOT" ]; then
+    count=$(ls -1 "$dir" 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Found: $dir ($count items)"
   fi
 done
 
 # Look for existing git repositories
+echo ""
+echo "Git repositories found:"
 find ~/ -maxdepth 3 -name ".git" -type d 2>/dev/null | head -20
 
 # Check for common development tools
@@ -133,12 +146,16 @@ which git node npm python3 docker-compose 2>/dev/null
 ```
 
 **Capture**:
-- Projects root directory (e.g., ~/Code)
+- **Recommended**: `~/Claude/Projects` (default for new setups)
+- Other discovered projects directories
 - Existing projects/repositories
 - Development tools installed
 
-**KEY CONCEPT**: AIfred is a "hub" that tracks projects but doesn't contain them.
-The user's code should stay in their projects directory (e.g., ~/Code), not inside AIfred.
+**DEFAULT**: `~/Claude/Projects` — This keeps code projects in the Claude ecosystem
+alongside Jarvis and other tools, but in their own dedicated subdirectory.
+
+**KEY CONCEPT**: Jarvis is a "hub" that tracks projects but doesn't contain them.
+The user's code should stay in their projects directory, not inside Jarvis.
 
 ---
 
@@ -173,7 +190,8 @@ services:
   key_ports: [list]
 
 development:
-  projects_root: [detected path, e.g., ~/Code]
+  projects_root: "~/Claude/Projects"  # Default, or user-specified
+  other_project_dirs: [list of other detected locations]
   existing_projects: [list of directory names]
   tools:
     git: [yes/no]
