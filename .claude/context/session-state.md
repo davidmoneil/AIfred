@@ -10,7 +10,7 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: Setup UX improvements from v1.3.0 validation complete
+**Current Task**: AIfred baseline sync complete (v1.4.0 released)
 
 **Next Step**: Begin PR-5 (Core Tooling Baseline)
 
@@ -30,28 +30,44 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-06)
 
-**Setup UX Improvements (Post-v1.3.0 Validation)**
+**Release v1.4.0 — Full AIfred Baseline Sync (af66364)**
 
-Ran Option C thorough validation in `/tmp/jarvis-validation-test/` — setup passed (17/17 checks, FULLY READY). Identified and fixed several UX issues:
+Comprehensive sync bringing Jarvis into full compliance with AIfred baseline:
 
-1. **Projects root default** — Updated to `~/Claude/Projects` as recommended default
-2. **Readiness script** — Moved to `scripts/setup-readiness.sh` (cleaner user output)
-3. **Hook validation script** — Created `scripts/validate-hooks.sh` (no confusing errors)
-4. **Phase 4 MCP refactor** — Made MCP optional, clarified Docker Desktop vs CLI
-5. **Phase 6 agent interview** — Added user choice for agent selection
-6. **Removed broken docker-compose** — mcp-gateway is stdio, not daemon
+1. **Skills System** — New abstraction for multi-step workflow guidance
+   - `.claude/skills/_index.md` — Directory index
+   - `.claude/skills/session-management/SKILL.md` — Session lifecycle skill
+   - Example walkthrough for typical sessions
 
-**Project Structure Reorganization**
+2. **Lifecycle Hooks** — 7 new hooks (11→18 total)
+   - `session-start.js` — Auto-load context on startup
+   - `session-stop.js` — Desktop notification on exit
+   - `self-correction-capture.js` — Capture corrections as lessons
+   - `subagent-stop.js` — Agent completion handling
+   - `pre-compact.js` — Preserve context before compaction
+   - `worktree-manager.js` — Git worktree tracking
+   - `doc-sync-trigger.js` — Track code changes, suggest sync
 
-Consolidated Project Aion documentation:
-- Moved `docs/project-aion/` → `projects/project-aion/`
-- Moved `Project_Aion.md` → `projects/project-aion/roadmap.md`
-- Moved `.claude/context/ideas/` → `projects/project-aion/ideas/`
-- Established BEHAVIOR (`.claude/context/`) vs EVOLUTION (`projects/project-aion/`) separation
+3. **Documentation Sync Agent**
+   - `memory-bank-synchronizer` — Syncs docs with code changes
+   - Preserves user content (todos, decisions, notes)
+
+4. **Documentation Updates**
+   - CLAUDE.md: Added Skills System, Documentation Sync sections
+   - hooks/README.md: Full reorganization with lifecycle hooks
+   - CHANGELOG.md: v1.4.0 release notes
+   - port-log.md: Documented full sync
 
 **Commits This Session**:
-- `25e7214` Restructure: Consolidate Project Aion into projects/project-aion/
+- `9379c52` Release v1.4.0 — Skills System & Lifecycle Hooks
+
+---
+
+**Earlier (2026-01-06): Setup UX Improvements**
+
+- `76d87f1` Release v1.3.1 — Validation & UX Improvements
 - `349aa9e` Setup UX improvements from v1.3.0 validation
+- `25e7214` Restructure: Consolidate Project Aion into projects/project-aion/
 
 ---
 
@@ -196,15 +212,13 @@ Implemented controlled porting workflow from AIfred baseline:
 - Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Begin **PR-5: Core Tooling Baseline** (v1.4.0 target)
+1. Begin **PR-5: Core Tooling Baseline** (v1.5.0 target)
    - Install/enable default MCP servers
    - Create capability matrix
    - Perform overlap/conflict analysis
 2. Consider enabling Memory MCP for decision tracking
-3. Review brainstorms at `projects/project-aion/ideas/`
-   - `setup-ux-improvements.md` — Additional fixes captured
-   - `tool-conformity-pattern.md` — Future PR-9b
-   - `setup-regression-testing.md` — Future PR-10b
+3. Test new lifecycle hooks (session-start, session-stop, etc.)
+4. Review brainstorms at `projects/project-aion/ideas/`
 
 ---
 
@@ -217,4 +231,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-06 - Setup UX improvements complete, ready for PR-5*
+*Updated: 2026-01-06 - v1.4.0 released (Skills System, lifecycle hooks), ready for PR-5*
