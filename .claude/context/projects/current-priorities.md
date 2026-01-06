@@ -8,7 +8,7 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-*No active PRs — PR-4 complete, ready for PR-5*
+*No active PRs — PR-5 complete, ready for PR-6*
 
 ---
 
@@ -41,17 +41,18 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Complete PR-4 setup preflight + guardrails ✅ Released as v1.3.0
 - [x] Option C thorough validation ✅ FULLY READY 2026-01-06
 - [x] Setup UX improvements ✅ 5 fixes committed 2026-01-06
+- [x] PR-5: Core Tooling Baseline ✅ Released as v1.5.0
+- [x] Stage 1 MCPs installed (6/7 connected, GitHub needs OAuth)
 - [ ] Enable Memory MCP in Docker Desktop
-- [ ] Begin PR-5: Core Tooling Baseline
 
 ---
 
 ## This Month
 
-### PR-5: Core Tooling Baseline
-- [ ] Install/enable default MCP servers
-- [ ] Create capability matrix
-- [ ] Perform overlap/conflict analysis
+### PR-6: Plugins Expansion (Next)
+- [ ] Install and evaluate official Claude Code plugins
+- [ ] Adopt/adapt/reject decisions for each
+- [ ] Overlap/conflict analysis vs existing agents/hooks
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns
@@ -81,6 +82,15 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-06
+- [x] **PR-5: Core Tooling Baseline** (Complete — v1.5.0)
+  - Created capability matrix (task → tool selection)
+  - Created overlap analysis (9 categories, conflict resolution)
+  - Created MCP installation guide (7 Stage 1 servers)
+  - Created `/tooling-health` command
+  - Installed Stage 1 MCPs (6/7 connected)
+  - Research: 7 MCPs, 13 plugins, 16 skills, 5 subagents documented
+
+- [x] **AIfred Baseline Sync** (v1.4.0) — Skills system, lifecycle hooks
 - [x] **Option C Thorough Validation** — Setup passed (17/17 FULLY READY)
 - [x] **Setup UX Improvements** — 5 fixes from validation feedback
   - Projects root default → `~/Claude/Projects`

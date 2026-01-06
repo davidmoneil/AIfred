@@ -101,10 +101,18 @@ designs/
 ### Integrations (API & Integration Guides)
 ```
 integrations/
-└── memory-usage.md       # Memory MCP guidelines
+├── memory-usage.md       # Memory MCP guidelines
+├── capability-matrix.md  # Task → tool selection matrix (PR-5)
+├── overlap-analysis.md   # Tool overlap & conflict resolution (PR-5)
+└── mcp-installation.md   # Stage 1 MCP installation guide (PR-5)
 ```
 
-**Purpose**: Documentation for connecting systems.
+**Purpose**: Documentation for connecting systems and tool selection.
+
+**PR-5 Core Tooling Baseline**:
+- ✅ **Capability Matrix**: Task type → preferred tool → fallback
+- ✅ **Overlap Analysis**: Conflict resolution between tools
+- ✅ **MCP Installation**: Stage 1 server installation procedures
 
 ### Learning (Background Knowledge)
 ```
@@ -204,6 +212,13 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
+**2026-01-06**: PR-5 Core Tooling Baseline
+- ✅ Created capability matrix document (task → tool selection)
+- ✅ Created overlap analysis document (conflict resolution)
+- ✅ Created MCP installation guide (Stage 1 servers)
+- ✅ Created `/tooling-health` command for tooling validation
+- ✅ Updated integrations directory structure
+
 **2026-01-05**: Project Structure Reorganization
 - ✅ Consolidated all Project Aion docs into `projects/project-aion/`
 - ✅ Moved `docs/project-aion/` contents to `projects/project-aion/`
@@ -227,4 +242,4 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
-*Last Updated: 2026-01-05*
+*Last Updated: 2026-01-06*

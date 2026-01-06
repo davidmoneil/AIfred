@@ -1,0 +1,233 @@
+# Core Tooling Capability Matrix
+
+**Created**: 2026-01-06
+**PR Reference**: PR-5 (Core Tooling Baseline)
+**Status**: Active
+
+---
+
+## Purpose
+
+This document maps task types to preferred tools, providing clear selection guidance for when to use which mechanism: MCP servers, Claude Code plugins, skills, built-in subagents, or bash commands.
+
+---
+
+## Task Type → Tool Selection Matrix
+
+### File Operations
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Read file | `Read` (built-in) | `Bash(cat)` | Built-in is faster, respects permissions |
+| Write file | `Write` (built-in) | `Bash(echo >)` | Built-in tracks changes |
+| Edit file | `Edit` (built-in) | `Bash(sed)` | Built-in has context awareness |
+| Search files by name | `Glob` (built-in) | `Bash(find)` | Glob is optimized |
+| Search file contents | `Grep` (built-in) | `Bash(rg/grep)` | Grep is integrated |
+| List directory | `Bash(ls)` | Filesystem MCP | Built-in sufficient |
+| External file access | Filesystem MCP | N/A | When outside workspace |
+
+### Git Operations
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Git status/log/diff | `Bash(git)` | Git MCP | Bash is simpler |
+| Commit (simple) | `Bash(git commit)` | Git MCP | Bash for single commits |
+| Commit (multi-file) | `/commit` plugin | Git MCP | Plugin handles staging |
+| PR creation | GitHub MCP / `gh` | `Bash(gh)` | MCP for complex workflows |
+| Branch management | `Bash(git)` | Git MCP | Bash is sufficient |
+
+### Web/Research Operations
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Fetch web page | `WebFetch` (built-in) | Fetch MCP | Built-in converts to markdown |
+| Web search | `WebSearch` (built-in) | DuckDuckGo MCP | Built-in is integrated |
+| Deep research | `deep-research` agent | WebSearch + WebFetch | Agent for multi-source synthesis |
+| API calls | `Bash(curl)` | Fetch MCP | Bash for full control |
+
+### GitHub Operations
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| View issues/PRs | `Bash(gh)` | GitHub MCP | CLI is quick |
+| Create PR | `Bash(gh pr create)` | GitHub MCP | CLI for standard PRs |
+| Complex automation | GitHub MCP | `Bash(gh)` | MCP for multi-step workflows |
+| Code security scan | GitHub MCP | N/A | MCP-only feature |
+
+### Code Exploration & Understanding
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Quick file search | `Glob` + `Grep` | Explore subagent | Direct tools for targeted search |
+| Codebase exploration | `Explore` subagent | `Task` with general-purpose | Subagent preserves context |
+| Architecture analysis | `Plan` subagent | Explore + Read | Plan for design decisions |
+| Feature tracing | `code-explorer` agent | Explore subagent | Plugin agent for depth |
+
+### Development Workflows
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Feature development | `feature-dev` plugin | Manual phases | Plugin provides structure |
+| Code review | `code-review` plugin | Manual review | Plugin runs parallel agents |
+| PR review | `pr-review-toolkit` | `code-review` | Toolkit for comprehensive review |
+| Plugin creation | `plugin-dev` plugin | Manual | Plugin scaffolds new plugins |
+
+### Document Generation
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Word documents | `docx` skill | Manual + python-docx | Skill handles formatting |
+| PDF generation | `pdf` skill | Manual + reportlab | Skill has templates |
+| Spreadsheets | `xlsx` skill | Manual + openpyxl | Skill handles formulas |
+| Presentations | `pptx` skill | Manual + python-pptx | Skill handles styling |
+
+### Infrastructure & Docker
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Docker operations | `Bash(docker)` | Docker MCP | Bash for direct control |
+| Service discovery | `docker-deployer` agent | Manual | Agent for guided deployment |
+| Troubleshooting | `service-troubleshooter` | Manual diagnosis | Agent for systematic approach |
+
+### Time & Memory
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Get current time | Time MCP | `Bash(date)` | MCP for timezone handling |
+| Store decision | Memory MCP | Context files | MCP for relationships |
+| Cross-session recall | Memory MCP | Context files | MCP is persistent |
+
+---
+
+## Tool Category Reference
+
+### Built-in Tools (Always Available)
+
+| Tool | Purpose | Token Cost |
+|------|---------|------------|
+| `Read` | Read files | ~0 (results only) |
+| `Write` | Write files | ~0 (results only) |
+| `Edit` | Edit files | ~0 (results only) |
+| `Glob` | File pattern search | ~0 |
+| `Grep` | Content search | ~0 |
+| `Bash` | Shell commands | ~0 |
+| `WebFetch` | Fetch web content | ~0 |
+| `WebSearch` | Search the web | ~0 |
+| `Task` | Spawn subagents | ~0 (subagent has own context) |
+| `TodoWrite` | Task tracking | ~0 |
+
+### Built-in Subagents
+
+| Subagent | Purpose | When to Use |
+|----------|---------|-------------|
+| `Explore` | Codebase exploration | Open-ended search, architecture understanding |
+| `Plan` | Implementation planning | Design decisions, multi-file changes |
+| `claude-code-guide` | Documentation lookup | Claude Code/SDK questions |
+| `general-purpose` | Full capability | Complex multi-step tasks |
+
+### MCP Servers (Stage 1 - Core)
+
+| Server | Purpose | Token Cost | Loading Strategy |
+|--------|---------|------------|------------------|
+| Memory | Knowledge graph | ~8-15K | Always-On |
+| Filesystem | File operations | ~8K | On-Demand |
+| Fetch | Web content | ~5K | On-Demand |
+| Time | Timezone handling | ~3K | On-Demand |
+| Git | Git operations | ~6K | On-Demand |
+| GitHub | GitHub platform | ~15K | On-Demand |
+| Sequential Thinking | Problem decomposition | ~5K | On-Demand |
+
+### Claude Code Plugins (Recommended)
+
+| Plugin | Purpose | When to Use |
+|--------|---------|-------------|
+| `commit-commands` | Git workflow | `/commit`, `/commit-push-pr` |
+| `feature-dev` | Feature development | Structured feature implementation |
+| `code-review` | PR review | Automated code review |
+| `hookify` | Custom hooks | Preventing unwanted behaviors |
+| `security-guidance` | Security checks | Security-sensitive code |
+
+### Skills (Document-focused)
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `docx` | Word documents | Creating/editing .docx files |
+| `pdf` | PDF documents | Generating PDFs |
+| `xlsx` | Spreadsheets | Excel file operations |
+| `pptx` | Presentations | PowerPoint creation |
+
+---
+
+## Selection Decision Tree
+
+```
+Need to accomplish a task?
+│
+├── Is it a file operation?
+│   ├── Inside workspace → Use built-in (Read/Write/Edit/Glob/Grep)
+│   └── Outside workspace → Use Filesystem MCP
+│
+├── Is it a git operation?
+│   ├── Simple (status/log/diff) → Use Bash(git)
+│   ├── Commit workflow → Use commit-commands plugin
+│   └── GitHub automation → Use gh CLI or GitHub MCP
+│
+├── Is it research/exploration?
+│   ├── Targeted search → Use Glob + Grep directly
+│   ├── Open-ended exploration → Use Explore subagent
+│   └── Web research → Use WebSearch/WebFetch or deep-research agent
+│
+├── Is it document generation?
+│   └── Office formats → Use appropriate skill (docx/pdf/xlsx/pptx)
+│
+├── Is it infrastructure?
+│   ├── Docker commands → Use Bash(docker)
+│   └── Complex deployment → Use docker-deployer agent
+│
+└── Is it a complex workflow?
+    ├── Feature development → Use feature-dev plugin
+    ├── Code review → Use code-review plugin
+    └── Multi-step automation → Use general-purpose subagent
+```
+
+---
+
+## Loading Strategy Summary
+
+### Always-On (Load at session start)
+
+- Built-in tools (Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch)
+- Built-in subagents (Explore, Plan)
+- Memory MCP (when enabled)
+
+### On-Demand (Enable per-session)
+
+- Filesystem MCP
+- Fetch MCP
+- Time MCP
+- Git MCP
+- GitHub MCP
+- Sequential Thinking MCP
+
+### Isolated (Separate process)
+
+- Playwright MCP (for browser automation)
+- Heavy tools with >15K token cost
+
+---
+
+## Overlap Analysis Reference
+
+See @.claude/context/integrations/overlap-analysis.md for detailed conflict resolution.
+
+---
+
+## Related Documentation
+
+- @.claude/context/patterns/mcp-loading-strategy.md - MCP loading strategies
+- @.claude/context/patterns/agent-selection-pattern.md - Agent vs subagent selection
+- @.claude/context/integrations/overlap-analysis.md - Overlap/conflict resolution
+
+---
+
+*PR-5 Core Tooling Baseline - Capability Matrix v1.0*

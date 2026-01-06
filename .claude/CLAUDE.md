@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.4.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
+**Version**: 1.5.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
 
 You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant for home lab automation, knowledge management, and system integration.
 
@@ -41,6 +41,11 @@ You are working in **Jarvis**, the master Archon of Project Aion — a highly au
 - @.claude/context/patterns/session-start-checklist.md - **Session start checklist** (includes baseline update)
 - @.claude/context/patterns/workspace-path-policy.md - **Workspace path policy** (where projects/docs go)
 - @.claude/context/patterns/branching-strategy.md - **Branching strategy** (Project_Aion branch)
+
+### Tooling (PR-5)
+- @.claude/context/integrations/capability-matrix.md - **Task → tool selection matrix**
+- @.claude/context/integrations/overlap-analysis.md - Tool overlap & conflict resolution
+- @.claude/context/integrations/mcp-installation.md - Stage 1 MCP installation guide
 
 ---
 
@@ -260,6 +265,7 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 | `/design-review` | PARC pattern design review |
 | `/discover <target>` | Discover and document services |
 | `/health-check` | Verify system health |
+| `/tooling-health` | Validate Claude Code tooling (MCPs, plugins, skills) (PR-5) |
 | `/sync-aifred-baseline` | Analyze AIfred baseline changes for porting |
 
 ---
@@ -448,7 +454,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.4.0 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.5.0 |
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
@@ -456,6 +462,6 @@ See @projects/project-aion/archon-identity.md for full details.
 
 ---
 
-*Jarvis v1.4.0 — Project Aion Master Archon*
+*Jarvis v1.5.0 — Project Aion Master Archon*
 *Derived from AIfred baseline commit `af66364` (2026-01-06)*
-*Updated: 2026-01-06 - Added Skills System, lifecycle hooks, and doc-sync from AIfred baseline*
+*Updated: 2026-01-06 - PR-5 Core Tooling Baseline: capability matrix, overlap analysis, MCP installation guide*

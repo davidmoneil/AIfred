@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: AIfred baseline sync complete (v1.4.0 released)
+**Current Task**: PR-5 Complete — Core Tooling Baseline (v1.5.0 released)
 
-**Next Step**: Begin PR-5 (Core Tooling Baseline)
+**Next Step**: Test MCPs after restart, then begin PR-6 (Plugins Expansion)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -30,7 +30,49 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-06)
 
-**Release v1.4.0 — Full AIfred Baseline Sync (af66364)**
+**PR-5: Core Tooling Baseline — Documentation Complete (v1.5.0)**
+
+Established minimal, reliable default toolbox with comprehensive documentation:
+
+1. **Capability Matrix** (`.claude/context/integrations/capability-matrix.md`)
+   - Task → tool selection matrix
+   - File operations, git, web/research, GitHub, code exploration
+   - Development workflows, document generation, infrastructure
+   - Decision tree for tool selection
+   - Loading strategy summary
+
+2. **Overlap Analysis** (`.claude/context/integrations/overlap-analysis.md`)
+   - 9 overlap categories identified with resolution rules
+   - Selection priority for each category
+   - Hard rules and soft rules
+   - Monitoring guidelines
+
+3. **MCP Installation Guide** (`.claude/context/integrations/mcp-installation.md`)
+   - 7 Stage 1 servers documented
+   - Installation commands, validation, token costs
+   - Bulk installation script
+   - Prerequisites check
+
+4. **Tooling Health Command** (`.claude/commands/tooling-health.md`)
+   - `/tooling-health` command created
+   - Validates MCPs, plugins, skills, built-in tools
+   - Reports Stage 1 baseline coverage
+
+5. **Research Findings**
+   - 7 Core MCP Servers (modelcontextprotocol/servers)
+   - 13 Official Claude Code Plugins
+   - 16 Official Skills
+   - 5 Built-in Subagents
+
+6. **Documentation Updates**
+   - CLAUDE.md: Added Tooling section in Quick Links
+   - Context index: Added integrations documentation
+   - CHANGELOG.md: v1.5.0 release notes
+   - VERSION: Bumped to 1.5.0
+
+---
+
+**Earlier: Release v1.4.0 — Full AIfred Baseline Sync (af66364)**
 
 Comprehensive sync bringing Jarvis into full compliance with AIfred baseline:
 
@@ -209,16 +251,18 @@ Implemented controlled porting workflow from AIfred baseline:
 - Enable Memory MCP in Docker Desktop (Settings → Features → Beta)
 - ~~**Validate `/sync-aifred-baseline`**~~ ✅ Complete — workflow verified
 - **(Optional)** Clean up test file from AIfred baseline
-- Begin PR-4 per Project Aion roadmap
+- ~~Begin PR-4 per Project Aion roadmap~~ ✅ Complete (v1.3.0)
+- ~~Begin PR-5 Core Tooling Baseline~~ ✅ Documentation complete (v1.5.0)
 
 ### Next Session Pickup
-1. Begin **PR-5: Core Tooling Baseline** (v1.5.0 target)
-   - Install/enable default MCP servers
-   - Create capability matrix
-   - Perform overlap/conflict analysis
-2. Consider enabling Memory MCP for decision tracking
-3. Test new lifecycle hooks (session-start, session-stop, etc.)
-4. Review brainstorms at `projects/project-aion/ideas/`
+1. **Install Stage 1 MCPs** (optional, per `.claude/context/integrations/mcp-installation.md`)
+   - Memory, Filesystem, Fetch, Time, Git, Sequential Thinking, GitHub
+2. Begin **PR-6: Plugins Expansion** (v1.6.0 target)
+   - Evaluate official Claude Code plugins
+   - Adopt/adapt/reject decisions
+3. Consider enabling Memory MCP for decision tracking
+4. Run `/tooling-health` to validate current state
+5. Review brainstorms at `projects/project-aion/ideas/`
 
 ---
 
@@ -231,4 +275,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-06 - v1.4.0 released (Skills System, lifecycle hooks), ready for PR-5*
+*Updated: 2026-01-06 - PR-5 Core Tooling Baseline documentation complete (v1.5.0)*

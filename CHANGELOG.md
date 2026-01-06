@@ -13,6 +13,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.0] - 2026-01-06
+
+**PR-5: Core Tooling Baseline** — Establish minimal, reliable default toolbox
+
+### Added
+
+#### Capability Matrix
+- **`.claude/context/integrations/capability-matrix.md`** — Task → tool selection matrix
+  - File operations, git operations, web/research, GitHub, code exploration
+  - Development workflows, document generation, infrastructure
+  - Decision tree for tool selection
+  - Loading strategy summary (Always-On vs On-Demand)
+
+#### Overlap Analysis
+- **`.claude/context/integrations/overlap-analysis.md`** — Tool overlap & conflict resolution
+  - Identified 9 overlap categories with resolution rules
+  - Selection priority for each category
+  - Hard rules and soft rules for conflict prevention
+  - Monitoring and adjustment guidelines
+
+#### MCP Installation Guide
+- **`.claude/context/integrations/mcp-installation.md`** — Stage 1 MCP installation
+  - 7 Stage 1 servers: Memory, Filesystem, Fetch, Time, Git, Sequential Thinking, GitHub
+  - Installation commands, validation procedures, token costs
+  - Bulk installation script
+  - Prerequisites check
+
+#### Tooling Health Command
+- **`.claude/commands/tooling-health.md`** — `/tooling-health` command
+  - Validates MCP servers, plugins, skills, built-in tools, subagents
+  - Reports Stage 1 baseline coverage
+  - Provides installation recommendations
+
+### Updated
+- **CLAUDE.md** — Added Tooling quick links section, `/tooling-health` command
+- **`.claude/context/_index.md`** — Added integrations documentation
+
+### Research Findings
+
+Official Anthropic tooling inventory:
+- **7 Core MCP Servers** (modelcontextprotocol/servers)
+- **13 Official Claude Code Plugins** (anthropics/claude-code/plugins)
+- **16 Official Skills** (anthropics/skills)
+- **5 Built-in Subagents** (Explore, Plan, claude-code-guide, general-purpose, statusline-setup)
+
+---
+
 ## [1.4.0] - 2026-01-06
 
 **Skills System & Lifecycle Hooks** — Full compliance with AIfred baseline af66364
