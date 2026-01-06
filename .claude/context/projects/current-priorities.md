@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-05
+**Last Updated**: 2026-01-06
 
 ---
 
@@ -39,7 +39,10 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Complete PR-3 upstream sync workflow ✅ Released as v1.2.0
 - [x] Validate `/sync-aifred-baseline` ✅ Verified 2026-01-05
 - [x] Complete PR-4 setup preflight + guardrails ✅ Released as v1.3.0
+- [x] Option C thorough validation ✅ FULLY READY 2026-01-06
+- [x] Setup UX improvements ✅ 5 fixes committed 2026-01-06
 - [ ] Enable Memory MCP in Docker Desktop
+- [ ] Begin PR-5: Core Tooling Baseline
 
 ---
 
@@ -76,6 +79,17 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ---
 
 ## Completed
+
+### 2026-01-06
+- [x] **Option C Thorough Validation** — Setup passed (17/17 FULLY READY)
+- [x] **Setup UX Improvements** — 5 fixes from validation feedback
+  - Projects root default → `~/Claude/Projects`
+  - Created `scripts/setup-readiness.sh` and `scripts/validate-hooks.sh`
+  - Refactored Phase 4 MCP (optional, clearer options)
+  - Added Phase 6 agent selection interview
+- [x] **Project Structure Reorganization** — BEHAVIOR vs EVOLUTION separation
+  - `docs/project-aion/` → `projects/project-aion/`
+  - Ideas consolidated under `projects/project-aion/ideas/`
 
 ### 2026-01-05
 - [x] **PR-4: Setup Preflight + Guardrails** (Complete — v1.3.0)
