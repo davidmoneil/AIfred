@@ -13,6 +13,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.0] - 2026-01-05
+
+**PR-4 Complete: Setup Preflight + Guardrails** — Three-layer validation system
+
+### Added
+
+#### Setup Readiness Command (PR-4c)
+
+- **`/setup-readiness`** (`.claude/commands/setup-readiness.md`)
+  - Post-setup validation command generating deterministic readiness report
+  - Checks: environment, structure, components, tools
+  - Status levels: FULLY READY, READY (warnings), DEGRADED, NOT READY
+  - Severity ratings: Critical, High, Medium, Low
+  - Exit codes for automation (0=ready, 1=degraded, 2=not ready)
+
+#### Setup Validation Pattern
+
+- **`setup-validation.md`** (`.claude/context/patterns/`)
+  - Documents three-layer validation approach: Preflight → Readiness → Health
+  - Defines validation tiers: Quick (2s), Standard (10s), Deep (60s)
+  - Troubleshooting guidance for common failures
+  - Integration points with session start, health check, end session
+
+#### Ideas Directory
+
+- **`.claude/context/ideas/`** — New brainstorm/planning space
+  - `tool-conformity-pattern.md`: External tool behavior normalization (future PR-9b)
+  - `setup-regression-testing.md`: Periodic re-validation after tool additions (future PR-10b)
+
+#### PR-4 Plan Archive
+
+- **`docs/project-aion/plans/`** — Conformant location for implementation plans
+  - Moved `wild-mapping-rose.md` from `~/.claude/plans/` to `pr-4-implementation-plan.md`
+  - Establishes convention for plan file storage within Jarvis workspace
+
+### Changed
+
+#### Setup Command Updates
+
+- **`setup.md`**: Enhanced phase descriptions
+  - Phase numbers now 0A-7 (was 0-7)
+  - Added PR references (PR-4a, PR-4b, PR-4c)
+  - Added final verification step calling `/setup-readiness`
+  - Updated wizard version to 1.3
+
+#### Finalization Phase Updates
+
+- **`07-finalization.md`**: Added readiness verification step
+  - Step 6: Verify Readiness (before git commit)
+  - Updated cleanup checklist to include readiness check
+  - Renumbered subsequent steps (7-8)
+
+#### CLAUDE.md Updates
+
+- Added **Guardrails (PR-4a)** section documenting protection hooks
+- Added **Setup Validation (PR-4)** section with three-layer validation overview
+- Added `/setup-readiness` to Available Commands
+- Updated version references to 1.3.0
+
+#### Context Index Updates
+
+- Added Ideas section to context index
+- Added Project Aion Plans section
+- Updated Recent Updates with PR-4c changes
+
+### PR-4 Summary
+
+PR-4 implements a complete setup validation system:
+
+| Sub-PR | Version | What |
+|--------|---------|------|
+| PR-4a | v1.2.1 | Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate) |
+| PR-4b | v1.2.2 | Preflight system (workspace-allowlist.yaml, 00-preflight.md) |
+| PR-4c | v1.3.0 | Readiness report (setup-readiness.md, setup-validation pattern) |
+
+The three layers work together:
+1. **Preflight** (pre-setup): Validates workspace boundaries
+2. **Readiness** (post-setup): Confirms all components installed
+3. **Health** (ongoing): Detects regression and drift
+
+---
+
 ## [1.2.2] - 2026-01-05
 
 **PR-4b: Preflight System** — Second sub-PR of Setup Preflight + Guardrails

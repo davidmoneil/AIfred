@@ -8,14 +8,7 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### PR-4: Setup Preflight + Guardrails (v1.3.0 target)
-**Status**: 🟡 In Progress — PR-4a, PR-4b complete
-
-| Sub-PR | Version | Status | Description |
-|--------|---------|--------|-------------|
-| PR-4a | v1.2.1 | ✅ Complete | Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate) |
-| PR-4b | v1.2.2 | ✅ Complete | Preflight system (workspace-allowlist.yaml, 00-preflight.md) |
-| PR-4c | v1.3.0 | ⏳ Pending | Readiness report (setup-readiness.md, documentation) |
+*No active PRs — PR-4 complete, ready for PR-5*
 
 ---
 
@@ -45,22 +38,21 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 
 - [x] Complete PR-3 upstream sync workflow ✅ Released as v1.2.0
 - [x] Validate `/sync-aifred-baseline` ✅ Verified 2026-01-05
+- [x] Complete PR-4 setup preflight + guardrails ✅ Released as v1.3.0
 - [ ] Enable Memory MCP in Docker Desktop
-- [ ] Start PR-4 setup preflight improvements
 
 ---
 
 ## This Month
 
-### PR-4: Setup Preflight + Guardrails
-- [ ] Add prereqs & environment checks to `/setup`
-- [ ] Implement permission allowlists
-- [ ] Create setup readiness report
-
 ### PR-5: Core Tooling Baseline
 - [ ] Install/enable default MCP servers
 - [ ] Create capability matrix
 - [ ] Perform overlap/conflict analysis
+
+### Future PR Ideas (from brainstorms)
+- [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns
+- [ ] **PR-10b: Setup Regression Testing** — Periodic re-validation after tool additions
 
 ---
 
@@ -86,6 +78,13 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-05
+- [x] **PR-4: Setup Preflight + Guardrails** (Complete — v1.3.0)
+  - **PR-4a** (v1.2.1): Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate)
+  - **PR-4b** (v1.2.2): Preflight system (workspace-allowlist.yaml, 00-preflight.md)
+  - **PR-4c** (v1.3.0): Readiness report (setup-readiness.md, setup-validation pattern)
+  - Created ideas directory with brainstorms for future PRs
+  - Moved plan file from `~/.claude/plans/` to conformant location
+
 - [x] **PR-3: Upstream Sync Workflow** (Complete — v1.2.0)
   - Created `/sync-aifred-baseline` command with adopt/adapt/reject classification
   - Established port log tracking at `.claude/context/upstream/port-log.md`

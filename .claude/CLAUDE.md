@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.2.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
+**Version**: 1.3.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `dc0e8ac`
 
 You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant for home lab automation, knowledge management, and system integration.
 
@@ -224,6 +224,7 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 | Command | Description |
 |---------|-------------|
 | `/setup` | Initial configuration wizard |
+| `/setup-readiness` | Verify setup is complete and operational (PR-4c) |
 | `/end-session` | Clean session exit |
 | `/checkpoint` | Save state for MCP-required restart |
 | `/design-review` | PARC pattern design review |
@@ -277,6 +278,67 @@ All logs stored as JSONL in `.claude/logs/audit.jsonl`:
 
 ---
 
+## Guardrails (PR-4a)
+
+Jarvis includes **guardrail hooks** that protect workspace boundaries and prevent dangerous operations.
+
+### Protection Hooks
+
+| Hook | Event | Purpose |
+|------|-------|---------|
+| `workspace-guard.js` | PreToolUse | Blocks Write/Edit to AIfred baseline; warns on ops outside workspace |
+| `dangerous-op-guard.js` | PreToolUse | Blocks destructive commands (`rm -rf /`, `mkfs`, force push to main) |
+| `permission-gate.js` | UserPromptSubmit | Soft-gates policy-crossing operations with confirmation |
+
+### What's Protected
+
+| Target | Protection Level | Action |
+|--------|-----------------|--------|
+| AIfred baseline (`/Users/aircannon/Claude/AIfred`) | **Blocked** | Write/Edit rejected |
+| Forbidden system paths (`/`, `/etc`, `/usr`, etc.) | **Blocked** | All operations rejected |
+| Outside Jarvis workspace | **Warned** | Logged with `[!] HIGH` warning |
+| Destructive bash commands | **Blocked** | Rejected with explanation |
+| Force push to main/master | **Blocked** | Requires explicit override |
+
+### Configuration
+
+Workspace boundaries defined in: `.claude/config/workspace-allowlist.yaml`
+
+Settings deny patterns in: `.claude/settings.json`
+
+### Fail-Safe Behavior
+
+Guardrail hooks use **fail-open** design:
+- If a hook can't load its config, it logs a `[!] HIGH` warning but allows the operation
+- This prevents hooks from blocking legitimate work due to config errors
+- All decisions are logged to `.claude/logs/audit.jsonl`
+
+See @.claude/hooks/README.md for hook documentation.
+
+---
+
+## Setup Validation (PR-4)
+
+Jarvis uses a three-layer validation approach:
+
+| Layer | When | Command | Purpose |
+|-------|------|---------|---------|
+| **Preflight** | Before /setup | Phase 0A | Validate workspace boundaries |
+| **Readiness** | After /setup | `/setup-readiness` | Confirm setup complete |
+| **Health** | Ongoing | `/health-check` | Detect regression |
+
+### Quick Status Check
+
+Run `/setup-readiness` anytime to verify setup is valid:
+
+```
+Expected: FULLY READY or READY (with warnings)
+```
+
+See @.claude/context/patterns/setup-validation.md for details.
+
+---
+
 ## Response Style
 
 - Be concise and practical
@@ -322,7 +384,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.1.0 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.3.0 |
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
@@ -330,6 +392,6 @@ See @docs/project-aion/archon-identity.md for full details.
 
 ---
 
-*Jarvis v1.2.0 — Project Aion Master Archon*
+*Jarvis v1.3.0 — Project Aion Master Archon*
 *Derived from AIfred baseline commit `dc0e8ac` (2026-01-03)*
-*Updated: 2026-01-05 - PR-3 Complete, Upstream sync workflow established*
+*Updated: 2026-01-05 - PR-4 Complete, Setup Preflight + Guardrails + Readiness*

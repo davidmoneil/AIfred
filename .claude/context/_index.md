@@ -114,6 +114,31 @@ learning/
 
 **Purpose**: Background knowledge that informs decisions.
 
+### Ideas (Brainstorms & Future Planning)
+```
+ideas/
+├── tool-conformity-pattern.md    # External tool behavior normalization
+└── setup-regression-testing.md   # Periodic setup validation
+```
+
+**Purpose**: Capture brainstorms, future ideas, and proposals that aren't ready for implementation. Ideas here may become patterns, PRs, or be rejected after discussion.
+
+**Active Ideas**:
+- 🧠 **Tool Conformity Pattern**: How to handle external tools that don't follow Jarvis conventions
+- 🧠 **Setup Regression Testing**: Periodic re-validation after tool additions
+
+---
+
+## Project Aion Plans
+
+Implementation plans for Project Aion PRs are stored at:
+```
+docs/project-aion/plans/
+└── pr-4-implementation-plan.md   # PR-4 master plan
+```
+
+**Note**: These are moved from Claude Code's default `~/.claude/plans/` location to conform with workspace path policy.
+
 ---
 
 ## File Lifecycle
@@ -174,6 +199,13 @@ After setup, discovered systems will appear in the `systems/` directory.
 ---
 
 ## Recent Updates
+
+**2026-01-05**: Ideas Directory & Plan File Conformity
+- ✅ Created `ideas/` directory for brainstorms and future planning
+- ✅ Added tool-conformity-pattern.md brainstorm (PR-9b candidate)
+- ✅ Added setup-regression-testing.md brainstorm (PR-10b candidate)
+- ✅ Moved PR-4 plan from `~/.claude/plans/` to `docs/project-aion/plans/`
+- ✅ Established convention for plan file storage
 
 **2026-01-05**: PR-3 Upstream Sync Workflow
 - ✅ Added `/sync-aifred-baseline` command for controlled baseline porting

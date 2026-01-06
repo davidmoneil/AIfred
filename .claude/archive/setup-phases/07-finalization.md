@@ -162,7 +162,27 @@ When working on these projects, AIfred will automatically load
 their context for better assistance.
 ```
 
-### 6. Git Commit
+### 6. Verify Readiness (PR-4c)
+
+Run the setup readiness report to confirm success:
+
+```
+/setup-readiness
+```
+
+**Expected Results**:
+- **FULLY READY**: All checks passed - setup complete
+- **READY (with warnings)**: Operational, consider addressing warnings
+- **DEGRADED**: Missing important components - review failures
+- **NOT READY**: Critical failures - do not proceed
+
+**If NOT READY or DEGRADED**:
+1. Review the failed checks
+2. Address critical/high failures
+3. Re-run `/setup-readiness`
+4. Only proceed to git commit when READY
+
+### 7. Git Commit
 
 If git enabled:
 
@@ -181,7 +201,7 @@ Configured:
 🤖 Generated with AIfred Setup Wizard"
 ```
 
-### 7. GitHub Push (Optional)
+### 8. GitHub Push (Optional)
 
 If GitHub integration enabled:
 
@@ -221,17 +241,19 @@ Present to user:
 
 ---
 
-## Cleanup
+## Cleanup Checklist
 
 - [ ] Configuration summary created
 - [ ] CLAUDE.md updated
 - [ ] Setup files archived
 - [ ] Session state updated
 - [ ] Projects registered (or skipped)
+- [ ] **Readiness report: READY** (PR-4c)
 - [ ] Git commit created
 - [ ] GitHub push (if enabled)
 - [ ] Final summary presented
 
 ---
 
-*Phase 7 of 8 (now 0-7) - Finalization - Setup Complete!*
+*Phase 7 of 8 (0A, 0B, 1-7) — Finalization*
+*Jarvis v1.3.0 — Project Aion Master Archon*

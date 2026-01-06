@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-4b complete — v1.2.2 released
+**Current Task**: PR-4 complete — v1.3.0 released
 
-**Next Step**: Begin PR-4c (readiness report)
+**Next Step**: Begin PR-5 (Core Tooling Baseline)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -29,6 +29,40 @@ Format: mcp-name (reason for enabling)
 ## Session Continuity Notes
 
 ### What Was Accomplished (2026-01-05)
+
+**PR-4c: Readiness Report — Complete (v1.3.0)**
+
+Completed PR-4 milestone with readiness report system:
+
+1. **setup-readiness.md** (`.claude/commands/`)
+   - Post-setup validation command
+   - Deterministic pass/fail readiness report
+   - Status levels: FULLY READY, READY (warnings), DEGRADED, NOT READY
+
+2. **setup-validation.md** (`.claude/context/patterns/`)
+   - Documents three-layer validation approach
+   - Preflight → Readiness → Health
+   - Troubleshooting and integration guidance
+
+3. **Ideas Directory** (`.claude/context/ideas/`)
+   - Created brainstorm space for future planning
+   - `tool-conformity-pattern.md` — Future PR-9b
+   - `setup-regression-testing.md` — Future PR-10b
+
+4. **Plan File Conformity**
+   - Moved `wild-mapping-rose.md` from `~/.claude/plans/`
+   - Renamed to `docs/project-aion/plans/pr-4-implementation-plan.md`
+   - Established convention for plan storage
+
+5. **Documentation Updates**
+   - CLAUDE.md: Added Guardrails and Setup Validation sections
+   - setup.md: Enhanced phase descriptions with PR references
+   - 07-finalization.md: Added readiness verification step
+   - Context index: Added Ideas and Plans sections
+
+**Release**: Committed as v1.3.0, PR-4 milestone complete
+
+---
 
 **PR-4b: Preflight System — Complete (v1.2.2)**
 
@@ -135,10 +169,13 @@ Implemented controlled porting workflow from AIfred baseline:
 - Begin PR-4 per Project Aion roadmap
 
 ### Next Session Pickup
-1. Begin **PR-4c: Readiness Report** (setup-readiness.md, setup-validation.md pattern)
-2. After PR-4c, bump to v1.3.0 (PR-4 milestone complete)
-3. Consider enabling Memory MCP for decision tracking
-4. Plan file available at `/Users/aircannon/.claude/plans/wild-mapping-rose.md`
+1. Begin **PR-5: Core Tooling Baseline** (v1.4.0 target)
+   - Install/enable default MCP servers
+   - Create capability matrix
+   - Perform overlap/conflict analysis
+2. Consider enabling Memory MCP for decision tracking
+3. Review brainstorm ideas for PR-9b (Tool Conformity) and PR-10b (Setup Regression)
+4. PR-4 plan archived at `docs/project-aion/plans/pr-4-implementation-plan.md`
 
 ---
 
@@ -151,4 +188,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-05 - PR-4b complete (v1.2.2), ready for PR-4c*
+*Updated: 2026-01-05 - PR-4 complete (v1.3.0), ready for PR-5*
