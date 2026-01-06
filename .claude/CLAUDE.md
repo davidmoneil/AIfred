@@ -19,6 +19,7 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 - @.claude/context/standards/severity-status-system.md - Severity/status terminology
 - @.claude/context/standards/model-selection.md - When to use Opus vs Sonnet vs Haiku
 - @.claude/context/patterns/agent-selection-pattern.md - **Choose agents vs subagents vs skills**
+- @.claude/skills/session-management/SKILL.md - **Session lifecycle management** (start, track, checkpoint, exit)
 - @.claude/context/patterns/memory-storage-pattern.md - When to use Memory MCP
 - @.claude/context/patterns/mcp-loading-strategy.md - **MCP loading strategies** (Always-On/On-Demand/Isolated)
 - @.claude/context/patterns/prompt-design-review.md - PARC design review pattern
@@ -135,8 +136,36 @@ Your infrastructure-specific agents with persistent memory:
 - `/agent deep-research "topic"` - Web research with multi-source validation
 - `/agent service-troubleshooter "issue"` - Systematic service diagnosis
 - `/agent docker-deployer "service"` - Guided Docker deployment
+- `/agent memory-bank-synchronizer` - Sync docs with code changes (preserves user content)
 
 **Decision Guide**: @.claude/context/patterns/agent-selection-pattern.md
+
+---
+
+## Skills System
+
+**Skills are comprehensive workflow guides** that consolidate related commands, hooks, and patterns for end-to-end task guidance.
+
+### Available Skills
+
+| Skill | Purpose | Key Commands |
+|-------|---------|--------------|
+| [session-management](@.claude/skills/session-management/SKILL.md) | Session lifecycle management | `/checkpoint`, `/update-priorities`, `/audit-log` |
+
+### When to Use Skills vs Commands vs Agents
+
+```
+Need to do ONE thing?
+  └─ Use a Command (e.g., /checkpoint)
+
+Need guidance across MULTIPLE steps?
+  └─ Reference a Skill (e.g., session-management)
+
+Need autonomous COMPLEX task execution?
+  └─ Invoke an Agent (e.g., /agent memory-bank-synchronizer)
+```
+
+**Full documentation**: @.claude/skills/_index.md
 
 ---
 
@@ -233,6 +262,7 @@ The `.claude/hooks/` directory contains JavaScript hooks:
 | `session-tracker.js` | Notification | Tracks session lifecycle |
 | `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
 | `project-detector.js` | UserPromptSubmit | Auto-detects GitHub URLs and "new project" requests |
+| `doc-sync-trigger.js` | PostToolUse | Tracks code changes, suggests doc sync |
 
 ### Log Format
 
@@ -248,6 +278,34 @@ All logs stored as JSONL in `.claude/logs/audit.jsonl`:
   "parameters": { "command": "docker ps" }
 }
 ```
+
+---
+
+## Documentation Synchronization
+
+**Automatic** via hooks - keeps documentation aligned with code changes.
+
+### How It Works
+
+1. `doc-sync-trigger.js` tracks Write/Edit operations on significant files
+2. After 5+ changes in 24 hours, suggests running `/agent memory-bank-synchronizer`
+3. The agent syncs docs while **preserving user content** (todos, decisions, notes)
+
+### Significant Files Tracked
+
+- `.claude/commands/`, `.claude/agents/`, `.claude/hooks/`, `.claude/skills/`
+- `src/`, `lib/`, `scripts/`
+- `docker-compose*.yaml`, `external-sources/`
+
+### Safe Updates (agent modifies)
+
+- Code examples, file paths, command syntax, version numbers, counts
+
+### Preserved Content (never modified)
+
+- Todos, decisions, troubleshooting notes, session notes, blockers
+
+**Related**: @.claude/agents/memory-bank-synchronizer.md
 
 ---
 
@@ -270,5 +328,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.2 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-01 - Added automatic project management with hook-based detection*
+*AIfred v1.3 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-01-05 - Added Skills System and Documentation Synchronization (ported from AIProjects)*
