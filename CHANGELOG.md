@@ -13,6 +13,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.1] - 2026-01-06
+
+**Validation & UX Improvements** — Post-v1.3.0 thorough validation with fixes
+
+### Added
+
+#### Validation Scripts
+- **`scripts/setup-readiness.sh`** — Standalone readiness report script
+  - Accepts optional JARVIS_PATH argument for testing
+  - Clean terminal output (no raw bash shown to user)
+  - Proper exit codes (0=ready, 1=degraded, 2=not ready)
+- **`scripts/validate-hooks.sh`** — Hook syntax validation script
+  - Clean pass/fail output per hook
+  - No confusing intermediate errors
+  - Shows actual error messages on failure
+
+#### Setup UX Improvements Brainstorm
+- **`projects/project-aion/ideas/setup-ux-improvements.md`**
+  - Documents UX issues found during Option C validation
+  - Tracks fixes applied and remaining items
+
+### Changed
+
+#### Phase 1: System Discovery
+- Updated projects_root detection to recommend `~/Claude/Projects` as default
+- Added clear explanation of the recommended location
+
+#### Phase 2: Purpose Interview
+- Changed project management question to present `~/Claude/Projects` as recommended default
+- Added follow-up options for existing projects in other locations
+
+#### Phase 4: MCP Integration (Major Refactor)
+- Made MCP entirely **optional** (Jarvis works without it)
+- Added three clear options: Skip / Docker Desktop MCP / Manual configuration
+- Removed incorrect mcp-gateway docker-compose.yml (was treating stdio server as daemon)
+- Added `docker/mcp-gateway/README.md` explaining actual architecture
+- Clarified Docker Desktop MCP vs Docker CLI requirements
+
+#### Phase 5: Hooks & Automation
+- Updated to use `scripts/validate-hooks.sh` for validation
+
+#### Phase 6: Agent Deployment
+- Added agent selection interview section
+- Users can now choose: Install all / Select specific / Skip
+- Default remains "install all core agents"
+
+### Reorganized
+
+#### Project Structure (BEHAVIOR vs EVOLUTION separation)
+- Moved `docs/project-aion/` → `projects/project-aion/`
+- Moved `Project_Aion.md` → `projects/project-aion/roadmap.md`
+- Moved `.claude/context/ideas/` → `projects/project-aion/ideas/`
+- Established clear separation:
+  - `.claude/context/` = BEHAVIOR (how Jarvis operates)
+  - `projects/project-aion/` = EVOLUTION (how Jarvis improves)
+
+### Validation
+
+**Option C Thorough Validation** completed successfully:
+- Fresh clone to `/tmp/jarvis-validation-test/`
+- Full `/setup` run from Phase 0A
+- Result: **17/17 checks passed, FULLY READY**
+
+---
+
 ## [1.3.0] - 2026-01-05
 
 **PR-4 Complete: Setup Preflight + Guardrails** — Three-layer validation system
