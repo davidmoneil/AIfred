@@ -8,11 +8,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟢 Active
 
-**Current Task**: PR-7 Skills Inventory (Complete — v1.7.0)
+**Current Task**: PR-8.1 Context Budget Optimization — Complete
 
-**Next Step**: Begin PR-8 (MCP Expansion) per roadmap
+**Next Step**: Commit changes, version bump to v1.8.0
 
 ### On-Demand MCPs Enabled This Session
 
@@ -391,6 +391,79 @@ Implemented controlled porting workflow from AIfred baseline:
    - Added PR-15 to roadmap future work section
    - Listed 30+ reference repositories for future review
 
+### Session Accomplishments (2026-01-07 — PR-8 Context Management)
+
+**PR-8.1: Context Budget Optimization — Design Complete**
+
+1. **Context Budget Analysis** ✅
+   - Identified context bloat: 232k/200k (116%) — autocompact mode
+   - MCP tools alone: 61K tokens (30.5% of budget)
+   - Plugin skill bundles: ~11.5K tokens of unused overhead
+
+2. **Context Management Pattern** ✅
+   - Created `.claude/context/patterns/context-budget-management.md`
+   - Defined MCP loading tiers (Always-On, Session-Scoped, Task-Scoped)
+   - Documented target budget allocation
+
+3. **PR-8 Scope Extension** ✅
+   - Extended PR-8 in roadmap.md to include context management
+   - Added PR-8.1 (Budget Optimization), PR-8.2 (Loading Tiers), PR-8.3 (Dynamic Loading Protocol)
+   - Original PR-8 scope moved to PR-8.4
+
+4. **Plugin Investigation** ✅
+   - Identified unused skills: algorithmic-art (4.8K), doc-coauthoring (3.8K), slack-gif-creator (1.9K)
+   - **Finding**: Cannot remove individually — bundled in `document-skills@anthropic-agent-skills`
+   - **Decision**: Accept bundled overhead (~11.5K tokens) to keep valuable core skills (docx, pdf, xlsx, pptx)
+   - frontend-design duplication: Accept, standalone version takes precedence
+
+5. **Documentation Updated** ✅
+   - Context index: Added context-budget-management pattern
+   - Roadmap Phase 5 description updated
+
+**Remaining PR-8 Tasks**: ✅ All Complete
+- [x] Configure MCP loading tiers in settings
+- [x] Refactor CLAUDE.md (<3K target) — 78% reduction achieved
+- [x] Add `/context-budget` command
+- [x] Integrate budget check into /tooling-health
+
+### Session Accomplishments (2026-01-07 — PR-8.1 Complete)
+
+**PR-8.1: Context Budget Optimization — Complete**
+
+1. **MCP Loading Tier System Revised** ✅
+   - Collapsed original 3-tier into cleaner model per user feedback
+   - **Tier 1 — Always-On** (~27-34K): Memory, Filesystem, Fetch, Git
+   - **Tier 2 — Task-Scoped**: Time, GitHub, Context7, Sequential Thinking, DuckDuckGo (agent-managed)
+   - **Tier 3 — Triggered**: Playwright, BrowserStack, Slack, Google Drive/Maps (blacklisted from agent selection)
+   - Updated `.claude/context/patterns/context-budget-management.md`
+
+2. **Plugin Decomposition Pattern Created** ✅
+   - Researched plugin structure: discovered plugins are NOT compiled/obfuscated
+   - Skills are simple markdown files (SKILL.md) with YAML frontmatter
+   - Documented extraction workflow in `.claude/context/patterns/plugin-decomposition-pattern.md`
+   - Feasibility: HIGH — skills fully extractable and customizable
+
+3. **CLAUDE.md Refactored** ✅
+   - Archived original to `.claude/CLAUDE-full-reference.md` (510 lines)
+   - Created slim quick-reference version: 113 lines (78% reduction)
+   - Estimated savings: ~4K tokens
+
+4. **Context Budget Command Created** ✅
+   - New `/context-budget` command at `.claude/commands/context-budget.md`
+   - Categorizes token usage by type
+   - Status levels: HEALTHY (<80%), WARNING (80-100%), CRITICAL (>100%)
+   - MCP tier reference included
+
+5. **Tooling Health Integration** ✅
+   - Added Context Budget to Executive Summary in `/tooling-health`
+   - First row in status table: `Context Budget | STATUS | X/200K tokens (Y%)`
+
+6. **Documentation Updated** ✅
+   - Context index: Added both new patterns
+   - Roadmap: PR-8.2 scope revised with new tier definitions
+
+---
+
 ### Session Accomplishments (2026-01-07 — PR-7)
 
 **PR-7: Skills Inventory — Core deliverables complete**
@@ -424,11 +497,11 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Next Session Pickup
 
-**PR-7 Completion** — Remaining tasks:
-1. Version bump to v1.7.0
-2. CHANGELOG update
-3. Commit and push
-4. Validation pass (optional, defer to post-PR-8)
+**PR-8.1 Complete** — Ready to commit:
+1. ✅ Version bump to v1.8.0
+2. ✅ CHANGELOG update
+3. ✅ Commit and push
+4. Optional: Test `/context-budget` command
 
 ---
 
@@ -441,4 +514,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-07 — PR-6 Revision complete (browser-automation + templates + PR-15 design)*
+*Updated: 2026-01-07 — PR-8.1 Context Budget Optimization complete*

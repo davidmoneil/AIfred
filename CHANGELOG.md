@@ -13,6 +13,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.8.0] - 2026-01-07
+
+**PR-8.1: Context Budget Optimization** — Reduce context window overhead and establish management patterns
+
+### Added
+
+#### Context Budget Management Pattern
+- **`.claude/context/patterns/context-budget-management.md`** — Core optimization pattern
+  - MCP Loading Tiers (revised 3-tier system)
+  - Token budget allocation targets
+  - Unload evaluation points
+  - Emergency procedures for context overflow
+
+#### Plugin Decomposition Pattern
+- **`.claude/context/patterns/plugin-decomposition-pattern.md`** — Skill extraction workflow
+  - Discovery: plugins are simple markdown structures, NOT compiled
+  - Extraction workflow for high-value skills
+  - Customization patterns for Jarvis ecosystem
+
+#### Context Budget Command
+- **`.claude/commands/context-budget.md`** — New `/context-budget` command
+  - Categorizes token usage by type (Conversation, MCPs, Plugins, etc.)
+  - Status levels: HEALTHY (<80%), WARNING (80-100%), CRITICAL (>100%)
+  - MCP tier reference included
+  - Recommendations for optimization
+
+### Changed
+
+#### CLAUDE.md Refactoring
+- Archived original to `.claude/CLAUDE-full-reference.md` (510 lines, ~5K tokens)
+- Created slim quick-reference version (113 lines, ~1K tokens)
+- **78% size reduction** — ~4K tokens saved per session
+
+#### MCP Loading Tiers (Revised)
+- **Tier 1 — Always-On** (~27-34K tokens): Memory, Filesystem, Fetch, Git
+- **Tier 2 — Task-Scoped** (agent-managed): Time, GitHub, Context7, Sequential Thinking, DuckDuckGo
+- **Tier 3 — Triggered** (blacklisted from agent selection): Playwright, BrowserStack, Slack, Google Drive/Maps
+
+#### Tooling Health Command
+- Added Context Budget to Executive Summary table
+- Now reports token usage and budget status
+
+#### Context Index Updates
+- Added context-budget-management.md pattern
+- Added plugin-decomposition-pattern.md pattern
+
+### Technical Summary
+
+| Optimization | Token Savings |
+|--------------|---------------|
+| CLAUDE.md refactoring | ~4K tokens |
+| Tier-based MCP loading | Variable (up to ~50K when unloading Task-Scoped) |
+| Future skill extraction | ~10K+ potential |
+
+### Key Decisions
+
+| Component | Decision | Rationale |
+|-----------|----------|-----------|
+| Move Time to Tier 2 | ACCEPTED | Only needed for specific timestamp operations |
+| Create Triggered tier | ACCEPTED | Blacklist high-cost MCPs from agent selection |
+| Accept plugin bundle overhead | ACCEPTED | Cannot remove individual skills without losing valuable core |
+| Plugin decomposition feasibility | HIGH | Skills are extractable markdown files |
+
+---
+
 ## [1.7.0] - 2026-01-07
 
 **PR-7: Skills Inventory** — Evaluate and document all skills

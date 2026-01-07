@@ -59,14 +59,16 @@ standards/
 ### Patterns (Reusable Implementations)
 ```
 patterns/
-├── _index.md                    # Patterns directory index
-├── agent-selection-pattern.md   # Choose agents vs subagents vs skills vs tools
-├── memory-storage-pattern.md    # When/how to store in Memory MCP
-├── prompt-design-review.md      # PARC pattern for design review
-├── session-start-checklist.md   # Mandatory session start steps
-├── branching-strategy.md        # Git branching for Project Aion
-├── workspace-path-policy.md     # Where projects and docs live
-└── mcp-loading-strategy.md      # Always-On vs On-Demand MCPs
+├── _index.md                       # Patterns directory index
+├── agent-selection-pattern.md      # Choose agents vs subagents vs skills vs tools
+├── memory-storage-pattern.md       # When/how to store in Memory MCP
+├── prompt-design-review.md         # PARC pattern for design review
+├── session-start-checklist.md      # Mandatory session start steps
+├── branching-strategy.md           # Git branching for Project Aion
+├── workspace-path-policy.md        # Where projects and docs live
+├── mcp-loading-strategy.md         # Always-On vs On-Demand MCPs
+├── context-budget-management.md    # Context window optimization (PR-8)
+└── plugin-decomposition-pattern.md # Extract skills from plugins (PR-8)
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -77,6 +79,8 @@ patterns/
 - ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
 - ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
 - ✅ **Workspace Path Policy**: Where projects and documentation live
+- ✅ **Context Budget Management**: MCP loading tiers, plugin pruning, token budgets (PR-8)
+- ✅ **Plugin Decomposition**: Extract/customize skills from bundled plugins (PR-8)
 
 ### Templates (Repeatable Workflow Templates)
 ```
@@ -230,6 +234,18 @@ After setup, discovered systems will appear in the `systems/` directory.
 ---
 
 ## Recent Updates
+
+**2026-01-07**: PR-8 Context Budget Management (Extended Scope)
+- ✅ Created context-budget-management.md pattern document
+- ✅ Extended PR-8 scope in roadmap to include context optimization
+- ✅ Defined MCP loading tiers (Always-On, Session-Scoped, Task-Scoped)
+- ✅ Identified plugins for pruning (algorithmic-art, doc-coauthoring, slack-gif-creator)
+
+**2026-01-07**: PR-7 Skills Inventory Complete (v1.7.0)
+- ✅ Evaluated 64+ skills (16 official + 39 plugin + 9 project)
+- ✅ Created skills evaluation report
+- ✅ Created skills selection guide
+- ✅ Added 5 overlap categories (11-15)
 
 **2026-01-07**: PR-6 Plugins Expansion (Revised)
 - ✅ Added browser-automation plugin evaluation

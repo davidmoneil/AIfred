@@ -309,37 +309,93 @@ Validation:
 
 ---
 
-### PR-8: MCP Expansion + Validation Harness (Install Piecemeal)
-**Goal:** Expand MCP servers gradually, with tests and dependency-driven installs.
+### PR-8: MCP Expansion + Context Budget Management + Validation Harness
+**Goal:** Expand MCP servers gradually with context-aware loading, budget monitoring, and validation.
+
+> **Extended Scope (2026-01-07)**: PR-8 now includes context budget management to address context window bloat (observed 232k/200k = 116% usage). MCP tool definitions consume ~61K tokens (30.5%) whether used or not.
+
+#### PR-8.1: Context Budget Optimization (New)
 
 Requirements:
-- Define MCP tiers:
-  - **Stage 1 default MCPs (install early):**
-    - Memory Knowledge Graph  
+- **Plugin Pruning**: Remove unused high-cost plugins
+  - `algorithmic-art` (4.8K tokens) — never used
+  - `doc-coauthoring` (3.8K tokens) — never used
+  - `slack-gif-creator` (1.9K tokens) — never used
+- **Duplicate Resolution**: Fix frontend-design duplication
+  - `claude-code-plugins` version (990 tokens) — KEEP
+  - `document-skills` bundle version (989 tokens) — REMOVE or disable
+- **CLAUDE.md Refactoring**: Reduce from 5.2K to <3K tokens
+  - Move details to secondary docs (pattern files)
+  - Keep CLAUDE.md as quick-reference index
+
+**Savings Target**: ~15K tokens (~7.5% context budget reclaimed)
+
+#### PR-8.2: MCP Loading Tiers (Revised)
+
+Requirements:
+- Define MCP loading tiers based on context budget and agent autonomy:
+  - **Tier 1 — Always-On** (~27-34K tokens):
+    - Memory Knowledge Graph
       https://github.com/modelcontextprotocol/servers/tree/main/src/memory
-    - Sequential Thinking (capability requirement; source/integration TBD—document what you choose)  
-      *(If you select a specific implementation, add its URL.)*
-    - Time / Fetch / Filesystem (core MCP servers)  
+    - Fetch / Filesystem (core MCP servers)
       https://github.com/modelcontextprotocol/servers/tree/main
-    - Context7  
-      https://github.com/upstash/context7
-    - GitHub Official MCP  
+    - Git MCP
+  - **Tier 2 — Task-Scoped** (agent-managed, load/unload dynamically):
+    - Time MCP (~3K) — moved from Tier 1
+    - GitHub Official MCP (~15K)
       https://github.com/github/github-mcp-server
-    - DuckDuckGo MCP  
+    - Context7 (~8K)
+      https://github.com/upstash/context7
+    - Sequential Thinking (~5K)
+    - DuckDuckGo MCP (~4K)
       https://github.com/nickclyde/duckduckgo-mcp-server
-    - Playwright MCP  
+    - Database MCPs, specialized MCPs
+  - **Tier 3 — Triggered** (blacklisted from agent selection, hook/command-invoked only):
+    - Playwright MCP (~15K) — triggered by `/browser-test`, webapp-testing skill
       https://github.com/microsoft/playwright-mcp
+    - BrowserStack — triggered by CI/CD hooks
+    - Slack — triggered by `/notify` command
+    - Google Drive/Maps — billing-gated, explicit command only
+- Implement unload evaluation points:
+  - After subtask completion
+  - On context switch
+  - Before compaction warning
+  - On `/context-budget` command
+
+#### PR-8.3: Dynamic Loading Protocol
+
+Requirements:
+- Update session-start hook to:
+  - Check planned work type from session-state.md
+  - Suggest appropriate Tier 2 MCPs
+  - Display context budget status
+- Update /checkpoint command to:
+  - Preserve MCP loading state for continuity
+  - Support mid-session MCP changes
+- Add `/context-budget` command:
+  - Display current context usage by category
+  - Warn when approaching limits
+  - Suggest optimization actions
+
+#### PR-8.4: MCP Validation Harness (Original Scope)
+
+Requirements:
 - For each MCP:
   - install procedure (automated if possible, otherwise gated manual steps)
   - configuration requirements and env vars
   - **validation**: health + basic tool invocation + expected response contract
   - overlap analysis vs skills/plugins/other MCPs
+  - **token cost measurement**
 - Add dependency-triggered installs:
-  - when a workflow/agent depends on an MCP, Jarvis recommends enabling/installing it.
+  - when a workflow/agent depends on an MCP, Jarvis recommends enabling/installing it
 
 Validation:
-- A standardized MCP validation harness produces a pass/fail report.
-- Each enabled MCP has at least one deterministic smoke test.
+- A standardized MCP validation harness produces a pass/fail report
+- Each enabled MCP has at least one deterministic smoke test
+- Context budget check integrated into /tooling-health command
+- Budget monitoring integrated into session lifecycle
+
+**Pattern Documentation**: @.claude/context/patterns/context-budget-management.md
 
 ---
 
@@ -784,7 +840,7 @@ Deliverables:
 - PR-5: Core Tooling baseline enabled + validated + overlap matrix started.
 - PR-6: Plugins expanded with adopt/adapt/reject decisions + conflicts resolved.
 - PR-7: Skills cataloged and selection rules written.
-- PR-8: Stage 1 MCPs installed + validated; then expand MCPs piecemeal.
+- PR-8: Context budget optimization + MCP loading tiers + validation harness.
 - PR-9: Selection Intelligence formalized based on real overlaps.
 - PR-10: Setup upgraded to automate baseline installs and validations.
 

@@ -70,6 +70,7 @@ For EACH connected MCP, test at least one tool:
 
 | Category | Status | Details |
 |----------|--------|---------|
+| **Context Budget** | STATUS | X/200K tokens (Y%) |
 | MCP Servers | STATUS | X/7 Stage 1 connected |
 | Plugins | STATUS | X installed, X PR-5 targets |
 | Skills | STATUS | Brief note |
