@@ -773,11 +773,11 @@ Acceptance:
 
 | PR | Description | Version |
 |----|-------------|---------|
-| PR-5 | Core Tooling Baseline | 1.4.0 |
-| PR-6 | Plugins Expansion | 1.5.0 |
-| PR-7 | Skills Inventory | 1.6.0 |
-| PR-8 | MCP Expansion | 1.7.0 |
-| PR-9 | Selection Intelligence | 1.8.0 |
+| PR-5 | Core Tooling Baseline | 1.5.0 ✅ |
+| PR-6 | Plugins Expansion | 1.6.0 |
+| PR-7 | Skills Inventory | 1.7.0 |
+| PR-8 | MCP Expansion | 1.8.0 |
+| PR-9 | Selection Intelligence | 1.9.0 |
 | PR-10 | Setup Upgrade | **2.0.0** |
 
 Deliverables:

@@ -9,15 +9,19 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## In Progress
 
 ### PR-5 Extended: Tooling Implementation
-**Status**: Assessment complete, implementation pending
+**Status**: ✅ Complete (v1.5.1) — All issues resolved
 
-Per `.claude/reports/tooling-health-2026-01-06.md`:
-- [ ] Install 14 PR-5 target plugins
-- [ ] Run MCP tool smoke tests (38 tools)
-- [ ] Fix GitHub MCP authentication
-- [ ] Skills inventory post-restart
-- [ ] Agent unification research
+Per `.claude/reports/tooling-health-2026-01-06-v4.md`:
+- [x] Fix GitHub MCP authentication (PAT via local server)
+- [x] Install Context7 MCP (documentation provider)
+- [x] Agent format migration (4 agents to YAML frontmatter)
+- [x] Remove legacy plugins (stale entries cleaned)
+- [x] 16 plugins installed (user-scope)
+- [x] 18/18 hooks validated
+
+**Deferred to PR-6/PR-7**:
 - [ ] Feature trials (happy, voicemode)
+- [ ] Extended plugin evaluation
 
 ---
 
@@ -53,7 +57,11 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] PR-5: Core Tooling Baseline ✅ Released as v1.5.0
 - [x] Stage 1 MCPs installed (6/7 connected, GitHub needs OAuth)
 - [x] Tooling Health Assessment ✅ Comprehensive report created
-- [ ] PR-5 Implementation: Install plugins, test tools, skills inventory
+- [x] PR-5 Implementation ✅ All issues resolved (v1.5.1)
+  - GitHub MCP: PAT auth configured
+  - Context7 MCP: Installed with API key
+  - Agents: Migrated to Claude Code format
+  - Plugins: Legacy entries removed
 - [ ] Enable Memory MCP in Docker Desktop
 
 ---
@@ -93,6 +101,14 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-06
+- [x] **PR-5 Tooling Implementation** (Complete — v1.5.1)
+  - Fixed GitHub MCP authentication (PAT via local server)
+  - Installed Context7 MCP with API key (8 MCPs total)
+  - Migrated 4 agents to Claude Code YAML frontmatter format
+  - Removed legacy project-scope plugins (19 → 16)
+  - Created troubleshooting docs (hookify-import-fix, agent-format-migration)
+  - Generated tooling health reports v2, v3, v4
+
 - [x] **PR-5 Tooling Health Assessment** (Complete)
   - Ran `/tooling-health` command
   - Created comprehensive report (`.claude/reports/tooling-health-2026-01-06.md`)

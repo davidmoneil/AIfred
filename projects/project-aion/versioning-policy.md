@@ -77,17 +77,18 @@ Commit:  "Release v1.2.0 - PR-3 complete"
 | PR-1 | Archon Identity + Versioning | 1.0.0 ✅ |
 | PR-2 | Workspace & Project Summaries | 1.1.0 ✅ |
 | PR-3 | Upstream Sync Workflow | 1.2.0 ✅ |
-| PR-4 | Setup Preflight + Guardrails | 1.3.0 |
-| PR-5 | Core Tooling Baseline | 1.4.0 |
-| PR-6 | Plugins Expansion | 1.5.0 |
-| PR-7 | Skills Inventory | 1.6.0 |
-| PR-8 | MCP Expansion | 1.7.0 |
-| PR-9 | Selection Intelligence | 1.8.0 |
-| PR-10 | Setup Upgrade | 1.9.0 |
-| PR-11 | Autonomy & Permission Reduction | 1.10.0 |
-| PR-12 | Self-Evolution Loop | 1.11.0 |
-| PR-13 | Benchmark Demos | 1.12.0 |
-| PR-14 | SOTA Research & Comparison | 1.13.0 |
+| PR-4 | Setup Preflight + Guardrails | 1.3.0 ✅ |
+| — | Skills System & Lifecycle Hooks | 1.4.0 ✅ |
+| PR-5 | Core Tooling Baseline | 1.5.0 ✅ |
+| PR-6 | Plugins Expansion | 1.6.0 |
+| PR-7 | Skills Inventory | 1.7.0 |
+| PR-8 | MCP Expansion | 1.8.0 |
+| PR-9 | Selection Intelligence | 1.9.0 |
+| PR-10 | Setup Upgrade | 2.0.0 |
+| PR-11 | Autonomy & Permission Reduction | 2.1.0 |
+| PR-12 | Self-Evolution Loop | 2.2.0 |
+| PR-13 | Benchmark Demos | 2.3.0 |
+| PR-14 | SOTA Research & Comparison | 3.0.0 |
 
 ### MAJOR Bump (+1.0.0) — Phase Completion
 

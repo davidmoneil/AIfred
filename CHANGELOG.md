@@ -13,6 +13,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.1] - 2026-01-06
+
+**PR-5 Implementation Phase** — Resolved all tooling health issues
+
+### Fixed
+
+#### GitHub MCP Authentication
+- Removed failed SSE remote config (`https://api.githubcopilot.com/mcp/`)
+- Added local server with PAT authentication: `@modelcontextprotocol/server-github`
+- GitHub tools now fully operational
+
+#### Context7 MCP Installation
+- Installed `@upstash/context7-mcp` documentation provider
+- Added API key configuration to environment
+- Updated MCP installation guide with Context7 section
+- Total MCP count: 8 (7 Stage 1 + Context7)
+
+### Changed
+
+#### Agent Format Migration
+- Migrated 4 custom agents to Claude Code YAML frontmatter format:
+  - `docker-deployer` — Docker service deployment
+  - `service-troubleshooter` — Infrastructure diagnosis
+  - `deep-research` — Technical research with citations
+  - `memory-bank-synchronizer` — Documentation sync
+- Backup of original format preserved in `.claude/agents/archive/`
+- Updated CLAUDE.md with new invocation pattern (`/agent-name`)
+
+#### Plugin Cleanup
+- Removed stale project-scope plugin entries pointing to old path
+- Cleaned plugin cache directory
+- Plugin count: 19 → 16 (all user-scope, no duplicates)
+
+### Added
+
+#### Troubleshooting Documentation
+- **`hookify-import-fix.md`** — Symlink workaround for Python import error
+- **`agent-format-migration.md`** — Comprehensive migration guide with YAML schema
+
+#### Tooling Health Reports
+- **v2** — Initial assessment with smoke tests
+- **v3** — Standardized template with hook validation
+- **v4** — Final post-remediation report (all issues resolved)
+
+### Technical Summary
+
+| Category | Before (v3) | After (v4) |
+|----------|-------------|------------|
+| MCP Servers | 6/7 (86%) | 8/8 (100%) |
+| GitHub MCP | ❌ Failed | ✅ Connected |
+| Plugins | 19 (2 stale) | 16 (clean) |
+| Agents | Not recognized | 4/4 migrated |
+| Hooks | 18/18 | 18/18 |
+
+---
+
 ## [1.5.0] - 2026-01-06
 
 **PR-5: Core Tooling Baseline** — Establish minimal, reliable default toolbox

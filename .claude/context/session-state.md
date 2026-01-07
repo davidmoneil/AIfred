@@ -8,11 +8,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Complete
+**Status**: 🟢 Idle
 
-**Current Task**: PR-5 Implementation Phase — All Issues Resolved
+**Current Task**: None — Session Complete
 
-**Next Step**: Session complete, ready for commit
+**Next Step**: Begin PR-6 (Plugins Expansion) when ready
 
 ### On-Demand MCPs Enabled This Session
 
@@ -337,13 +337,13 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Next Session Pickup
 
-**PR-5 Complete** — All tooling issues resolved. Next priorities:
+**PR-5 Complete (v1.5.1)** — All tooling issues resolved and released. Next priorities:
 
 1. **Verify agents after restart** — Run `/agents` to confirm 4 custom agents recognized
 2. **Test Context7** — Try `resolve-library-id` and `get-library-docs` tools
 3. **Test GitHub MCP** — Verify GitHub tools work with PAT
 4. **Seed Memory MCP** — Add initial entities as patterns emerge
-5. **Continue PR-6** — Per Project Aion roadmap
+5. **Begin PR-6: Plugins Expansion** — Per Project Aion roadmap
 
 ---
 
@@ -356,4 +356,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-06 22:32 MST - PR-5 Tooling Health Complete, all issues resolved*
+*Updated: 2026-01-06 — Session complete, PR-5 released as v1.5.1*

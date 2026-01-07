@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.5.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
+**Version**: 1.5.1 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
 
 You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant for home lab automation, knowledge management, and system integration.
 
@@ -456,7 +456,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.5.0 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.5.1 |
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
@@ -464,6 +464,6 @@ See @projects/project-aion/archon-identity.md for full details.
 
 ---
 
-*Jarvis v1.5.0 — Project Aion Master Archon*
+*Jarvis v1.5.1 — Project Aion Master Archon*
 *Derived from AIfred baseline commit `af66364` (2026-01-06)*
-*Updated: 2026-01-06 - PR-5 Core Tooling Baseline: capability matrix, overlap analysis, MCP installation guide*
+*Updated: 2026-01-06 - PR-5 Implementation: GitHub MCP fixed, Context7 added, agents migrated*
