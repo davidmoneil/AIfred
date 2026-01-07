@@ -1,197 +1,424 @@
 # /tooling-health Command
 
-Validate Claude Code tooling status: MCPs, plugins, skills, and subagents.
+Validate Claude Code tooling status and generate a comprehensive health report.
 
 ## Usage
 
 ```
 /tooling-health
-/tooling-health --quick    # Skip smoke tests
-/tooling-health --verbose  # Show all tool details
+/tooling-health --quick    # Skip MCP tool inventory
+/tooling-health --verbose  # Include all appendices
 ```
 
-## What It Checks
+---
 
-### 1. MCP Servers
+## CRITICAL: Report Generation Workflow
 
-- List configured MCPs
-- Test connectivity for each
-- Report token cost estimates
-- Check for Stage 1 baseline coverage
+**This command produces a STANDARDIZED report.** Follow these steps exactly:
 
-### 2. Plugins
+### Phase 1: Data Collection (MANDATORY)
 
-- List installed plugins
-- Check for official plugins
-- Report plugin health
+Execute ALL these checks before writing the report:
 
-### 3. Skills
+```bash
+# 1. MCP Servers
+claude mcp list
 
-- Check skill availability
-- Verify document skills (docx, pdf, xlsx, pptx)
+# 2. Plugins
+cat ~/.claude/plugins/installed_plugins.json
 
-### 4. Built-in Tools
+# 3. Hook Validation
+for f in .claude/hooks/*.js; do node -c "$f" 2>/dev/null && echo "✓ $(basename $f)" || echo "✗ $(basename $f)"; done
 
-- Verify core tools available (Read, Write, Edit, Glob, Grep, Bash)
-- Check WebFetch, WebSearch availability
+# 4. Hook Structure Check (run the full validation script in Implementation section)
+```
 
-### 5. Subagents
+### Phase 2: MCP Tool Testing (MANDATORY)
 
-- Verify Explore, Plan, claude-code-guide availability
+For EACH connected MCP, test at least one tool:
 
-## Output Format
+| MCP | Required Test |
+|-----|---------------|
+| memory | `mcp__memory__read_graph` |
+| filesystem | `mcp__filesystem__list_allowed_directories` |
+| fetch | Note availability |
+| time | `mcp__time__get_current_time` |
+| git | `mcp__git__git_status` |
+| sequential-thinking | Note availability |
+| github | Test or document failure |
+
+### Phase 3: Report Generation (MANDATORY TEMPLATE)
+
+**IMPORTANT**: The report MUST include ALL sections from the template below. Missing sections indicate an incomplete report.
+
+---
+
+## Mandatory Report Template
 
 ```markdown
 # Tooling Health Report
-**Generated**: YYYY-MM-DD HH:MM
-**Claude Code Version**: X.X.X
 
-## Summary
+**Generated**: YYYY-MM-DD HH:MM TZ
+**Revised**: (if applicable)
+**Claude Code Version**: Model name (model ID)
+**Workspace**: `/path/to/workspace`
+**Branch**: `branch-name`
+
+---
+
+## Executive Summary
+
 | Category | Status | Details |
 |----------|--------|---------|
-| MCP Servers | ⚠️ PARTIAL | 2/7 Stage 1 installed |
-| Plugins | ✅ HEALTHY | 3 official plugins |
-| Skills | ✅ HEALTHY | Document skills available |
-| Built-in Tools | ✅ HEALTHY | All core tools available |
-| Subagents | ✅ HEALTHY | All subagents available |
+| MCP Servers | STATUS | X/7 Stage 1 connected |
+| Plugins | STATUS | X installed, X PR-5 targets |
+| Skills | STATUS | Brief note |
+| Built-in Tools | STATUS | All/partial available |
+| Hooks | STATUS | X/Y validated |
+| Subagents | STATUS | X available |
+| Custom Agents | STATUS | (if applicable) |
+| Commands | STATUS | X project + X built-in |
 
-## MCP Servers
+**Overall Health**: STATUS - Summary statement
 
-### Installed
-| Server | Status | Token Cost |
-|--------|--------|------------|
-| memory | ✅ Connected | ~12K |
+---
 
-### Stage 1 Baseline (Not Installed)
-| Server | Status | Install Command |
-|--------|--------|-----------------|
-| filesystem | ❌ Not installed | `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem <dirs>` |
-| fetch | ❌ Not installed | `claude mcp add fetch -- uvx mcp-server-fetch` |
-| time | ❌ Not installed | `claude mcp add time -- uvx mcp-server-time` |
-| git | ❌ Not installed | `claude mcp add git -- uvx mcp-server-git` |
-| sequential-thinking | ❌ Not installed | `claude mcp add sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking` |
-| github | ❌ Not installed | `claude mcp add github --remote https://api.githubcopilot.com/mcp/` |
+## Detailed Findings
 
-## Plugins
+### 1. MCP Servers
 
-### Installed
-| Plugin | Scope | Version |
-|--------|-------|---------|
-| commit-commands | project | 6d3752c |
-| github | project | 6d3752c |
+#### Stage 1 Baseline Status
 
-### Recommended (Official)
-- feature-dev - Feature development workflow
-- code-review - Automated PR review
-- hookify - Custom hook creation
-- security-guidance - Security reminders
+| Server | Status | Token Cost | Tools | Notes |
+|--------|--------|------------|-------|-------|
+| memory | STATUS | ~8-15K | 8 | Test result |
+| filesystem | STATUS | ~8K | 13 | Test result |
+| fetch | STATUS | ~5K | 1 | Test result |
+| time | STATUS | ~3K | 2 | Test result |
+| git | STATUS | ~6K | 13 | Test result |
+| sequential-thinking | STATUS | ~5K | 1 | Test result |
+| github | STATUS | ~15K | ~20+ | Test result |
 
-## Skills
+**Stage 1 Coverage**: X/7 (XX%)
 
-### Document Skills
-| Skill | Status |
-|-------|--------|
-| docx | ✅ Available (via marketplace) |
-| pdf | ✅ Available (via marketplace) |
-| xlsx | ✅ Available (via marketplace) |
-| pptx | ✅ Available (via marketplace) |
+#### MCP Tool Inventory
 
-## Built-in Tools
+**Memory MCP (8 tools)**:
+| Tool | Tested | Status | Notes |
+|------|--------|--------|-------|
+| `create_entities` | ✓/✗ | GO/WARN/FAIL | |
+| `create_relations` | ✓/✗ | GO/WARN/FAIL | |
+| `add_observations` | ✓/✗ | GO/WARN/FAIL | |
+| `delete_entities` | ✓/✗ | GO/WARN/FAIL | |
+| `delete_observations` | ✓/✗ | GO/WARN/FAIL | |
+| `delete_relations` | ✓/✗ | GO/WARN/FAIL | |
+| `read_graph` | ✓/✗ | GO/WARN/FAIL | |
+| `search_nodes` | ✓/✗ | GO/WARN/FAIL | |
+| `open_nodes` | ✓/✗ | GO/WARN/FAIL | |
 
-| Tool | Status |
-|------|--------|
-| Read | ✅ Available |
-| Write | ✅ Available |
-| Edit | ✅ Available |
-| Glob | ✅ Available |
-| Grep | ✅ Available |
-| Bash | ✅ Available |
-| WebFetch | ✅ Available |
-| WebSearch | ✅ Available |
-| Task | ✅ Available |
-| TodoWrite | ✅ Available |
+(Repeat for each connected MCP...)
 
-## Subagents
+---
+
+### 2. Plugins
+
+#### Current Installation Status
+
+| Plugin | Scope | Version | Source | PR-5 Priority |
+|--------|-------|---------|--------|---------------|
+| name | user/project | version | source | HIGH/MED/LOW/Extra |
+
+#### PR-5 Target Coverage
+
+| Priority | Target | Installed | Status |
+|----------|--------|-----------|--------|
+| HIGH | X | Y | STATUS |
+| MEDIUM | X | Y | STATUS |
+| LOW | X | Y | STATUS |
+| **Total** | **X** | **Y** | **XX%** |
+
+---
+
+### 3. Hooks
+
+#### Validation Summary
+
+| Test | Passed | Failed | Details |
+|------|--------|--------|---------|
+| Syntax Check | X/Y | Z | Notes |
+| Module Load | X/Y | Z | Notes |
+| Format Check | X/Y | Z | X module, Y CLI, Z bare |
+| **Total** | **X** | **Y** | |
+
+#### By Category
+
+(Include tables for each category: Lifecycle, Guardrail, Security, Observability, Documentation, Utility)
+
+#### Failed Hooks (if any)
+
+```
+Hook: filename.js
+Error: error message
+Resolution: suggested fix
+```
+
+---
+
+### 4. Skills
+
+| Skill | Location | Purpose | Status |
+|-------|----------|---------|--------|
+| name | path | description | STATUS |
+
+---
+
+### 5. Subagents
 
 | Subagent | Status | Purpose |
 |----------|--------|---------|
-| Explore | ✅ Available | Codebase exploration |
-| Plan | ✅ Available | Implementation planning |
-| claude-code-guide | ✅ Available | Documentation lookup |
-| general-purpose | ✅ Available | Complex tasks |
+| Explore | STATUS | Codebase exploration |
+| Plan | STATUS | Implementation planning |
+| claude-code-guide | STATUS | Documentation lookup |
+| general-purpose | STATUS | Complex tasks |
+| statusline-setup | STATUS | Status line config |
 
-## Recommendations
+---
 
-1. [~] MEDIUM: Install Stage 1 MCPs (filesystem, fetch, time, git, sequential-thinking)
-2. [~] MEDIUM: Configure GitHub MCP for automation workflows
-3. [-] LOW: Consider feature-dev plugin for structured development
+### 6. Custom Agents (if applicable)
 
-## Stage 1 Baseline Coverage
+| Agent | File | Purpose | Recognition Status |
+|-------|------|---------|-------------------|
+| name | path | purpose | Recognized/Not recognized |
 
-Current: 1/7 (14%)
-Target: 7/7 (100%)
+---
 
-Missing:
-- Filesystem MCP
-- Fetch MCP
-- Time MCP
-- Git MCP
-- Sequential Thinking MCP
-- GitHub MCP
+### 7. Commands
+
+#### Project Commands
+| Command | Purpose | Stoppage Hook |
+|---------|---------|---------------|
+| /command | description | Yes/No |
+
+---
+
+## Issues Requiring Attention
+
+### Issue #1: [Title]
+
+**Severity**: `[X] CRITICAL` / `[!] HIGH` / `[~] MEDIUM` / `[-] LOW`
+
+#### Assessment
+(What's wrong, what's the impact)
+
+#### Root Cause Analysis
+(Why is this happening)
+
+#### Recommended Plan
+(Step-by-step fix with commands)
+
+(Repeat for each issue...)
+
+---
+
+## Stage 1 Baseline Summary
+
+### Current State
+
+```
+MCP Servers:     X/7  (XX%)  - Notes
+MCP Tools:       X/Y  (XX%)  - Notes
+Plugins:         X/Y  (XX%)  - Notes
+Skills:          X/Y  (XX%)  - Notes
+Hooks:           X/Y  (XX%)  - Notes
+Built-in Tools:  X/Y  (XX%)
+Subagents:       X/Y  (XX%)
 ```
 
-## Implementation
+### Target State (PR-5)
 
-When invoked, Claude will:
-
-### 1. Check MCP Servers
-```bash
-# List configured MCPs
-claude mcp list
-
-# For each MCP, attempt a simple operation
-# (handled internally - no bash needed)
+```
+MCP Servers:     7/7   (100%)
+MCP Tools:       38/38 (100%)
+Plugins:         X/X   (100%)
+etc.
 ```
 
-### 2. Check Plugins
-```bash
-# Read installed plugins
-cat ~/.claude/plugins/installed_plugins.json
-```
+---
 
-### 3. Verify Built-in Tools
-- Attempt to use each tool with minimal operation
-- Report availability
+## Action Items Summary
 
-### 4. Check Subagents
-- Verify Task tool can spawn each subagent type
+| Priority | Action | Effort | Impact |
+|----------|--------|--------|--------|
+| `[!] HIGH` | action | Xm | impact |
+| `[~] MEDIUM` | action | Xm | impact |
+| `[-] LOW` | action | Xm | impact |
 
-### 5. Generate Report
-- Compare against Stage 1 baseline
-- Calculate coverage percentage
-- Provide actionable recommendations
+---
 
-## Smoke Tests
+## Appendices
 
-When `--verbose` is used, run simple validation for each installed MCP:
+### Appendix A: MCP Server Configuration
+(Raw `claude mcp list` output)
 
-| MCP | Test |
-|-----|------|
-| memory | Create/delete test entity |
-| filesystem | List allowed directories |
-| fetch | Fetch example.com |
-| time | Get current time |
-| git | Get git status |
-| sequential-thinking | Simple reasoning test |
-| github | List notifications |
+### Appendix B: Plugin Installation JSON
+(Raw JSON from installed_plugins.json)
+
+### Appendix C: Hook Validation Output
+(Full validation script output)
+
+---
 
 ## Related Documentation
 
-- @.claude/context/integrations/capability-matrix.md - Capability matrix
-- @.claude/context/integrations/mcp-installation.md - Installation procedures
-- @.claude/context/integrations/overlap-analysis.md - Overlap analysis
+- Links to relevant context files
+
+---
+
+*Report generated by `/tooling-health` command*
+*PR-5 Core Tooling Baseline*
+```
+
+---
+
+## Validation Checklist
+
+Before finalizing the report, verify:
+
+- [ ] Executive Summary includes ALL categories
+- [ ] MCP Tool Inventory lists tools for each connected MCP
+- [ ] Plugin table includes PR-5 priority classification
+- [ ] Hook validation includes all 3 tests (syntax, load, structure)
+- [ ] Issues section includes root cause analysis AND recommended plan
+- [ ] Stage 1 Baseline Summary has both current and target states
+- [ ] Action Items have effort estimates
+- [ ] At least one appendix with raw data
+
+---
+
+## Implementation Details
+
+### 1. Check MCP Servers
+
+```bash
+claude mcp list
+```
+
+Then test each connected server with the appropriate MCP tool.
+
+### 2. Check Plugins
+
+```bash
+cat ~/.claude/plugins/installed_plugins.json
+```
+
+Classify each plugin by:
+- Source: claude-code-plugins, claude-plugins-official, third-party
+- PR-5 Priority: HIGH, MEDIUM, LOW, Extra, N/A
+
+### 3. Check Hooks
+
+#### Syntax Validation
+
+```bash
+echo "=== SYNTAX CHECK ==="
+for f in .claude/hooks/*.js; do
+  if node -c "$f" 2>/dev/null; then
+    echo "✓ $(basename $f)"
+  else
+    echo "✗ $(basename $f) - SYNTAX ERROR"
+  fi
+done
+```
+
+#### Structure Validation
+
+```bash
+echo "=== FORMAT & STRUCTURE CHECK ==="
+node -e "
+const fs = require('fs');
+const path = require('path');
+
+const HOOKS_DIR = '.claude/hooks';
+const CLI_HOOKS = ['permission-gate.js', 'project-detector.js'];
+
+const results = {
+  load: { passed: 0, failed: 0 },
+  format: { module: 0, cli: 0, bare: 0, invalid: 0 }
+};
+
+const hookFiles = fs.readdirSync(HOOKS_DIR).filter(f => f.endsWith('.js'));
+console.log('Found ' + hookFiles.length + ' hooks\n');
+
+for (const file of hookFiles) {
+  const hookPath = path.join(process.cwd(), HOOKS_DIR, file);
+
+  if (CLI_HOOKS.includes(file)) {
+    results.load.passed++;
+    results.format.cli++;
+    console.log('✓ ' + file + ' (CLI-style)');
+    continue;
+  }
+
+  let hook;
+  try {
+    hook = require(hookPath);
+    results.load.passed++;
+  } catch (e) {
+    results.load.failed++;
+    console.log('✗ ' + file + ' - LOAD FAILED: ' + e.message);
+    continue;
+  }
+
+  if (typeof hook === 'function') {
+    results.format.bare++;
+    console.log('✓ ' + file + ' (bare function)');
+  } else if (hook.handler && hook.name && hook.event) {
+    results.format.module++;
+    console.log('✓ ' + file + ' (' + hook.event + ')');
+  } else if (hook.handler || typeof hook === 'object') {
+    results.format.module++;
+    console.log('✓ ' + file + ' (' + (hook.event || 'unknown') + ')');
+  } else {
+    results.format.invalid++;
+    console.log('? ' + file + ' - unrecognized format');
+  }
+}
+
+console.log('\n=== SUMMARY ===');
+console.log('Load: ' + results.load.passed + '/' + hookFiles.length);
+console.log('Module: ' + results.format.module + ' | CLI: ' + results.format.cli + ' | Bare: ' + results.format.bare);
+console.log(results.load.failed === 0 && results.format.invalid === 0 ? '✅ All hooks valid' : '⚠️ Issues found');
+"
+```
+
+### 4. Check Subagents
+
+Verify Task tool can spawn: Explore, Plan, claude-code-guide, general-purpose, statusline-setup
+
+### 5. Generate Report
+
+1. Save to `.claude/reports/tooling-health-YYYY-MM-DD.md`
+2. If revising same-day report, use `-vN` suffix (e.g., `-v2`)
+3. Update session-state.md with report reference
+
+---
+
+## Reference Reports
+
+For format guidance, see:
+- `.claude/reports/tooling-health-2026-01-06.md` (comprehensive example)
+
+---
+
+## Related Documentation
+
+- @.claude/context/integrations/capability-matrix.md - Task to tool selection
+- @.claude/context/integrations/mcp-installation.md - MCP installation procedures
+- @.claude/context/integrations/overlap-analysis.md - Tool overlap resolution
+- @.claude/hooks/README.md - Hooks documentation
 - @.claude/commands/health-report.md - Infrastructure health
 
 ---
 
-*PR-5 Core Tooling Baseline - Tooling Health Check v1.0*
+*PR-5 Core Tooling Baseline - Tooling Health Check v2.0*
+*Updated: 2026-01-06 - Added mandatory template, validation checklist, hooks validation*

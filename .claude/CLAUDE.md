@@ -155,12 +155,12 @@ Claude Code includes specialized subagents that are **automatically invoked** wh
 - **agent-sdk-dev:agent-sdk-verifier-ts**: Verify TypeScript Agent SDK applications
 - **project-plan-validator**: Validate project plans against infrastructure patterns
 
-### Custom Agents (via `/agent`)
+### Custom Agents (via `/agent-name`)
 Your infrastructure-specific agents with persistent memory:
-- `/agent deep-research "topic"` - Web research with multi-source validation
-- `/agent service-troubleshooter "issue"` - Systematic service diagnosis
-- `/agent docker-deployer "service"` - Guided Docker deployment
-- `/agent memory-bank-synchronizer` - Sync docs with code changes (preserves user content)
+- `/deep-research "topic"` - Web research with multi-source validation
+- `/service-troubleshooter "issue"` - Systematic service diagnosis
+- `/docker-deployer "service"` - Guided Docker deployment
+- `/memory-bank-synchronizer` - Sync docs with code changes (preserves user content)
 
 **Decision Guide**: @.claude/context/patterns/agent-selection-pattern.md
 
@@ -272,14 +272,16 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 
 ## Agents
 
-Specialized agents available via `/agent`:
+Specialized agents available via `/agent-name` or Task tool:
 
-| Agent | Purpose |
-|-------|---------|
-| `docker-deployer` | Deploy and configure Docker services |
-| `service-troubleshooter` | Diagnose infrastructure issues |
-| `deep-research` | In-depth topic investigation |
-| `memory-bank-synchronizer` | Sync documentation with code (preserves user content) |
+| Agent | Purpose | Invocation |
+|-------|---------|------------|
+| `docker-deployer` | Deploy and configure Docker services | `/docker-deployer` |
+| `service-troubleshooter` | Diagnose infrastructure issues | `/service-troubleshooter` |
+| `deep-research` | In-depth topic investigation | `/deep-research` |
+| `memory-bank-synchronizer` | Sync docs with code (preserves user content) | `/memory-bank-synchronizer` |
+
+**Note**: Agents use Claude Code's standard YAML frontmatter format. Original extended documentation archived in `.claude/agents/archive/`.
 
 ---
 

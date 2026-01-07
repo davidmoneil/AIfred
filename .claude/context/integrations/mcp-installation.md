@@ -247,10 +247,33 @@ claude mcp add playwright -- npx -y @anthropic/mcp-server-playwright
 **Loading Strategy**: Isolated (spawn per-invocation)
 **Token Cost**: ~15K
 
-### Context7 (Upstash)
+### Context7 (Upstash) — Documentation Provider
+
+**Purpose**: Provides up-to-date, version-specific library documentation to prevent hallucinations
+
+**Installation**:
 ```bash
-claude mcp add context7 -- npx -y @upstash/context7
+# Requires API key from https://context7.io/dashboard
+export CONTEXT7_API_KEY="ctx7sk-xxxxx"
+claude mcp add context7 -- npx -y @upstash/context7-mcp --api-key $CONTEXT7_API_KEY
 ```
+
+**Tools Provided**:
+- `resolve-library-id` - Convert library name to Context7 ID
+- `get-library-docs` - Retrieve version-specific documentation
+
+**Key Features**:
+- Access to ~20,000 indexed libraries
+- Version-specific documentation (e.g., React 18 vs 19)
+- Prevents hallucinations from outdated training data
+- Higher rate limits with API key
+
+**Validation**:
+```bash
+claude -p "Use Context7 to resolve the library ID for 'react'"
+```
+
+**Loading Strategy**: On-Demand (enable for documentation-heavy tasks)
 **Token Cost**: ~8K
 
 ---
@@ -347,7 +370,8 @@ Before installing MCPs, ensure:
 | Git | ~6K | On-Demand |
 | Sequential Thinking | ~5K | On-Demand |
 | GitHub | ~15K | On-Demand |
-| **Total (all enabled)** | **~50-60K** | |
+| Context7 | ~8K | On-Demand |
+| **Total (all enabled)** | **~58-68K** | |
 
 **Recommendation**: Start with Memory only as Always-On. Enable others as needed per session.
 
