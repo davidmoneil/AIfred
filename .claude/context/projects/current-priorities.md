@@ -68,10 +68,23 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 
 ## This Month
 
-### PR-8: MCP Expansion (Next)
-- [ ] Install Playwright MCP for browser automation
-- [ ] Evaluate additional MCP servers
-- [ ] Document MCP selection and overlap with plugins
+### PR-8: MCP Expansion + Context Budget (In Progress)
+
+**Completed (v1.8.0)**:
+- [x] PR-8.1: Context Budget Optimization (CLAUDE.md 78% reduction, /context-budget)
+- [x] PR-8.2: MCP Loading Tiers (3-tier design: Always-On/Task-Scoped/Triggered)
+- [x] PR-8.3: Dynamic Loading Protocol (session-start hook, checkpoint enhancements)
+
+**Remaining**:
+- [ ] PR-8.4: MCP Validation Harness
+  - Standardized validation procedure
+  - Token cost measurement
+  - Health + tool invocation tests
+
+### PR-9: Selection Intelligence (Brainstorms Captured)
+- [ ] PR-9.0: Plugin decomposition investigation
+- [ ] PR-9.1: Selection framework
+- [ ] PR-9.2: Deselection intelligence (context threshold hook + analyzer agent)
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns

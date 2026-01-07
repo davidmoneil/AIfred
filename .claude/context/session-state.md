@@ -8,11 +8,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Active
+**Status**: 🟢 Idle
 
-**Current Task**: PR-8.3 Dynamic Loading Protocol — Complete
+**Last Completed**: PR-8.3 Dynamic Loading Protocol — Complete (v1.8.0)
 
-**Next Step**: Commit PR-8.3, then PR-8.4 (MCP Validation Harness)
+**Next Step**: PR-8.4 (MCP Validation Harness)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -525,11 +525,13 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Next Session Pickup
 
-**PR-8.1 Complete** — Ready to commit:
-1. ✅ Version bump to v1.8.0
-2. ✅ CHANGELOG update
-3. ✅ Commit and push
-4. Optional: Test `/context-budget` command
+**PR-8.3 Complete** — Ready for PR-8.4:
+1. PR-8.4: MCP Validation Harness
+   - Create standardized MCP validation procedure
+   - Token cost measurement per MCP
+   - Health + tool invocation tests
+2. Test `/context-budget` command (now fixed with frontmatter)
+3. Optional: Begin PR-9 plugin decomposition investigation
 
 ---
 
@@ -542,4 +544,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-07 — PR-8.1 Context Budget Optimization complete*
+*Updated: 2026-01-07 — PR-8.3 Dynamic Loading Protocol complete (v1.8.0)*
