@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-06
+**Last Updated**: 2026-01-07
 
 ---
 
@@ -68,10 +68,11 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 
 ## This Month
 
-### PR-6: Plugins Expansion (Next)
-- [ ] Install and evaluate official Claude Code plugins
-- [ ] Adopt/adapt/reject decisions for each
-- [ ] Overlap/conflict analysis vs existing agents/hooks
+### PR-7: Skills Inventory (Next)
+- [ ] Ingest and categorize official Anthropic skills
+- [ ] Curate unofficial skills (adopt/adapt/reject)
+- [ ] Overlap analysis vs MCP tools vs plugins
+- [ ] Produce "Skills selection guide"
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns
@@ -99,6 +100,17 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ---
 
 ## Completed
+
+### 2026-01-07
+- [x] **PR-6 Plugins Expansion** (Complete — v1.6.0)
+  - Evaluated 17 plugins (13 ADOPT, 4 ADAPT, 0 REJECT)
+  - Added browser-automation plugin evaluation
+  - Created overlap analysis with 10 conflict categories
+  - Updated capability matrix with plugin selection rules
+  - Created 3 workflow templates for future tooling expansion
+  - Documented Playwright MCP for PR-8
+  - Designed PR-15 toolset expansion automation system
+  - Added validation scenarios for all adopted plugins
 
 ### 2026-01-06
 - [x] **PR-5 Tooling Implementation** (Complete — v1.5.1)

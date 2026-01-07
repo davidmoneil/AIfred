@@ -13,6 +13,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.6.0] - 2026-01-07
+
+**PR-6: Plugins Expansion** — Evaluate and document all installed plugins
+
+### Added
+
+#### Plugin Evaluation Framework
+- **`.claude/reports/pr-6-plugin-evaluation.md`** — Comprehensive evaluation of 17 plugins
+  - Decision framework: ADOPT / ADAPT / REJECT
+  - Risk assessment (LOW / MEDIUM / HIGH)
+  - Overlap analysis per plugin
+  - Selection rules for overlapping tools
+  - Validation scenarios for each adopted plugin
+
+#### Overlap Analysis
+- **`.claude/reports/pr-6-overlap-analysis.md`** — 10 overlap categories identified
+  - Category 10: Browser Automation (browser-automation vs Playwright MCP)
+  - Selection rules for each category
+  - Risk notes for higher-risk tools
+
+#### Workflow Templates
+- **`.claude/context/templates/tooling-evaluation-workflow.md`** — Repeatable process for evaluating new tools
+- **`.claude/context/templates/overlap-analysis-workflow.md`** — Template for detecting and resolving tool conflicts
+- **`.claude/context/templates/capability-matrix-update-workflow.md`** — Template for updating capability matrix
+
+#### PR-15 Design (Future)
+- **`projects/project-aion/ideas/toolset-expansion-automation.md`** — Automated toolset expansion system
+  - Repository catalog system
+  - Deep code review workflow
+  - Self-directed discovery proposal
+  - 30+ reference repositories cataloged
+
+### Changed
+
+#### Capability Matrix Updates
+- Added Browser Automation Operations section
+- Added plugin selection rules throughout
+- Added browser-automation to plugin tables
+
+#### MCP Installation Guide
+- Documented Playwright MCP for PR-8 with proper installation command
+- Added tools list and validation steps
+- Added overlap notes with browser-automation
+
+#### CLAUDE.md Updates
+- Added Plugins section with high-value plugins table
+- Added Quick Selection Guide for common tasks
+- Added Output Styles documentation (mutually exclusive)
+- Updated version to 1.6.0
+
+### Technical Summary
+
+| Category | Decision | Count |
+|----------|----------|-------|
+| ADOPT | Unique value, low risk | 13 |
+| ADAPT | Value with conditions | 4 |
+| REJECT | Redundant/problematic | 0 |
+
+### Plugin Decisions
+
+| Plugin | Decision | Rationale |
+|--------|----------|-----------|
+| agent-sdk-dev | ADOPT | Unique Agent SDK capability |
+| browser-automation | ADAPT | NL browser automation (higher risk) |
+| code-review | ADAPT | Keep as quick review alternative |
+| explanatory-output-style | ADAPT | Mutually exclusive with learning |
+| feature-dev | ADOPT | Comprehensive feature workflow |
+| frontend-design | ADOPT | Unique UI quality guidance |
+| hookify | ADOPT | Unique hook creation |
+| learning-output-style | ADAPT | Mutually exclusive with explanatory |
+| plugin-dev | ADOPT | Plugin development toolkit |
+| pr-review-toolkit | ADOPT | Most comprehensive review |
+| ralph-wiggum | ADOPT | Enables autonomous loops |
+| security-guidance | ADOPT | Defense in depth |
+| code-operations-skills | ADOPT | Bulk operations |
+| engineering-workflow-skills | ADOPT | Conversational workflows |
+| productivity-skills | ADOPT | Project bootstrapping |
+| visual-documentation-skills | ADOPT | Visual artifacts |
+| document-skills | ADOPT | Office documents |
+
+---
+
 ## [1.5.1] - 2026-01-06
 
 **PR-5 Implementation Phase** — Resolved all tooling health issues

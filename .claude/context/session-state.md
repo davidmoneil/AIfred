@@ -8,9 +8,9 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Ready
+**Status**: 🟢 Idle
 
-**Current Task**: PR-6 Revision Complete (browser-automation added)
+**Current Task**: PR-6 Complete (v1.6.0 Released)
 
 **Next Step**: Begin PR-7 (Skills Inventory) per roadmap
 
