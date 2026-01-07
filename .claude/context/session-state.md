@@ -8,11 +8,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟢 Ready
 
-**Current Task**: None — Session Complete
+**Current Task**: PR-6 Revision Complete (browser-automation added)
 
-**Next Step**: Begin PR-6 (Plugins Expansion) when ready
+**Next Step**: Begin PR-7 (Skills Inventory) per roadmap
 
 ### On-Demand MCPs Enabled This Session
 
@@ -337,13 +337,67 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Next Session Pickup
 
-**PR-5 Complete (v1.5.1)** — All tooling issues resolved and released. Next priorities:
+**PR-6 Complete** — All pickup tasks verified and PR-6 plugins expansion completed.
 
-1. **Verify agents after restart** — Run `/agents` to confirm 4 custom agents recognized
-2. **Test Context7** — Try `resolve-library-id` and `get-library-docs` tools
-3. **Test GitHub MCP** — Verify GitHub tools work with PAT
-4. **Seed Memory MCP** — Add initial entities as patterns emerge
-5. **Begin PR-6: Plugins Expansion** — Per Project Aion roadmap
+### Session Accomplishments (2026-01-07)
+
+1. **Verified PR-5 post-restart** ✅
+   - Custom agents: 4 recognized (docker-deployer, service-troubleshooter, deep-research, memory-bank-synchronizer)
+   - Context7 MCP: Both `resolve-library-id` and `query-docs` working
+   - GitHub MCP: PAT authentication working (file contents, commits, search)
+   - Memory MCP: Seeded with 6 entities, 6 relations
+
+2. **PR-6: Plugins Expansion** ✅
+   - Discovered original target list had errors (gitlab/playwright don't exist)
+   - Evaluated all 16 installed plugins
+   - Created overlap analysis: `.claude/reports/pr-6-overlap-analysis.md`
+   - Created evaluation document: `.claude/reports/pr-6-plugin-evaluation.md`
+   - Updated capability matrix with plugin selection rules
+   - Added Plugins section to CLAUDE.md
+   - Decisions: 12 ADOPT, 3 ADAPT, 0 REJECT
+
+### Session Accomplishments (2026-01-07 Continued)
+
+**PR-6 Revision: browser-automation Added**
+
+1. **browser-automation Plugin Evaluated** ✅
+   - Added evaluation entry to pr-6-plugin-evaluation.md
+   - Decision: ADAPT (NL browser control with caution)
+   - Overlap with Playwright MCP documented
+
+2. **Overlap Analysis Updated** ✅
+   - Added Category 10: Browser Automation
+   - Selection rules: NL tasks → browser-automation, scripts → Playwright
+   - Risk notes documented
+
+3. **Capability Matrix Updated** ✅
+   - Added Browser Automation Operations section
+   - Added selection rules for browser automation
+   - Added browser-automation plugin to plugin tables
+
+4. **Workflow Templates Created** ✅
+   - `.claude/context/templates/tooling-evaluation-workflow.md`
+   - `.claude/context/templates/overlap-analysis-workflow.md`
+   - `.claude/context/templates/capability-matrix-update-workflow.md`
+   - Updated context index with templates section
+
+5. **Playwright MCP Documented for PR-8** ✅
+   - Updated MCP installation guide with proper command
+   - Added tools list and validation steps
+   - Added overlap notes with browser-automation
+
+6. **PR-15 Toolset Expansion System Designed** ✅
+   - Created `projects/project-aion/ideas/toolset-expansion-automation.md`
+   - Added PR-15 to roadmap future work section
+   - Listed 30+ reference repositories for future review
+
+### Next Session Pickup
+
+**PR-7: Skills Inventory** — Per Project Aion roadmap:
+1. Ingest and categorize official Anthropic skills
+2. Curate unofficial skills (adopt/adapt/reject)
+3. Overlap analysis vs MCP tools vs plugins
+4. Produce "Skills selection guide"
 
 ---
 
@@ -356,4 +410,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-06 — Session complete, PR-5 released as v1.5.1*
+*Updated: 2026-01-07 — PR-6 Revision complete (browser-automation + templates + PR-15 design)*

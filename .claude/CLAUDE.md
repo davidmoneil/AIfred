@@ -42,10 +42,12 @@ You are working in **Jarvis**, the master Archon of Project Aion — a highly au
 - @.claude/context/patterns/workspace-path-policy.md - **Workspace path policy** (where projects/docs go)
 - @.claude/context/patterns/branching-strategy.md - **Branching strategy** (Project_Aion branch)
 
-### Tooling (PR-5)
-- @.claude/context/integrations/capability-matrix.md - **Task → tool selection matrix**
+### Tooling (PR-5/PR-6)
+- @.claude/context/integrations/capability-matrix.md - **Task → tool selection matrix** (includes plugin selection rules)
 - @.claude/context/integrations/overlap-analysis.md - Tool overlap & conflict resolution
 - @.claude/context/integrations/mcp-installation.md - Stage 1 MCP installation guide
+- @.claude/reports/pr-6-plugin-evaluation.md - **Plugin adopt/adapt/reject decisions**
+- @.claude/reports/pr-6-overlap-analysis.md - Plugin vs hooks/agents overlap analysis
 
 ---
 
@@ -282,6 +284,44 @@ Specialized agents available via `/agent-name` or Task tool:
 | `memory-bank-synchronizer` | Sync docs with code (preserves user content) | `/memory-bank-synchronizer` |
 
 **Note**: Agents use Claude Code's standard YAML frontmatter format. Original extended documentation archived in `.claude/agents/archive/`.
+
+---
+
+## Plugins (PR-6)
+
+**16 plugins** evaluated and categorized for Jarvis workflows.
+
+### High-Value Plugins
+
+| Plugin | Purpose | Usage |
+|--------|---------|-------|
+| `feature-dev` | Structured feature development | Complex multi-phase features |
+| `pr-review-toolkit` | Comprehensive PR review | 7 specialized review agents |
+| `ralph-wiggum` | Autonomous iteration loops | "Keep going until done" |
+| `hookify` | Create prevention hooks | Analyze patterns, generate hooks |
+| `visual-documentation-skills` | Diagrams & dashboards | Architecture, flowcharts, timelines |
+| `document-skills` | Office documents | Word, PDF, Excel, PowerPoint |
+
+### Quick Selection Guide
+
+| Task | Plugin | Command/Skill |
+|------|--------|---------------|
+| Code review (quick) | `code-review` | `/code-review:code-review` |
+| Code review (thorough) | `pr-review-toolkit` | `/pr-review-toolkit:review-pr` |
+| Feature dev (simple) | `engineering-workflow-skills` | `feature-planning` skill |
+| Feature dev (complex) | `feature-dev` | `/feature-dev:feature-dev` |
+| Git commit & push | `engineering-workflow-skills` | `git-pushing` skill |
+| Create diagram | `visual-documentation-skills` | `/architecture-diagram-creator` |
+
+### Output Styles (Mutually Exclusive)
+
+Choose **ONE** per session:
+- `explanatory-output-style`: Educational insights (teaching mode)
+- `learning-output-style`: Interactive contributions (learning mode)
+- Neither: Normal operation
+
+**Full evaluation**: @.claude/reports/pr-6-plugin-evaluation.md
+**Selection rules**: @.claude/context/integrations/capability-matrix.md
 
 ---
 

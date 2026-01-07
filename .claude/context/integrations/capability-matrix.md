@@ -45,6 +45,18 @@ This document maps task types to preferred tools, providing clear selection guid
 | Deep research | `deep-research` agent | WebSearch + WebFetch | Agent for multi-source synthesis |
 | API calls | `Bash(curl)` | Fetch MCP | Bash for full control |
 
+### Browser Automation Operations
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| NL browser tasks | `browser-automation` plugin | Playwright MCP | NL-first, AI-interpreted |
+| Programmatic automation | Playwright MCP | browser-automation | Precise control, deterministic |
+| Form filling | `browser-automation` plugin | Playwright MCP | NL more intuitive |
+| Web scraping | `browser-automation` plugin | WebFetch + parsing | Interactive content needs browser |
+| QA testing | Playwright MCP | browser-automation | Assertions need determinism |
+| Screenshots | Playwright MCP | browser-automation | Both support screenshots |
+| Logged-in sessions | `browser-automation` plugin | N/A | Uses Chrome profile (caution) |
+
 ### GitHub Operations
 
 | Task | Primary Tool | Fallback | Notes |
@@ -137,15 +149,44 @@ This document maps task types to preferred tools, providing clear selection guid
 | GitHub | GitHub platform | ~15K | On-Demand |
 | Sequential Thinking | Problem decomposition | ~5K | On-Demand |
 
-### Claude Code Plugins (Recommended)
+### Claude Code Plugins (PR-6 Evaluated)
 
-| Plugin | Purpose | When to Use |
-|--------|---------|-------------|
-| `commit-commands` | Git workflow | `/commit`, `/commit-push-pr` |
-| `feature-dev` | Feature development | Structured feature implementation |
-| `code-review` | PR review | Automated code review |
-| `hookify` | Custom hooks | Preventing unwanted behaviors |
-| `security-guidance` | Security checks | Security-sensitive code |
+#### Official Plugins (claude-code-plugins)
+
+| Plugin | Purpose | Decision | When to Use |
+|--------|---------|----------|-------------|
+| `agent-sdk-dev` | Agent SDK development | ADOPT | Creating/validating Agent SDK apps |
+| `code-review` | Quick code review | ADAPT | Lightweight reviews (use pr-review-toolkit for thorough) |
+| `explanatory-output-style` | Educational insights | ADAPT | Teaching mode (mutually exclusive with learning) |
+| `feature-dev` | Feature development | ADOPT | Complex multi-phase features |
+| `frontend-design` | UI design guidance | ADOPT | Building web interfaces |
+| `hookify` | Hook creation | ADOPT | Creating prevention hooks from patterns |
+| `learning-output-style` | Interactive contributions | ADAPT | Learning by doing (mutually exclusive with explanatory) |
+| `plugin-dev` | Plugin development | ADOPT | Creating new plugins |
+| `pr-review-toolkit` | Comprehensive PR review | ADOPT | Thorough PR reviews (7 specialized agents) |
+| `ralph-wiggum` | Autonomous loops | ADOPT | "Keep going until done" workflows |
+| `security-guidance` | Security monitoring | ADOPT | All development (defense in depth) |
+
+#### Community Skills (mhattingpete-claude-skills)
+
+| Plugin | Purpose | Decision | When to Use |
+|--------|---------|----------|-------------|
+| `code-operations-skills` | Bulk code operations | ADOPT | Renaming, pattern replacement across files |
+| `engineering-workflow-skills` | Git, testing, planning | ADOPT | Natural language workflows ("push changes") |
+| `productivity-skills` | Project bootstrap, audit | ADOPT | New projects, code quality audits |
+| `visual-documentation-skills` | Diagrams, dashboards | ADOPT | Architecture diagrams, flowcharts, timelines |
+
+#### Document Skills (anthropic-agent-skills)
+
+| Plugin | Purpose | Decision | When to Use |
+|--------|---------|----------|-------------|
+| `document-skills` | Office documents | ADOPT | Word, PDF, Excel, PowerPoint generation |
+
+#### Browser Automation (browser-tools)
+
+| Plugin | Purpose | Decision | When to Use |
+|--------|---------|----------|-------------|
+| `browser-automation` | NL browser control | ADAPT | Natural language web tasks, scraping, form filling (caution with auth) |
 
 ### Skills (Document-focused)
 
@@ -155,6 +196,77 @@ This document maps task types to preferred tools, providing clear selection guid
 | `pdf` | PDF documents | Generating PDFs |
 | `xlsx` | Spreadsheets | Excel file operations |
 | `pptx` | Presentations | PowerPoint creation |
+
+---
+
+## Plugin Selection Rules (PR-6)
+
+### Code Review Selection
+```
+Need code review?
+├── Quick review → code-review plugin
+├── Thorough review → pr-review-toolkit (7 specialized agents)
+└── Specific analysis → pr-review-toolkit agents directly:
+    ├── Silent failures → silent-failure-hunter
+    ├── Type design → type-design-analyzer
+    ├── Test coverage → pr-test-analyzer
+    └── Comment quality → comment-analyzer
+```
+
+### Feature Development Selection
+```
+Building a feature?
+├── Simple feature → engineering-workflow-skills:feature-planning
+├── Complex feature → feature-dev plugin (7-phase workflow)
+└── Architecture only → Plan subagent
+```
+
+### Git Workflow Selection
+```
+Git operations needed?
+├── Natural language ("push changes") → engineering-workflow-skills:git-pushing
+├── Simple commands → Bash(git)
+└── Complex automation → GitHub MCP
+```
+
+### Output Style Selection (Mutually Exclusive)
+```
+Session output style?
+├── Learning mode → learning-output-style (user writes key code)
+├── Teaching mode → explanatory-output-style (educational insights)
+└── Normal work → Neither (default behavior)
+
+WARNING: Only enable ONE output style per session
+```
+
+### Documentation Selection
+```
+Generating documentation?
+├── Office formats (Word/Excel/PPT/PDF) → document-skills
+├── Visual diagrams/flowcharts → visual-documentation-skills
+├── Markdown sync → memory-bank-synchronizer agent
+└── Codebase docs → productivity-skills:codebase-documenter
+```
+
+### Browser Automation Selection
+```
+Need browser automation?
+├── Simple content fetch (no interaction) → WebFetch / WebSearch
+├── Natural language browsing → browser-automation plugin
+│   ├── "Go to X and extract Y" → browser-automation
+│   ├── "Fill out this form" → browser-automation
+│   └── "Navigate and click" → browser-automation
+├── Deterministic automation → Playwright MCP
+│   ├── Test scripts → Playwright MCP
+│   ├── Precise assertions → Playwright MCP
+│   └── Repeatable automation → Playwright MCP
+└── Logged-in sessions → browser-automation (CAUTION)
+
+RISK NOTE: browser-automation has higher risk profile:
+- Uses Chrome profile with logged-in sessions
+- AI interpretation may produce unexpected actions
+- Operations outside workspace guardrails
+```
 
 ---
 
@@ -169,7 +281,7 @@ Need to accomplish a task?
 │
 ├── Is it a git operation?
 │   ├── Simple (status/log/diff) → Use Bash(git)
-│   ├── Commit workflow → Use commit-commands plugin
+│   ├── Natural language ("commit and push") → engineering-workflow-skills:git-pushing
 │   └── GitHub automation → Use gh CLI or GitHub MCP
 │
 ├── Is it research/exploration?
@@ -177,16 +289,27 @@ Need to accomplish a task?
 │   ├── Open-ended exploration → Use Explore subagent
 │   └── Web research → Use WebSearch/WebFetch or deep-research agent
 │
+├── Is it browser automation?
+│   ├── Simple content fetch → Use WebFetch/WebSearch
+│   ├── Natural language tasks → Use browser-automation plugin
+│   └── Deterministic scripts → Use Playwright MCP
+│
 ├── Is it document generation?
-│   └── Office formats → Use appropriate skill (docx/pdf/xlsx/pptx)
+│   ├── Office formats → Use document-skills
+│   ├── Visual diagrams → Use visual-documentation-skills
+│   └── Markdown → Write directly or memory-bank-synchronizer
 │
 ├── Is it infrastructure?
 │   ├── Docker commands → Use Bash(docker)
 │   └── Complex deployment → Use docker-deployer agent
 │
+├── Is it code review?
+│   ├── Quick check → Use code-review plugin
+│   └── Thorough review → Use pr-review-toolkit
+│
 └── Is it a complex workflow?
     ├── Feature development → Use feature-dev plugin
-    ├── Code review → Use code-review plugin
+    ├── Autonomous iteration → Use ralph-wiggum
     └── Multi-step automation → Use general-purpose subagent
 ```
 
@@ -230,4 +353,4 @@ See @.claude/context/integrations/overlap-analysis.md for detailed conflict reso
 
 ---
 
-*PR-5 Core Tooling Baseline - Capability Matrix v1.0*
+*PR-5 Core Tooling Baseline - Capability Matrix v1.2 (Revised 2026-01-07 with browser-automation)*

@@ -78,6 +78,21 @@ patterns/
 - ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
 - ✅ **Workspace Path Policy**: Where projects and documentation live
 
+### Templates (Repeatable Workflow Templates)
+```
+templates/
+├── tooling-evaluation-workflow.md      # Evaluate new tools (MCPs, plugins, skills)
+├── overlap-analysis-workflow.md        # Identify and resolve tool overlaps
+└── capability-matrix-update-workflow.md # Update capability matrix after changes
+```
+
+**Purpose**: Step-by-step templates for repeatable processes, ensuring consistency across tool evaluations and capability updates.
+
+**Active Templates**:
+- ✅ **Tooling Evaluation**: ADOPT/ADAPT/REJECT decisions for new tools
+- ✅ **Overlap Analysis**: Detect and resolve tool conflicts
+- ✅ **Capability Matrix Update**: Add tools to selection matrix
+
 ### Upstream (AIfred Baseline Tracking)
 ```
 upstream/
@@ -212,6 +227,12 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
+**2026-01-07**: PR-6 Plugins Expansion (Revised)
+- ✅ Added browser-automation plugin evaluation
+- ✅ Updated overlap analysis with browser automation category
+- ✅ Updated capability matrix with browser automation selection rules
+- ✅ Created templates directory with tooling workflows
+
 **2026-01-06**: PR-5 Core Tooling Baseline
 - ✅ Created capability matrix document (task → tool selection)
 - ✅ Created overlap analysis document (conflict resolution)
@@ -242,4 +263,4 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
-*Last Updated: 2026-01-06*
+*Last Updated: 2026-01-07*

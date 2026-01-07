@@ -240,11 +240,43 @@ claude mcp add duckduckgo -- npx -y @nicholasrq/duckduckgo-mcp
 ```
 **Token Cost**: ~5K
 
-### Playwright (Browser Automation)
+### Playwright (Browser Automation) — PR-8 Target
+
+**Purpose**: Programmatic browser automation with precise control for testing and scraping
+
+**Installation**:
 ```bash
-claude mcp add playwright -- npx -y @anthropic/mcp-server-playwright
+claude mcp add playwright npx '@playwright/mcp@latest'
 ```
-**Loading Strategy**: Isolated (spawn per-invocation)
+
+**Tools Provided**:
+- `browser_navigate` - Go to URL
+- `browser_snapshot` - Accessibility snapshot (better than screenshot)
+- `browser_click`, `browser_type`, `browser_fill_form` - Interactions
+- `browser_screenshot` - Visual capture
+- `browser_evaluate` - Run JavaScript
+- `browser_network_requests`, `browser_console_messages` - Debugging
+- `browser_tabs` - Multi-tab management
+- `browser_wait_for` - Wait conditions
+- `browser_drag`, `browser_hover`, `browser_select_option` - Advanced interactions
+
+**Prerequisites**:
+```bash
+# Install browser if not present
+npx playwright install chromium
+```
+
+**Validation**:
+```bash
+claude -p "Use Playwright MCP to navigate to https://example.com and take a snapshot"
+```
+
+**Overlap with browser-automation plugin**:
+- Playwright MCP: Programmatic, deterministic, precise control
+- browser-automation: Natural language, AI-interpreted, context-efficient
+- **Selection**: Use Playwright for QA tests/scripts, browser-automation for NL tasks
+
+**Loading Strategy**: Isolated (spawn per-invocation, high resource usage)
 **Token Cost**: ~15K
 
 ### Context7 (Upstash) — Documentation Provider
@@ -361,17 +393,20 @@ Before installing MCPs, ensure:
 
 ## Token Cost Summary
 
-| MCP | Token Cost | Loading Strategy |
-|-----|------------|------------------|
-| Memory | ~8-15K | Always-On |
-| Filesystem | ~8K | On-Demand |
-| Fetch | ~5K | On-Demand |
-| Time | ~3K | On-Demand |
-| Git | ~6K | On-Demand |
-| Sequential Thinking | ~5K | On-Demand |
-| GitHub | ~15K | On-Demand |
-| Context7 | ~8K | On-Demand |
-| **Total (all enabled)** | **~58-68K** | |
+| MCP | Token Cost | Loading Strategy | Status |
+|-----|------------|------------------|--------|
+| Memory | ~8-15K | Always-On | Stage 1 |
+| Filesystem | ~8K | On-Demand | Stage 1 |
+| Fetch | ~5K | On-Demand | Stage 1 |
+| Time | ~3K | On-Demand | Stage 1 |
+| Git | ~6K | On-Demand | Stage 1 |
+| Sequential Thinking | ~5K | On-Demand | Stage 1 |
+| GitHub | ~15K | On-Demand | Stage 1 |
+| Context7 | ~8K | On-Demand | Stage 1 |
+| Playwright | ~15K | Isolated | PR-8 Target |
+| DuckDuckGo | ~5K | On-Demand | Stage 2 |
+| **Total Stage 1** | **~58-68K** | | |
+| **Total All** | **~78-88K** | | |
 
 **Recommendation**: Start with Memory only as Always-On. Enable others as needed per session.
 

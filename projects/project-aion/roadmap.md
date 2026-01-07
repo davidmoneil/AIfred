@@ -915,7 +915,32 @@ Copy/paste this into Claude Code to start:
 
 ## 10) Future Work / Brainstorms (De-scoped for Now)
 
+### PR-15: Toolset Expansion Automation (Proposed)
+
+**Goal**: Automate the discovery, evaluation, and integration of new tools.
+
+**Design Document**: `projects/project-aion/ideas/toolset-expansion-automation.md`
+
+**Phases**:
+- PR-15a: Repository catalog system (`~/Claude/GitRepos/`)
+- PR-15b: Deep review workflow with structured analysis
+- PR-15c: Auto-integration with existing templates
+- PR-15d: Self-directed discovery (pattern detection)
+
+**Reference Repositories** (to be reviewed):
+- Claude Code enhancement: superpowers, claude-code-templates, SuperClaude_Framework
+- Testing: tdd-guard
+- Multi-agent: Roo Commander, rUvnet, Claude-Flow, Symphony, Maestro
+- Sessions: cc-sessions, ccusage
+- Infrastructure: ccflare, ccpm
+
+**Dependencies**: PR-6 (complete), PR-7 (in progress), workflow templates (created)
+
+---
+
+### Copilot Pro / RooCode Model Routing
+
 - **Copilot Pro / RooCode model routing feasibility**
-  - Roo-Code: https://github.com/RooCodeInc/Roo-Code  
-  - Explore whether an MCP/tool could route prompts through Copilot Pro models  
+  - Roo-Code: https://github.com/RooCodeInc/Roo-Code
+  - Explore whether an MCP/tool could route prompts through Copilot Pro models
   - Produce a feasibility report and architecture proposal only (no premature build)
