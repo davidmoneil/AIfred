@@ -13,6 +13,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.7.0] - 2026-01-07
+
+**PR-7: Skills Inventory** — Evaluate and document all skills
+
+### Added
+
+#### Skills Evaluation Report
+- **`.claude/reports/pr-7-skills-evaluation.md`** — Comprehensive evaluation of 64+ skills
+  - 16 Official Anthropic skills (11 ADOPT, 5 ADAPT)
+  - 39 Plugin-provided skills (inherit PR-6 decisions)
+  - 9 Project skills/commands (all KEEP)
+  - Validation scenarios for each skill
+
+#### Skills Overlap Analysis
+- **`.claude/reports/pr-7-skills-overlap-analysis.md`** — 5 new overlap categories
+  - Category 11: Document Generation
+  - Category 12: Visual/Creative Design
+  - Category 13: Development Skills
+  - Category 14: Testing & QA
+  - Category 15: Communication & Documentation
+
+#### Skills Selection Guide
+- **`.claude/context/integrations/skills-selection-guide.md`** — Quick reference
+  - Selection matrix by output type and task type
+  - Decision trees for common scenarios
+  - Tier 1/2/3 skill recommendations for Jarvis workflows
+  - Skill + MCP combination recommendations
+
+### Changed
+
+#### Capability Matrix Updates
+- Added comprehensive Skills section (v1.3)
+- Document skills (docx, pdf, pptx, xlsx, doc-coauthoring)
+- Creative/visual skills (algorithmic-art, canvas-design, etc.)
+- Development skills (mcp-builder, skill-creator, webapp-testing)
+- Reference to skills-selection-guide.md
+
+#### CLAUDE.md Updates
+- Added skills quick links in Tooling section
+- Updated version to 1.7.0
+
+#### Context Index Updates
+- Added skills-selection-guide.md to integrations
+
+### Technical Summary
+
+| Category | ADOPT | ADAPT | REJECT |
+|----------|-------|-------|--------|
+| Official Anthropic Skills | 11 | 5 | 0 |
+| Plugin-Provided Skills | — | — | — (inherit PR-6) |
+| Project Skills | 9 (KEEP) | — | — |
+
+### Key Skill Decisions
+
+| Skill | Decision | Rationale |
+|-------|----------|-----------|
+| docx/pdf/pptx/xlsx | ADOPT | Production-tested document creation |
+| algorithmic-art | ADOPT | Unique creative capability |
+| mcp-builder | ADOPT | Essential for PR-8 MCP expansion |
+| canvas-design | ADAPT | Use for custom graphics beyond templates |
+| frontend-design | ADAPT | Use via plugin invocation |
+| webapp-testing | ADAPT | Use with Playwright MCP |
+| skill-creator | ADAPT | Use for standalone skills |
+
+---
+
 ## [1.6.0] - 2026-01-07
 
 **PR-6: Plugins Expansion** — Evaluate and document all installed plugins

@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.6.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
+**Version**: 1.7.0 | **Derived from**: [AIfred baseline](https://github.com/davidmoneil/AIfred) commit `af66364`
 
 You are working in **Jarvis**, the master Archon of Project Aion — a highly autonomous, self-improving AI infrastructure and software-development assistant for home lab automation, knowledge management, and system integration.
 
@@ -42,12 +42,13 @@ You are working in **Jarvis**, the master Archon of Project Aion — a highly au
 - @.claude/context/patterns/workspace-path-policy.md - **Workspace path policy** (where projects/docs go)
 - @.claude/context/patterns/branching-strategy.md - **Branching strategy** (Project_Aion branch)
 
-### Tooling (PR-5/PR-6)
-- @.claude/context/integrations/capability-matrix.md - **Task → tool selection matrix** (includes plugin selection rules)
+### Tooling (PR-5/PR-6/PR-7)
+- @.claude/context/integrations/capability-matrix.md - **Task → tool selection matrix** (includes plugin and skill selection)
+- @.claude/context/integrations/skills-selection-guide.md - **Skills selection guide** (PR-7)
 - @.claude/context/integrations/overlap-analysis.md - Tool overlap & conflict resolution
 - @.claude/context/integrations/mcp-installation.md - Stage 1 MCP installation guide
-- @.claude/reports/pr-6-plugin-evaluation.md - **Plugin adopt/adapt/reject decisions**
-- @.claude/reports/pr-6-overlap-analysis.md - Plugin vs hooks/agents overlap analysis
+- @.claude/reports/pr-6-plugin-evaluation.md - Plugin adopt/adapt/reject decisions
+- @.claude/reports/pr-7-skills-evaluation.md - **Skills adopt/adapt/reject decisions** (PR-7)
 
 ---
 
@@ -496,7 +497,7 @@ Jarvis is part of **Project Aion**, a collection of specialized AI assistants (A
 
 | Archon | Role | Status |
 |--------|------|--------|
-| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.6.0 |
+| **Jarvis** | Master Archon — Dev + Infrastructure + Archon Builder | Active v1.7.0 |
 | **Jeeves** | Always-On — Personal automation via cron jobs | Concept |
 | **Wallace** | Creative Writer — Fiction and long-form content | Concept |
 
@@ -504,6 +505,6 @@ See @projects/project-aion/archon-identity.md for full details.
 
 ---
 
-*Jarvis v1.6.0 — Project Aion Master Archon*
+*Jarvis v1.7.0 — Project Aion Master Archon*
 *Derived from AIfred baseline commit `af66364` (2026-01-06)*
-*Updated: 2026-01-07 - PR-6 Complete: Plugins expansion with 17 plugins evaluated*
+*Updated: 2026-01-07 - PR-7 Complete: Skills inventory with 64+ skills evaluated*

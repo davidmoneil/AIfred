@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-6 Complete (v1.6.0 Released)
+**Current Task**: PR-7 Skills Inventory (Complete — v1.7.0)
 
-**Next Step**: Begin PR-7 (Skills Inventory) per roadmap
+**Next Step**: Begin PR-8 (MCP Expansion) per roadmap
 
 ### On-Demand MCPs Enabled This Session
 
@@ -391,13 +391,44 @@ Implemented controlled porting workflow from AIfred baseline:
    - Added PR-15 to roadmap future work section
    - Listed 30+ reference repositories for future review
 
+### Session Accomplishments (2026-01-07 — PR-7)
+
+**PR-7: Skills Inventory — Core deliverables complete**
+
+1. **Skills Evaluation Report** ✅
+   - Evaluated 16 official Anthropic skills (11 ADOPT, 5 ADAPT, 0 REJECT)
+   - 39 plugin-provided skills (inherit PR-6 decisions)
+   - 9 project skills/commands (all KEEP)
+   - `.claude/reports/pr-7-skills-evaluation.md`
+
+2. **Skills Overlap Analysis** ✅
+   - Added 5 new overlap categories (11-15)
+   - Document generation, visual/creative, development, testing, communication
+   - `.claude/reports/pr-7-skills-overlap-analysis.md`
+
+3. **Skills Selection Guide** ✅
+   - Quick selection matrix by output type and task type
+   - Decision trees for common scenarios
+   - Tier 1/2/3 skill recommendations
+   - `.claude/context/integrations/skills-selection-guide.md`
+
+4. **Capability Matrix Updated** ✅
+   - Added comprehensive skills section
+   - Document skills, creative/visual skills, development skills
+   - v1.3 with PR-7 skills
+
+5. **Documentation Updated** ✅
+   - CLAUDE.md: Added skills quick links
+   - Context index: Added skills-selection-guide
+   - Current priorities: Ready for PR-7 completion
+
 ### Next Session Pickup
 
-**PR-7: Skills Inventory** — Per Project Aion roadmap:
-1. Ingest and categorize official Anthropic skills
-2. Curate unofficial skills (adopt/adapt/reject)
-3. Overlap analysis vs MCP tools vs plugins
-4. Produce "Skills selection guide"
+**PR-7 Completion** — Remaining tasks:
+1. Version bump to v1.7.0
+2. CHANGELOG update
+3. Commit and push
+4. Validation pass (optional, defer to post-PR-8)
 
 ---
 

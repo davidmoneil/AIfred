@@ -68,11 +68,10 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 
 ## This Month
 
-### PR-7: Skills Inventory (Next)
-- [ ] Ingest and categorize official Anthropic skills
-- [ ] Curate unofficial skills (adopt/adapt/reject)
-- [ ] Overlap analysis vs MCP tools vs plugins
-- [ ] Produce "Skills selection guide"
+### PR-8: MCP Expansion (Next)
+- [ ] Install Playwright MCP for browser automation
+- [ ] Evaluate additional MCP servers
+- [ ] Document MCP selection and overlap with plugins
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns
@@ -102,6 +101,13 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-07
+- [x] **PR-7 Skills Inventory** (Complete — v1.7.0)
+  - Evaluated 64+ skills (16 official + 39 plugin + 9 project)
+  - 11 ADOPT, 5 ADAPT, 0 REJECT for official skills
+  - Created skills selection guide with decision trees
+  - Added 5 overlap categories (11-15)
+  - Updated capability matrix v1.3
+
 - [x] **PR-6 Plugins Expansion** (Complete — v1.6.0)
   - Evaluated 17 plugins (13 ADOPT, 4 ADAPT, 0 REJECT)
   - Added browser-automation plugin evaluation

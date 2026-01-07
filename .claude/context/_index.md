@@ -116,10 +116,11 @@ designs/
 ### Integrations (API & Integration Guides)
 ```
 integrations/
-├── memory-usage.md       # Memory MCP guidelines
-├── capability-matrix.md  # Task → tool selection matrix (PR-5)
-├── overlap-analysis.md   # Tool overlap & conflict resolution (PR-5)
-└── mcp-installation.md   # Stage 1 MCP installation guide (PR-5)
+├── memory-usage.md            # Memory MCP guidelines
+├── capability-matrix.md       # Task → tool selection matrix (PR-5/PR-7)
+├── overlap-analysis.md        # Tool overlap & conflict resolution (PR-5)
+├── mcp-installation.md        # Stage 1 MCP installation guide (PR-5)
+└── skills-selection-guide.md  # Skills selection guide (PR-7)
 ```
 
 **Purpose**: Documentation for connecting systems and tool selection.
@@ -128,6 +129,9 @@ integrations/
 - ✅ **Capability Matrix**: Task type → preferred tool → fallback
 - ✅ **Overlap Analysis**: Conflict resolution between tools
 - ✅ **MCP Installation**: Stage 1 server installation procedures
+
+**PR-7 Skills Inventory**:
+- ✅ **Skills Selection Guide**: When to use which skill
 
 ### Learning (Background Knowledge)
 ```

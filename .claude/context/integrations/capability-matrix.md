@@ -188,14 +188,40 @@ This document maps task types to preferred tools, providing clear selection guid
 |--------|---------|----------|-------------|
 | `browser-automation` | NL browser control | ADAPT | Natural language web tasks, scraping, form filling (caution with auth) |
 
-### Skills (Document-focused)
+### Skills (PR-7 Evaluated)
+
+#### Document Skills (document-skills plugin)
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
 | `docx` | Word documents | Creating/editing .docx files |
-| `pdf` | PDF documents | Generating PDFs |
+| `pdf` | PDF documents | Generating PDFs, extracting form data |
 | `xlsx` | Spreadsheets | Excel file operations |
 | `pptx` | Presentations | PowerPoint creation |
+| `doc-coauthoring` | Collaborative editing | Multi-author document workflows |
+
+#### Creative/Visual Skills (example-skills plugin)
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `algorithmic-art` | Generative art | Creating visual patterns, data art |
+| `canvas-design` | Custom graphics | HTML5 Canvas diagrams beyond templates |
+| `brand-guidelines` | Brand identity | Creating style guides |
+| `theme-factory` | Design themes | Color schemes, dark/light modes |
+| `web-artifacts-builder` | Interactive demos | Prototypes, shareable artifacts |
+| `slack-gif-creator` | Animated GIFs | Slack emojis, reaction GIFs |
+| `internal-comms` | Communications | Company announcements, newsletters |
+
+#### Development Skills (example-skills plugin)
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `mcp-builder` | MCP servers | Creating new MCP integrations |
+| `skill-creator` | Standalone skills | Skills not bundled in plugins |
+| `webapp-testing` | Web app testing | QA with Playwright MCP |
+| `frontend-design` | UI components | Building polished interfaces |
+
+See @.claude/context/integrations/skills-selection-guide.md for full selection guidance.
 
 ---
 
@@ -353,4 +379,4 @@ See @.claude/context/integrations/overlap-analysis.md for detailed conflict reso
 
 ---
 
-*PR-5 Core Tooling Baseline - Capability Matrix v1.2 (Revised 2026-01-07 with browser-automation)*
+*Core Tooling Baseline - Capability Matrix v1.3 (Revised 2026-01-07 PR-7 Skills)*
