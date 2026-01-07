@@ -1,3 +1,7 @@
+---
+description: Display current context usage by category and recommend optimizations
+---
+
 # Context Budget Analysis
 
 Display current context usage by category and recommend optimizations.
