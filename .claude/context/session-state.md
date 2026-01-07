@@ -8,11 +8,34 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟡 Checkpoint (smart-checkpoint)
 
-**Last Completed**: CRITICAL Hook Format Discovery — Hooks need JSON registration
+**Last Completed**: Testing /smart-checkpoint command for PR-8.3.1 validation
 
-**Next Step**: Test SessionStart hook after restart, then design proper soft-restart workflow
+**Next Step**: After restart, verify checkpoint was loaded by session-start hook
+
+### Checkpoint Info
+
+- **Type**: smart-checkpoint
+- **Reason**: PR-8.3.1 validation — testing checkpoint creation and restoration workflow
+- **Timestamp**: 2026-01-07
+
+### MCP Recommendation
+
+- **Keep**: memory, filesystem, fetch, git (Tier 1)
+- **Drop**: github (no PR work in immediate next steps)
+
+### Work Summary This Session
+
+- Verified SessionStart hook fires correctly on startup
+- Confirmed MCP dynamic loading works (Tier 2/3 dropped as expected)
+- Tested /smart-checkpoint workflow for PR-8.3.1 validation
+
+### Next Steps After Restart
+
+1. Verify checkpoint file was detected and displayed by session-start hook
+2. Continue PR-8.3.1: Test /clear soft restart path
+3. If working, test full workflow end-to-end
 
 ### On-Demand MCPs Enabled This Session
 

@@ -1,0 +1,6 @@
+2026-01-07T21:18:00Z | Starting MCP unload workflow - mode: keep-github
+2026-01-07T21:18:00Z | Checkpoint file created: /Users/aircannon/Claude/Jarvis/.claude/context/.soft-restart-checkpoint.md
+2026-01-07T21:18:00Z | Removed MCP: time
+2026-01-07T21:18:00Z | Removed MCP: context7
+2026-01-07T21:18:00Z | Removed MCP: sequential-thinking
+2026-01-07T21:18:00Z | Workflow complete - removed 3 MCPs

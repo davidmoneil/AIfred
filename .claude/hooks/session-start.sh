@@ -1,6 +1,7 @@
 #!/bin/bash
-# Session Start Hook - Official Claude Code Format
+# Session Start Hook - JSON Output Format (Required by Claude Code)
 # Fires on: startup, resume, clear, compact
+# Output: JSON with systemMessage field
 
 # Read input from stdin (JSON)
 INPUT=$(cat)
@@ -19,39 +20,32 @@ echo "$TIMESTAMP | SessionStart | source=$SOURCE | session=$SESSION_ID" >> "$LOG
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
 if [ -f "$CHECKPOINT_FILE" ]; then
-    # Checkpoint exists - output it for context injection
-    echo ""
-    echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║     🔄 SOFT RESTART ($SOURCE) - CHECKPOINT LOADED            ║"
-    echo "╚══════════════════════════════════════════════════════════════╝"
-    echo ""
-    echo "📦 Source: $SOURCE"
-    echo ""
-    echo "─────────────────── Checkpoint Context ───────────────────"
-    echo ""
-    cat "$CHECKPOINT_FILE"
-    echo ""
-    echo "─────────────────── Instructions ───────────────────"
-    echo ""
-    echo "   ✅ Checkpoint loaded"
-    echo "   📝 Say 'continue' or describe what to do next"
-    echo ""
-    echo "══════════════════════════════════════════════════════════════"
+    # Checkpoint exists - load and display
+    CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE" | jq -Rs .)
+
+    # Build JSON message
+    MESSAGE="SOFT RESTART ($SOURCE) - CHECKPOINT LOADED\n\nCheckpoint Context:\n"
+    MESSAGE="$MESSAGE$(cat "$CHECKPOINT_FILE")\n\n"
+    MESSAGE="${MESSAGE}Say 'continue' or describe what to do next."
 
     # Clear checkpoint after loading (one-time use)
     rm "$CHECKPOINT_FILE"
+
+    # Output JSON with systemMessage
+    echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
+
+elif [ "$SOURCE" = "clear" ]; then
+    # No checkpoint, source is clear
+    MESSAGE="CONVERSATION CLEARED\n\n"
+    MESSAGE="${MESSAGE}No checkpoint found - starting fresh.\n"
+    MESSAGE="${MESSAGE}Use /soft-restart before /clear to preserve context."
+
+    echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
+
 else
-    # No checkpoint - show minimal banner for clear, or normal for startup
-    if [ "$SOURCE" = "clear" ]; then
-        echo ""
-        echo "╔══════════════════════════════════════════════════════════════╗"
-        echo "║               CONVERSATION CLEARED                           ║"
-        echo "╚══════════════════════════════════════════════════════════════╝"
-        echo ""
-        echo "   💡 No checkpoint found - starting fresh"
-        echo "   💡 Use /soft-restart before /clear to preserve context"
-        echo ""
-    fi
+    # Normal startup - minimal output or none
+    # Output empty JSON (no message needed for normal startup)
+    echo "{}"
 fi
 
 # Exit success

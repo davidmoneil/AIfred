@@ -1,0 +1,5 @@
+2026-01-07T20:50:38Z | SessionStart | source=resume | session=9c05dd93-f83a-4bdc-a9bf-eacdfbf41d9b
+2026-01-07T20:51:00Z | SessionStart | source=clear | session=287ecb13-f02d-44c0-bd21-c58e7046a0f1
+2026-01-07T21:11:17Z | SessionStart | source=clear | session=test-123
+2026-01-07T21:17:13Z | SessionStart | source=clear | session=test-checkpoint
+2026-01-07T21:27:54Z | SessionStart | source=startup | session=10ccfd80-9f06-4f45-a790-f6d873ba687e
