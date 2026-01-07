@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Active
 
-**Current Task**: PR-8.1 Context Budget Optimization — Complete
+**Current Task**: PR-8.3 Dynamic Loading Protocol — Complete
 
-**Next Step**: Commit changes, version bump to v1.8.0
+**Next Step**: Commit PR-8.3, then PR-8.4 (MCP Validation Harness)
 
 ### On-Demand MCPs Enabled This Session
 
@@ -461,6 +461,34 @@ Implemented controlled porting workflow from AIfred baseline:
 6. **Documentation Updated** ✅
    - Context index: Added both new patterns
    - Roadmap: PR-8.2 scope revised with new tier definitions
+
+### Session Accomplishments (2026-01-07 — PR-8.3 Complete)
+
+**PR-8.3: Dynamic Loading Protocol — Complete**
+
+1. **Session-Start Hook Enhanced** ✅
+   - Added work type analysis from session-state.md and priorities
+   - Maps keywords (PR, research, design, etc.) to suggested Tier 2 MCPs
+   - Tier 3 warnings for browser/webapp tasks
+   - Budget reminder with `/context-budget` and `/checkpoint` tips
+
+2. **Checkpoint Command Enhanced** ✅
+   - Added MCP state capture step (step 1)
+   - Documents which Tier 2 MCPs are active, preserve vs drop
+   - Complete MCP tier reference table with token costs
+   - Updated with context-budget-management.md links
+
+3. **MCP Tier Transition Documentation** ✅
+   - Enable/disable instructions for Tier 2 MCPs
+   - Tier 3 trigger command reference
+   - Context budget workflow (5 steps)
+   - Emergency context recovery procedure
+
+4. **PR-9 Brainstorms Added** ✅
+   - PR-9.0: Pre-PR-9 plugin decomposition investigation
+   - PR-9.1: Selection framework (original scope)
+   - PR-9.2: Deselection intelligence (context threshold hook + context-analyzer agent)
+   - Detailed workflow for automatic MCP deactivation
 
 ---
 

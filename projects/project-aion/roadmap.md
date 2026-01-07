@@ -399,8 +399,22 @@ Validation:
 
 ---
 
-### PR-9: “Selection Intelligence” Pattern (MCP vs Skill vs Plugin vs Agent vs Bash)
-**Goal:** Ensure Jarvis reliably chooses the right mechanism for the job.
+### PR-9: "Selection Intelligence" Pattern (MCP vs Skill vs Plugin vs Agent vs Bash)
+**Goal:** Ensure Jarvis reliably chooses the right mechanism for the job AND automatically deselects unused tools.
+
+> **Extended Scope (2026-01-07)**: PR-9 now includes both SELECTION and DESELECTION intelligence. When context grows large, Jarvis should automatically identify and deactivate unused Tier 2/3 MCPs.
+
+#### PR-9.0: Pre-PR-9 Investigation (Plugin Decomposition)
+
+Requirements:
+- Execute plugin decomposition workflow from `plugin-decomposition-pattern.md`
+- Extract high-value skills from bundled plugins (docx, pdf, xlsx, pptx)
+- Create standalone Jarvis-customized versions
+- Validate extracted skills work independently
+
+**Dependency**: Pattern created in PR-8.1 (`plugin-decomposition-pattern.md`)
+
+#### PR-9.1: Selection Framework (Original Scope)
 
 Requirements:
 - A documented decision framework and quick reference:
@@ -413,11 +427,50 @@ Requirements:
 Deliverables:
 - `agent-selection-pattern.md` v2 (or equivalent) + capability matrix updates.
 
+#### PR-9.2: Deselection Intelligence (New)
+
+**Goal**: Build a hook+agent+command system that triggers when context window reaches a threshold, investigates current context, identifies active Tier 2/3 MCPs, and intelligently deactivates them.
+
+Requirements:
+- **Context Threshold Hook** (`context-threshold.js`):
+  - Triggers when context usage exceeds configurable threshold (e.g., 75%, 85%)
+  - Invokes context analysis agent
+  - Reports findings to user
+- **Context Analyzer Agent** (`context-analyzer`):
+  - Runs `/context-budget` to assess current state
+  - Identifies loaded Tier 2/3 MCPs
+  - Evaluates which MCPs are actively needed vs idle
+  - Generates deactivation recommendations
+  - Optionally executes `/checkpoint` to save state before MCP changes
+- **Deselection Commands**:
+  - `/context-budget` — Already created (PR-8.1)
+  - `/mcp-audit` — New: List active MCPs with last-use timestamps
+  - `/mcp-unload <name>` — New: Gracefully unload a Tier 2/3 MCP
+
+**Workflow**:
+```
+Context at 80% → context-threshold hook fires
+  → context-analyzer agent spawns
+    → runs /context-budget
+    → runs /mcp-audit
+    → identifies: GitHub MCP loaded but no PR work in 30min
+    → recommends: "Unload GitHub MCP to save ~15K tokens"
+    → user approves or agent auto-executes (configurable)
+  → /mcp-unload github
+  → context reduced to 65%
+```
+
+**Integration Points**:
+- Uses Tier 2/3 definitions from `context-budget-management.md`
+- Respects blacklist rules (Tier 3 already isolated)
+- Logs all deselection decisions to Memory MCP
+
 Validation:
 - Evaluate selection behavior using at least:
   - one repo exploration task
   - one web automation task
   - one documentation conversion task
+- **New**: Demonstrate deselection workflow reducing context by 20%+
 
 ---
 

@@ -182,32 +182,113 @@ Current size: 5.2K tokens (acceptable but improvable)
 
 ---
 
-## Implementation Checklist
+## Implementation Checklist (Aligned with Roadmap)
 
-### Phase 1: Immediate (PR-8.1)
+### PR-8.1: Context Budget Optimization — ✅ COMPLETE (v1.8.0)
 
 - [x] Investigate unused plugins — **FINDING**: bundled in document-skills, cannot remove individually
 - [x] Resolve frontend-design duplicate — **FINDING**: accept duplication, standalone takes precedence
-- [ ] Configure MCP loading tiers in settings
-- [ ] Audit gitlab/playwright plugins (recently added, evaluate if needed)
+- [x] CLAUDE.md refactoring — 78% reduction (510→113 lines)
+- [x] Create `CLAUDE-full-reference.md` archive
+- [x] Create `/context-budget` command
+- [x] Add context budget to `/tooling-health` Executive Summary
 
-### Phase 2: Session Management (PR-8.2)
+### PR-8.2: MCP Loading Tiers — ✅ DESIGN COMPLETE
 
-- [ ] Update session-start hook to check planned work type
-- [ ] Add MCP loading suggestions to session-state.md
-- [ ] Update /checkpoint to preserve MCP state
+- [x] Define 3-tier system (Always-On / Task-Scoped / Triggered)
+- [x] Document unload evaluation points
+- [x] Create plugin-decomposition-pattern.md for future extraction
+- [ ] *Enforcement via hooks/commands* — Moved to PR-8.3
 
-### Phase 3: CLAUDE.md Refactor (PR-8.3)
+**Note**: Claude Code doesn't have native MCP tier enforcement. Implementation requires PR-8.3 dynamic loading protocol.
 
-- [ ] Extract detail sections to linked docs
-- [ ] Create CLAUDE-reference.md for full details
-- [ ] Reduce CLAUDE.md to essential quick-reference
+### PR-8.3: Dynamic Loading Protocol — ✅ COMPLETE
 
-### Phase 4: Monitoring (PR-8.4)
+- [x] Update session-start hook to check planned work type from session-state.md
+- [x] Add MCP loading suggestions based on work type
+- [x] Update `/checkpoint` command to preserve MCP loading state
+- [x] Add budget warnings to session-start
+- [x] Document MCP enable/disable instructions for tier transitions
 
-- [ ] Add context budget check to /tooling-health
-- [ ] Create /context-budget command for visibility
-- [ ] Add budget warnings to session-start
+### PR-8.4: MCP Validation Harness — PENDING
+
+- [ ] Create standardized MCP validation procedure
+- [ ] Token cost measurement per MCP
+- [ ] Health + tool invocation tests
+- [ ] Dependency-triggered install recommendations
+
+### PR-9 Integration (Brainstorm — Future)
+
+- [ ] Context threshold hook (`context-threshold.js`)
+- [ ] Context analyzer agent
+- [ ] `/mcp-audit` command (last-use timestamps)
+- [ ] `/mcp-unload` command (graceful deactivation)
+- [ ] Plugin decomposition execution (extract docx, pdf, xlsx, pptx)
+
+---
+
+## MCP Tier Transition Instructions
+
+### Enabling Tier 2 MCPs (Task-Scoped)
+
+When the session-start hook suggests a Tier 2 MCP:
+
+```bash
+# Check current MCP configuration
+claude mcp list
+
+# Add a Tier 2 MCP for the current session
+claude mcp add <mcp-name>
+
+# Example: Enable GitHub MCP for PR work
+claude mcp add github
+```
+
+**After enabling**: Restart Claude Code for the MCP to load.
+
+### Disabling Tier 2 MCPs (Reduce Context)
+
+When context budget is high and an MCP is no longer needed:
+
+```bash
+# Remove an MCP from configuration
+claude mcp remove <mcp-name>
+
+# Example: Remove Context7 after research phase
+claude mcp remove context7
+```
+
+**Note**: MCP removal takes effect on next restart.
+
+### Tier 3 MCPs (Triggered Only)
+
+Tier 3 MCPs should NOT be manually enabled. They are invoked by specific commands:
+
+| MCP | Trigger Command | When to Use |
+|-----|-----------------|-------------|
+| Playwright | `/browser-test` | Browser automation, webapp testing |
+| BrowserStack | CI/CD hooks | Cross-browser testing |
+| Slack | `/notify` | Team notifications |
+
+**If you need Tier 3 functionality**: Use the trigger command rather than adding the MCP manually.
+
+### Context Budget Workflow
+
+1. **Session Start**: Check suggested MCPs in session-start output
+2. **Before Major Work**: Run `/context-budget` to assess headroom
+3. **Mid-Session**: If context > 80%, evaluate unloading Tier 2 MCPs
+4. **Before Checkpoint**: Document active MCPs in session-state.md
+5. **Session End**: MCPs remain for next session unless explicitly removed
+
+### Emergency Context Recovery
+
+If context exceeds 100% and autocompaction triggers:
+
+1. Run `/checkpoint` immediately to save state
+2. Note which Tier 2 MCPs are active
+3. Remove non-essential MCPs: `claude mcp remove <mcp-name>`
+4. Restart Claude Code
+5. Resume from checkpoint with reduced MCP load
 
 ---
 

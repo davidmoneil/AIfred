@@ -6,9 +6,11 @@
  * - Session state (truncated to 2000 chars)
  * - Current priorities (truncated to 1500 chars)
  * - AIfred baseline status check
+ * - MCP loading suggestions based on work type (PR-8.3)
  *
  * Priority: HIGH (Context Loading)
  * Created: 2026-01-06
+ * Updated: 2026-01-07 (PR-8.3 - Dynamic Loading Protocol)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
  */
 
@@ -24,6 +26,36 @@ const AIFRED_BASELINE = '/Users/aircannon/Claude/AIfred';
 
 const SESSION_STATE_MAX_CHARS = 2000;
 const PRIORITIES_MAX_CHARS = 1500;
+
+// MCP Tier 2 suggestions based on work type keywords
+const WORK_TYPE_MCP_MAP = {
+  // PR/GitHub work
+  'PR': ['github'],
+  'pull request': ['github'],
+  'issue': ['github'],
+  'review': ['github'],
+
+  // Research/documentation
+  'research': ['context7', 'duckduckgo'],
+  'documentation': ['context7'],
+  'docs': ['context7'],
+  'library': ['context7'],
+
+  // Complex planning
+  'design': ['sequential-thinking'],
+  'architecture': ['sequential-thinking'],
+  'planning': ['sequential-thinking'],
+  'complex': ['sequential-thinking'],
+
+  // Time-sensitive
+  'schedule': ['time'],
+  'timestamp': ['time'],
+  'timezone': ['time'],
+
+  // Browser/testing (Tier 3 - just inform, don't suggest)
+  'browser': ['⚠️ Playwright (Tier 3 - use /browser-test)'],
+  'webapp': ['⚠️ Playwright (Tier 3 - use /browser-test)'],
+};
 
 /**
  * Truncate text to max chars, preserving complete lines
@@ -75,6 +107,32 @@ function getGitInfo() {
 }
 
 /**
+ * Analyze work type from session state and suggest MCPs
+ */
+function analyzeWorkType(sessionState, priorities) {
+  const combinedText = (sessionState + ' ' + priorities).toLowerCase();
+  const suggestedMcps = new Set();
+  const tier3Warnings = [];
+
+  for (const [keyword, mcps] of Object.entries(WORK_TYPE_MCP_MAP)) {
+    if (combinedText.includes(keyword.toLowerCase())) {
+      for (const mcp of mcps) {
+        if (mcp.startsWith('⚠️')) {
+          tier3Warnings.push(mcp);
+        } else {
+          suggestedMcps.add(mcp);
+        }
+      }
+    }
+  }
+
+  return {
+    suggested: Array.from(suggestedMcps),
+    tier3Warnings: [...new Set(tier3Warnings)]
+  };
+}
+
+/**
  * Check AIfred baseline status
  */
 function checkBaselineStatus() {
@@ -116,9 +174,44 @@ async function readFileSafe(filePath, maxChars) {
 }
 
 /**
+ * Format MCP suggestions section
+ */
+function formatMcpSuggestions(mcpAnalysis) {
+  if (mcpAnalysis.suggested.length === 0 && mcpAnalysis.tier3Warnings.length === 0) {
+    return '   No specific MCPs suggested for current work type';
+  }
+
+  const lines = [];
+
+  if (mcpAnalysis.suggested.length > 0) {
+    lines.push(`   Tier 2 (Task-Scoped): ${mcpAnalysis.suggested.join(', ')}`);
+    lines.push(`   → If needed, these will be loaded on-demand`);
+  }
+
+  if (mcpAnalysis.tier3Warnings.length > 0) {
+    lines.push('');
+    for (const warning of mcpAnalysis.tier3Warnings) {
+      lines.push(`   ${warning}`);
+    }
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format budget reminder section
+ */
+function formatBudgetReminder() {
+  return [
+    '   💡 Run /context-budget for current usage',
+    '   💡 Run /checkpoint before enabling new MCPs'
+  ].join('\n');
+}
+
+/**
  * Format the context injection message
  */
-function formatContextMessage(gitInfo, sessionState, priorities, baselineStatus) {
+function formatContextMessage(gitInfo, sessionState, priorities, baselineStatus, mcpAnalysis) {
   const lines = [
     '',
     '╔══════════════════════════════════════════════════════════════╗',
@@ -127,6 +220,12 @@ function formatContextMessage(gitInfo, sessionState, priorities, baselineStatus)
     '',
     `📍 Branch: ${gitInfo.branch} (${gitInfo.status})`,
     `📦 AIfred Baseline: ${baselineStatus}`,
+    '',
+    '─────────────────── MCP & Budget (PR-8.3) ───────────────────',
+    '',
+    formatMcpSuggestions(mcpAnalysis),
+    '',
+    formatBudgetReminder(),
     '',
     '─────────────────── Session State ───────────────────',
     '',
@@ -159,8 +258,11 @@ module.exports = {
       const gitInfo = getGitInfo();
       const baselineStatus = checkBaselineStatus();
 
+      // Analyze work type and suggest MCPs (PR-8.3)
+      const mcpAnalysis = analyzeWorkType(sessionState, priorities);
+
       // Output the context
-      const message = formatContextMessage(gitInfo, sessionState, priorities, baselineStatus);
+      const message = formatContextMessage(gitInfo, sessionState, priorities, baselineStatus, mcpAnalysis);
       console.log(message);
 
     } catch (err) {
