@@ -8,7 +8,16 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-*No active PRs — PR-5 complete, ready for PR-6*
+### PR-5 Extended: Tooling Implementation
+**Status**: Assessment complete, implementation pending
+
+Per `.claude/reports/tooling-health-2026-01-06.md`:
+- [ ] Install 14 PR-5 target plugins
+- [ ] Run MCP tool smoke tests (38 tools)
+- [ ] Fix GitHub MCP authentication
+- [ ] Skills inventory post-restart
+- [ ] Agent unification research
+- [ ] Feature trials (happy, voicemode)
 
 ---
 
@@ -43,6 +52,8 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Setup UX improvements ✅ 5 fixes committed 2026-01-06
 - [x] PR-5: Core Tooling Baseline ✅ Released as v1.5.0
 - [x] Stage 1 MCPs installed (6/7 connected, GitHub needs OAuth)
+- [x] Tooling Health Assessment ✅ Comprehensive report created
+- [ ] PR-5 Implementation: Install plugins, test tools, skills inventory
 - [ ] Enable Memory MCP in Docker Desktop
 
 ---
@@ -82,6 +93,16 @@ See `projects/Project_Aion.md` for full roadmap (PR-6 through PR-14):
 ## Completed
 
 ### 2026-01-06
+- [x] **PR-5 Tooling Health Assessment** (Complete)
+  - Ran `/tooling-health` command
+  - Created comprehensive report (`.claude/reports/tooling-health-2026-01-06.md`)
+  - MCP tool inventory: 38 tools across 6 servers
+  - Plugin categorization: 14 PR-5 targets, 10 future, 12 excluded
+  - Command list: 8 project + 50+ built-in with stoppage hooks
+  - Custom agents analysis and unification proposal
+  - Feature expansion trials defined (happy, voicemode)
+  - Added anthropic-agent-skills marketplace
+
 - [x] **PR-5: Core Tooling Baseline** (Complete — v1.5.0)
   - Created capability matrix (task → tool selection)
   - Created overlap analysis (9 categories, conflict resolution)

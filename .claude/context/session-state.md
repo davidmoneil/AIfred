@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Current Task**: PR-5 Complete — Core Tooling Baseline (v1.5.0 released)
+**Current Task**: PR-5 Tooling Assessment Complete — Ready for implementation
 
-**Next Step**: Test MCPs after restart, then begin PR-6 (Plugins Expansion)
+**Next Step**: Install PR-5 plugins (14 target), run MCP tool smoke tests, skills inventory
 
 ### On-Demand MCPs Enabled This Session
 
@@ -30,7 +30,37 @@ Format: mcp-name (reason for enabling)
 
 ### What Was Accomplished (2026-01-06)
 
-**PR-5: Core Tooling Baseline — Documentation Complete (v1.5.0)**
+**PR-5: Tooling Health Assessment — Comprehensive Report**
+
+Ran `/tooling-health` and created comprehensive assessment with user feedback:
+
+1. **Tooling Health Report** (`.claude/reports/tooling-health-2026-01-06.md`)
+   - MCP tool inventory (38 tools across 6 connected servers)
+   - Plugin categorization: 14 PR-5 targets, 10 future evaluation, 12 excluded
+   - Full command list (8 project + 50+ built-in) with stoppage hook requirements
+   - Custom agents analysis (4 defined but not recognized by `/agents`)
+   - Skills testing plan framework
+   - Feature expansion trials (happy, voicemode)
+
+2. **Key Findings**
+   - GitHub MCP: SSE connection failed (needs OAuth/PAT)
+   - Plugins: Path mismatch (old Jarvis path), 12 missing PR-5 targets
+   - Memory MCP: Connected but empty, validation test defined
+   - Subagents: 5 available (added statusline-setup to tracking)
+   - Custom agents: Need unification with Claude Code format
+
+3. **Marketplace Added**
+   - `anthropic-agent-skills` via `/plugin marketplace add anthropics/skills`
+
+4. **Next Steps Defined**
+   - Install 14 PR-5 target plugins
+   - Run MCP tool smoke tests (38 tools)
+   - Skills inventory after restart
+   - Agent unification research
+
+---
+
+**Earlier: PR-5: Core Tooling Baseline — Documentation Complete (v1.5.0)**
 
 Established minimal, reliable default toolbox with comprehensive documentation:
 
@@ -255,14 +285,15 @@ Implemented controlled porting workflow from AIfred baseline:
 - ~~Begin PR-5 Core Tooling Baseline~~ ✅ Documentation complete (v1.5.0)
 
 ### Next Session Pickup
-1. **Install Stage 1 MCPs** (optional, per `.claude/context/integrations/mcp-installation.md`)
-   - Memory, Filesystem, Fetch, Time, Git, Sequential Thinking, GitHub
-2. Begin **PR-6: Plugins Expansion** (v1.6.0 target)
-   - Evaluate official Claude Code plugins
-   - Adopt/adapt/reject decisions
-3. Consider enabling Memory MCP for decision tracking
-4. Run `/tooling-health` to validate current state
-5. Review brainstorms at `projects/project-aion/ideas/`
+1. **Skills Inventory** — Review installed skills after restart (anthropic-agent-skills + others)
+2. **Plugin Installation** — Install 14 PR-5 target plugins per report
+   - HIGH: commit-commands, github, code-review, feature-dev, security-guidance, agent-sdk-dev, context7
+   - MEDIUM: gitlab, playwright, frontend-design, hookify, ralph-loop
+   - LOW: explanatory-output-style, plugin-dev
+3. **MCP Tool Testing** — Create `mcp-tool-testing.md`, smoke test 38 tools
+4. **Fix GitHub MCP** — OAuth or PAT authentication
+5. **Agent Unification** — Research Claude Code agent format, propose migration
+6. **Feature Trials** — Clone and evaluate happy + voicemode repos
 
 ---
 
@@ -275,4 +306,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-06 - PR-5 Core Tooling Baseline documentation complete (v1.5.0)*
+*Updated: 2026-01-06 - PR-5 Tooling Health Assessment complete, implementation ready*
