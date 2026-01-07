@@ -1,16 +1,20 @@
 /**
- * Pre-Compact Hook
+ * Pre-Compact Hook (Enhanced)
  *
  * Preserves critical context before conversation compaction:
  * - Key sections from session-state.md
  * - Recent blockers
  * - Active orchestration info
  * - Compaction timestamp
+ * - Soft restart recommendation (PR-8.4)
  *
  * This ensures important context survives the compaction process.
+ * Suggests /soft-restart as alternative to autocompaction (two paths:
+ * Path A for conversation-only clear, Path B for MCP reduction).
  *
  * Priority: HIGH (Context Preservation)
  * Created: 2026-01-06
+ * Updated: 2026-01-07 (PR-8.4 - Soft Restart integration)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
  */
 
@@ -64,16 +68,30 @@ function extractKeySections(content) {
 }
 
 /**
- * Format preserved context message
+ * Format preserved context message with smart checkpoint suggestion
  */
 function formatPreservedContext(sections) {
   const lines = [
     '',
     '╔══════════════════════════════════════════════════════════════╗',
-    '║              CONTEXT PRESERVED BEFORE COMPACTION             ║',
+    '║         ⚠️  CONTEXT THRESHOLD - COMPACTION IMMINENT          ║',
     '╚══════════════════════════════════════════════════════════════╝',
+    '',
+    '┌─────────────────────────────────────────────────────────────┐',
+    '│  💡 RECOMMENDATION: Run /soft-restart instead              │',
+    '│                                                             │',
+    '│  Two options:                                               │',
+    '│  Path A (Soft): /clear only → ~16K tokens freed            │',
+    '│  Path B (Hard): exit + claude → ~47K tokens freed          │',
+    '│                                                             │',
+    '│  Both paths preserve your work state via checkpoint!       │',
+    '│  This is better than autocompaction which loses context!   │',
+    '└─────────────────────────────────────────────────────────────┘',
     ''
   ];
+
+  lines.push('─────────────────── Context Being Preserved ───────────────────');
+  lines.push('');
 
   if (sections.status) {
     lines.push(`📊 Status: ${sections.status}`);
@@ -98,7 +116,7 @@ function formatPreservedContext(sections) {
   }
 
   lines.push('');
-  lines.push(`⏰ Compacted at: ${new Date().toISOString()}`);
+  lines.push(`⏰ Compaction at: ${new Date().toISOString()}`);
   lines.push('');
   lines.push('══════════════════════════════════════════════════════════════');
   lines.push('');

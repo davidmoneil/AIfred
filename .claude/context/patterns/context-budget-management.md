@@ -280,15 +280,60 @@ Tier 3 MCPs should NOT be manually enabled. They are invoked by specific command
 4. **Before Checkpoint**: Document active MCPs in session-state.md
 5. **Session End**: MCPs remain for next session unless explicitly removed
 
+### Soft Restart Workflow (PR-8.4 Enhanced)
+
+The `/soft-restart` command provides two paths for context management:
+
+| Path | Token Savings | MCP Reduction | Restart Type |
+|------|---------------|---------------|--------------|
+| A (Soft) | ~16K | No | `/clear` only |
+| B (Hard) | ~47K | Yes | `exit` + `claude` |
+
+**Path A (Soft - Conversation Only)**:
+1. Run `/soft-restart` → choose Path A
+2. Command creates checkpoint file
+3. Run `/clear`
+4. SessionStart hook loads checkpoint automatically
+5. Say "continue" to resume
+6. MCPs still loaded (same process)
+
+**Path B (Hard - With MCP Reduction)**:
+1. Run `/soft-restart` → choose Path B
+2. Command creates checkpoint + modifies MCP config
+3. Type `exit` or Ctrl+C
+4. Run `claude` to start new session
+5. SessionStart hook loads checkpoint
+6. MCPs reduced per evaluation
+
+**Quick Decision**:
+- Just need fresh conversation? → Path A
+- Context critical + need maximum savings? → Path B
+
 ### Emergency Context Recovery
 
 If context exceeds 100% and autocompaction triggers:
 
-1. Run `/checkpoint` immediately to save state
-2. Note which Tier 2 MCPs are active
-3. Remove non-essential MCPs: `claude mcp remove <mcp-name>`
-4. Restart Claude Code
+1. Run `/soft-restart` immediately (preferred) or `/smart-checkpoint`
+2. Choose Path B for maximum savings
+3. Command will automatically:
+   - Evaluate which MCPs to keep based on next steps
+   - Save session state with commit
+   - Adjust MCP config (remove non-essential Tier 2)
+   - Provide restart instructions
+4. Exit and restart Claude Code
 5. Resume from checkpoint with reduced MCP load
+
+**Hook Support**: The `pre-compact.js` hook suggests `/soft-restart` when autocompaction is imminent. The `session-start.js` hook now detects both `/clear` (source="clear") and new sessions (source="startup") to load checkpoints.
+
+### Helper Scripts
+
+```bash
+# Manually adjust MCP config
+.claude/scripts/adjust-mcp-config.sh [tier1-only|keep-github|keep-context7|keep-all]
+
+# Restore Tier 2 MCPs
+.claude/scripts/restore-mcp-config.sh [mcp-name|all]
+```
 
 ---
 

@@ -10,9 +10,9 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: PR-8.3 Dynamic Loading Protocol — Complete (v1.8.0)
+**Last Completed**: CRITICAL Hook Format Discovery — Hooks need JSON registration
 
-**Next Step**: PR-8.4 (MCP Validation Harness)
+**Next Step**: Test SessionStart hook after restart, then design proper soft-restart workflow
 
 ### On-Demand MCPs Enabled This Session
 
@@ -27,6 +27,43 @@ Format: mcp-name (reason for enabling)
 ---
 
 ## Session Continuity Notes
+
+### What Was Accomplished (2026-01-07) — Hook Format Discovery
+
+**CRITICAL DISCOVERY: All 18 JavaScript hooks were NOT executing!**
+
+Our hooks used a custom `module.exports = { handler }` pattern that Claude Code doesn't recognize. Claude Code requires:
+1. JSON registration in `.claude/settings.json` under `"hooks"` section
+2. Shell commands/scripts (not JavaScript modules)
+3. Hooks are NOT auto-discovered from `.claude/hooks/` directory
+
+**Actions Taken:**
+1. Created `session-start.sh` — proper shell script hook
+2. Added `hooks` section to `.claude/settings.json` with SessionStart registration
+3. Documented the discovery for future hook migration
+
+**Files Created:**
+- `.claude/hooks/session-start.sh` — Shell script hook (executable)
+- `.claude/commands/soft-restart.md` — Two-path restart command
+- `.claude/context/patterns/automated-context-management.md` — Updated architecture
+
+**Files Modified:**
+- `.claude/settings.json` — Added hooks section
+- `.claude/context/patterns/context-budget-management.md` — Added soft restart workflow
+
+**Next Steps (After Restart):**
+1. Verify SessionStart hook fires (check `.claude/logs/session-start-diagnostic.log`)
+2. Test `/clear` to see if source="clear" works
+3. If working, migrate remaining critical hooks to proper format
+4. Design MCP flagging system with working hooks
+
+**Impact:**
+- All our "guardrail" hooks (workspace-guard, dangerous-op-guard) were never protecting anything
+- Session-start context loading was never happening
+- Pre-compact warnings were never showing
+- This explains many mysterious behaviors
+
+---
 
 ### What Was Accomplished (2026-01-06)
 
@@ -523,13 +560,73 @@ Implemented controlled porting workflow from AIfred baseline:
    - Context index: Added skills-selection-guide
    - Current priorities: Ready for PR-7 completion
 
+### Session Accomplishments (2026-01-07 — Pre-PR-8.4 Testing)
+
+**MCP Load/Unload Testing — Critical Discovery**
+
+1. **Manual Testing Complete** ✅
+   - Tested 4 MCPs: Time (uvx), Sequential-Thinking (npx), Context7 (npx+API key), Filesystem (npx+paths)
+   - All removal/re-addition cycles successful
+   - Full report: `.claude/reports/mcp-load-unload-test-procedure.md`
+
+2. **Critical Discovery: MCP Removal is CONFIG-ONLY** ⚠️
+   - `claude mcp remove` updates config but **does NOT disable tools**
+   - MCP processes persist until session ends
+   - Tools remain fully functional in current session after removal
+   - **Session restart required** for changes to take effect
+
+3. **Impact on PR-8.4 and PR-9** ⚠️
+   - Cannot dynamically unload MCPs to free context budget mid-session
+   - PR-8.4 validation harness should validate config changes, not runtime
+   - PR-9.2 deselection intelligence: recommendations apply to NEXT session
+   - `/context-budget` should warn "changes require restart"
+
+4. **Re-addition Patterns Documented** ✅
+   - Simple: `claude mcp add <name> -s local -- <runner> <package>`
+   - With API key: `--api-key <key>` as argument
+   - With paths: trailing positional arguments
+
+### Session Accomplishments (2026-01-07 — Smart Checkpoint Implementation)
+
+**Automated Context Management Workflow — Complete**
+
+1. **`/smart-checkpoint` Command** ✅
+   - `.claude/commands/smart-checkpoint.md`
+   - Intelligent MCP evaluation based on next steps
+   - Soft-exit with commit (no push)
+   - MCP config adjustment automation
+   - Restart instructions
+
+2. **Enhanced Pre-Compact Hook** ✅
+   - Updated `.claude/hooks/pre-compact.js`
+   - Now suggests `/smart-checkpoint` when autocompaction imminent
+   - Better than losing context to compaction
+
+3. **MCP Config Scripts** ✅
+   - `.claude/scripts/adjust-mcp-config.sh` — Remove non-essential Tier 2 MCPs
+   - `.claude/scripts/restore-mcp-config.sh` — Re-add Tier 2 MCPs as needed
+   - Tested: Successfully removed/restored MCPs
+
+4. **Documentation** ✅
+   - `.claude/context/patterns/automated-context-management.md` — Full workflow
+   - Updated `context-budget-management.md` with smart-checkpoint integration
+   - Updated test procedure report with implementation details
+
+**Token Savings by Mode:**
+| Mode | MCPs Dropped | Savings |
+|------|--------------|---------|
+| tier1-only | all Tier 2 | ~31K |
+| keep-github | time, context7, seq-thinking | ~16K |
+| keep-context7 | time, github, seq-thinking | ~23K |
+
 ### Next Session Pickup
 
-**PR-8.3 Complete** — Ready for PR-8.4:
-1. PR-8.4: MCP Validation Harness
-   - Create standardized MCP validation procedure
+**Pre-PR-8.4 Testing Complete** — Ready for PR-8.4:
+1. PR-8.4: MCP Validation Harness (scope adjusted per findings)
+   - Focus on config validation, not runtime effect
    - Token cost measurement per MCP
    - Health + tool invocation tests
+   - Add "restart required" warnings to context budget workflows
 2. Test `/context-budget` command (now fixed with frontmatter)
 3. Optional: Begin PR-9 plugin decomposition investigation
 

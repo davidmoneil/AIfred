@@ -75,11 +75,20 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] PR-8.2: MCP Loading Tiers (3-tier design: Always-On/Task-Scoped/Triggered)
 - [x] PR-8.3: Dynamic Loading Protocol (session-start hook, checkpoint enhancements)
 
+**CRITICAL DISCOVERY (2026-01-07):**
+- [!] All 18 JavaScript hooks were NOT executing!
+- [!] Hooks require JSON registration in settings.json, not auto-discovery
+- [x] Created `session-start.sh` shell script hook
+- [x] Added `hooks` section to `.claude/settings.json`
+- [ ] Test hook execution after restart
+- [ ] Migrate remaining critical hooks to proper format
+
 **Remaining**:
 - [ ] PR-8.4: MCP Validation Harness
   - Standardized validation procedure
   - Token cost measurement
   - Health + tool invocation tests
+  - **Blocked on**: Hook format migration
 
 ### PR-9: Selection Intelligence (Brainstorms Captured)
 - [ ] PR-9.0: Plugin decomposition investigation

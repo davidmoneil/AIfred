@@ -1,5 +1,5 @@
 /**
- * Session Start Hook
+ * Session Start Hook (with Soft Restart Support)
  *
  * Auto-loads context when Claude Code starts:
  * - Current git branch and uncommitted changes count
@@ -8,9 +8,23 @@
  * - AIfred baseline status check
  * - MCP loading suggestions based on work type (PR-8.3)
  *
+ * Soft Restart Support (PR-8.4):
+ * - Checks for .soft-restart-checkpoint.md file
+ * - If found, loads checkpoint context instead of normal session
+ * - Clears checkpoint file after loading
+ * - Handles both /clear (source="clear") and new session (source="startup")
+ *
+ * SessionStart Sources:
+ * - "startup" - Fresh session start
+ * - "resume" - From --resume, --continue, or /resume
+ * - "clear" - After /clear command (same process, conversation cleared)
+ * - "compact" - After auto/manual compaction
+ *
  * Priority: HIGH (Context Loading)
  * Created: 2026-01-06
  * Updated: 2026-01-07 (PR-8.3 - Dynamic Loading Protocol)
+ * Updated: 2026-01-07 (PR-8.4 - Soft Restart/Checkpoint Support)
+ * Updated: 2026-01-07 (Enhanced source detection for /clear)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
  */
 
@@ -23,9 +37,11 @@ const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
 const SESSION_STATE_PATH = path.join(WORKSPACE_ROOT, '.claude/context/session-state.md');
 const PRIORITIES_PATH = path.join(WORKSPACE_ROOT, '.claude/context/projects/current-priorities.md');
 const AIFRED_BASELINE = '/Users/aircannon/Claude/AIfred';
+const CHECKPOINT_PATH = path.join(WORKSPACE_ROOT, '.claude/context/.soft-restart-checkpoint.md');
 
 const SESSION_STATE_MAX_CHARS = 2000;
 const PRIORITIES_MAX_CHARS = 1500;
+const CHECKPOINT_MAX_CHARS = 3000;
 
 // MCP Tier 2 suggestions based on work type keywords
 const WORK_TYPE_MCP_MAP = {
@@ -209,6 +225,94 @@ function formatBudgetReminder() {
 }
 
 /**
+ * Check if checkpoint file exists
+ */
+async function checkForCheckpoint() {
+  try {
+    await fs.access(CHECKPOINT_PATH);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Read checkpoint file
+ */
+async function readCheckpoint() {
+  try {
+    const content = await fs.readFile(CHECKPOINT_PATH, 'utf8');
+    return truncateText(content, CHECKPOINT_MAX_CHARS);
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Delete checkpoint file after loading
+ */
+async function clearCheckpoint() {
+  try {
+    await fs.unlink(CHECKPOINT_PATH);
+  } catch {
+    // Ignore errors
+  }
+}
+
+/**
+ * Format checkpoint resume message
+ */
+function formatCheckpointMessage(checkpointContent, gitInfo, source) {
+  const sourceLabel = source === 'clear' ? 'POST-CLEAR' : 'NEW SESSION';
+  const lines = [
+    '',
+    '╔══════════════════════════════════════════════════════════════╗',
+    `║     🔄 SOFT RESTART (${sourceLabel}) - CHECKPOINT LOADED     ║`,
+    '╚══════════════════════════════════════════════════════════════╝',
+    '',
+    `📍 Branch: ${gitInfo.branch} (${gitInfo.status})`,
+    `📦 Source: ${source}`,
+    '',
+    '─────────────────── Checkpoint Context ───────────────────',
+    '',
+    checkpointContent,
+    '',
+    '─────────────────── Instructions ───────────────────',
+    '',
+    '   ✅ Context cleared, checkpoint loaded',
+    '   📝 Say "continue" or describe what to do next',
+    source === 'startup' ? '   💡 MCP config was adjusted - reduced context load' : '   💡 MCPs unchanged (use hard restart for MCP reduction)',
+    '',
+    '══════════════════════════════════════════════════════════════',
+    ''
+  ];
+
+  return lines.join('\n');
+}
+
+/**
+ * Format message for /clear without checkpoint
+ */
+function formatClearMessage(gitInfo) {
+  const lines = [
+    '',
+    '╔══════════════════════════════════════════════════════════════╗',
+    '║               CONVERSATION CLEARED                           ║',
+    '╚══════════════════════════════════════════════════════════════╝',
+    '',
+    `📍 Branch: ${gitInfo.branch} (${gitInfo.status})`,
+    '',
+    '   💡 No checkpoint found - starting fresh',
+    '   💡 Use /soft-restart before /clear to preserve context',
+    '',
+    '══════════════════════════════════════════════════════════════',
+    ''
+  ];
+
+  return lines.join('\n');
+}
+
+/**
  * Format the context injection message
  */
 function formatContextMessage(gitInfo, sessionState, priorities, baselineStatus, mcpAnalysis) {
@@ -244,18 +348,59 @@ function formatContextMessage(gitInfo, sessionState, priorities, baselineStatus,
 
 module.exports = {
   name: 'session-start',
-  description: 'Auto-load context when Claude Code starts',
+  description: 'Auto-load context when Claude Code starts (with checkpoint support)',
   event: 'SessionStart',
 
   async handler(context) {
+    // DIAGNOSTIC: Write to file to confirm hook is firing
+    const diagnosticPath = path.join(WORKSPACE_ROOT, '.claude/logs/session-start-diagnostic.log');
+    const timestamp = new Date().toISOString();
+    const diagnosticEntry = `${timestamp} | SessionStart fired | source=${context?.source || 'undefined'} | context_keys=${Object.keys(context || {}).join(',')}\n`;
     try {
-      // Gather all context in parallel
+      const dir = path.dirname(diagnosticPath);
+      await fs.mkdir(dir, { recursive: true });
+      await fs.appendFile(diagnosticPath, diagnosticEntry);
+    } catch (diagErr) {
+      // Silent fail for diagnostic
+    }
+
+    try {
+      // Detect session source (startup, resume, clear, compact)
+      const source = context?.source || 'unknown';
+      const gitInfo = getGitInfo();
+
+      // Check for soft-restart checkpoint first (PR-8.4)
+      // Works for both /clear (source="clear") and new sessions (source="startup")
+      const hasCheckpoint = await checkForCheckpoint();
+
+      if (hasCheckpoint) {
+        // Checkpoint mode: load checkpoint context
+        const checkpointContent = await readCheckpoint();
+
+        if (checkpointContent) {
+          const message = formatCheckpointMessage(checkpointContent, gitInfo, source);
+          console.log(message);
+
+          // Clear checkpoint file after loading
+          await clearCheckpoint();
+
+          return { proceed: true };
+        }
+      }
+
+      // For /clear without checkpoint, show minimal banner
+      if (source === 'clear') {
+        const clearMessage = formatClearMessage(gitInfo);
+        console.log(clearMessage);
+        return { proceed: true };
+      }
+
+      // Normal mode: load session state and priorities
       const [sessionState, priorities] = await Promise.all([
         readFileSafe(SESSION_STATE_PATH, SESSION_STATE_MAX_CHARS),
         readFileSafe(PRIORITIES_PATH, PRIORITIES_MAX_CHARS)
       ]);
 
-      const gitInfo = getGitInfo();
       const baselineStatus = checkBaselineStatus();
 
       // Analyze work type and suggest MCPs (PR-8.3)

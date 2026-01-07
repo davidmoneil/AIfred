@@ -59,16 +59,17 @@ standards/
 ### Patterns (Reusable Implementations)
 ```
 patterns/
-├── _index.md                       # Patterns directory index
-├── agent-selection-pattern.md      # Choose agents vs subagents vs skills vs tools
-├── memory-storage-pattern.md       # When/how to store in Memory MCP
-├── prompt-design-review.md         # PARC pattern for design review
-├── session-start-checklist.md      # Mandatory session start steps
-├── branching-strategy.md           # Git branching for Project Aion
-├── workspace-path-policy.md        # Where projects and docs live
-├── mcp-loading-strategy.md         # Always-On vs On-Demand MCPs
-├── context-budget-management.md    # Context window optimization (PR-8)
-└── plugin-decomposition-pattern.md # Extract skills from plugins (PR-8)
+├── _index.md                          # Patterns directory index
+├── agent-selection-pattern.md         # Choose agents vs subagents vs skills vs tools
+├── memory-storage-pattern.md          # When/how to store in Memory MCP
+├── prompt-design-review.md            # PARC pattern for design review
+├── session-start-checklist.md         # Mandatory session start steps
+├── branching-strategy.md              # Git branching for Project Aion
+├── workspace-path-policy.md           # Where projects and docs live
+├── mcp-loading-strategy.md            # Always-On vs On-Demand MCPs
+├── context-budget-management.md       # Context window optimization (PR-8)
+├── plugin-decomposition-pattern.md    # Extract skills from plugins (PR-8)
+└── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -81,6 +82,7 @@ patterns/
 - ✅ **Workspace Path Policy**: Where projects and documentation live
 - ✅ **Context Budget Management**: MCP loading tiers, plugin pruning, token budgets (PR-8)
 - ✅ **Plugin Decomposition**: Extract/customize skills from bundled plugins (PR-8)
+- ✅ **Automated Context Management**: Smart checkpoint with MCP optimization (PR-8.4)
 
 ### Templates (Repeatable Workflow Templates)
 ```
