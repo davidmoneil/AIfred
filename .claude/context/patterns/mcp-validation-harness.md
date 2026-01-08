@@ -408,9 +408,19 @@ These MCPs will be installed to test the harness works on fresh installs:
    - `claude mcp list` shows MCP as "Connected" when server responds
    - This does NOT guarantee tools are available in current session
    - **Observed**: DuckDuckGo tools available, but Brave Search, arXiv, GitHub, Context7, Sequential Thinking tools NOT in session despite "Connected"
-   - **Hypothesis**: Tool loading may have limits, timing, or priority ordering
-   - **Workaround**: Restart session if expected tools not available
-   - **Validation Impact**: Phase 3 (Tool Inventory) must verify tools actually exist in session, not just that MCP is "Connected"
+
+   **Root Cause (Research)**:
+   - Tool definitions consume significant context tokens before conversation starts
+   - Playwright alone: ~13K tokens. Memory+Filesystem+Git+Fetch: ~8K tokens
+   - Claude Code may have implicit limits on total tool context
+   - GitHub docs mention 128 tool limit; context limits may be lower
+
+   **Workarounds**:
+   1. Disable high-token MCPs (Playwright) when not needed
+   2. Use selective MCP enabling per task type
+   3. Consider consolidating similar tools into fewer MCPs
+
+   **Validation Impact**: Phase 3 (Tool Inventory) must verify tools actually exist in session, not just that MCP is "Connected"
 
 ### Validation Results Summary
 

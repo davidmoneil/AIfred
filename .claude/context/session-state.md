@@ -8,11 +8,44 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle (end of session)
+**Status**: 🟡 In Progress (PR-8.4 Blocked)
 
-**Last Completed**: PR-8.4 MCP Validation Harness — Core Pattern Complete
+**Last Completed**: PR-8.4 Phase 4 Testing — DuckDuckGo FAIL, Tool Loading Issue Discovered
 
-**Next Step**: Complete DuckDuckGo functional testing (Phase 4), then install/validate Brave Search and arXiv MCPs
+**Current Blocker**: MCPs show "Connected" but tools not loaded in session (Brave Search, arXiv, GitHub, Context7, Sequential Thinking)
+
+**Next Step**: Investigate tool loading limits — may need to reduce MCP count or file Claude Code issue
+
+### Session Summary (2026-01-09)
+
+**Major Findings**: MCP Validation Blockers Identified
+
+1. **DuckDuckGo MCP FAIL** ❌
+   - Both npm (zhsama) and uvx (nickclyde) versions fail
+   - DuckDuckGo's server-side bot detection blocks all automated requests
+   - Recommendation: REMOVE, use native WebSearch or Brave Search instead
+
+2. **Tool Loading Limit Discovery** ⚠️
+   - MCPs show "Connected" in `claude mcp list` but tools NOT in session
+   - **Affected**: Brave Search, arXiv, GitHub, Context7, Sequential Thinking
+   - **Working**: Memory, Filesystem, Fetch, Git, Playwright, DuckDuckGo
+   - **Root cause**: Likely token/context limits for tool definitions
+   - **Research**: Playwright alone ~13K tokens; GitHub docs mention 128 tool limit
+
+3. **API Keys Stored** ✅
+   - Created `.claude/config/credentials.local.yaml` (gitignored)
+   - All provided API keys for Brave Search, Perplexity, etc. stored securely
+
+4. **Validation Harness Updated** ✅
+   - Added Discovery #7: "Connected" ≠ "Tools Available"
+   - Updated DuckDuckGo, Brave Search, arXiv validation logs
+   - Updated mcp-installation.md with current status
+
+**PR-8.4 Status**: BLOCKED — Cannot complete validation workflow until tool loading issue resolved
+
+**Commit**: `2409d31` — PR-8.4: MCP Validation - Critical discoveries and DuckDuckGo FAIL
+
+---
 
 ### Session Summary (2026-01-08)
 
