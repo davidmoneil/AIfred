@@ -10,14 +10,14 @@
 
 **Status**: 🟢 Idle (checkpoint ready)
 
-**Last Completed**: PR-8.3.1 Context Checkpoint workflow validated end-to-end
+**Last Completed**: Tested /context-checkpoint workflow end-to-end
 
-**Next Step**: After /clear, verify checkpoint loads and MCPs are reduced
+**Next Step**: Run /clear to verify checkpoint loads and MCPs are reduced
 
 ### Checkpoint Info
 
 - **Type**: context-checkpoint
-- **Reason**: Context optimization — PR-8.3.1 validation complete
+- **Reason**: Context optimization — testing workflow
 - **Timestamp**: 2026-01-07
 - **MCPs Disabled**: github, git, context7, sequential-thinking
 - **Checkpoint File**: `.claude/context/.soft-restart-checkpoint.md`
