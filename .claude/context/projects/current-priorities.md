@@ -82,13 +82,15 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Disable ≠ Uninstall — MCPs remain registered, just skipped at load
 - [x] Documentation updated across 4 files
 
-**PR-8.3.1 Implementation**: ✅ **COMPLETE**
+**PR-8.3.1 Implementation**: ✅ **COMPLETE + VALIDATED**
 - [x] Create `.claude/scripts/disable-mcps.sh`
 - [x] Create `.claude/scripts/enable-mcps.sh`
 - [x] Create `.claude/scripts/list-mcp-status.sh`
 - [x] Create `/context-checkpoint` command with MCP evaluation
-- [x] Test full workflow: checkpoint → disable → exit-session → /clear → resume
-- [x] Context reduced from ~32K to ~7.4K MCP tokens (77% reduction in MCP overhead)
+- [x] Test full workflow: checkpoint → disable → /clear → resume
+- [x] Context reduced from ~16.2K to ~7.4K MCP tokens (54% reduction)
+- [x] **Bug Fix**: Checkpoint file deletion in session-start.sh hook
+- [x] **Automation**: Single command workflow (just `/clear` after checkpoint)
 
 **Remaining**:
 - [ ] PR-8.4: MCP Validation Harness

@@ -283,29 +283,31 @@ Tier 3 MCPs should NOT be manually enabled. They are invoked by specific command
 4. **Before Checkpoint**: Document active MCPs in session-state.md
 5. **Session End**: MCPs remain for next session unless explicitly removed
 
-### Context Management Workflow (Validated 2026-01-07)
+### Context Management Workflow (Updated 2026-01-07)
 
-Single workflow for context management with MCP reduction:
+Streamlined workflow for context management with MCP reduction:
 
 ```
-/context-checkpoint → /exit-session → /clear → resume
+/context-checkpoint → /clear → continue
 ```
 
 **Steps**:
 1. Run `/context-checkpoint`
-   - Creates checkpoint file with work state
    - Evaluates MCPs needed for next steps
-   - Runs `disable-mcps.sh` for unneeded MCPs (if approved)
-2. Run `/exit-session`
-   - Commits checkpoint and session state
-   - Displays: "Run /clear to resume"
-3. Run `/clear`
+   - Creates checkpoint file with work state
+   - Runs `disable-mcps.sh` for unneeded MCPs
+   - Updates session state
+   - Commits all changes
+   - Displays: "Type /clear"
+2. Run `/clear`
    - Clears conversation
-   - SessionStart hook loads checkpoint
-   - Disabled MCPs not loaded (disabledMcpServers respected)
-4. Say "continue" to resume
+   - Config reloads with disabled MCPs excluded
+   - SessionStart hook loads checkpoint automatically
+3. Say "continue" to resume
 
 **Key Discovery**: `/clear` respects `disabledMcpServers` changes — no `exit` + `claude` required.
+
+**Bug Fixed (2026-01-07)**: Checkpoint file was being deleted by session-start hook. Fixed by removing the `rm` line.
 
 ### Emergency Context Recovery
 

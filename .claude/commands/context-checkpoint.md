@@ -1,11 +1,13 @@
 ---
-description: Context management with MCP evaluation and reduction — the full workflow
+description: Automated context management — evaluate MCPs, save state, reduce context, prepare for /clear
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(.claude/scripts/*)
 ---
 
-# Context Checkpoint
+# Context Checkpoint (Automated)
 
-Full context management workflow: evaluate MCPs, create checkpoint, disable unneeded MCPs, prepare for /clear restart.
+Fully automated context management: single command that evaluates MCPs, creates checkpoint, disables unneeded MCPs, commits state, and prepares for `/clear`.
+
+**After running this command**: User only needs to type `/clear` to resume with reduced context.
 
 ## When to Use
 
@@ -13,32 +15,37 @@ Full context management workflow: evaluate MCPs, create checkpoint, disable unne
 - `/context-budget` shows WARNING or CRITICAL
 - Before long-running tasks that may bloat context
 - Proactive context optimization
+- PreCompact warning received
 
-## Workflow Overview
+## Automated Workflow
 
 ```
-/context-checkpoint → /exit-session → /clear → resume
+/context-checkpoint  →  /clear  →  auto-resume
+      ↓                    ↓            ↓
+   (Claude)           (User types)  (Automatic)
 ```
 
-## Procedure
+**User actions required**: Just `/clear` after checkpoint completes.
+
+## Procedure (Fully Automated)
 
 ### Phase 1: Assess Current State
 
-First, check context and MCP status:
+Check context and MCP status:
 
-1. Run `/context` to see current usage
-2. Note MCP tools token count
+```bash
+# Current MCPs
+.claude/scripts/list-mcp-status.sh
+```
+
+Read context state from session files.
 
 ### Phase 2: Gather Work Context
 
 Read and summarize:
-1. Current work in progress
-2. What was accomplished this session
-3. Immediate next steps
-
-**Key files to check:**
-- `.claude/context/session-state.md` — Current status
-- `.claude/context/projects/current-priorities.md` — What's next
+1. `.claude/context/session-state.md` — Current work status
+2. `.claude/context/projects/current-priorities.md` — Immediate priorities
+3. Current conversation work — What was accomplished
 
 ### Phase 3: MCP Evaluation
 
@@ -78,7 +85,7 @@ Write checkpoint to `.claude/context/.soft-restart-checkpoint.md`:
 
 ## Work Summary
 
-[What was accomplished this session]
+[What was accomplished this session - be specific]
 
 ## Next Steps After Restart
 
@@ -87,20 +94,24 @@ Write checkpoint to `.claude/context/.soft-restart-checkpoint.md`:
 
 ## Critical Context
 
-[Any decisions, discoveries, or blockers that must be preserved]
+[Decisions, discoveries, blockers that must be preserved]
 
 ## MCP State
 
 | MCP | Action | Reason |
 |-----|--------|--------|
-| github | DISABLED | No PR work planned |
-| context7 | DISABLED | Research phase complete |
-| ... | ... | ... |
+| memory | KEEP | Tier 1 |
+| filesystem | KEEP | Tier 1 |
+| fetch | KEEP | Tier 1 |
+| github | [KEEP/DISABLED] | [reason] |
+| git | [KEEP/DISABLED] | [reason] |
+| context7 | [KEEP/DISABLED] | [reason] |
+| sequential-thinking | [KEEP/DISABLED] | [reason] |
 ```
 
-### Phase 5: Disable MCPs (If Approved)
+### Phase 5: Disable MCPs
 
-If user approves MCP reduction, run:
+Run the disable script for MCPs not needed:
 
 ```bash
 .claude/scripts/disable-mcps.sh <mcp-names>
@@ -108,12 +119,14 @@ If user approves MCP reduction, run:
 
 Example:
 ```bash
-.claude/scripts/disable-mcps.sh github context7 sequential-thinking git
+.claude/scripts/disable-mcps.sh github context7 sequential-thinking
 ```
+
+**Note**: Changes take effect after `/clear`.
 
 ### Phase 6: Update Session State
 
-Update `.claude/context/session-state.md` with:
+Update `.claude/context/session-state.md`:
 
 ```yaml
 ## Current Work Status
@@ -126,13 +139,28 @@ Update `.claude/context/session-state.md` with:
 - Timestamp: [datetime]
 - MCPs Disabled: [list]
 
+**Work Summary:**
+- [from checkpoint]
+
 **Next Steps After Restart:**
 - [from checkpoint]
 ```
 
-### Phase 7: Provide Instructions
+### Phase 7: Git Commit
 
-Output to user:
+```bash
+git add -A
+git commit -m "Context checkpoint: context optimization
+
+MCPs disabled: [list]
+Next: [brief next step]
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+```
+
+### Phase 8: Output Instructions
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
@@ -142,23 +170,26 @@ Output to user:
 ✅ Checkpoint saved: .claude/context/.soft-restart-checkpoint.md
 ✅ Session state updated
 ✅ MCPs disabled: [list]
+✅ Changes committed
 
-Estimated Token Savings: ~[X]K
+Estimated Token Savings: ~[X]K (MCP reduction)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-NEXT STEPS:
+NEXT STEP (Just one!):
 
-  1. Run: /exit-session (commits changes)
-  2. Run: /clear (restarts with reduced MCPs)
-  3. Say "continue" to resume work
+  Type: /clear
+
+  ➜ Session restarts with reduced MCPs
+  ➜ Checkpoint loads automatically
+  ➜ Resume from where you left off
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## MCP Token Reference
 
-### Tier 1: Never Disable
+### Tier 1: Never Disable (~21K)
 | MCP | ~Tokens |
 |-----|---------|
 | memory | ~8K |
@@ -166,8 +197,8 @@ NEXT STEPS:
 | fetch | ~5K |
 
 ### Tier 2: Disable When Not Needed
-| MCP | ~Tokens | Savings When Disabled |
-|-----|---------|----------------------|
+| MCP | ~Tokens | Savings |
+|-----|---------|---------|
 | github | ~15K | High |
 | git | ~4K | Medium |
 | context7 | ~8K | Medium |
@@ -183,19 +214,26 @@ After completing work that needed reduced MCPs:
 
 # Or enable all
 .claude/scripts/enable-mcps.sh --all
+
+# Then /clear to load them
 ```
 
-Then run `/exit-session` → `/clear` to load them.
+## Key Discovery (2026-01-07)
+
+`/clear` respects `disabledMcpServers` changes:
+- Disabling via script adds to `~/.claude.json` → `disabledMcpServers[]`
+- `/clear` reloads config and skips disabled MCPs
+- No need to `exit` + `claude` — `/clear` is sufficient
 
 ## Related
 
 - `/checkpoint` — Simple state save (no MCP logic)
 - `/context-budget` — Check current context usage
-- `/exit-session` — Commit and exit cleanly
-- @.claude/context/patterns/automated-context-management.md
+- `/end-session` — Full session exit (use when NOT checkpointing)
+- @.claude/context/patterns/context-budget-management.md
 
 ---
 
-*Context Checkpoint — MCP-Aware Context Management*
+*Context Checkpoint — Automated Context Management*
 *Created: 2026-01-07*
 *Validated: /clear respects disabledMcpServers*

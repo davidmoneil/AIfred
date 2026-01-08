@@ -26,10 +26,12 @@ if [ -f "$CHECKPOINT_FILE" ]; then
     # Build JSON message
     MESSAGE="SOFT RESTART ($SOURCE) - CHECKPOINT LOADED\n\nCheckpoint Context:\n"
     MESSAGE="$MESSAGE$(cat "$CHECKPOINT_FILE")\n\n"
-    MESSAGE="${MESSAGE}Say 'continue' or describe what to do next."
+    MESSAGE="${MESSAGE}Ready to resume. Say 'continue' to pick up where you left off."
 
-    # Clear checkpoint after loading (one-time use)
-    rm "$CHECKPOINT_FILE"
+    # NOTE: Checkpoint file is NOT deleted after loading
+    # - Allows multiple /clear cycles with same checkpoint
+    # - Will be overwritten by next /context-checkpoint
+    # - Can be manually deleted if needed
 
     # Output JSON with systemMessage
     echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"

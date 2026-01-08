@@ -279,12 +279,13 @@ You can then close the test terminal.
 ## Success Criteria
 
 The workflow is validated if:
-- [x] Scripts modify disabledMcpServers correctly ✅ (already validated)
-- [x] /clear respects disabledMcpServers ✅ (already validated)
-- [ ] /context-checkpoint creates proper checkpoint file
-- [ ] /exit-session commits checkpoint
-- [ ] SessionStart hook loads checkpoint (optional enhancement)
-- [ ] Context reduction measurable via /context
+- [x] Scripts modify disabledMcpServers correctly ✅ (validated)
+- [x] /clear respects disabledMcpServers ✅ (validated)
+- [x] /context-checkpoint creates proper checkpoint file ✅ (validated)
+- [x] Git commits checkpoint ✅ (validated)
+- [x] SessionStart hook loads checkpoint ✅ (validated)
+- [x] Context reduction measurable via /context ✅ (16.2K → 7.4K = 54% reduction)
+- [x] Checkpoint file persists after /clear ✅ (fixed - removed `rm` from hook)
 
 ---
 
