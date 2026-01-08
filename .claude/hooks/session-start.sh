@@ -1,7 +1,7 @@
 #!/bin/bash
 # Session Start Hook - JSON Output Format (Required by Claude Code)
 # Fires on: startup, resume, clear, compact
-# Output: JSON with systemMessage field
+# Output: JSON with systemMessage and additionalContext for auto-resume
 
 # Read input from stdin (JSON)
 INPUT=$(cat)
@@ -20,33 +20,40 @@ echo "$TIMESTAMP | SessionStart | source=$SOURCE | session=$SESSION_ID" >> "$LOG
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
 if [ -f "$CHECKPOINT_FILE" ]; then
-    # Checkpoint exists - load and display
-    CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE" | jq -Rs .)
+    # Checkpoint exists - load and AUTO-RESUME
+    CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE")
 
-    # Build JSON message
-    MESSAGE="SOFT RESTART ($SOURCE) - CHECKPOINT LOADED\n\nCheckpoint Context:\n"
-    MESSAGE="$MESSAGE$(cat "$CHECKPOINT_FILE")\n\n"
-    MESSAGE="${MESSAGE}Ready to resume. Say 'continue' to pick up where you left off."
+    # Build system message
+    MESSAGE="CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT"
+
+    # Build additionalContext to trigger auto-resume
+    # This tells Claude to immediately continue work without waiting for user
+    CONTEXT="AUTO-RESUME: A context checkpoint was just loaded. Continue working on the tasks listed in 'Next Steps After Restart' above. Do NOT wait for user input - proceed immediately with the work."
 
     # NOTE: Checkpoint file is NOT deleted after loading
     # - Allows multiple /clear cycles with same checkpoint
     # - Will be overwritten by next /context-checkpoint
-    # - Can be manually deleted if needed
 
-    # Output JSON with systemMessage
-    echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
+    # Output JSON with systemMessage AND additionalContext
+    jq -n \
+      --arg msg "$MESSAGE" \
+      --arg ctx "$CONTEXT" \
+      '{
+        "systemMessage": $msg,
+        "hookSpecificOutput": {
+          "hookEventName": "SessionStart",
+          "additionalContext": $ctx
+        }
+      }'
 
 elif [ "$SOURCE" = "clear" ]; then
     # No checkpoint, source is clear
-    MESSAGE="CONVERSATION CLEARED\n\n"
-    MESSAGE="${MESSAGE}No checkpoint found - starting fresh.\n"
-    MESSAGE="${MESSAGE}Use /soft-restart before /clear to preserve context."
+    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context."
 
     echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
 
 else
     # Normal startup - minimal output or none
-    # Output empty JSON (no message needed for normal startup)
     echo "{}"
 fi
 

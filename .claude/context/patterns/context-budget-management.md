@@ -285,29 +285,41 @@ Tier 3 MCPs should NOT be manually enabled. They are invoked by specific command
 
 ### Context Management Workflow (Updated 2026-01-07)
 
-Streamlined workflow for context management with MCP reduction:
+**Maximum Automation Achieved** — Only ONE user action required:
 
 ```
-/context-checkpoint → /clear → continue
+[Auto] PreCompact creates checkpoint → /clear (user types) → [Auto] Resume work
 ```
 
-**Steps**:
-1. Run `/context-checkpoint`
-   - Evaluates MCPs needed for next steps
-   - Creates checkpoint file with work state
-   - Runs `disable-mcps.sh` for unneeded MCPs
-   - Updates session state
-   - Commits all changes
-   - Displays: "Type /clear"
-2. Run `/clear`
-   - Clears conversation
-   - Config reloads with disabled MCPs excluded
-   - SessionStart hook loads checkpoint automatically
-3. Say "continue" to resume
+**How It Works**:
 
-**Key Discovery**: `/clear` respects `disabledMcpServers` changes — no `exit` + `claude` required.
+1. **Auto-Trigger (PreCompact Hook)**:
+   - When context approaches threshold, PreCompact hook fires automatically
+   - Creates checkpoint file at `.soft-restart-checkpoint.md`
+   - Disables Tier 2 MCPs (github, context7, sequential-thinking)
+   - Shows message: "Type /clear to continue"
 
-**Bug Fixed (2026-01-07)**: Checkpoint file was being deleted by session-start hook. Fixed by removing the `rm` line.
+2. **User Action (ONE command)**:
+   - User types: `/clear`
+
+3. **Auto-Resume (SessionStart Hook)**:
+   - Clears conversation, reloads config
+   - SessionStart hook detects checkpoint
+   - Injects `additionalContext` telling Claude to auto-continue
+   - Claude resumes work immediately (no "continue" needed)
+
+**Manual Trigger Option**:
+If you want to checkpoint before PreCompact triggers:
+```
+/context-checkpoint → /clear → [auto-resume]
+```
+
+**Key Discoveries (2026-01-07)**:
+- `/clear` respects `disabledMcpServers` changes
+- `additionalContext` in SessionStart can trigger auto-resume
+- PreCompact hook enables proactive checkpoint before context loss
+
+**Limitation**: Cannot auto-trigger `/clear` — it's a CLI command requiring user input. This is the minimum achievable user interaction.
 
 ### Emergency Context Recovery
 
