@@ -429,10 +429,11 @@ These MCPs will be installed to test the harness works on fresh installs:
 | Git | PASS | 1 | Reliable, ~2.5K tokens |
 | Memory | PASS | 1 | Reliable, ~1.8K tokens |
 | Filesystem | PASS | 1 | Reliable, ~2.8K tokens |
-| DuckDuckGo (npm) | FAIL | — | Bot detection blocks requests (zhsama package) |
-| DuckDuckGo (uvx) | FAIL | 3 | Bot detection persists with Python version |
-| arXiv | BLOCKED | — | Tools not loaded despite "Connected" |
-| Brave Search | BLOCKED | — | Tools not loaded despite "Connected" |
+| **Brave Search** | **PASS** | 2 | API-based, reliable, ~3K tokens |
+| **arXiv** | **PASS** | 2 | Full paper download/read workflow |
+| DuckDuckGo | **REMOVED** | — | Bot detection blocks all implementations |
+
+**Note**: Brave Search and arXiv were BLOCKED mid-session but PASS after restart (Discovery #7 confirmed).
 
 ### Troubleshooting Case Study: DuckDuckGo MCP
 
@@ -444,11 +445,16 @@ These MCPs will be installed to test the harness works on fresh installs:
 3. Found root cause: TypeScript implementation uses `duck-duck-scrape` library which triggers DDG bot detection
 
 **Resolution**:
-1. Switched to Python implementation: `uvx duckduckgo-mcp-server` (nickclyde version)
-2. Added Brave Search MCP as reliable API-based alternative
-3. Testing pending session restart
+1. Python version (uvx) also fails — DuckDuckGo server-side detection
+2. Added Brave Search MCP as reliable API-based alternative (PASS)
+3. **DuckDuckGo MCP REMOVED** — unreliable for automation
 
-**Lesson**: Always identify exact package implementation when troubleshooting MCP issues
+**Final Outcome**:
+- DuckDuckGo: REMOVED from configuration
+- Brave Search: PASS — primary MCP-based search
+- arXiv: PASS — academic paper retrieval
+
+**Lesson**: Scraping-based MCPs are unreliable; prefer API-based alternatives
 
 ---
 

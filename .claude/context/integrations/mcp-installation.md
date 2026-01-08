@@ -400,12 +400,12 @@ Before installing MCPs, ensure:
 | Fetch | ~1K | Always-On | 1 | 2026-01-08 ✅ |
 | Git | ~2.5K | Always-On | 1 | 2026-01-08 ✅ |
 | Playwright | ~6K | Triggered | 3 | 2026-01-08 ✅ |
-| GitHub | ~15K | Task-Scoped | 2 | Tools not loaded ⚠️ |
-| Context7 | ~8K | Task-Scoped | 2 | Tools not loaded ⚠️ |
-| Sequential Thinking | ~5K | Task-Scoped | 2 | Tools not loaded ⚠️ |
-| DuckDuckGo | ~2K | NOT RECOMMENDED | — | 2026-01-09 ❌ FAIL |
-| Brave Search | ~3K | Task-Scoped | 2 | Tools not loaded ⚠️ |
-| arXiv | ~2K | Task-Scoped | 2 | Tools not loaded ⚠️ |
+| GitHub | ~15K | Task-Scoped | 2 | Pending |
+| Context7 | ~8K | Task-Scoped | 2 | Pending |
+| Sequential Thinking | ~5K | Task-Scoped | 2 | Pending |
+| **Brave Search** | ~3K | Task-Scoped | 2 | **2026-01-09 ✅** |
+| **arXiv** | ~2K | Task-Scoped | 2 | **2026-01-09 ✅** |
+| ~~DuckDuckGo~~ | — | — | — | REMOVED (bot detection) |
 
 **Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 
