@@ -8,13 +8,13 @@
 
 ## Current Work Status
 
-**Status**: 🟡 In Progress (PR-8.4 Blocked)
+**Status**: 🟢 Idle (end of session)
 
-**Last Completed**: PR-8.4 Phase 4 Testing — DuckDuckGo FAIL, Tool Loading Issue Discovered
+**Last Completed**: PR-8.4 Phase 4 Testing — DuckDuckGo FAIL confirmed, Tool Loading Issue documented, DDG alternatives researched
 
 **Current Blocker**: MCPs show "Connected" but tools not loaded in session (Brave Search, arXiv, GitHub, Context7, Sequential Thinking)
 
-**Next Step**: Investigate tool loading limits — may need to reduce MCP count or file Claude Code issue
+**Next Step**: After restart: 1) Remove DuckDuckGo MCP (confirmed unreliable), 2) Try OneSearch MCP as multi-engine alternative, 3) Test if reducing MCP count allows Brave Search tools to load
 
 ### Session Summary (2026-01-09)
 
@@ -43,7 +43,17 @@
 
 **PR-8.4 Status**: BLOCKED — Cannot complete validation workflow until tool loading issue resolved
 
-**Commit**: `2409d31` — PR-8.4: MCP Validation - Critical discoveries and DuckDuckGo FAIL
+**Commits**:
+- `2409d31` — PR-8.4: MCP Validation - Critical discoveries and DuckDuckGo FAIL
+- `0630e72` — Session: PR-8.4 validation blocked by tool loading limits
+
+5. **DuckDuckGo Alternatives Researched** ✅
+   - All current DDG MCP implementations have same bot detection issue
+   - Root cause: DuckDuckGo server-side detection, not library issue
+   - Best alternative: **OneSearch MCP** (yokingma/one-search-mcp)
+     - Multi-engine: SearXNG, Firecrawl, Tavily, DuckDuckGo, Bing
+     - Local browser fallback (puppeteer-core) - no API keys
+   - Other option: Brave Search (already installed, API-based)
 
 ---
 

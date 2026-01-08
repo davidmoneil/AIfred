@@ -99,18 +99,25 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
   - [x] Full end-to-end validation: checkpoint → auto-clear → auto-resume
 - [x] **Documentation**: `.claude/context/patterns/automated-context-management.md`
 
-**PR-8.4 MCP Validation Harness** (In Progress — 2026-01-08):
+**PR-8.4 MCP Validation Harness** (BLOCKED — 2026-01-09):
 - [x] Design 5-phase validation harness pattern
 - [x] Create validation script (validate-mcp-installation.sh)
 - [x] Validate design MCPs (Git, Memory, Filesystem) - all Tier 1
 - [x] Select testing MCPs (DuckDuckGo, Brave Search, arXiv)
 - [x] Create /validate-mcp skill
 - [x] Update mcp-installation.md with validated token costs
-- [x] Install DuckDuckGo MCP (Phases 1-3, 5 complete)
-- [ ] Complete DuckDuckGo Phase 4 functional testing (post-restart)
-- [ ] Install and validate Brave Search MCP (API key test)
-- [ ] Install and validate arXiv MCP (research utility)
-- [ ] Add dependency-triggered install recommendations
+- [x] Install DuckDuckGo MCP — **FAIL** (bot detection, both npm & uvx)
+- [x] Install Brave Search MCP (with API key)
+- [x] Install arXiv MCP (uvx)
+- [x] Research DDG alternatives (OneSearch MCP recommended)
+- **BLOCKER**: Tool loading issue — MCPs show "Connected" but tools not in session
+  - Affected: Brave Search, arXiv, GitHub, Context7, Sequential Thinking
+  - Working: Memory, Filesystem, Fetch, Git, Playwright, DuckDuckGo
+  - Root cause: Likely context/token limits for tool definitions (~13K for Playwright)
+- [ ] Resolve tool loading blocker (try removing Playwright or reducing MCPs)
+- [ ] Test OneSearch MCP as DDG alternative
+- [ ] Complete Brave Search/arXiv Phase 4 testing
+- [ ] Standardize validation workflow
 
 ### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation
