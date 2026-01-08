@@ -363,17 +363,27 @@ Requirements:
 
 **Token Savings Validated**: 16.2K → 7.4K MCP tokens (54% reduction)
 
-#### PR-8.4: MCP Validation Harness (Pending)
+#### PR-8.4: MCP Validation Harness (In Progress)
+
+**Pattern**: `.claude/context/patterns/mcp-validation-harness.md`
+**Command**: `/validate-mcp [mcp-name]`
 
 Requirements:
-- For each MCP:
-  - install procedure (automated if possible, otherwise gated manual steps)
-  - configuration requirements and env vars
-  - **validation**: health + basic tool invocation + expected response contract
-  - overlap analysis vs skills/plugins/other MCPs
-  - **token cost measurement**
-- Add dependency-triggered installs:
-  - when a workflow/agent depends on an MCP, Jarvis recommends enabling/installing it
+- [x] Design 5-phase validation harness pattern
+  - Phase 1: Installation Verification
+  - Phase 2: Configuration Audit
+  - Phase 3: Tool Inventory
+  - Phase 4: Functional Testing
+  - Phase 5: Tier Recommendation
+- [x] Create validation script (`.claude/scripts/validate-mcp-installation.sh`)
+- [x] Validate design MCPs (Git, Memory, Filesystem) - All Tier 1
+- [x] Select testing MCPs (DuckDuckGo, Brave Search, arXiv)
+- [x] Create `/validate-mcp` skill
+- [x] Update mcp-installation.md with validated token costs
+- [ ] Install and validate DuckDuckGo MCP (test harness)
+- [ ] Install and validate Brave Search MCP (API key config test)
+- [ ] Install and validate arXiv MCP (research utility test)
+- [ ] Add dependency-triggered install recommendations
 
 Validation:
 - A standardized MCP validation harness produces a pass/fail report
@@ -885,7 +895,7 @@ Acceptance:
 | PR-5 | Core Tooling Baseline | 1.5.0 | ✅ Complete |
 | PR-6 | Plugins Expansion | 1.6.0 | ✅ Complete |
 | PR-7 | Skills Inventory | 1.7.0 | ✅ Complete |
-| PR-8 | MCP Expansion + Context Budget | 1.8.1 | 🔄 PR-8.4 pending |
+| PR-8 | MCP Expansion + Context Budget | 1.8.1 | 🔄 PR-8.4 in progress |
 | PR-9 | Selection Intelligence | 1.9.0 | 🔄 PR-9.0, PR-9.1 pending |
 | PR-10 | Setup Upgrade | **2.0.0** | ⏳ Pending |
 

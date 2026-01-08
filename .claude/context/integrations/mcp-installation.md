@@ -393,20 +393,21 @@ Before installing MCPs, ensure:
 
 ## Token Cost Summary
 
-| MCP | Token Cost | Loading Strategy | Status |
-|-----|------------|------------------|--------|
-| Memory | ~8-15K | Always-On | Stage 1 |
-| Filesystem | ~8K | On-Demand | Stage 1 |
-| Fetch | ~5K | On-Demand | Stage 1 |
-| Time | ~3K | On-Demand | Stage 1 |
-| Git | ~6K | On-Demand | Stage 1 |
-| Sequential Thinking | ~5K | On-Demand | Stage 1 |
-| GitHub | ~15K | On-Demand | Stage 1 |
-| Context7 | ~8K | On-Demand | Stage 1 |
-| Playwright | ~15K | Isolated | PR-8 Target |
-| DuckDuckGo | ~5K | On-Demand | Stage 2 |
-| **Total Stage 1** | **~58-68K** | | |
-| **Total All** | **~78-88K** | | |
+| MCP | Token Cost | Loading Strategy | Tier | Validated |
+|-----|------------|------------------|------|-----------|
+| Memory | ~1.8K | Always-On | 1 | 2026-01-08 |
+| Filesystem | ~2.8K | Always-On | 1 | 2026-01-08 |
+| Fetch | ~1K | Always-On | 1 | Pending |
+| Git | ~2.5K | Always-On | 1 | 2026-01-08 |
+| GitHub | ~15K | Task-Scoped | 2 | Pending |
+| Context7 | ~8K | Task-Scoped | 2 | Pending |
+| Sequential Thinking | ~5K | Task-Scoped | 2 | Pending |
+| Playwright | ~6K | Triggered | 3 | Pending |
+| DuckDuckGo | ~2K | Task-Scoped | 2 | Not Installed |
+| Brave Search | ~3K | Task-Scoped | 2 | Not Installed |
+| arXiv | ~2K | Triggered | 3 | Not Installed |
+
+**Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 
 **Recommendation**: Start with Memory only as Always-On. Enable others as needed per session.
 
@@ -437,9 +438,11 @@ claude mcp add <name> -- <command>
 ## Related Documentation
 
 - @.claude/context/patterns/mcp-loading-strategy.md - Loading strategy details
+- @.claude/context/patterns/mcp-validation-harness.md - Validation harness pattern (PR-8.4)
 - @.claude/context/integrations/capability-matrix.md - When to use which tool
 - @.claude/context/integrations/overlap-analysis.md - Conflict resolution
+- @.claude/skills/mcp-validation/SKILL.md - `/validate-mcp` command
 
 ---
 
-*PR-5 Core Tooling Baseline - MCP Installation Guide v1.0*
+*MCP Installation Guide - Updated 2026-01-08 (PR-8.4 Validation)*
