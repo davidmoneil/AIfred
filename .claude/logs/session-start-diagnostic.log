@@ -30,3 +30,7 @@
 2026-01-08T03:41:36Z | SessionStart | Launched watcher
 2026-01-08T03:41:59Z | SessionStart | source=startup | session=12ddc0ce-e271-429c-b010-37433499bd18
 2026-01-08T03:41:59Z | SessionStart | Launched watcher
+2026-01-08T03:43:31Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:43:45Z | Stop | Clear already pending, allowing stop
+2026-01-08T03:43:46Z | SessionStart | source=clear | session=aff42bbf-b1cc-41e4-8c51-c8dc3e93cf35
+2026-01-08T03:43:46Z | SessionStart | Cleaned up .clear-pending marker
