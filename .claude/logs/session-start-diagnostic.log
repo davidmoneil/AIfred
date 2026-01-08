@@ -21,3 +21,8 @@
 2026-01-08T03:29:42Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
 2026-01-08T03:31:52Z | SessionStart | source=startup | session=14ec6da1-7456-4d80-8b6c-5b2b3f762e80
 2026-01-08T03:31:52Z | SessionStart | Launched watcher
+2026-01-08T03:34:14Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:34:28Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:34:32Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:34:36Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:34:40Z | Stop | Recent checkpoint detected, blocking stop to trigger clear

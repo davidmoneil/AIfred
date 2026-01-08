@@ -14,8 +14,10 @@ This command signals the auto-clear-watcher to send the `/clear` command automat
 When instructed to "run /clear" or "clear the conversation", execute:
 
 ```bash
-# Create signal file for watcher
-echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.auto-clear-signal
+# Create signal file for watcher AND pending marker (prevents stop hook loop)
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+echo "$TIMESTAMP" > .claude/context/.auto-clear-signal
+echo "$TIMESTAMP" > .claude/context/.clear-pending
 ```
 
 Then inform the user:
