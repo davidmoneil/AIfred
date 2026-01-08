@@ -3,3 +3,9 @@
 2026-01-07T21:11:17Z | SessionStart | source=clear | session=test-123
 2026-01-07T21:17:13Z | SessionStart | source=clear | session=test-checkpoint
 2026-01-07T21:27:54Z | SessionStart | source=startup | session=10ccfd80-9f06-4f45-a790-f6d873ba687e
+2026-01-07T21:44:49Z | SessionStart | source=clear | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T00:23:06Z | SessionStart | source=startup | session=ab719ece-03df-49fc-84e5-b7aac70bd164
+2026-01-08T00:24:39Z | SessionStart | source=clear | session=19dbd948-63c8-4646-8d27-c1303cf403ea
+2026-01-08T00:49:24Z | SessionStart | source=startup | session=3e9c08a6-11eb-4832-95ae-54a332f7093f
+2026-01-08T00:49:31Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T01:06:10Z | SessionStart | source=startup | session=d41777f7-c5bb-480d-bddb-6a49be9d5cdd

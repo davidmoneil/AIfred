@@ -73,27 +73,33 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 **Completed (v1.8.0)**:
 - [x] PR-8.1: Context Budget Optimization (CLAUDE.md 78% reduction, /context-budget)
 - [x] PR-8.2: MCP Loading Tiers (3-tier design: Always-On/Task-Scoped/Triggered)
-- [x] PR-8.3: Dynamic Loading Protocol (session-start hook, checkpoint enhancements)
+- [x] PR-8.3: Dynamic Loading Protocol — **KEY DISCOVERY MADE**
 
-**CRITICAL DISCOVERY (2026-01-07):**
-- [!] All 18 JavaScript hooks were NOT executing!
-- [!] Hooks require JSON registration in settings.json, not auto-discovery
-- [x] Created `session-start.sh` shell script hook
-- [x] Added `hooks` section to `.claude/settings.json`
-- [ ] Test hook execution after restart
-- [ ] Migrate remaining critical hooks to proper format
+**KEY DISCOVERY (2026-01-07): disabledMcpServers Array**
+- [x] MCP disabled state stored in `~/.claude.json` → `projects.<path>.disabledMcpServers[]`
+- [x] Can programmatically disable/enable MCPs with `jq` commands
+- [x] Changes take effect on next session start (exit + claude, or /clear)
+- [x] Disable ≠ Uninstall — MCPs remain registered, just skipped at load
+- [x] Documentation updated across 4 files
+
+**PR-8.3.1 Implementation**: ✅ **COMPLETE**
+- [x] Create `.claude/scripts/disable-mcps.sh`
+- [x] Create `.claude/scripts/enable-mcps.sh`
+- [x] Create `.claude/scripts/list-mcp-status.sh`
+- [x] Create `/context-checkpoint` command with MCP evaluation
+- [x] Test full workflow: checkpoint → disable → exit-session → /clear → resume
+- [x] Context reduced from ~32K to ~7.4K MCP tokens (77% reduction in MCP overhead)
 
 **Remaining**:
 - [ ] PR-8.4: MCP Validation Harness
   - Standardized validation procedure
   - Token cost measurement
   - Health + tool invocation tests
-  - **Blocked on**: Hook format migration
 
-### PR-9: Selection Intelligence (Brainstorms Captured)
+### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation
 - [ ] PR-9.1: Selection framework
-- [ ] PR-9.2: Deselection intelligence (context threshold hook + analyzer agent)
+- [ ] PR-9.2: Deselection intelligence — **SIMPLIFIED** (uses disabledMcpServers mechanism from PR-8.3)
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns

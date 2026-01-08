@@ -1,9 +1,25 @@
 ---
-description: Intelligent session restart with checkpoint preservation and optional MCP reduction
+description: "[DEPRECATED] Use /checkpoint instead — Single workflow for context management"
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(claude mcp:*)
 ---
 
-# Soft Restart
+# Soft Restart (DEPRECATED)
+
+> **DEPRECATED 2026-01-07**: This command has been superseded by `/checkpoint`.
+> The two-path approach (Path A/B) is no longer needed.
+> Use `/checkpoint` for the validated single workflow.
+
+## Redirect
+
+Run `/checkpoint` instead. It provides:
+1. MCP evaluation based on next steps
+2. Checkpoint file creation
+3. MCP disable via `disabledMcpServers` (not `claude mcp remove`)
+4. Single workflow: `/checkpoint` → `/exit-session` → `/clear`
+
+---
+
+## Legacy Documentation (for reference)
 
 Two-path restart system: clear conversation with checkpoint, optionally reduce MCP load.
 

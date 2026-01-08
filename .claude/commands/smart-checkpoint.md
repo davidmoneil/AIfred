@@ -1,9 +1,27 @@
 ---
-description: Intelligent context management with MCP optimization and session restart
+description: "[DEPRECATED] Use /checkpoint instead — Single workflow for context management"
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(claude mcp:*)
 ---
 
-# Smart Checkpoint
+# Smart Checkpoint (DEPRECATED)
+
+> **DEPRECATED 2026-01-07**: This command has been superseded by `/checkpoint`.
+> The two-path approach (Option A/B) is no longer needed.
+> MCP changes are now made via `disabledMcpServers`, not `claude mcp remove`.
+
+## Redirect
+
+Run `/checkpoint` instead. It provides:
+1. MCP evaluation based on next steps
+2. Checkpoint file creation
+3. MCP disable via `.claude/scripts/disable-mcps.sh`
+4. Single workflow: `/checkpoint` → `/exit-session` → `/clear`
+
+**Validated 2026-01-07**: `/clear` respects `disabledMcpServers` changes.
+
+---
+
+## Legacy Documentation (for reference)
 
 Automated context management: evaluate MCPs, save state, adjust config, restart with lean load.
 

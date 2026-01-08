@@ -1,9 +1,9 @@
 # Automated Context Management Pattern
 
 **Created**: 2026-01-07
-**PR Reference**: PR-8.4 / PR-9.2
-**Status**: Active
-**Updated**: 2026-01-07 (Two-path soft restart system)
+**PR Reference**: PR-8.3 / PR-9.2
+**Status**: READY FOR IMPLEMENTATION
+**Updated**: 2026-01-07 (Revised based on disabledMcpServers discovery)
 
 ---
 
@@ -14,261 +14,283 @@ When context exceeds threshold (~80%), Claude Code enters degraded mode where:
 - User gets "ambushed" by sudden context compression
 - Manual intervention required to manage MCP load
 
-**Key Discovery (2026-01-07)**: MCP removal is CONFIG-ONLY. Tools remain functional until session restart. Therefore, context optimization requires a controlled restart workflow.
-
-**Key Discovery (2026-01-07)**: The `/clear` command triggers `SessionStart` with `source="clear"`. This allows checkpoint loading after `/clear` without a full process restart.
+**Key Discovery (2026-01-07)**: MCP disabled state is stored in `~/.claude.json` under `projects.<path>.disabledMcpServers[]`. This array can be modified programmatically to control which MCPs load on session start.
 
 ---
 
-## Solution: Two-Path Soft Restart (`/soft-restart`)
+## Solution: Checkpoint + Disable + Restart
 
-The `/soft-restart` command provides two restart paths:
+### Core Mechanism
 
-| Path | Method | Token Savings | MCP Reduction |
-|------|--------|---------------|---------------|
-| A (Soft) | `/clear` | ~16K | No (same process) |
-| B (Hard) | `exit` + `claude` | ~47K | Yes (new process) |
-
-### Path A: Soft Restart (Conversation Only)
-
-For when you just need fresh conversation but MCPs are fine:
-1. Run `/soft-restart` → choose Path A
-2. Command creates `.soft-restart-checkpoint.md`
-3. Run `/clear`
-4. `SessionStart` hook fires with `source="clear"`
-5. Hook detects checkpoint file, loads context
-6. User says "continue" to resume
-
-### Path B: Hard Restart (With MCP Reduction)
-
-For maximum token savings including MCP reduction:
-1. Run `/soft-restart` → choose Path B
-2. Command creates checkpoint AND modifies MCP config
-3. Type `exit` or Ctrl+C
-4. Run `claude` to start new session
-5. `SessionStart` hook fires with `source="startup"`
-6. Hook loads checkpoint, MCPs already reduced
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CONTEXT THRESHOLD DETECTION                   │
-├─────────────────────────────────────────────────────────────────┤
-│  Triggers:                                                       │
-│  1. PreCompact hook (autocompaction about to occur)             │
-│  2. Manual /soft-restart command                                │
-│  3. /context-budget showing WARNING/CRITICAL                    │
-└─────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    /soft-restart COMMAND                         │
-├─────────────────────────────────────────────────────────────────┤
-│  1. Capture current work state                                  │
-│  2. Write checkpoint: .claude/context/.soft-restart-checkpoint.md│
-│  3. Update session-state.md with checkpoint info                │
-│  4. Git commit (no push)                                        │
-│  5. User chooses Path A or Path B                               │
-└─────────────────────────────────────────────────────────────────┘
-                               │
-              ┌────────────────┴────────────────┐
-              ▼                                 ▼
-┌─────────────────────────────┐ ┌─────────────────────────────────┐
-│     PATH A: SOFT            │ │     PATH B: HARD                │
-├─────────────────────────────┤ ├─────────────────────────────────┤
-│ No MCP config changes       │ │ MCP config updated:             │
-│                             │ │   claude mcp remove <tier2>    │
-│ User runs: /clear           │ │                                 │
-│                             │ │ User runs: exit + claude        │
-│ SessionStart fires with     │ │                                 │
-│   source="clear"            │ │ SessionStart fires with         │
-│                             │ │   source="startup"              │
-│ MCPs: Still loaded          │ │                                 │
-│ Savings: ~16K               │ │ MCPs: Reduced per evaluation    │
-└─────────────────────────────┘ │ Savings: ~47K                   │
-              │                 └─────────────────────────────────┘
-              │                                 │
-              └────────────────┬────────────────┘
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    SESSION RESUME                                │
-├─────────────────────────────────────────────────────────────────┤
-│  1. session-start.js checks for .soft-restart-checkpoint.md    │
-│  2. If found: displays checkpoint context, clears file          │
-│  3. User says "continue" to resume work                         │
-│  4. Context budget now within healthy range                     │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Component Specifications
-
-### 1. Enhanced PreCompact Hook (`pre-compact.js`)
-
-Enhance existing hook to:
-- Detect autocompaction trigger
-- Offer smart-checkpoint option
-- If accepted, run full workflow
-
-### 2. Smart Checkpoint Command (`/smart-checkpoint`)
-
-New command that:
-- Can be run manually at any time
-- Runs MCP evaluation
-- Executes soft-exit
-- Adjusts MCP config
-- Signals restart
-
-### 3. MCP Evaluation Logic
-
-Reuses `session-start.js` keyword-MCP mapping:
-
-```javascript
-const WORK_TYPE_MCP_MAP = {
-  'PR': ['github'],
-  'research': ['context7', 'duckduckgo'],
-  'design': ['sequential-thinking'],
-  // ... etc
-};
-
-function evaluateMcps(nextSteps, priorities) {
-  // 1. Identify keywords in next steps
-  // 2. Map to required MCPs
-  // 3. Return { keep: [...], drop: [...] }
+```json
+// ~/.claude.json structure
+{
+  "projects": {
+    "/Users/aircannon/Claude/Jarvis": {
+      "mcpServers": { /* registered MCPs */ },
+      "disabledMcpServers": ["context7", "github", "git", ...]
+    }
+  }
 }
 ```
 
-### 4. MCP Config Adjuster
+- **To disable**: Add MCP name to `disabledMcpServers` array
+- **To enable**: Remove MCP name from array
+- **Effect**: Changes apply after `/clear` (validated 2026-01-07)
 
-```bash
-# Drop non-essential Tier 2 MCPs
-claude mcp remove time -s local
-claude mcp remove context7 -s local
-claude mcp remove sequential-thinking -s local
-# Keep: github (if PR work upcoming)
+### Workflow
+
+```
+TRIGGER → CHECKPOINT → DISABLE MCPs → EXIT-SESSION → /CLEAR → RESUME
 ```
 
-### 5. Restart Orchestration
+1. **Trigger**: Context threshold warning (manual or hook-based)
+2. **Checkpoint**: Save work state to `.soft-restart-checkpoint.md`
+3. **Disable MCPs**: Run script to modify `~/.claude.json`
+4. **Exit Session**: Run /exit-session to commit and save state
+5. **Clear**: User runs /clear to restart with hooks
+6. **Resume**: SessionStart hook loads checkpoint, MCPs reduced
 
-**macOS Auto-Restart Script** (optional):
+---
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 1: TRIGGER                                                   │
+├─────────────────────────────────────────────────────────────────┤
+│ Options:                                                          │
+│ - Manual: /checkpoint command                                     │
+│ - Manual: /context-budget shows CRITICAL                         │
+│ - Future: PreCompact hook warns user                              │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 2: CHECKPOINT CREATION                                       │
+├─────────────────────────────────────────────────────────────────┤
+│ 1. Claude gathers current work state                              │
+│ 2. Evaluates next steps for MCP requirements                     │
+│ 3. Writes: .claude/context/.soft-restart-checkpoint.md           │
+│ 4. Updates: session-state.md                                      │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 3: MCP DISABLE (User Approves)                               │
+├─────────────────────────────────────────────────────────────────┤
+│ Script: .claude/scripts/disable-mcps.sh git context7             │
+│                                                                   │
+│ Action: Adds to disabledMcpServers array in ~/.claude.json       │
+│ Effect: MCPs will not load on next session start                  │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 4: EXIT SESSION                                              │
+├─────────────────────────────────────────────────────────────────┤
+│ User runs: /exit-session                                          │
+│ - Commits: session-state.md, checkpoint file                     │
+│ - Saves: All work state                                           │
+│ - Displays: "Run /clear to resume"                                │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 5: CLEAR AND RESUME                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ User runs: /clear                                                 │
+│                                                                   │
+│ What happens:                                                     │
+│ 1. Conversation cleared                                           │
+│ 2. SessionStart hook fires                                        │
+│ 3. Hook detects checkpoint file                                   │
+│ 4. Hook outputs checkpoint as system message                     │
+│ 5. Hook deletes checkpoint file (one-time use)                   │
+│ 6. MCPs load per config (disabled ones excluded)                  │
+│                                                                   │
+│ Result:                                                           │
+│ - Fresh context (only checkpoint + system)                        │
+│ - Reduced MCP load                                                │
+│ - User says "continue" to resume work                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Implementation Components
+
+### 1. MCP Control Scripts
+
+**disable-mcps.sh**:
 ```bash
 #!/bin/bash
-# .claude/scripts/restart-session.sh
-cd /Users/aircannon/Claude/Jarvis
-osascript -e 'tell application "Terminal" to do script "cd /Users/aircannon/Claude/Jarvis && claude"'
-exit 0
+PROJECT_PATH="/Users/aircannon/Claude/Jarvis"
+CONFIG_FILE="$HOME/.claude.json"
+
+for SERVER in "$@"; do
+  jq --arg path "$PROJECT_PATH" --arg server "$SERVER" '
+    .projects[$path].disabledMcpServers |= (. + [$server] | unique)
+  ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+  echo "Disabled: $SERVER"
+done
+```
+
+**enable-mcps.sh**:
+```bash
+#!/bin/bash
+PROJECT_PATH="/Users/aircannon/Claude/Jarvis"
+CONFIG_FILE="$HOME/.claude.json"
+
+for SERVER in "$@"; do
+  jq --arg path "$PROJECT_PATH" --arg server "$SERVER" '
+    .projects[$path].disabledMcpServers |= (. - [$server])
+  ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+  echo "Enabled: $SERVER"
+done
+```
+
+### 2. Enhanced /checkpoint Command
+
+The /checkpoint command should:
+1. Capture current work context
+2. Evaluate next steps for MCP needs
+3. Recommend MCPs to disable
+4. If approved, run disable-mcps.sh
+5. Create checkpoint file
+6. Instruct: "Run /exit-session, then /clear"
+
+### 3. SessionStart Hook
+
+```bash
+#!/bin/bash
+# .claude/hooks/session-start.sh
+
+CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
+
+if [ -f "$CHECKPOINT_FILE" ]; then
+  CONTENT=$(cat "$CHECKPOINT_FILE" | jq -Rs .)
+  rm "$CHECKPOINT_FILE"
+  echo "{\"systemMessage\": \"Checkpoint loaded:\\n$CONTENT\"}"
+else
+  echo "{}"
+fi
 ```
 
 ---
 
 ## MCP Tier Reference
 
-### Tier 1: Always Keep
-| MCP | Remove Command |
-|-----|----------------|
-| memory | Never remove |
-| filesystem | Never remove |
-| fetch | Never remove |
-| git | Never remove |
+### Tier 1: Never Disable
+| MCP | Reason |
+|-----|--------|
+| memory | Knowledge persistence |
+| filesystem | File operations |
+| fetch | Web requests |
 
-### Tier 2: Evaluate for Next Steps
-| MCP | Keep If | Remove Command |
-|-----|---------|----------------|
-| github | PR/issue work | `claude mcp remove github -s local` |
-| context7 | Research/docs | `claude mcp remove context7 -s local` |
-| sequential-thinking | Design/planning | `claude mcp remove sequential-thinking -s local` |
-| time | Scheduling | `claude mcp remove time -s local` |
+### Tier 2: Task-Dependent
+| MCP | Keep If | Est. Tokens |
+|-----|---------|-------------|
+| github | PR/issue work planned | ~15K |
+| git | Active git operations | ~4K |
+| context7 | Documentation research | ~8K |
+| sequential-thinking | Complex planning | ~5K |
 
-### Tier 3: Never Auto-Load
-- Playwright, BrowserStack, Slack, etc.
-- Only enabled by explicit trigger commands
-
----
-
-## Integration Points
-
-### session-state.md Structure
-
-```yaml
-## Checkpoint Info (Smart Checkpoint)
-
-checkpoint_type: smart-checkpoint
-checkpoint_reason: context threshold (85%)
-checkpoint_timestamp: 2026-01-07T15:30:00Z
-
-### MCP Recommendation
-- **Keep**: github (PR-8.4 work continues)
-- **Drop**: time, context7, sequential-thinking
-
-### Next Steps After Restart
-1. Continue PR-8.4 implementation
-2. Test /smart-checkpoint command
-```
-
-### Hook Chain
-
-```
-PreCompact → Detect threshold → Offer smart-checkpoint
-     ↓
-/smart-checkpoint → MCP evaluation → Soft exit → Config adjust → Restart signal
-     ↓
-SessionStart → Load checkpoint context → Resume work
-```
+### Tier 3: Plugin-Managed
+| MCP | Format |
+|-----|--------|
+| Playwright | `plugin:playwright:playwright` |
+| GitLab | `plugin:gitlab:gitlab` |
 
 ---
 
 ## Usage Scenarios
 
-### Scenario 1: Automatic (PreCompact Trigger)
+### Scenario 1: Proactive Checkpoint
 
 ```
-[System detects autocompaction imminent]
-╔══════════════════════════════════════════════════════════════╗
-║              CONTEXT THRESHOLD WARNING                        ║
-╚══════════════════════════════════════════════════════════════╝
+User: Context is getting high, let me checkpoint
 
-Context usage: ~85% (autocompaction imminent)
+> /checkpoint
 
-Recommended Action: Run /smart-checkpoint to:
-1. Save current work state
-2. Reduce MCP load (drop: time, context7)
-3. Restart with clean context
+Claude: Creating checkpoint...
 
-Run /smart-checkpoint now? (y/n)
+Current work state:
+- Implementing PR-8.3.1 context management
+- Updated 3 documentation files
+- Next: Test disable/enable scripts
+
+MCP Analysis:
+- Required for next steps: memory, filesystem, fetch
+- Not needed: github, context7, sequential-thinking, git
+
+Recommend disabling: github, context7, sequential-thinking, git
+Estimated savings: ~32K tokens
+
+Disable these MCPs? [y/n]
+
+User: y
+
+Claude: Running disable-mcps.sh...
+Disabled: github
+Disabled: context7
+Disabled: sequential-thinking
+Disabled: git
+
+Checkpoint saved to: .claude/context/.soft-restart-checkpoint.md
+
+Next steps:
+1. Run /exit-session to commit
+2. Run /clear to restart with reduced context
+3. Say "continue" to resume work
 ```
 
-### Scenario 2: Manual Trigger
+### Scenario 2: Re-enable After Work Complete
 
-```bash
-# User runs command proactively
-> /smart-checkpoint
-
-Evaluating MCP needs for next steps...
-
-Next Steps Analysis:
-- "Continue PR-8.4 implementation" → github needed
-- "Test validation harness" → no special MCP
-
-MCP Recommendation:
-- KEEP: Tier 1 + github
-- DROP: time, context7, sequential-thinking (~16K tokens saved)
-
-Proceed with smart checkpoint? (y/n)
 ```
+User: Done with documentation, need GitHub for PR
+
+Claude: Running enable-mcps.sh github...
+Enabled: github
+
+To load GitHub MCP:
+1. Run /exit-session
+2. Run /clear
+3. GitHub tools will be available
+```
+
+---
+
+## Token Savings Estimates
+
+| Scenario | MCPs Disabled | Est. Savings |
+|----------|---------------|--------------|
+| Documentation work | github, sequential-thinking | ~20K |
+| Quick fixes | github, context7, sequential-thinking | ~28K |
+| Maximum reduction | all Tier 2 | ~32K |
+
+---
+
+## Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/scripts/disable-mcps.sh` | Disable MCPs |
+| `.claude/scripts/enable-mcps.sh` | Enable MCPs |
+| `.claude/scripts/list-mcp-status.sh` | Show MCP state |
+| `.claude/context/.soft-restart-checkpoint.md` | Checkpoint file |
+| `~/.claude.json` | Config with disabledMcpServers |
 
 ---
 
 ## Related Documentation
 
-- @.claude/context/patterns/context-budget-management.md
-- @.claude/commands/checkpoint.md
-- @.claude/commands/end-session.md
-- @.claude/reports/mcp-load-unload-test-procedure.md
+- `.claude/reports/pr-8.3.1-hook-validation-roadmap.md` — Full implementation
+- `.claude/reports/mcp-load-unload-test-procedure.md` — Testing details
+- `.claude/context/patterns/context-budget-management.md` — Budget tiers
 
 ---
 
-*Automated Context Management Pattern — PR-8.4 / PR-9.2*
+*Automated Context Management Pattern*
+*Key mechanism: disabledMcpServers array in ~/.claude.json*
+*Updated: 2026-01-07*

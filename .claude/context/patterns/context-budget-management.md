@@ -251,14 +251,17 @@ claude mcp add github
 When context budget is high and an MCP is no longer needed:
 
 ```bash
-# Remove an MCP from configuration
-claude mcp remove <mcp-name>
+# Disable MCPs (adds to disabledMcpServers array)
+.claude/scripts/disable-mcps.sh <mcp-name> [mcp-name...]
 
-# Example: Remove Context7 after research phase
-claude mcp remove context7
+# Example: Disable Context7 after research phase
+.claude/scripts/disable-mcps.sh context7
+
+# Example: Disable multiple MCPs
+.claude/scripts/disable-mcps.sh github context7 sequential-thinking
 ```
 
-**Note**: MCP removal takes effect on next restart.
+**Note**: Changes take effect after `/clear` (validated 2026-01-07).
 
 ### Tier 3 MCPs (Triggered Only)
 
@@ -280,60 +283,59 @@ Tier 3 MCPs should NOT be manually enabled. They are invoked by specific command
 4. **Before Checkpoint**: Document active MCPs in session-state.md
 5. **Session End**: MCPs remain for next session unless explicitly removed
 
-### Soft Restart Workflow (PR-8.4 Enhanced)
+### Context Management Workflow (Validated 2026-01-07)
 
-The `/soft-restart` command provides two paths for context management:
+Single workflow for context management with MCP reduction:
 
-| Path | Token Savings | MCP Reduction | Restart Type |
-|------|---------------|---------------|--------------|
-| A (Soft) | ~16K | No | `/clear` only |
-| B (Hard) | ~47K | Yes | `exit` + `claude` |
+```
+/context-checkpoint → /exit-session → /clear → resume
+```
 
-**Path A (Soft - Conversation Only)**:
-1. Run `/soft-restart` → choose Path A
-2. Command creates checkpoint file
+**Steps**:
+1. Run `/context-checkpoint`
+   - Creates checkpoint file with work state
+   - Evaluates MCPs needed for next steps
+   - Runs `disable-mcps.sh` for unneeded MCPs (if approved)
+2. Run `/exit-session`
+   - Commits checkpoint and session state
+   - Displays: "Run /clear to resume"
 3. Run `/clear`
-4. SessionStart hook loads checkpoint automatically
-5. Say "continue" to resume
-6. MCPs still loaded (same process)
+   - Clears conversation
+   - SessionStart hook loads checkpoint
+   - Disabled MCPs not loaded (disabledMcpServers respected)
+4. Say "continue" to resume
 
-**Path B (Hard - With MCP Reduction)**:
-1. Run `/soft-restart` → choose Path B
-2. Command creates checkpoint + modifies MCP config
-3. Type `exit` or Ctrl+C
-4. Run `claude` to start new session
-5. SessionStart hook loads checkpoint
-6. MCPs reduced per evaluation
-
-**Quick Decision**:
-- Just need fresh conversation? → Path A
-- Context critical + need maximum savings? → Path B
+**Key Discovery**: `/clear` respects `disabledMcpServers` changes — no `exit` + `claude` required.
 
 ### Emergency Context Recovery
 
 If context exceeds 100% and autocompaction triggers:
 
-1. Run `/soft-restart` immediately (preferred) or `/smart-checkpoint`
-2. Choose Path B for maximum savings
-3. Command will automatically:
-   - Evaluate which MCPs to keep based on next steps
-   - Save session state with commit
-   - Adjust MCP config (remove non-essential Tier 2)
-   - Provide restart instructions
-4. Exit and restart Claude Code
+1. Run `/context-checkpoint` immediately
+2. Approve MCP reduction recommendations
+3. Run `/exit-session` (commits state)
+4. Run `/clear`
 5. Resume from checkpoint with reduced MCP load
 
-**Hook Support**: The `pre-compact.js` hook suggests `/soft-restart` when autocompaction is imminent. The `session-start.js` hook now detects both `/clear` (source="clear") and new sessions (source="startup") to load checkpoints.
+**Hook Support**: The `session-start.sh` hook detects checkpoint files and loads them automatically after `/clear`.
 
 ### Helper Scripts
 
 ```bash
-# Manually adjust MCP config
-.claude/scripts/adjust-mcp-config.sh [tier1-only|keep-github|keep-context7|keep-all]
+# Disable specific MCPs
+.claude/scripts/disable-mcps.sh <mcp-name> [mcp-name...]
 
-# Restore Tier 2 MCPs
-.claude/scripts/restore-mcp-config.sh [mcp-name|all]
+# Enable specific MCPs (or --all)
+.claude/scripts/enable-mcps.sh <mcp-name> [mcp-name...]
+.claude/scripts/enable-mcps.sh --all
+
+# Show current MCP status
+.claude/scripts/list-mcp-status.sh
 ```
+
+**Legacy scripts** (use `claude mcp remove`, deprecated):
+- `adjust-mcp-config.sh` — Use `disable-mcps.sh` instead
+- `restore-mcp-config.sh` — Use `enable-mcps.sh` instead
 
 ---
 

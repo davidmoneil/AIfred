@@ -313,71 +313,48 @@ Validation:
 **Goal:** Expand MCP servers gradually with context-aware loading, budget monitoring, and validation.
 
 > **Extended Scope (2026-01-07)**: PR-8 now includes context budget management to address context window bloat (observed 232k/200k = 116% usage). MCP tool definitions consume ~61K tokens (30.5%) whether used or not.
+>
+> **Key Discovery (2026-01-07)**: MCP disabled state is stored in `~/.claude.json` under `projects.<path>.disabledMcpServers[]`. This enables programmatic MCP control without uninstalling.
 
-#### PR-8.1: Context Budget Optimization (New)
-
-Requirements:
-- **Plugin Pruning**: Remove unused high-cost plugins
-  - `algorithmic-art` (4.8K tokens) — never used
-  - `doc-coauthoring` (3.8K tokens) — never used
-  - `slack-gif-creator` (1.9K tokens) — never used
-- **Duplicate Resolution**: Fix frontend-design duplication
-  - `claude-code-plugins` version (990 tokens) — KEEP
-  - `document-skills` bundle version (989 tokens) — REMOVE or disable
-- **CLAUDE.md Refactoring**: Reduce from 5.2K to <3K tokens
-  - Move details to secondary docs (pattern files)
-  - Keep CLAUDE.md as quick-reference index
-
-**Savings Target**: ~15K tokens (~7.5% context budget reclaimed)
-
-#### PR-8.2: MCP Loading Tiers (Revised)
+#### PR-8.1: Context Budget Optimization (Complete)
 
 Requirements:
-- Define MCP loading tiers based on context budget and agent autonomy:
-  - **Tier 1 — Always-On** (~27-34K tokens):
-    - Memory Knowledge Graph
-      https://github.com/modelcontextprotocol/servers/tree/main/src/memory
-    - Fetch / Filesystem (core MCP servers)
-      https://github.com/modelcontextprotocol/servers/tree/main
-    - Git MCP
-  - **Tier 2 — Task-Scoped** (agent-managed, load/unload dynamically):
-    - Time MCP (~3K) — moved from Tier 1
-    - GitHub Official MCP (~15K)
-      https://github.com/github/github-mcp-server
-    - Context7 (~8K)
-      https://github.com/upstash/context7
-    - Sequential Thinking (~5K)
-    - DuckDuckGo MCP (~4K)
-      https://github.com/nickclyde/duckduckgo-mcp-server
-    - Database MCPs, specialized MCPs
-  - **Tier 3 — Triggered** (blacklisted from agent selection, hook/command-invoked only):
-    - Playwright MCP (~15K) — triggered by `/browser-test`, webapp-testing skill
-      https://github.com/microsoft/playwright-mcp
-    - BrowserStack — triggered by CI/CD hooks
-    - Slack — triggered by `/notify` command
-    - Google Drive/Maps — billing-gated, explicit command only
-- Implement unload evaluation points:
-  - After subtask completion
-  - On context switch
-  - Before compaction warning
-  - On `/context-budget` command
+- **Plugin Pruning**: Remove unused high-cost plugins ✅
+- **Duplicate Resolution**: Fix frontend-design duplication ✅
+- **CLAUDE.md Refactoring**: Reduce from 5.2K to <3K tokens ✅
 
-#### PR-8.3: Dynamic Loading Protocol
+**Savings Achieved**: ~15K tokens (~7.5% context budget reclaimed)
+
+#### PR-8.2: MCP Loading Tiers (Complete)
 
 Requirements:
-- Update session-start hook to:
-  - Check planned work type from session-state.md
-  - Suggest appropriate Tier 2 MCPs
-  - Display context budget status
-- Update /checkpoint command to:
-  - Preserve MCP loading state for continuity
-  - Support mid-session MCP changes
-- Add `/context-budget` command:
-  - Display current context usage by category
-  - Warn when approaching limits
-  - Suggest optimization actions
+- Define MCP loading tiers based on context budget: ✅
+  - **Tier 1 — Always-On**: memory, filesystem, fetch (never disable)
+  - **Tier 2 — Task-Scoped**: github, git, context7, sequential-thinking (disable when not needed)
+  - **Tier 3 — Plugin-Managed**: playwright, gitlab (managed by plugin system)
 
-#### PR-8.4: MCP Validation Harness (Original Scope)
+#### PR-8.3: Dynamic Loading Protocol (Complete)
+
+Requirements:
+- **disabledMcpServers Mechanism**: ✅ Discovered and documented
+  - Location: `~/.claude.json` → `projects.<path>.disabledMcpServers[]`
+  - To disable: Add MCP name to array
+  - To enable: Remove MCP name from array
+  - Effect: Changes apply after `/clear` (validated 2026-01-07)
+- **MCP Control Scripts**: ✅ Created and tested
+  - `disable-mcps.sh` — Add to disabledMcpServers ✅
+  - `enable-mcps.sh` — Remove from disabledMcpServers ✅
+  - `list-mcp-status.sh` — Show registered vs disabled ✅
+- **Workflow**: ✅ Validated (single workflow, no exit required)
+  - `/context-checkpoint` → `/exit-session` → `/clear` → resume
+
+**Remaining (PR-8.3.1)**:
+- [x] Create and test disable-mcps.sh script ✅
+- [x] Create and test enable-mcps.sh script ✅
+- [x] Create /context-checkpoint command ✅
+- [ ] Validate full workflow end-to-end (test procedure ready)
+
+#### PR-8.4: MCP Validation Harness (Pending)
 
 Requirements:
 - For each MCP:
@@ -396,6 +373,7 @@ Validation:
 - Budget monitoring integrated into session lifecycle
 
 **Pattern Documentation**: @.claude/context/patterns/context-budget-management.md
+**Implementation Details**: @.claude/reports/pr-8.3.1-hook-validation-roadmap.md
 
 ---
 
@@ -403,6 +381,8 @@ Validation:
 **Goal:** Ensure Jarvis reliably chooses the right mechanism for the job AND automatically deselects unused tools.
 
 > **Extended Scope (2026-01-07)**: PR-9 now includes both SELECTION and DESELECTION intelligence. When context grows large, Jarvis should automatically identify and deactivate unused Tier 2/3 MCPs.
+>
+> **Implementation Note**: Deselection uses `disabledMcpServers` array in `~/.claude.json` (discovered PR-8.3).
 
 #### PR-9.0: Pre-PR-9 Investigation (Plugin Decomposition)
 
@@ -427,50 +407,59 @@ Requirements:
 Deliverables:
 - `agent-selection-pattern.md` v2 (or equivalent) + capability matrix updates.
 
-#### PR-9.2: Deselection Intelligence (New)
+#### PR-9.2: Deselection Intelligence (Revised)
 
-**Goal**: Build a hook+agent+command system that triggers when context window reaches a threshold, investigates current context, identifies active Tier 2/3 MCPs, and intelligently deactivates them.
+**Goal**: Build a command+script system that evaluates MCP needs and disables unused MCPs.
 
-Requirements:
-- **Context Threshold Hook** (`context-threshold.js`):
-  - Triggers when context usage exceeds configurable threshold (e.g., 75%, 85%)
-  - Invokes context analysis agent
-  - Reports findings to user
-- **Context Analyzer Agent** (`context-analyzer`):
-  - Runs `/context-budget` to assess current state
-  - Identifies loaded Tier 2/3 MCPs
-  - Evaluates which MCPs are actively needed vs idle
-  - Generates deactivation recommendations
-  - Optionally executes `/checkpoint` to save state before MCP changes
-- **Deselection Commands**:
-  - `/context-budget` — Already created (PR-8.1)
-  - `/mcp-audit` — New: List active MCPs with last-use timestamps
-  - `/mcp-unload <name>` — New: Gracefully unload a Tier 2/3 MCP
+> **Revised Approach**: Based on disabledMcpServers discovery, we no longer need a complex hook+agent system. Simple scripts + /checkpoint integration suffices.
+
+**Implementation** (from PR-8.3.1):
+- **MCP Control Scripts**:
+  - `disable-mcps.sh <name...>` — Add to disabledMcpServers array
+  - `enable-mcps.sh <name...>` — Remove from disabledMcpServers array
+  - `list-mcp-status.sh` — Show registered vs disabled MCPs
+- **Enhanced /checkpoint Command**:
+  - Evaluates next steps for MCP requirements
+  - Recommends MCPs to disable
+  - Runs disable script if approved
+  - Instructs user: "/exit-session then /clear"
+- **SessionStart Hook**:
+  - Loads checkpoint file if present
+  - Outputs context to system message
+  - Deletes checkpoint (one-time use)
 
 **Workflow**:
 ```
-Context at 80% → context-threshold hook fires
-  → context-analyzer agent spawns
-    → runs /context-budget
-    → runs /mcp-audit
-    → identifies: GitHub MCP loaded but no PR work in 30min
-    → recommends: "Unload GitHub MCP to save ~15K tokens"
-    → user approves or agent auto-executes (configurable)
-  → /mcp-unload github
-  → context reduced to 65%
+User detects high context (or /context-budget warns)
+  → User runs /checkpoint
+    → Claude evaluates next steps
+    → Identifies: GitHub MCP not needed for doc work
+    → Recommends: "Disable github, context7, sequential-thinking"
+    → User approves
+  → disable-mcps.sh github context7 sequential-thinking
+  → /exit-session (commits checkpoint)
+  → User runs /clear
+  → SessionStart hook loads checkpoint
+  → MCPs reduced, context fresh
+  → User says "continue"
 ```
 
-**Integration Points**:
-- Uses Tier 2/3 definitions from `context-budget-management.md`
-- Respects blacklist rules (Tier 3 already isolated)
-- Logs all deselection decisions to Memory MCP
+**Commands**:
+- `/context-budget` — Display context usage (exists)
+- `/checkpoint` — Create checkpoint with MCP evaluation (enhance)
+- `/exit-session` — Commit and exit cleanly (exists)
+
+**Scripts**:
+- `.claude/scripts/disable-mcps.sh`
+- `.claude/scripts/enable-mcps.sh`
+- `.claude/scripts/list-mcp-status.sh`
 
 Validation:
 - Evaluate selection behavior using at least:
   - one repo exploration task
   - one web automation task
   - one documentation conversion task
-- **New**: Demonstrate deselection workflow reducing context by 20%+
+- **Required**: Demonstrate full workflow reducing context by 20%+
 
 ---
 
