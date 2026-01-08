@@ -2,6 +2,13 @@
 # Session Start Hook - JSON Output Format (Required by Claude Code)
 # Fires on: startup, resume, clear, compact
 # Output: JSON with systemMessage and additionalContext for auto-resume
+#
+# Features:
+# - Loads checkpoint files for context restoration
+# - Suggests MCPs based on "Next Step" in session-state.md
+# - Launches auto-clear watcher on startup
+#
+# Updated: 2026-01-09 (MCP Initialization Protocol)
 
 # Read input from stdin (JSON)
 INPUT=$(cat)
@@ -30,15 +37,54 @@ if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     echo "$TIMESTAMP | SessionStart | Launched watcher" >> "$LOG_DIR/session-start-diagnostic.log"
 fi
 
-# Check for checkpoint file
+# ============== MCP SUGGESTIONS ==============
+# Only run on startup/resume (not clear/compact to avoid noise)
+MCP_SUGGESTION=""
+if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
+    SUGGEST_SCRIPT="$CLAUDE_PROJECT_DIR/.claude/scripts/suggest-mcps.sh"
+    if [[ -x "$SUGGEST_SCRIPT" ]]; then
+        # Get JSON output from suggest script
+        MCP_JSON=$("$SUGGEST_SCRIPT" --json 2>/dev/null || echo '{}')
+
+        # Parse results
+        TO_ENABLE=$(echo "$MCP_JSON" | jq -r '.to_enable // [] | join(", ")' 2>/dev/null)
+        TO_DISABLE=$(echo "$MCP_JSON" | jq -r '.to_disable // [] | join(", ")' 2>/dev/null)
+        TIER3_WARN=$(echo "$MCP_JSON" | jq -r '.tier3_warnings // [] | join(", ")' 2>/dev/null)
+
+        # Build suggestion message if there are recommendations
+        if [[ -n "$TO_ENABLE" ]] || [[ -n "$TO_DISABLE" ]]; then
+            MCP_SUGGESTION="\n\n--- MCP SUGGESTIONS ---\n"
+
+            if [[ -n "$TO_ENABLE" ]]; then
+                MCP_SUGGESTION="${MCP_SUGGESTION}Enable for this session: $TO_ENABLE\n"
+                MCP_SUGGESTION="${MCP_SUGGESTION}  Run: .claude/scripts/enable-mcps.sh $TO_ENABLE && /clear\n"
+            fi
+
+            if [[ -n "$TO_DISABLE" ]]; then
+                MCP_SUGGESTION="${MCP_SUGGESTION}Consider disabling (not needed): $TO_DISABLE\n"
+                MCP_SUGGESTION="${MCP_SUGGESTION}  Run: .claude/scripts/disable-mcps.sh $TO_DISABLE && /clear\n"
+            fi
+
+            if [[ -n "$TIER3_WARN" ]]; then
+                MCP_SUGGESTION="${MCP_SUGGESTION}Note: $TIER3_WARN are Tier 3 (high token cost) - consider isolated invocation\n"
+            fi
+
+            MCP_SUGGESTION="${MCP_SUGGESTION}---"
+        fi
+
+        echo "$TIMESTAMP | SessionStart | MCP suggestions: enable=[$TO_ENABLE] disable=[$TO_DISABLE]" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+fi
+
+# ============== CHECKPOINT HANDLING ==============
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
 if [ -f "$CHECKPOINT_FILE" ]; then
     # Checkpoint exists - load and AUTO-RESUME
     CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE")
 
-    # Build system message
-    MESSAGE="CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT"
+    # Build system message with checkpoint and MCP suggestions
+    MESSAGE="CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION"
 
     # Build additionalContext to trigger auto-resume
     # This tells Claude to immediately continue work without waiting for user
@@ -62,12 +108,21 @@ if [ -f "$CHECKPOINT_FILE" ]; then
 
 elif [ "$SOURCE" = "clear" ]; then
     # No checkpoint, source is clear
-    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context."
+    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context.$MCP_SUGGESTION"
 
     echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
 
+elif [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
+    # Normal startup with MCP suggestions
+    if [[ -n "$MCP_SUGGESTION" ]]; then
+        MESSAGE="Session started.$MCP_SUGGESTION"
+        echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
+    else
+        echo "{}"
+    fi
+
 else
-    # Normal startup - minimal output or none
+    # Compact or other - minimal output
     echo "{}"
 fi
 

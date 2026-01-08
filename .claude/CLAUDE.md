@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.8.3 | **Baseline**: AIfred commit `af66364`
+**Version**: 1.8.4 | **Baseline**: AIfred commit `af66364`
 
 Master Archon for infrastructure, development, and self-improvement. AIfred baseline is **read-only**.
 
@@ -110,4 +110,4 @@ For full documentation on any topic:
 
 ---
 
-*Jarvis v1.8.3 — Updated 2026-01-09*
+*Jarvis v1.8.4 — Updated 2026-01-09*

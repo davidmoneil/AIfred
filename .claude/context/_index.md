@@ -66,10 +66,13 @@ patterns/
 ├── session-start-checklist.md         # Mandatory session start steps
 ├── branching-strategy.md              # Git branching for Project Aion
 ├── workspace-path-policy.md           # Where projects and docs live
-├── mcp-loading-strategy.md            # Always-On vs On-Demand MCPs
+├── mcp-loading-strategy.md            # 3-tier MCP loading (PR-8.5)
+├── mcp-design-patterns.md             # Per-MCP best practices (PR-8.5) ← NEW
 ├── context-budget-management.md       # Context window optimization (PR-8)
 ├── plugin-decomposition-pattern.md    # Extract skills from plugins (PR-8)
-└── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
+├── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
+├── mcp-validation-harness.md          # 5-phase MCP validation (PR-8.4)
+└── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -80,9 +83,13 @@ patterns/
 - ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
 - ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
 - ✅ **Workspace Path Policy**: Where projects and documentation live
+- ✅ **MCP Loading Strategy**: 3-tier loading (Always-On, Task-Scoped, On-Demand) (PR-8.5)
+- ✅ **MCP Design Patterns**: Per-MCP best practices based on validation (PR-8.5) ← NEW
 - ✅ **Context Budget Management**: MCP loading tiers, plugin pruning, token budgets (PR-8)
 - ✅ **Plugin Decomposition**: Extract/customize skills from bundled plugins (PR-8)
 - ✅ **Automated Context Management**: Smart checkpoint with MCP optimization (PR-8.4)
+- ✅ **MCP Validation Harness**: 5-phase validation for new MCPs (PR-8.4)
+- ✅ **Batch MCP Validation**: Test MCPs in groups within token limits (PR-8.5)
 
 ### Templates (Repeatable Workflow Templates)
 ```
@@ -237,6 +244,28 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
+**2026-01-09**: PR-8.5 MCP Initialization Protocol Implemented
+- ✅ Created `suggest-mcps.sh` — Keyword-to-MCP mapping script
+- ✅ Updated `session-start.sh` — Auto-suggests MCPs based on "Next Step"
+- ✅ Updated `session-exit.md` — Added MCP state capture step
+- ✅ Updated `session-state.md` — Added MCP State section template
+- ✅ Updated `mcp-loading-strategy.md` — Full protocol documentation (v2.1)
+- ✅ Updated `mcp-design-patterns.md` — Session lifecycle section (v1.1)
+
+**2026-01-09**: PR-8.5 MCP Validation Complete + Documentation Revision
+- ✅ Completed batch validation of all 17 MCPs (13/13 task MCPs + 4 core MCPs)
+- ✅ Created mcp-design-patterns.md — Per-MCP best practices from validation
+- ✅ Revised mcp-loading-strategy.md — Updated 3-tier system with accurate token costs
+- ✅ Updated capability-matrix.md — Added research tool selection matrix
+- ✅ Updated overlap-analysis.md — Added research MCP complementarity (section 5a)
+- ✅ Documented 11 key discoveries from validation process
+
+**2026-01-08**: PR-8.4 MCP Validation Harness
+- ✅ Created 5-phase validation harness pattern
+- ✅ Validated 17 MCPs across 4 batches
+- ✅ Discovered tool loading limits (~45K tokens)
+- ✅ DuckDuckGo removed (bot detection), Brave Search added
+
 **2026-01-07**: PR-8 Context Budget Management (Extended Scope)
 - ✅ Created context-budget-management.md pattern document
 - ✅ Extended PR-8 scope in roadmap to include context optimization
@@ -285,4 +314,4 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
-*Last Updated: 2026-01-07*
+*Last Updated: 2026-01-09*

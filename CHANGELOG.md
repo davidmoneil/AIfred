@@ -11,6 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.8.4] - 2026-01-09
+
+**PR-8.5: MCP Initialization Protocol** — Automated MCP lifecycle management
+
+### Added
+
+#### MCP Initialization Protocol
+- **`.claude/scripts/suggest-mcps.sh`** — Keyword-to-MCP mapping (30+ rules)
+  - Analyzes "Next Step" in session-state.md
+  - Suggests enable/disable actions
+  - JSON mode for hook integration
+- **Session-start hook integration** — Auto-suggests MCPs on startup/resume
+- **Session-exit protocol** — MCP state capture and prediction
+
+#### Documentation Updates
+- **`mcp-loading-strategy.md` v2.1** — Full protocol flow diagram, scripts table
+- **`mcp-design-patterns.md` v1.1** — MCP Session Lifecycle section
+- **`session-exit.md` v2.0** — Step 2 "MCP State Capture" with scripts
+- **`session-state.md`** — MCP State template (Tier 1/2/3 + predictions)
+
+### Changed
+- `session-start.sh` now calls `suggest-mcps.sh` and outputs recommendations
+- Context index updated with protocol implementation entry
+
+---
+
 ## [1.8.3] - 2026-01-09
 
 **PR-8.5: MCP Expansion — Batch Installation** — 10 new MCPs validated

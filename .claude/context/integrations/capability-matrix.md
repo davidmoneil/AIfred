@@ -41,9 +41,24 @@ This document maps task types to preferred tools, providing clear selection guid
 | Task | Primary Tool | Fallback | Notes |
 |------|--------------|----------|-------|
 | Fetch web page | `WebFetch` (built-in) | Fetch MCP | Built-in converts to markdown |
-| Web search | `WebSearch` (built-in) | DuckDuckGo MCP | Built-in is integrated |
-| Deep research | `deep-research` agent | WebSearch + WebFetch | Agent for multi-source synthesis |
+| Web search | `WebSearch` (built-in) | Brave Search MCP | Built-in is integrated |
+| Quick fact check | `perplexity_search` | `brave_web_search` | AI-curated results |
+| Deep research | `gptresearcher_deep_research` | `perplexity_research` | 16+ sources synthesis |
+| Academic papers | arXiv MCP | WebSearch | Full paper workflow |
+| Reference lookup | Wikipedia MCP | WebSearch | Clean markdown output |
 | API calls | `Bash(curl)` | Fetch MCP | Bash for full control |
+
+### Research Tool Selection (PR-8.5)
+
+| Need | Tool | Speed | Depth |
+|------|------|-------|-------|
+| Quick facts | `perplexity_search` | Fast | Shallow |
+| Current events | `brave_web_search` | Fast | Shallow |
+| Q&A with citations | `perplexity_ask` | Fast | Medium |
+| Multi-source synthesis | `perplexity_research` | Medium | Deep |
+| Comprehensive research | `gptresearcher_deep_research` | Slow | Very Deep |
+| Academic papers | arXiv MCP | Medium | Deep |
+| Reference articles | Wikipedia MCP | Fast | Medium |
 
 ### Browser Automation Operations
 
@@ -137,17 +152,38 @@ This document maps task types to preferred tools, providing clear selection guid
 | `claude-code-guide` | Documentation lookup | Claude Code/SDK questions |
 | `general-purpose` | Full capability | Complex multi-step tasks |
 
-### MCP Servers (Stage 1 - Core)
+### MCP Servers (Validated PR-8.5)
 
-| Server | Purpose | Token Cost | Loading Strategy |
-|--------|---------|------------|------------------|
-| Memory | Knowledge graph | ~8-15K | Always-On |
-| Filesystem | File operations | ~8K | On-Demand |
-| Fetch | Web content | ~5K | On-Demand |
-| Time | Timezone handling | ~3K | On-Demand |
-| Git | Git operations | ~6K | On-Demand |
-| GitHub | GitHub platform | ~15K | On-Demand |
-| Sequential Thinking | Problem decomposition | ~5K | On-Demand |
+**Tier 1 — Always-On**:
+| Server | Purpose | Token Cost | Tools |
+|--------|---------|------------|-------|
+| Memory | Knowledge graph | ~1.8K | 9 |
+| Filesystem | File operations | ~2.8K | 13 |
+| Fetch | Web content | ~0.5K | 1 |
+| Git | Git operations | ~2.5K | 12 |
+
+**Tier 2 — Task-Scoped**:
+| Server | Purpose | Token Cost | Tools |
+|--------|---------|------------|-------|
+| GitHub | GitHub platform | ~5K | 20+ |
+| Context7 | Library documentation | ~2K | 2 |
+| Sequential Thinking | Problem decomposition | ~1K | 1 |
+| Brave Search | Web search (API-based) | ~3K | 2 |
+| arXiv | Academic papers | ~2K | 4 |
+| DateTime | Timezone operations | ~1K | 1 |
+| Wikipedia | Reference articles | ~2K | 2 |
+| Chroma | Vector database | ~4K | 12 |
+| Desktop Commander | System operations | ~8K | 30+ |
+| Perplexity | AI-powered search | ~3K | 4 |
+| GPTresearcher | Deep research | ~3K | 5 |
+
+**Tier 3 — On-Demand**:
+| Server | Purpose | Token Cost | Tools |
+|--------|---------|------------|-------|
+| Playwright | Browser automation | ~6K | 20+ |
+| Lotus Wisdom | Contemplative reasoning | ~2K | 2 |
+
+**Note**: Token costs validated via MCP validation harness. See @.claude/context/patterns/mcp-design-patterns.md for per-MCP best practices.
 
 ### Claude Code Plugins (PR-6 Evaluated)
 
@@ -379,4 +415,4 @@ See @.claude/context/integrations/overlap-analysis.md for detailed conflict reso
 
 ---
 
-*Core Tooling Baseline - Capability Matrix v1.3 (Revised 2026-01-07 PR-7 Skills)*
+*Core Tooling Baseline - Capability Matrix v1.4 (Revised 2026-01-09 PR-8.5 MCPs)*

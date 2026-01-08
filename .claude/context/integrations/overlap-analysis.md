@@ -102,24 +102,67 @@ This document identifies overlapping functionality between tools and establishes
 
 ---
 
-### 5. Web Search Overlap
+### 5. Web Search Overlap (Updated PR-8.5)
 
 **Overlapping Tools**:
 - Built-in: `WebSearch`
-- MCP: DuckDuckGo MCP (if installed)
+- MCP: Brave Search MCP, Perplexity MCP, GPTresearcher MCP
 - Custom: `deep-research` agent
 
-**Conflict Potential**: LOW - Different depth levels
+**Conflict Potential**: MEDIUM - Multiple research MCPs with different strengths
 
 **Resolution Rule**:
 | Scenario | Use | Rationale |
 |----------|-----|-----------|
-| Quick fact check | `WebSearch` | Built-in, immediate |
-| General search | `WebSearch` | Good enough for most cases |
-| Privacy-focused search | DuckDuckGo MCP | No tracking |
-| Multi-source synthesis | `deep-research` agent | Agent validates across sources |
+| Quick fact check | `WebSearch` or `perplexity_search` | Built-in or AI-curated |
+| Current events | `brave_web_search` | Fast web index |
+| Q&A with citations | `perplexity_ask` | Returns cited answers |
+| Multi-source synthesis | `perplexity_research` | Deep with citations |
+| Comprehensive research | `gptresearcher_deep_research` | 16+ sources |
+| Academic research | arXiv MCP | Full paper workflow |
 
-**Selection Priority**: WebSearch → DuckDuckGo MCP → deep-research agent
+**Selection Priority**: WebSearch (quick) → Perplexity (AI-curated) → GPTresearcher (comprehensive)
+
+**Note**: DuckDuckGo MCP removed due to bot detection issues. Use Brave Search as API-based alternative.
+
+---
+
+### 5a. Research MCP Complementarity (NEW PR-8.5)
+
+**Overlapping Tools**:
+- Brave Search MCP (web search)
+- Perplexity MCP (AI search, 4 tools)
+- GPTresearcher MCP (deep research, 5 tools)
+- arXiv MCP (academic papers)
+- Wikipedia MCP (reference articles)
+
+**Conflict Potential**: HIGH - Multiple tools for research tasks
+
+**Resolution Matrix**:
+| Tool | Speed | Depth | Sources | Best For |
+|------|-------|-------|---------|----------|
+| `brave_web_search` | Fast | Shallow | Web index | Current events, fallback |
+| `perplexity_search` | Fast | Shallow | AI-curated | Quick facts |
+| `perplexity_ask` | Fast | Medium | AI-curated | Q&A with citations |
+| `perplexity_research` | Medium | Deep | Multi-source | Synthesis tasks |
+| `gptresearcher_quick_search` | Fast | Shallow | 9+ sources | Alternative search |
+| `gptresearcher_deep_research` | Slow | Very Deep | 16+ sources | Comprehensive research |
+| arXiv MCP | Medium | Deep | Academic | Papers, citations |
+| Wikipedia MCP | Fast | Medium | Wikipedia | Reference lookups |
+
+**Selection Priority by Task**:
+```
+Need research?
+├── Quick answer → perplexity_search or WebSearch
+├── Current events → brave_web_search
+├── Q&A with citations → perplexity_ask
+├── Multi-source synthesis → perplexity_research
+├── Comprehensive deep-dive → gptresearcher_deep_research
+├── Academic papers → arXiv MCP
+└── Reference lookup → Wikipedia MCP
+```
+
+**Anti-Pattern**: Don't use multiple research MCPs for same query (context waste)
 
 ---
 
@@ -268,4 +311,4 @@ Re-evaluate overlap rules when:
 
 ---
 
-*PR-5 Core Tooling Baseline - Overlap Analysis v1.0*
+*PR-5 Core Tooling Baseline - Overlap Analysis v1.1 (Updated PR-8.5 2026-01-09)*

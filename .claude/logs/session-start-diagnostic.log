@@ -76,3 +76,16 @@
 2026-01-08T19:42:49Z | PreCompact | Disabled Tier 2 MCPs
 2026-01-08T19:42:49Z | PreCompact | Signal file created for auto-clear
 2026-01-08T19:43:51Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T19:45:59Z | SessionStart | source=startup | session=352366aa-aec5-4926-a6db-1833485fb827
+2026-01-08T19:45:59Z | SessionStart | Launched watcher
+2026-01-08T20:00:19Z | SessionStart | source=clear | session=e8b4223f-f142-4218-94f9-0e3cd860a4a3
+2026-01-08T20:04:34Z | SessionStart | source=clear | session=250b51cf-8cbe-49ce-abd6-2b8af4b0e116
+2026-01-08T20:06:53Z | Stop | Clear already pending, allowing stop
+2026-01-08T20:06:57Z | Stop | Clear already pending, allowing stop
+2026-01-08T20:06:57Z | SessionStart | source=clear | session=468585f0-d622-4eec-8841-86f659dd1c73
+2026-01-08T20:06:57Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-08T20:11:59Z | SessionStart | source=clear | session=775dfddf-3b2b-4399-b13d-6c8f1e6baa4a
+2026-01-08T20:52:11Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T20:52:11Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T20:52:11Z | PreCompact | Signal file created for auto-clear
+2026-01-08T20:53:11Z | SessionStart | source=compact | session=775dfddf-3b2b-4399-b13d-6c8f1e6baa4a

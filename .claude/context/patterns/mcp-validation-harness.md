@@ -1,8 +1,9 @@
 # MCP Validation Harness Pattern
 
 **Created**: 2026-01-08
-**Status**: Draft
-**Related**: PR-8.4, capability-matrix.md, mcp-installation.md
+**Updated**: 2026-01-08
+**Status**: Active
+**Related**: PR-8.4, capability-matrix.md, mcp-installation.md, batch-mcp-validation.md
 
 ---
 
@@ -319,12 +320,43 @@ Store at `.claude/logs/mcp-validation/[mcp-name].md`:
 
 ---
 
+## Batch Validation
+
+When validating many MCPs, use the **Batch MCP Validation Pattern** to ensure all tools load:
+
+**See**: `batch-mcp-validation.md`
+
+**Quick Start**:
+```bash
+# Configure batch 1 (Development MCPs)
+.claude/scripts/mcp-validation-batches.sh 1
+
+# Apply changes
+/clear
+
+# Run functional tests for batch 1 MCPs
+
+# Move to next batch
+.claude/scripts/mcp-validation-batches.sh 2
+```
+
+**Batches**:
+| Batch | MCPs | Focus |
+|-------|------|-------|
+| 1 | 8 | Development (github, context7, sequential-thinking, datetime) |
+| 2 | 8 | Research (brave-search, arxiv, perplexity, wikipedia) |
+| 3 | 7 | Utilities (desktop-commander, chroma, gptresearcher) |
+| 4 | 6 | Specialized (playwright, lotus-wisdom) |
+
+---
+
 ## Integration Points
 
 ### With Context Budget Management
 - Token costs feed into budget calculations
 - Tier placement affects loading decisions
 - Overlap analysis prevents redundant loading
+- **Batch validation ensures all tools load within token limits**
 
 ### With Capability Matrix
 - Validated tools added to matrix

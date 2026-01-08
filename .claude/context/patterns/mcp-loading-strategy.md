@@ -1,295 +1,393 @@
 # MCP Loading Strategy Pattern
 
 **Created**: 2026-01-02
+**Updated**: 2026-01-09 (PR-8.5 Revision)
 **Status**: Active
-**Applies To**: AIProjects, AIFred, all Claude Code projects
+**Applies To**: Jarvis, all Claude Code projects
 
 ---
 
 ## Overview
 
-MCP (Model Context Protocol) servers consume context tokens when loaded. This pattern defines three loading strategies to optimize context usage while maintaining functionality.
+MCP servers consume context tokens when loaded. This pattern defines three loading tiers to optimize context usage while maintaining functionality.
 
-**Key Constraint**: MCP servers **cannot be toggled mid-session**. Changes require restarting Claude Code.
+**Key Constraints**:
+- MCP servers cannot be toggled mid-session (changes require restart)
+- Tool definitions consume ~45K token budget maximum
+- With 15+ MCPs active, some tools won't load (Discovery #7)
 
 ---
 
-## The Three Loading Strategies
+## The Three Loading Tiers
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    MCP LOADING STRATEGIES                        │
+│                    MCP LOADING TIERS                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  ALWAYS-ON                ON-DEMAND               ISOLATED       │
-│  ──────────               ─────────               ────────       │
-│  Session Start            Session Start           Per-Invocation │
-│  (if enabled)             (spawn new process)                    │
+│  TIER 1: ALWAYS-ON       TIER 2: TASK-SCOPED     TIER 3: ON-DEMAND │
+│  ──────────────────      ─────────────────────   ────────────────  │
+│  Load every session      Load based on task      Load when needed  │
+│  (~8K tokens)            (+tokens per MCP)       (isolated use)    │
 │                                                                  │
-│  ┌─────────┐              ┌─────────┐            ┌─────────┐    │
-│  │ Memory  │              │ n8n-MCP │            │Playwright│    │
-│  │ Git     │              │ GitHub  │            │ (21 tools│    │
-│  │ Fetch   │              │ SSH     │            │  ~15k)   │    │
-│  │Filesys  │              │ Docker  │            └─────────┘    │
-│  └─────────┘              └─────────┘                 │          │
-│       │                        │                      │          │
-│       ▼                        ▼                      ▼          │
-│  IN MAIN CONTEXT          IN MAIN CONTEXT        SEPARATE       │
-│  (~25k tokens)            (+tokens when on)      PROCESS        │
-│                                                  (0 tokens)      │
+│  ┌─────────────┐         ┌─────────────────┐    ┌─────────────┐  │
+│  │ memory      │         │ github          │    │ playwright  │  │
+│  │ filesystem  │         │ context7        │    │ lotus-wisdom│  │
+│  │ fetch       │         │ sequential-think│    └─────────────┘  │
+│  │ git         │         │ brave-search    │         │           │
+│  └─────────────┘         │ arxiv           │         ▼           │
+│        │                 │ datetime        │    TRIGGERED BY     │
+│        │                 │ wikipedia       │    SPECIFIC COMMAND │
+│        ▼                 │ chroma          │                      │
+│  ALWAYS IN CONTEXT       │ desktop-cmdr    │                      │
+│                          │ perplexity      │                      │
+│                          │ gptresearcher   │                      │
+│                          └─────────────────┘                      │
+│                                 │                                 │
+│                                 ▼                                 │
+│                          ENABLED PER-SESSION                      │
+│                          BASED ON WORK TYPE                       │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Strategy 1: Always-On
+## Tier 1: Always-On (~8K tokens)
 
-**Definition**: MCP servers loaded at every session start. Cannot be disabled without config change + restart.
+**Definition**: Core MCPs loaded at every session start. Essential for base functionality.
+
+| MCP | Tokens | Purpose | Tools |
+|-----|--------|---------|-------|
+| memory | ~1.8K | Persistent knowledge graph | 9 tools |
+| filesystem | ~2.8K | External file operations | 13 tools |
+| fetch | ~0.5K | Web content retrieval | 1 tool |
+| git | ~2.5K | Repository operations | 12 tools |
+
+**Total Tier 1**: ~7.6K tokens
 
 **Characteristics**:
-| Aspect | Behavior |
-|--------|----------|
-| When loaded | Session start (automatic) |
-| Token impact | Always in context |
-| Toggle mid-session | No |
-| Best for | Core functionality used in 80%+ of sessions |
+- Loaded automatically every session
+- Cannot be disabled without config change
+- Used in 80%+ of sessions
+- Core to primary workflows
 
-**Current Always-On MCPs (AIProjects)**:
-- **MCP Gateway** (Memory, Fetch, Docker) - ~15k tokens
-- **Git MCP** - ~6k tokens
-- **Filesystem MCP** - ~8k tokens
-
-**Decision Criteria - Use Always-On When**:
+**Decision Criteria**:
 - [ ] Used in 80%+ of sessions
 - [ ] Core to project functionality
-- [ ] Token cost acceptable for frequency of use
-- [ ] No sensitive/expensive API calls on load
+- [ ] Token cost <3K per MCP
+- [ ] No external dependencies that may fail
 
 ---
 
-## Strategy 2: On-Demand
+## Tier 2: Task-Scoped (~34K total, select subset)
 
-**Definition**: MCP servers configured but **disabled by default**. Enable for one session only, then **auto-revert to off** at session end.
+**Definition**: MCPs enabled based on session work type. Select relevant subset at session start.
 
-**Core Principle**: Default state is always OFF. Every enable is temporary (one session).
+| MCP | Tokens | Use Case | Enable When |
+|-----|--------|----------|-------------|
+| github | ~5K | PR/issue work | Working on PRs, issues |
+| context7 | ~2K | Library docs | Documentation lookup |
+| sequential-thinking | ~1K | Complex reasoning | Architecture decisions |
+| brave-search | ~3K | Web search | Research tasks |
+| arxiv | ~2K | Academic papers | Academic research |
+| datetime | ~1K | Timezone ops | Time-sensitive work |
+| wikipedia | ~2K | Reference lookups | Background research |
+| chroma | ~4K | Vector storage | Semantic search tasks |
+| desktop-commander | ~8K | System operations | File/process management |
+| perplexity | ~3K | AI search | Research with citations |
+| gptresearcher | ~3K | Deep research | Comprehensive research |
 
 **Characteristics**:
-| Aspect | Behavior |
-|--------|----------|
-| Default state | **Off** (disabled in settings) |
-| When loaded | Session start (only if explicitly enabled) |
-| Token impact | In context when enabled |
-| Toggle mid-session | No (config change + restart required) |
-| Session end behavior | **Auto-disable** (returns to default off) |
-| Best for | Task-specific functionality, heavy token cost |
+- Enable at session start based on planned work
+- Can load 6-8 Tier 2 MCPs alongside Tier 1
+- Session-start hook suggests MCPs based on session-state.md
+- Changes require `/clear` and restart
 
-**Current On-Demand MCPs (AIProjects)**:
-- **n8n-MCP** - ~28k tokens (42 tools) - Default: OFF
-- **GitHub MCP** - ~15k tokens - Default: OFF
-- **SSH MCP** - ~5k tokens - Default: OFF
-- **Prometheus MCP** - ~8k tokens - Default: OFF
-- **Grafana MCP** - ~10k tokens - Default: OFF
+**Selection by Work Type**:
 
-**Lifecycle Flow**:
+| Work Type | Recommended Tier 2 MCPs |
+|-----------|------------------------|
+| Development | github, context7, sequential-thinking |
+| Research | brave-search, perplexity, gptresearcher, arxiv |
+| Documentation | wikipedia, chroma |
+| System Admin | desktop-commander, datetime |
+
+**Lifecycle**:
 ```
-SESSION A (MCP off - default)
-├── User needs MCP functionality
-├── Claude detects MCP unavailable
-├── Claude runs /checkpoint (saves state, provides enable command)
-└── User exits
+1. Session Start
+   → Hook reads session-state.md
+   → Suggests relevant Tier 2 MCPs
 
-USER ENABLES (between sessions)
-└── Runs: claude mcp add <server-name>
+2. User enables if needed
+   → claude mcp add <name>
+   → Run /clear
 
-SESSION B (MCP on - temporary)
-├── MCP tools available
-├── Work completed
-├── Session ends
-└── Auto-disable: MCP removed from enabled list
-
-SESSION C (MCP off - back to default)
-└── Tokens saved, clean state
+3. Session End
+   → Document active MCPs in session-state
+   → Optionally disable for next session
 ```
-
-**Enable Command** (user runs between sessions):
-```bash
-claude mcp add <server-name>
-# Then restart Claude Code
-```
-
-**Auto-Disable** (handled by session exit procedure):
-- Session exit checks for enabled On-Demand MCPs
-- Automatically disables them via settings modification
-- No user action required
-
-**When Claude Needs Unavailable MCP**:
-1. Claude recognizes the MCP tools are not available
-2. Claude runs `/checkpoint` to save current state
-3. Checkpoint output includes enable instructions
-4. User enables MCP, restarts, and continues from checkpoint
-
-**Decision Criteria - Use On-Demand When**:
-- [ ] Used in 20-80% of sessions
-- [ ] Specific task categories (n8n work, GitHub PRs, etc.)
-- [ ] High token cost worth avoiding when not needed
-- [ ] User can predict need at session start
 
 ---
 
-## Strategy 3: Isolated
+## Tier 3: On-Demand (~8K total)
 
-**Definition**: MCP servers never loaded in main session. Spawned in separate Claude process per-invocation.
+**Definition**: MCPs with specialized use cases. Enable only when specific functionality needed.
+
+| MCP | Tokens | Use Case | Trigger |
+|-----|--------|----------|---------|
+| playwright | ~6K | Browser automation | /browser-test, QA tasks |
+| lotus-wisdom | ~2K | Contemplative reasoning | Philosophical analysis |
 
 **Characteristics**:
-| Aspect | Behavior |
-|--------|----------|
-| When loaded | New process spawned per-invocation |
-| Token impact | Zero in main session |
-| Toggle mid-session | N/A (each call is fresh process) |
-| Best for | Heavy token cost, infrequent use, context isolation needed |
+- Disabled by default
+- Enable only for specific tasks
+- High token cost or specialized use
+- Consider isolated invocation pattern
 
-**Current Isolated MCPs (AIProjects)**:
-- **Playwright MCP** - ~15k tokens (21 tools) - Via `/browser` skill
-
-**Implementation Pattern**:
+**Isolated Invocation Pattern**:
 ```bash
-# Create a skill/command that spawns isolated session:
+# Spawn separate Claude process with only Playwright
 claude \
-  --mcp-config ~/.claude/mcp-profiles/<server>.json \
-  --settings ~/.claude/mcp-profiles/<server>-settings.json \
-  -p "Task: $ARGUMENTS" \
+  --mcp-config ~/.claude/mcp-profiles/playwright.json \
+  -p "Navigate to example.com and screenshot" \
   --output-format text
 ```
 
-**Required Files**:
-1. `~/.claude/mcp-profiles/<server>.json` - MCP config with only that server
-2. `~/.claude/mcp-profiles/<server>-settings.json` - Permissions for that server
-3. `.claude/commands/<server>.md` - Skill to invoke isolated session
+---
 
-**Decision Criteria - Use Isolated When**:
-- [ ] Used in <20% of sessions
-- [ ] Very high token cost (>10k tokens)
-- [ ] Results can be returned as text summary
-- [ ] Context isolation is beneficial (browser state, etc.)
-- [ ] Latency of spawning new process is acceptable
+## Token Budget Management
+
+### Maximum Practical Limit
+
+**Discovery #7**: ~45K tokens is the practical limit for tool definitions.
+
+| Configuration | Tokens | Tools Available |
+|---------------|--------|-----------------|
+| Tier 1 only | ~8K | All tools load |
+| Tier 1 + 6 Tier 2 | ~25K | All tools load |
+| Tier 1 + all Tier 2 | ~42K | All tools load |
+| All 17 MCPs | ~50K | Some tools won't load |
+
+### Recommended Configurations
+
+**Lean Session** (10 MCPs, ~20K):
+```
+Tier 1: memory, filesystem, fetch, git
+Tier 2: github, context7, datetime, desktop-commander, brave-search, perplexity
+```
+
+**Research Session** (12 MCPs, ~30K):
+```
+Tier 1: memory, filesystem, fetch, git
+Tier 2: brave-search, arxiv, perplexity, gptresearcher, wikipedia, chroma, datetime, desktop-commander
+```
+
+**Development Session** (10 MCPs, ~22K):
+```
+Tier 1: memory, filesystem, fetch, git
+Tier 2: github, context7, sequential-thinking, datetime, desktop-commander, chroma
+```
+
+---
+
+## MCP Enable/Disable Commands
+
+### Enable MCP
+```bash
+# Add MCP to configuration
+claude mcp add <name>
+
+# Then run /clear to reload
+```
+
+### Disable MCP
+```bash
+# Using helper script (adds to disabledMcpServers)
+.claude/scripts/disable-mcps.sh <name> [name...]
+
+# Or remove entirely
+claude mcp remove <name>
+```
+
+### List Status
+```bash
+# Show all MCPs
+claude mcp list
+
+# Show with helper script
+.claude/scripts/list-mcp-status.sh
+```
+
+---
+
+## MCP Initialization Protocol (PR-8.5)
+
+Full lifecycle for MCP management across sessions:
+
+### Protocol Flow
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                    MCP INITIALIZATION PROTOCOL                       │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  SESSION END                           SESSION START                 │
+│  ───────────                           ─────────────                 │
+│                                                                      │
+│  ┌─────────────────────┐               ┌─────────────────────┐      │
+│  │ 1. Update session-  │               │ 1. session-start.sh │      │
+│  │    state.md with    │               │    hook fires        │      │
+│  │    "Next Step"      │               │                      │      │
+│  └─────────┬───────────┘               └─────────┬───────────┘      │
+│            │                                     │                   │
+│            ▼                                     ▼                   │
+│  ┌─────────────────────┐               ┌─────────────────────┐      │
+│  │ 2. Run suggest-     │               │ 2. suggest-mcps.sh  │      │
+│  │    mcps.sh          │               │    analyzes "Next   │      │
+│  │    --capture        │               │    Step" keywords   │      │
+│  └─────────┬───────────┘               └─────────┬───────────┘      │
+│            │                                     │                   │
+│            ▼                                     ▼                   │
+│  ┌─────────────────────┐               ┌─────────────────────┐      │
+│  │ 3. Update MCP State │               │ 3. Outputs MCP      │      │
+│  │    section with     │               │    suggestions in   │      │
+│  │    prediction       │               │    systemMessage    │      │
+│  └─────────┬───────────┘               └─────────┬───────────┘      │
+│            │                                     │                   │
+│            ▼                                     ▼                   │
+│  ┌─────────────────────┐               ┌─────────────────────┐      │
+│  │ 4. Disable Tier 2/3 │               │ 4. User enables     │      │
+│  │    MCPs not needed  │               │    suggested MCPs   │      │
+│  │    for next step    │               │    + runs /clear    │      │
+│  └─────────────────────┘               └─────────────────────┘      │
+│                                                                      │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+### Keyword-to-MCP Mapping
+
+The `suggest-mcps.sh` script maps keywords in "Next Step" to MCPs:
+
+| Keyword | MCPs Suggested |
+|---------|----------------|
+| PR, pull request, issue, github | github |
+| documentation, library, docs | context7, wikipedia |
+| research, search | brave-search, perplexity, gptresearcher |
+| paper, academic, arxiv | arxiv |
+| architecture, design, complex | sequential-thinking |
+| browser, test, QA, automation | playwright |
+| vector, semantic, embedding | chroma |
+| time, timezone, schedule | datetime |
+| file, process, system | desktop-commander |
+| deep research, comprehensive | gptresearcher |
+
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `.claude/scripts/suggest-mcps.sh` | Analyze "Next Step" and suggest MCPs |
+| `.claude/scripts/suggest-mcps.sh --capture` | Capture currently enabled MCPs |
+| `.claude/scripts/suggest-mcps.sh --json` | JSON output for hooks |
+| `.claude/scripts/enable-mcps.sh` | Enable MCPs by name |
+| `.claude/scripts/disable-mcps.sh` | Disable MCPs by name |
+| `.claude/scripts/list-mcp-status.sh` | Show current MCP state |
+
+### Session State Template
+
+```markdown
+### MCP State (PR-8.5 Protocol)
+
+**Current Session**:
+- **Tier 1 (Always-On)**: memory, filesystem, fetch, git
+- **Tier 2 (Enabled)**: github, context7
+- **Tier 3 (On-Demand)**: (none)
+
+**Next Session Prediction**:
+- Keywords detected: PR, documentation
+- Suggested MCPs: github, context7
+
+**MCP Action on Exit**:
+- Disable: (none needed)
+- Keep enabled: github, context7
+```
+
+---
+
+## Session-Start Hook Details
+
+The session-start hook (`.claude/hooks/session-start.sh`) automatically:
+
+1. **On startup/resume**: Calls `suggest-mcps.sh --json`
+2. **Parses results**: Gets `to_enable`, `to_disable`, `tier3_warnings`
+3. **Outputs suggestions**: Adds MCP recommendations to systemMessage
+
+**Output Format**:
+```
+--- MCP SUGGESTIONS ---
+Enable for this session: github, context7
+  Run: .claude/scripts/enable-mcps.sh github context7 && /clear
+Consider disabling (not needed): brave-search
+  Run: .claude/scripts/disable-mcps.sh brave-search && /clear
+Note: playwright are Tier 3 (high token cost) - consider isolated invocation
+---
+```
 
 ---
 
 ## Decision Matrix
 
-| Criteria | Always-On | On-Demand | Isolated |
-|----------|-----------|-----------|----------|
+| Criteria | Tier 1 | Tier 2 | Tier 3 |
+|----------|--------|--------|--------|
 | **Usage frequency** | 80%+ sessions | 20-80% sessions | <20% sessions |
-| **Token cost** | <10k acceptable | 10-30k | >10k |
-| **Predictable need** | Always | At session start | During session |
+| **Token cost** | <3K each | 3K-8K each | >5K or specialized |
+| **Loading time** | Session start | Session start | On-demand |
 | **Context isolation** | Not needed | Not needed | Beneficial |
-| **Latency tolerance** | N/A | Restart OK | Process spawn OK |
 
 ---
 
-## Implementation Checklist
-
-### Adding a New Always-On MCP
-
-1. [ ] Add to global `~/.claude.json` or project `.mcp.json`
-2. [ ] Verify token impact with `/context`
-3. [ ] Document in `mcp-servers.md`
-4. [ ] Update architecture docs
-
-### Adding a New On-Demand MCP
-
-1. [ ] Add to config (disabled by default)
-2. [ ] Document enable/disable commands
-3. [ ] Add to `mcp-servers.md` as Tier 2
-4. [ ] Create task-specific enable instructions
-
-### Adding a New Isolated MCP
-
-1. [ ] Create `~/.claude/mcp-profiles/<server>.json`
-2. [ ] Create `~/.claude/mcp-profiles/<server>-settings.json`
-3. [ ] Create `.claude/commands/<server>.md` skill
-4. [ ] Document in architecture as isolated
-5. [ ] Add usage examples
-
----
-
-## Current State (AIProjects)
-
-```
-DEFAULT SESSION (~22k tokens - lean)
-├── Always-On
-│   ├── MCP Gateway (Memory, Fetch, Docker) ~15k
-│   ├── Git MCP ~6k
-│   └── Filesystem MCP ~8k
-│
-├── On-Demand (Default: OFF, auto-revert after use)
-│   ├── n8n-MCP (~28k tokens)
-│   ├── GitHub MCP (~15k tokens)
-│   ├── SSH MCP (~5k tokens)
-│   ├── Prometheus MCP (~8k tokens)
-│   └── Grafana MCP (~10k tokens)
-│
-└── Isolated (Separate Process)
-    └── Playwright MCP (via /browser skill)
-```
-
----
-
-## Enforcement
-
-### Session Exit Procedure (Hard Rule)
-
-The session exit procedure **must** disable any On-Demand MCPs that were enabled:
-
-```bash
-# At session end, for each On-Demand MCP that is enabled:
-claude mcp remove <server-name>
-# This ensures next session starts with default (off) state
-```
-
-### Checkpoint Workflow (Soft Rule)
-
-When Claude needs an unavailable On-Demand MCP:
-1. Run `/checkpoint` to save state
-2. Output enable instructions for user
-3. User enables, restarts, continues from checkpoint
-
-### Soft Rules
-
-1. **Pattern Application**: When adding new MCP servers, apply this decision matrix
-2. **Documentation**: All MCP servers must be documented with their loading strategy
-3. **Review**: Periodically review On-Demand servers - promote to Always-On if usage >80%, demote to Isolated if <20%
-4. **Missing MCP Detection**: When MCP tools are needed but unavailable, run `/checkpoint`
+## Enforcement Rules
 
 ### Hard Rules
 
-1. **Restart Required**: Never assume MCP changes take effect mid-session
-2. **Isolated for Heavy**: Any MCP >15k tokens should default to Isolated pattern
-3. **Document Token Cost**: All MCP additions must include token cost measurement
-4. **Auto-Revert On-Demand**: Session exit MUST disable any enabled On-Demand MCPs
+1. **Restart Required**: MCP changes never take effect mid-session
+2. **Token Limit**: Keep total MCPs <15 to ensure all tools load
+3. **Document Token Cost**: All MCP additions must include token measurement
+
+### Soft Rules
+
+1. **Pattern Application**: Apply tier classification to new MCPs
+2. **Documentation**: All MCPs documented in mcp-installation.md
+3. **Review**: Promote/demote MCPs based on actual usage patterns
 
 ---
 
 ## Related Documentation
 
-- @.claude/context/integrations/mcp-servers.md - Current MCP inventory
-- @.claude/context/workflows/dynamic-mcp-management.md - Historical context
-- @knowledge/docs/architecture-overview.md - Architecture overview
-- @.claude/commands/browser.md - Example isolated MCP implementation
-- @.claude/commands/checkpoint.md - Checkpoint command for MCP transitions
-- @.claude/context/workflows/session-exit-procedure.md - Session exit with MCP auto-disable
+- @.claude/context/patterns/mcp-design-patterns.md - Per-MCP best practices
+- @.claude/context/patterns/context-budget-management.md - Token budgets
+- @.claude/context/patterns/mcp-validation-harness.md - Validation process
+- @.claude/context/integrations/mcp-installation.md - Installation guide
 
 ---
 
 ## Changelog
 
-- **2026-01-02**: Added On-Demand auto-revert pattern
-  - On-Demand MCPs now default to OFF
-  - Auto-disable at session end (returns to default)
-  - Added `/checkpoint` command integration
-  - Updated enforcement with hard rule for auto-revert
+- **2026-01-09**: MCP Initialization Protocol added
+  - Added full MCP Initialization Protocol section
+  - Documented keyword-to-MCP mapping
+  - Integrated suggest-mcps.sh script
+  - Added session state template
+  - Added session-start hook details
+
+- **2026-01-09**: Major revision for PR-8.5
+  - Updated to 3-tier system (Always-On, Task-Scoped, On-Demand)
+  - Added all 17 validated MCPs with accurate token costs
+  - Added Discovery #7 token limit findings
+  - Added recommended configurations by work type
+  - Removed obsolete AIProjects references
 
 - **2026-01-02**: Initial pattern documentation
-  - Formalized three-strategy model
-  - Added decision matrix
-  - Documented enforcement approach
+
+---
+
+*MCP Loading Strategy Pattern v2.1 — PR-8.5 MCP Init Protocol (2026-01-09)*
