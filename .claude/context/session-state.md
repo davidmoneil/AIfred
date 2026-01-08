@@ -10,9 +10,44 @@
 
 **Status**: 🟢 Idle (end of session)
 
-**Last Completed**: PR-8.3.1 Zero-Action Context Management — FULLY VALIDATED
+**Last Completed**: PR-8.4 MCP Validation Harness — Core Pattern Complete
 
-**Next Step**: Continue with PR-8.4 (MCP Validation Harness) or other priority
+**Next Step**: Complete DuckDuckGo functional testing (Phase 4), then install/validate Brave Search and arXiv MCPs
+
+### Session Summary (2026-01-08)
+
+**Major Achievement**: MCP Validation Harness Pattern
+
+1. **5-Phase Validation Harness Designed** ✅
+   - Phase 1: Installation Verification
+   - Phase 2: Configuration Audit
+   - Phase 3: Tool Inventory
+   - Phase 4: Functional Testing
+   - Phase 5: Tier Recommendation
+   - Pattern: `.claude/context/patterns/mcp-validation-harness.md`
+
+2. **Design MCPs Validated** ✅
+   - Git MCP: 12 tools, ~2.5K tokens, Tier 1
+   - Memory MCP: 9 tools, ~1.8K tokens, Tier 1
+   - Filesystem MCP: 13 tools, ~2.8K tokens, Tier 1
+   - Validation logs in `.claude/logs/mcp-validation/`
+
+3. **Testing MCPs Selected** ✅
+   - DuckDuckGo (installed, partial validation)
+   - Brave Search (API key required)
+   - arXiv (research utility)
+
+4. **Harness Infrastructure Created** ✅
+   - `/validate-mcp` skill
+   - `validate-mcp-installation.sh` script
+   - Token cost estimates updated in mcp-installation.md
+
+5. **Key Discovery**: MCPs installed mid-session require restart for tools to appear
+
+6. **Subagent MCP Research** ✅
+   - Finding: Subagents inherit parent MCPs, cannot enable disabled ones
+   - Conclusion: Not viable for context management
+   - Brainstorm: `projects/project-aion/ideas/subagent-mcp-isolation.md`
 
 ### Session Summary (2026-01-07)
 
@@ -675,14 +710,27 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ### Next Session Pickup
 
-**Pre-PR-8.4 Testing Complete** — Ready for PR-8.4:
-1. PR-8.4: MCP Validation Harness (scope adjusted per findings)
-   - Focus on config validation, not runtime effect
-   - Token cost measurement per MCP
-   - Health + tool invocation tests
-   - Add "restart required" warnings to context budget workflows
-2. Test `/context-budget` command (now fixed with frontmatter)
-3. Optional: Begin PR-9 plugin decomposition investigation
+**PR-8.4 Validation Harness — In Progress**
+
+1. **Complete DuckDuckGo Validation** (post-restart):
+   - Run Phase 4 functional tests (search, fetch_content)
+   - Update validation log with results
+   - DuckDuckGo MCP is installed and ready
+
+2. **Install and Validate Brave Search MCP**:
+   - Requires BRAVE_API_KEY environment variable
+   - Tests API key configuration validation
+   - 6 tools to inventory
+
+3. **Install and Validate arXiv MCP**:
+   - No API key required
+   - 4 tools for research workflows
+   - Tests simpler MCP setup
+
+4. **After Testing MCPs Complete**:
+   - Add dependency-triggered install recommendations
+   - Update roadmap PR-8.4 checklist
+   - Consider PR-8.4 completion and version bump
 
 ---
 
@@ -695,4 +743,4 @@ Implemented controlled porting workflow from AIfred baseline:
 
 ---
 
-*Updated: 2026-01-07 — PR-8.3 Dynamic Loading Protocol complete (v1.8.0)*
+*Updated: 2026-01-08 — PR-8.4 MCP Validation Harness in progress (v1.8.1)*

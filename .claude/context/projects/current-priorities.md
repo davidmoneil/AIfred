@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-07
+**Last Updated**: 2026-01-08
 
 ---
 
@@ -99,11 +99,18 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
   - [x] Full end-to-end validation: checkpoint → auto-clear → auto-resume
 - [x] **Documentation**: `.claude/context/patterns/automated-context-management.md`
 
-**Remaining**:
-- [ ] PR-8.4: MCP Validation Harness
-  - Standardized validation procedure
-  - Token cost measurement
-  - Health + tool invocation tests
+**PR-8.4 MCP Validation Harness** (In Progress — 2026-01-08):
+- [x] Design 5-phase validation harness pattern
+- [x] Create validation script (validate-mcp-installation.sh)
+- [x] Validate design MCPs (Git, Memory, Filesystem) - all Tier 1
+- [x] Select testing MCPs (DuckDuckGo, Brave Search, arXiv)
+- [x] Create /validate-mcp skill
+- [x] Update mcp-installation.md with validated token costs
+- [x] Install DuckDuckGo MCP (Phases 1-3, 5 complete)
+- [ ] Complete DuckDuckGo Phase 4 functional testing (post-restart)
+- [ ] Install and validate Brave Search MCP (API key test)
+- [ ] Install and validate arXiv MCP (research utility)
+- [ ] Add dependency-triggered install recommendations
 
 ### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation
