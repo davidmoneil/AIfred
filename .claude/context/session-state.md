@@ -10,13 +10,41 @@
 
 **Status**: 🟢 Idle (end of session)
 
-**Last Completed**: PR-8.4 Phase 4 Testing Complete + Batch MCP Installation
+**Last Completed**: PR-8.5 MCP Expansion — 5 MCPs validated, 3 installed (need restart)
 
 **Current Blocker**: None
 
-**Next Step**: After restart: Iteratively validate 5 newly installed MCPs (DateTime, DesktopCommander, Lotus Wisdom, Wikipedia, Chroma)
+**Next Step**: Restart to validate Perplexity, Playwright, GPTresearcher tools
 
-### Session Summary (2026-01-09 — Later)
+### Session Summary (2026-01-08 — MCP Expansion)
+
+**PR-8.5 MCP Expansion Complete**
+
+1. **MCPs Validated** ✅
+   - DateTime: PASS — timezone support working
+   - DesktopCommander: PASS — 30+ tools, system info
+   - Lotus Wisdom: PASS — contemplative reasoning framework
+   - Wikipedia: PASS — search and full article retrieval
+   - Chroma: PASS — vector DB with semantic search
+
+2. **MCPs Installed (need restart)** ⏳
+   - Perplexity: API key configured
+   - Playwright: Browser automation
+   - GPTresearcher: Python 3.13 venv + OpenAI/Tavily keys
+
+3. **Python Upgrade**
+   - Found Python 3.13.11 via uv
+   - Created venv for GPTresearcher at `/Users/aircannon/Claude/gptr-mcp/.venv`
+
+4. **Plugins Removed by User**
+   - 18 plugins uninstalled for future decomposition work
+
+**Commits**:
+- Continuation from `84f5e07`
+
+---
+
+### Session Summary (2026-01-09 — Earlier)
 
 **PR-8.4 Validation Complete + Batch MCP Installation**
 

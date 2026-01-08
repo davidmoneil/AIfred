@@ -116,16 +116,19 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] **DuckDuckGo REMOVED** — Bot detection unreliable
 - [x] Standardize validation workflow
 
-**PR-8.5 MCP Expansion — Batch Installation** (2026-01-09):
-- [x] DateTime MCP installed (✓ Connected)
-- [x] DesktopCommander MCP installed (✓ Connected)
-- [x] Lotus Wisdom MCP installed (✓ Connected)
-- [x] Wikipedia MCP installed (✓ Connected)
-- [x] Chroma MCP installed (✓ Connected)
+**PR-8.5 MCP Expansion — Batch Installation** (2026-01-08):
+- [x] DateTime MCP installed and **VALIDATED** ✅
+- [x] DesktopCommander MCP installed and **VALIDATED** ✅
+- [x] Lotus Wisdom MCP installed and **VALIDATED** ✅
+- [x] Wikipedia MCP installed and **VALIDATED** ✅
+- [x] Chroma MCP installed and **VALIDATED** ✅
+- [x] Perplexity MCP installed with API key (needs restart for tools)
+- [x] Playwright MCP installed (needs restart for tools)
 - [x] Database MCPs (PostgreSQL, MySQL) added to backlog
-- [ ] Perplexity MCP (deferred — needs API key)
-- [ ] GPTresearcher MCP (deferred — manual Python setup)
-- [ ] **Validate all 5 MCPs** (after restart)
+- [x] GPTresearcher MCP installed (Python 3.13 venv + API keys configured)
+- [ ] Complete Perplexity validation (after restart)
+- [ ] Complete Playwright validation (after restart)
+- [ ] Complete GPTresearcher validation (after restart)
 
 ### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation
