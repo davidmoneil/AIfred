@@ -66,3 +66,13 @@
 2026-01-08T18:47:05Z | SessionStart | Launched watcher
 2026-01-08T18:47:20Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
 2026-01-08T18:47:20Z | SessionStart | Launched watcher
+2026-01-08T19:23:02Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T19:23:02Z | SessionStart | Launched watcher
+2026-01-08T19:27:25Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T19:27:25Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T19:27:25Z | PreCompact | Signal file created for auto-clear
+2026-01-08T19:28:48Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T19:42:49Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T19:42:49Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T19:42:49Z | PreCompact | Signal file created for auto-clear
+2026-01-08T19:43:51Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1

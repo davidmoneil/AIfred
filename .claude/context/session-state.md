@@ -10,11 +10,36 @@
 
 **Status**: 🟢 Idle (end of session)
 
-**Last Completed**: PR-8.5 MCP Expansion — 5 MCPs validated, 3 installed (need restart)
+**Last Completed**: PR-8.5 MCP Expansion — 10 MCPs fully validated ✅
 
 **Current Blocker**: None
 
-**Next Step**: Restart to validate Perplexity, Playwright, GPTresearcher tools
+**Next Step**: Re-run MCP validation harness on all 17 active MCPs
+
+### Session Summary (2026-01-09 — PR-8.5 Complete)
+
+**PR-8.5 MCP Expansion — COMPLETE**
+
+1. **Final Validations Completed** ✅
+   - Perplexity: PASS — search, ask, research, reason all working
+   - Playwright: PASS — navigate, snapshot, click, close all working
+   - GPTresearcher: PASS — quick_search, deep_research, get_sources all working
+
+2. **Documentation Updated** ✅
+   - Roadmap updated with PR-8.5 section and Phase 5 table
+   - Validation harness pattern updated with 4 new discoveries (8-11)
+   - mcp-installation.md updated with all validated MCPs
+   - batch-validation-20260108.md finalized
+
+3. **Key Insights Documented**
+   - Perplexity `strip_thinking=true` for context efficiency
+   - GPTresearcher requires Python 3.13+ venv
+   - Playwright accessibility snapshots more efficient than screenshots
+   - Research MCP complementarity matrix
+
+**Version**: 1.8.2 → 1.8.3
+
+---
 
 ### Session Summary (2026-01-08 — MCP Expansion)
 

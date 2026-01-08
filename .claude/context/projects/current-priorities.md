@@ -126,9 +126,9 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Playwright MCP installed (needs restart for tools)
 - [x] Database MCPs (PostgreSQL, MySQL) added to backlog
 - [x] GPTresearcher MCP installed (Python 3.13 venv + API keys configured)
-- [ ] Complete Perplexity validation (after restart)
-- [ ] Complete Playwright validation (after restart)
-- [ ] Complete GPTresearcher validation (after restart)
+- [x] **Perplexity VALIDATED** ✅ — search, ask, research, reason all working
+- [x] **Playwright VALIDATED** ✅ — navigate, snapshot, click, close all working
+- [x] **GPTresearcher VALIDATED** ✅ — quick_search, deep_research, get_sources all working
 
 ### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation

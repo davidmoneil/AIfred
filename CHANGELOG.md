@@ -9,19 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Added
-- **Batch MCP Installation**: DateTime, DesktopCommander, Lotus Wisdom, Wikipedia, Chroma
-- **Database MCPs** added to roadmap backlog: PostgreSQL, MySQL
-- **Search API Research**: `.claude/context/integrations/search-api-research.md`
+---
 
-### Changed
-- **Brave Search MCP**: Status BLOCKED → PASS (validated after restart)
-- **arXiv MCP**: Status PARTIAL → PASS (full workflow tested)
-- **DuckDuckGo MCP**: REMOVED (bot detection unreliable)
-- **mcp-validation-harness.md**: Updated results table with final validation status
+## [1.8.3] - 2026-01-09
+
+**PR-8.5: MCP Expansion — Batch Installation** — 10 new MCPs validated
+
+### Added
+
+#### New MCPs Installed & Validated
+- **DateTime MCP** — Timezone-aware time operations (~1K tokens, Tier 2)
+- **DesktopCommander MCP** — File operations, process management (~8K tokens, Tier 2)
+- **Lotus Wisdom MCP** — Contemplative reasoning framework (~2K tokens, Tier 3)
+- **Wikipedia MCP** — Article search and retrieval (~2K tokens, Tier 2)
+- **Chroma MCP** — Vector database operations (~4K tokens, Tier 2)
+- **Perplexity MCP** — AI-powered search with citations (~3K tokens, Tier 2)
+- **Playwright MCP** — Browser automation (~6K tokens, Tier 3)
+- **GPTresearcher MCP** — Deep web research (~5K tokens, Tier 2)
+- **Brave Search MCP** — Web search API (~3K tokens, Tier 2)
+- **arXiv MCP** — Academic paper search & download (~2K tokens, Tier 2)
+
+#### Documentation
+- **`.claude/logs/mcp-validation/batch-validation-20260108.md`** — Comprehensive validation log
+- **Search API Research**: `.claude/context/integrations/search-api-research.md`
+- **Database MCPs** added to roadmap backlog: PostgreSQL, MySQL
 
 ### Key Discoveries
-- **Discovery #7 Confirmed**: "Connected" ≠ "Tools Available" — MCPs require session restart for tools to load
+- **Discovery #7**: "Connected" ≠ "Tools Available" — MCPs require session restart
+- **Discovery #8**: Perplexity `strip_thinking=true` parameter saves context tokens
+- **Discovery #9**: GPTresearcher requires Python 3.13+ venv
+- **Discovery #10**: Playwright accessibility snapshots more efficient than screenshots
+- **Discovery #11**: Research MCP complementarity — Perplexity (fast) vs GPTresearcher (deep)
+
+### Removed
+- **DuckDuckGo MCP** — Bot detection made it unreliable
 
 ---
 

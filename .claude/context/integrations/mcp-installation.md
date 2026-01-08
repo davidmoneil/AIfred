@@ -410,9 +410,9 @@ Before installing MCPs, ensure:
 | **Wikipedia** | ~2K | Task-Scoped | 2 | **2026-01-08 ✅** |
 | **Chroma** | ~4K | Task-Scoped | 2 | **2026-01-08 ✅** |
 | **Lotus Wisdom** | ~2K | Specialized | 3 | **2026-01-08 ✅** |
-| **Perplexity** | ~3K | Task-Scoped | 2 | Installed (needs restart) |
+| **Perplexity** | ~3K | Task-Scoped | 2 | **2026-01-09 ✅** |
 | ~~DuckDuckGo~~ | — | — | — | REMOVED (bot detection) |
-| **GPTresearcher** | ~5K | Task-Scoped | 2 | Installed (needs restart) |
+| **GPTresearcher** | ~5K | Task-Scoped | 2 | **2026-01-09 ✅** |
 
 **Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 

@@ -431,6 +431,14 @@ These MCPs will be installed to test the harness works on fresh installs:
 | Filesystem | PASS | 1 | Reliable, ~2.8K tokens |
 | **Brave Search** | **PASS** | 2 | API-based, reliable, ~3K tokens |
 | **arXiv** | **PASS** | 2 | Full paper download/read workflow |
+| **DateTime** | **PASS** | 2 | Simple, ~1K tokens, IANA timezone |
+| **DesktopCommander** | **PASS** | 2 | 30+ tools, ~8K tokens |
+| **Wikipedia** | **PASS** | 2 | Clean markdown output, ~2K tokens |
+| **Chroma** | **PASS** | 2 | Vector DB with semantic search, ~4K |
+| **Perplexity** | **PASS** | 2 | 4 tools (search/ask/research/reason), ~3K |
+| **Playwright** | **PASS** | 3 | Browser automation, ~6K tokens |
+| **GPTresearcher** | **PASS** | 2 | Deep research, Python 3.13 venv required |
+| **Lotus Wisdom** | **PASS** | 3 | Contemplative reasoning, niche |
 | DuckDuckGo | **REMOVED** | — | Bot detection blocks all implementations |
 
 **Note**: Brave Search and arXiv were BLOCKED mid-session but PASS after restart (Discovery #7 confirmed).
@@ -456,6 +464,36 @@ These MCPs will be installed to test the harness works on fresh installs:
 
 **Lesson**: Scraping-based MCPs are unreliable; prefer API-based alternatives
 
+### PR-8.5 Additional Discoveries (2026-01-09)
+
+8. **Perplexity `strip_thinking` Parameter**
+   - Deep research tools include `<think>` tags showing reasoning process
+   - Setting `strip_thinking=true` removes these, saving significant tokens
+   - Quality of answers preserved; only internal reasoning stripped
+   - **Recommendation**: Always use `strip_thinking=true` for `perplexity_research` and `perplexity_reason`
+
+9. **GPTresearcher Python Version Requirements**
+   - Requires Python 3.13+ for `gpt-researcher>=0.14.0` dependencies
+   - System Python may be too old (macOS ships with Python 3.9)
+   - **Solution**: Use `uv venv --python 3.13` to create isolated environment
+   - MCP command must point to venv Python: `/path/to/.venv/bin/python server.py`
+
+10. **Playwright Accessibility Snapshots**
+    - `browser_snapshot` returns YAML accessibility tree, NOT visual screenshot
+    - Elements tagged with refs (e.g., `[ref=e6]`) for interaction
+    - More efficient than screenshots for automated navigation
+    - Use `browser_take_screenshot` only when visual verification needed
+
+11. **Research MCP Complementarity**
+    | Tool | Speed | Depth | Best For |
+    |------|-------|-------|----------|
+    | `perplexity_search` | Fast | Shallow | Quick facts, current events |
+    | `perplexity_ask` | Fast | Medium | Q&A with citations |
+    | `perplexity_research` | Medium | Deep | Multi-source synthesis |
+    | `gptresearcher_quick_search` | Fast | Shallow | Alternative search |
+    | `gptresearcher_deep_research` | Slow | Very Deep | Comprehensive research (16+ sources) |
+    | `brave_web_search` | Fast | Shallow | Web search fallback |
+
 ---
 
-*MCP Validation Harness Pattern — PR-8.4 (Updated 2026-01-09)*
+*MCP Validation Harness Pattern — PR-8.4/8.5 (Updated 2026-01-09)*

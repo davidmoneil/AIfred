@@ -14,8 +14,9 @@
 | Lotus Wisdom | PASS | 3 | `lotuswisdom` | Contemplative reasoning framework |
 | Wikipedia | PASS | 2 | `search`, `readArticle` | Full markdown article retrieval |
 | Chroma | PASS | 2 | `create_collection`, `add_documents`, `query_documents` | Vector DB with semantic search |
-| Perplexity | PARTIAL | 2 | N/A | Installed with API key, needs restart |
-| Playwright | PARTIAL | 2 | N/A | Installed, needs restart |
+| Perplexity | **PASS** | 2 | `search`, `ask`, `research`, `reason` | All 4 tools validated |
+| Playwright | **PASS** | 3 | `navigate`, `snapshot`, `click`, `close` | Browser automation working |
+| GPTresearcher | **PASS** | 2 | `quick_search`, `deep_research`, `get_sources` | Python 3.13 venv fix |
 
 ---
 
@@ -96,58 +97,106 @@ get_current_datetime(timezone="America/Chicago")
 
 ### 6. Perplexity MCP
 **Package**: `@perplexity-ai/mcp-server`
-**Status**: PARTIAL (needs restart)
+**Status**: **PASS** ✅
 
-**Configuration**:
-- API key: Configured in env
-- Tools: Not loaded (mid-session install)
+**Configuration**: API key in env (`PERPLEXITY_API_KEY`)
 
-**Expected Tools**: perplexity_search, perplexity_ask, perplexity_research, perplexity_reason
+**Test Results**:
+- `perplexity_search`: Web search with ranked results, metadata
+- `perplexity_ask`: Conversational Q&A with citations
+- `perplexity_reason`: Reasoning with `strip_thinking` option for context efficiency
+- `perplexity_research`: Deep research with comprehensive multi-source synthesis
 
-**Assessment**: Will validate after restart.
+**Assessment**: Excellent research MCP. `strip_thinking=true` recommended for context savings.
 
 ---
 
 ### 7. Playwright MCP
 **Package**: `@playwright/mcp@latest`
-**Status**: PARTIAL (needs restart)
+**Status**: **PASS** ✅
 
-**Configuration**: Installed, no env vars needed
+**Test Results**:
+- `browser_navigate`: Navigated to example.com successfully
+- `browser_snapshot`: YAML accessibility tree returned
+- `browser_click`: Clicked link, navigated to IANA page
+- `browser_close`: Clean tab closure
 
-**Expected Tools**: Browser automation (navigate, click, type, screenshot, etc.)
-
-**Assessment**: Will validate after restart.
-
----
-
-## Deferred: GPTresearcher MCP
-
-**Reason**: Dependency issue
-- Requires `gpt-researcher>=0.14.0`
-- Latest available: `0.12.3`
-- Python version mismatch likely
-
-**Action**: Monitor for package updates or use alternative research tools (Perplexity, Brave Search).
+**Assessment**: Full browser automation. Tier 3 due to resource usage (~6K tokens).
 
 ---
 
-## Tier Recommendations
+### 8. GPTresearcher MCP
+**Package**: Custom Python server (`gptr-mcp`)
+**Status**: **PASS** ✅
+
+**Resolution**: Python 3.13.11 venv (via uv) resolved dependency issues.
+
+**Test Results**:
+- `quick_search`: Fast web search (9 results in ~2s)
+- `deep_research`: Comprehensive research with 16 sources, full context
+- `get_research_sources`: Returns structured source list with URLs
+
+**Configuration**:
+- Location: `/Users/aircannon/Claude/gptr-mcp/`
+- Env vars: `OPENAI_API_KEY`, `TAVILY_API_KEY`
+- Python: `.venv/bin/python` (3.13.11)
+
+**Assessment**: Powerful deep research. Complements Perplexity (quick) vs GPTresearcher (comprehensive).
+
+---
+
+## Tier Recommendations (Final)
 
 | Tier | MCPs | Rationale |
 |------|------|-----------|
-| Tier 1 (Always-On) | Memory, Filesystem, Fetch, Git | Core infrastructure |
-| Tier 2 (Task-Scoped) | DateTime, Wikipedia, Chroma, DesktopCommander, Perplexity, Playwright | Enable when needed |
-| Tier 3 (Specialized) | Lotus Wisdom, arXiv | Niche use cases |
+| **Tier 1** (Always-On) | Memory, Filesystem, Fetch, Git | Core infrastructure (~8K total) |
+| **Tier 2** (Task-Scoped) | DateTime, Wikipedia, Chroma, DesktopCommander, Perplexity, GPTresearcher, Brave, arXiv | Enable when task requires |
+| **Tier 3** (Specialized) | Lotus Wisdom, Playwright | High resource or niche use cases |
 
 ---
 
-## Next Steps
+## Validation Insights
 
-1. Restart session to load Perplexity and Playwright tools
-2. Complete Phase 4 testing for both
-3. Update mcp-installation.md with token costs
-4. Consider DesktopCommander overlap with native filesystem
+### Key Discoveries
+
+1. **Perplexity `strip_thinking`**: The `strip_thinking=true` parameter removes `<think>` tags from responses, significantly reducing token usage while preserving answer quality.
+
+2. **GPTresearcher Python Version**: Requires Python 3.13+ for dependencies. Solution: Use `uv venv --python 3.13` to create isolated environment.
+
+3. **Playwright Accessibility Snapshots**: `browser_snapshot` returns YAML accessibility tree with element refs (e.g., `[ref=e6]`). More efficient than screenshots for automation.
+
+4. **Research MCP Complementarity**:
+   - Perplexity: Fast, conversational, good for quick facts
+   - GPTresearcher: Deep, comprehensive, 16+ sources synthesis
+   - Brave Search: Simple web search, local business support
+
+### Validation Harness Pattern Confirmation
+
+The 5-phase validation pattern proved effective:
+1. **Install**: `claude mcp add` with correct package
+2. **Config**: API keys via `-e KEY=value`
+3. **Inventory**: List tools, assess token cost
+4. **Test**: Functional validation of key tools
+5. **Tier**: Assign loading strategy
 
 ---
 
-*Validated: 2026-01-08 by Claude Opus 4.5*
+## Final Status
+
+**10/10 MCPs validated in PR-8.5**:
+- DateTime ✅
+- DesktopCommander ✅
+- Lotus Wisdom ✅
+- Wikipedia ✅
+- Chroma ✅
+- Perplexity ✅
+- Playwright ✅
+- GPTresearcher ✅
+- Brave Search ✅ (validated 2026-01-09)
+- arXiv ✅ (validated 2026-01-09)
+
+**Removed**: DuckDuckGo (bot detection unreliable)
+
+---
+
+*Validated: 2026-01-09 by Claude Opus 4.5*

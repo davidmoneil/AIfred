@@ -1,5 +1,5 @@
 # Project Aion — Jarvis (AIfred “Archon”) Feature Request & Development Roadmap
-*Current date: 2026-01-05*  
+*Current date: 2026-01-09*  
 *Target environment: Claude Code (primary) + OpenCode (secondary)*  
 *Baseline reference (vanilla template, upstream-only): **AIfred mainline by David O’Neil** (“AIfred baseline”)*  
 *Project Aion Archons: **Jarvis**, **Jeeves**, **Wallace** (and future Archons as needed)*  
@@ -396,6 +396,40 @@ Requirements:
 | Brave Search | DEFERRED | 2 | Requires API key |
 
 **Documentation**: @.claude/context/patterns/mcp-validation-harness.md
+
+#### PR-8.5: MCP Expansion — Batch Installation (Complete — v1.8.3)
+
+**Status**: ✅ **COMPLETE** (2026-01-09)
+
+Requirements:
+- [x] Install and validate 10 new MCPs ✅
+- [x] Document tier recommendations and token costs ✅
+- [x] Add validation insights to harness pattern ✅
+
+**Validated MCPs** (all PASS):
+
+| MCP | Status | Tier | Key Finding |
+|-----|--------|------|-------------|
+| DateTime | PASS | 2 | ~1K tokens, IANA timezone support |
+| DesktopCommander | PASS | 2 | ~8K tokens, 30+ tools |
+| Lotus Wisdom | PASS | 3 | Contemplative reasoning, niche |
+| Wikipedia | PASS | 2 | ~2K tokens, clean markdown |
+| Chroma | PASS | 2 | ~4K tokens, vector DB |
+| Perplexity | PASS | 2 | ~3K tokens, 4 tools (search/ask/research/reason) |
+| Playwright | PASS | 3 | ~6K tokens, browser automation |
+| GPTresearcher | PASS | 2 | ~5K tokens, Python 3.13 venv required |
+| Brave Search | PASS | 2 | ~3K tokens, API-based |
+| arXiv | PASS | 2 | ~2K tokens, paper download/read |
+
+**Removed**: DuckDuckGo (bot detection unreliable)
+
+**Key Discoveries** (added to harness pattern):
+1. Perplexity `strip_thinking=true` for context efficiency
+2. GPTresearcher requires Python 3.13+ venv
+3. Playwright accessibility snapshots more efficient than screenshots
+4. Research MCP complementarity: Perplexity (fast) vs GPTresearcher (deep)
+
+**Validation Log**: `.claude/logs/mcp-validation/batch-validation-20260108.md`
 
 ---
 
@@ -903,6 +937,7 @@ Acceptance:
 | PR-6 | Plugins Expansion | 1.6.0 | ✅ Complete |
 | PR-7 | Skills Inventory | 1.7.0 | ✅ Complete |
 | PR-8 | MCP Expansion + Context Budget | 1.8.2 | ✅ Complete |
+| PR-8.5 | MCP Expansion — Batch Install | **1.8.3** | ✅ Complete (10 MCPs validated) |
 | PR-9 | Selection Intelligence | 1.9.0 | 🔄 PR-9.0, PR-9.1 pending |
 | PR-10 | Setup Upgrade | **2.0.0** | ⏳ Pending |
 
@@ -911,6 +946,7 @@ Deliverables:
 - PR-6: Plugins expanded with adopt/adapt/reject decisions + conflicts resolved.
 - PR-7: Skills cataloged and selection rules written.
 - PR-8: Context budget optimization + MCP loading tiers + validation harness.
+- PR-8.5: MCP expansion (10 MCPs validated: Perplexity, Playwright, GPTresearcher, DateTime, DesktopCommander, Lotus Wisdom, Wikipedia, Chroma, Brave Search, arXiv).
 - PR-9: Selection Intelligence formalized based on real overlaps.
 - PR-10: Setup upgraded to automate baseline installs and validations.
 
