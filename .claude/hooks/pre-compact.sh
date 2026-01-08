@@ -57,12 +57,17 @@ if [ -x "$CLAUDE_PROJECT_DIR/.claude/scripts/disable-mcps.sh" ]; then
     echo "$TIMESTAMP | PreCompact | Disabled Tier 2 MCPs" >> "$LOG_DIR/session-start-diagnostic.log"
 fi
 
+# Create signal file for auto-clear watcher (if running)
+SIGNAL_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.auto-clear-signal"
+echo "$TIMESTAMP" > "$SIGNAL_FILE"
+echo "$TIMESTAMP | PreCompact | Signal file created for auto-clear" >> "$LOG_DIR/session-start-diagnostic.log"
+
 # Output message to user
 MESSAGE="⚠️ CONTEXT THRESHOLD - AUTO-CHECKPOINT CREATED\n\n"
 MESSAGE="${MESSAGE}Context is approaching the limit. A checkpoint has been saved.\n\n"
 MESSAGE="${MESSAGE}To continue with reduced context:\n"
-MESSAGE="${MESSAGE}  1. Type: /clear\n"
-MESSAGE="${MESSAGE}  2. Work will resume automatically\n\n"
+MESSAGE="${MESSAGE}  • If auto-clear-watcher is running: /clear will be sent automatically\n"
+MESSAGE="${MESSAGE}  • Otherwise: Type /clear manually\n\n"
 MESSAGE="${MESSAGE}Tier 2 MCPs have been disabled (github, context7, sequential-thinking)"
 
 echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
