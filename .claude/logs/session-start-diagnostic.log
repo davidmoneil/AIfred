@@ -26,3 +26,7 @@
 2026-01-08T03:34:32Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
 2026-01-08T03:34:36Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
 2026-01-08T03:34:40Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:41:36Z | SessionStart | source=startup | session=6e2d1a6f-50dd-4afc-90ff-60265468e433
+2026-01-08T03:41:36Z | SessionStart | Launched watcher
+2026-01-08T03:41:59Z | SessionStart | source=startup | session=12ddc0ce-e271-429c-b010-37433499bd18
+2026-01-08T03:41:59Z | SessionStart | Launched watcher

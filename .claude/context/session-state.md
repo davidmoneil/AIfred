@@ -10,16 +10,16 @@
 
 **Status**: checkpoint (context-checkpoint)
 
-**Last Completed**: Proactive context checkpoint for optimization
+**Last Completed**: Context checkpoint (user-requested)
 
-**Next Step**: Run /clear to resume with reduced MCPs
+**Next Step**: Run /clear to resume
 
 ### Checkpoint Info
 
 - **Type**: context-checkpoint
-- **Reason**: Proactive context optimization
+- **Reason**: User-requested context optimization
 - **Timestamp**: 2026-01-07
-- **MCPs Disabled**: github, context7, sequential-thinking
+- **MCPs Disabled**: github, context7, sequential-thinking (already disabled)
 - **Checkpoint File**: `.claude/context/.soft-restart-checkpoint.md`
 
 ### MCP State
@@ -29,7 +29,7 @@
 
 ### On-Demand MCPs Enabled This Session
 
-- None (all disabled MCPs are Tier 2, not on-demand)
+- None (Tier 2 MCPs remain disabled from previous checkpoint)
 
 ---
 
