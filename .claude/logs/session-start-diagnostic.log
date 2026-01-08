@@ -38,3 +38,5 @@
 2026-01-08T03:45:51Z | Stop | Clear already pending, allowing stop
 2026-01-08T03:45:52Z | SessionStart | source=clear | session=cb3865a0-0413-47c1-bea7-bc8b132a9ceb
 2026-01-08T03:45:52Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-08T14:27:05Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T14:27:05Z | SessionStart | Launched watcher

@@ -348,11 +348,20 @@ Requirements:
 - **Workflow**: ✅ Validated (single workflow, no exit required)
   - `/context-checkpoint` → `/exit-session` → `/clear` → resume
 
-**Remaining (PR-8.3.1)**:
+**PR-8.3.1: Zero-Action Context Management** (Complete — v1.8.1):
 - [x] Create and test disable-mcps.sh script ✅
 - [x] Create and test enable-mcps.sh script ✅
 - [x] Create /context-checkpoint command ✅
-- [ ] Validate full workflow end-to-end (test procedure ready)
+- [x] Validate full workflow end-to-end ✅ (2026-01-07)
+- [x] **Zero-Action Automation** ✅:
+  - Auto-clear watcher (external AppleScript keystroke automation)
+  - Stop hook with `decision:block` (Ralph Wiggum pattern)
+  - SessionStart watcher auto-launch
+  - PreCompact hook for automatic checkpointing
+  - `additionalContext` injection for auto-resume
+- [x] Documentation: `.claude/context/patterns/automated-context-management.md`
+
+**Token Savings Validated**: 16.2K → 7.4K MCP tokens (54% reduction)
 
 #### PR-8.4: MCP Validation Harness (Pending)
 
@@ -411,48 +420,50 @@ Deliverables:
 
 **Goal**: Build a command+script system that evaluates MCP needs and disables unused MCPs.
 
-> **Revised Approach**: Based on disabledMcpServers discovery, we no longer need a complex hook+agent system. Simple scripts + /checkpoint integration suffices.
+> **Status (2026-01-07)**: Core deselection functionality **COMPLETE** via PR-8.3.1 zero-action automation. Remaining: enhance MCP recommendation logic.
 
-**Implementation** (from PR-8.3.1):
-- **MCP Control Scripts**:
+**Implementation Complete** (PR-8.3.1):
+- **MCP Control Scripts**: ✅
   - `disable-mcps.sh <name...>` — Add to disabledMcpServers array
   - `enable-mcps.sh <name...>` — Remove from disabledMcpServers array
   - `list-mcp-status.sh` — Show registered vs disabled MCPs
-- **Enhanced /checkpoint Command**:
-  - Evaluates next steps for MCP requirements
-  - Recommends MCPs to disable
-  - Runs disable script if approved
-  - Instructs user: "/exit-session then /clear"
-- **SessionStart Hook**:
-  - Loads checkpoint file if present
-  - Outputs context to system message
-  - Deletes checkpoint (one-time use)
+- **Zero-Action Automation**: ✅
+  - `/context-checkpoint` — Evaluates next steps, disables MCPs, creates checkpoint
+  - Stop hook blocks stop → instructs `/trigger-clear`
+  - Auto-clear watcher sends `/clear` via AppleScript
+  - SessionStart hook loads checkpoint + auto-resumes
 
-**Workflow**:
+**Automated Workflow** (Zero User Action After Trigger):
 ```
-User detects high context (or /context-budget warns)
-  → User runs /checkpoint
-    → Claude evaluates next steps
-    → Identifies: GitHub MCP not needed for doc work
-    → Recommends: "Disable github, context7, sequential-thinking"
-    → User approves
-  → disable-mcps.sh github context7 sequential-thinking
-  → /exit-session (commits checkpoint)
-  → User runs /clear
+User runs /context-checkpoint (or PreCompact auto-triggers)
+  → Claude evaluates next steps
+  → Identifies MCPs to disable based on work type
+  → disable-mcps.sh runs automatically
+  → Checkpoint file created
+  → Stop hook blocks → tells Claude to run /trigger-clear
+  → Watcher detects signal → sends /clear keystroke
+  → /clear executes
   → SessionStart hook loads checkpoint
-  → MCPs reduced, context fresh
-  → User says "continue"
+  → additionalContext triggers auto-resume
+  → Claude continues work (no user input needed)
 ```
 
-**Commands**:
-- `/context-budget` — Display context usage (exists)
-- `/checkpoint` — Create checkpoint with MCP evaluation (enhance)
-- `/exit-session` — Commit and exit cleanly (exists)
+**Remaining Enhancements**:
+- [ ] Smarter MCP recommendation based on keyword analysis
+- [ ] Integration with TodoWrite for better next-step inference
+- [ ] Pre-session MCP selection based on planned work type
 
-**Scripts**:
+**Commands**: ✅ All exist
+- `/context-budget` — Display context usage
+- `/context-checkpoint` — Full automated checkpoint workflow
+- `/trigger-clear` — Signal watcher to send /clear
+
+**Scripts**: ✅ All exist
 - `.claude/scripts/disable-mcps.sh`
 - `.claude/scripts/enable-mcps.sh`
 - `.claude/scripts/list-mcp-status.sh`
+- `.claude/scripts/auto-clear-watcher.sh`
+- `.claude/scripts/launch-watcher.sh`
 
 Validation:
 - Evaluate selection behavior using at least:
@@ -869,14 +880,14 @@ Acceptance:
 
 **Target Version**: 2.0.0 (MAJOR — Tooling Complete)
 
-| PR | Description | Version |
-|----|-------------|---------|
-| PR-5 | Core Tooling Baseline | 1.5.0 ✅ |
-| PR-6 | Plugins Expansion | 1.6.0 |
-| PR-7 | Skills Inventory | 1.7.0 |
-| PR-8 | MCP Expansion | 1.8.0 |
-| PR-9 | Selection Intelligence | 1.9.0 |
-| PR-10 | Setup Upgrade | **2.0.0** |
+| PR | Description | Version | Status |
+|----|-------------|---------|--------|
+| PR-5 | Core Tooling Baseline | 1.5.0 | ✅ Complete |
+| PR-6 | Plugins Expansion | 1.6.0 | ✅ Complete |
+| PR-7 | Skills Inventory | 1.7.0 | ✅ Complete |
+| PR-8 | MCP Expansion + Context Budget | 1.8.1 | 🔄 PR-8.4 pending |
+| PR-9 | Selection Intelligence | 1.9.0 | 🔄 PR-9.0, PR-9.1 pending |
+| PR-10 | Setup Upgrade | **2.0.0** | ⏳ Pending |
 
 Deliverables:
 - PR-5: Core Tooling baseline enabled + validated + overlap matrix started.
