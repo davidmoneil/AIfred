@@ -10,21 +10,21 @@
 
 **Status**: 🟢 Idle (checkpoint ready)
 
-**Last Completed**: Tested /context-checkpoint workflow end-to-end
+**Last Completed**: Tested /context-checkpoint workflow with simulated next steps
 
-**Next Step**: Run /clear to verify checkpoint loads and MCPs are reduced
+**Next Step**: Run /clear to resume with reduced MCPs
 
 ### Checkpoint Info
 
 - **Type**: context-checkpoint
-- **Reason**: Context optimization — testing workflow
+- **Reason**: Context optimization
 - **Timestamp**: 2026-01-07
 - **MCPs Disabled**: github, git, context7, sequential-thinking
 - **Checkpoint File**: `.claude/context/.soft-restart-checkpoint.md`
 
 ### MCP State
 
-- **Active**: memory, filesystem, fetch, playwright (Tier 1)
+- **Active**: memory, filesystem, fetch (Tier 1 only)
 - **Disabled**: github, git, context7, sequential-thinking (Tier 2)
 
 ### On-Demand MCPs Enabled This Session
