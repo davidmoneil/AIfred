@@ -395,17 +395,17 @@ Before installing MCPs, ensure:
 
 | MCP | Token Cost | Loading Strategy | Tier | Validated |
 |-----|------------|------------------|------|-----------|
-| Memory | ~1.8K | Always-On | 1 | 2026-01-08 |
-| Filesystem | ~2.8K | Always-On | 1 | 2026-01-08 |
-| Fetch | ~1K | Always-On | 1 | Pending |
-| Git | ~2.5K | Always-On | 1 | 2026-01-08 |
-| GitHub | ~15K | Task-Scoped | 2 | Pending |
-| Context7 | ~8K | Task-Scoped | 2 | Pending |
-| Sequential Thinking | ~5K | Task-Scoped | 2 | Pending |
-| Playwright | ~6K | Triggered | 3 | Pending |
-| DuckDuckGo | ~2K | Triggered | 3 | 2026-01-09 ⚠️ |
-| Brave Search | ~3K | Task-Scoped | 2 | Not Installed |
-| arXiv | ~2K | Task-Scoped | 2 | 2026-01-09 (partial) |
+| Memory | ~1.8K | Always-On | 1 | 2026-01-08 ✅ |
+| Filesystem | ~2.8K | Always-On | 1 | 2026-01-08 ✅ |
+| Fetch | ~1K | Always-On | 1 | 2026-01-08 ✅ |
+| Git | ~2.5K | Always-On | 1 | 2026-01-08 ✅ |
+| Playwright | ~6K | Triggered | 3 | 2026-01-08 ✅ |
+| GitHub | ~15K | Task-Scoped | 2 | Tools not loaded ⚠️ |
+| Context7 | ~8K | Task-Scoped | 2 | Tools not loaded ⚠️ |
+| Sequential Thinking | ~5K | Task-Scoped | 2 | Tools not loaded ⚠️ |
+| DuckDuckGo | ~2K | NOT RECOMMENDED | — | 2026-01-09 ❌ FAIL |
+| Brave Search | ~3K | Task-Scoped | 2 | Tools not loaded ⚠️ |
+| arXiv | ~2K | Task-Scoped | 2 | Tools not loaded ⚠️ |
 
 **Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 
@@ -414,6 +414,21 @@ Before installing MCPs, ensure:
 ---
 
 ## Troubleshooting
+
+### Tools Not Loaded Despite "Connected"
+
+**Symptom**: `claude mcp list` shows MCP as "✓ Connected" but tools are not available in session.
+
+**Observed With**: Brave Search, arXiv, GitHub, Context7, Sequential Thinking
+
+**Cause**: Unknown - possibly tool loading limits, priority ordering, or session timing.
+
+**Workaround**:
+1. Restart Claude Code session
+2. If still not working, disable other MCPs to reduce total tool count
+3. Try fresh session with only the required MCP enabled
+
+See: mcp-validation-harness.md Discovery #7
 
 ### MCP Not Responding
 ```bash

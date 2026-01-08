@@ -1,8 +1,9 @@
 # DuckDuckGo MCP Validation Results
 
 **Date**: 2026-01-08 (Updated 2026-01-09)
-**Status**: VALIDATED WITH ISSUES
-**Tier Recommendation**: Tier 3 (Triggered) — Downgraded due to reliability issues
+**Status**: TROUBLESHOOTING IN PROGRESS
+**Implementation**: Switched from npm (zhsama) to uvx (nickclyde) version
+**Tier Recommendation**: TBD (pending retest)
 
 ## Phase 1: Installation Verification
 
@@ -110,5 +111,78 @@ Result: FAIL - Persistent rate limiting
 
 ---
 
+## Troubleshooting (2026-01-09)
+
+### Root Cause Analysis
+
+**Initial Package**: `npx -y duckduckgo-mcp-server`
+- npm package: `duckduckgo-mcp-server@0.1.2`
+- Repository: `zhsama/duckduckgo-mcp-server`
+- Library: `duck-duck-scrape@2.2.7`
+- Last updated: 9 months ago
+
+**Problem**: The `duck-duck-scrape` library triggers DuckDuckGo's bot detection on every request, regardless of rate limiting.
+
+### Resolution Attempted
+
+1. **Identified package implementation** using `npm view duckduckgo-mcp-server`
+2. **Switched to Python version**:
+   ```bash
+   claude mcp remove duckduckgo
+   claude mcp add duckduckgo -- uvx duckduckgo-mcp-server
+   ```
+3. **Added reliable API-based alternative**:
+   ```bash
+   claude mcp add brave-search -e BRAVE_API_KEY=xxx -- npx -y @modelcontextprotocol/server-brave-search
+   ```
+
+### New Configuration
+
+```json
+{
+  "duckduckgo": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["duckduckgo-mcp-server"],
+    "env": {}
+  }
+}
+```
+
+### Status
+
+- Python version installed and connected
+- **Phase 4 Result**: FAIL - Bot detection persists
+- Both npm (zhsama) and uvx (nickclyde) versions trigger DuckDuckGo bot detection
+- Brave Search MCP added as reliable API-based backup
+
+### Python Version Test (2026-01-09, Post-Restart)
+
+```
+Tool: mcp__duckduckgo__duckduckgo_web_search
+Input: query="Claude Code MCP server", count=3
+Output: ERROR - "DDG detected an anomaly in the request"
+Result: FAIL - Same error as npm version
+```
+
+**Conclusion**: DuckDuckGo's bot detection is triggered by automated requests regardless of implementation. This is a DuckDuckGo server-side block, not a library issue.
+
+---
+
+## Final Verdict
+
+**Status**: FAIL (Both Implementations)
+**Tier**: 3 (Triggered) — NOT RECOMMENDED
+**Recommendation**: REMOVE or use only for manual testing scenarios
+
+**Alternatives**:
+1. Native WebSearch (reliable, no bot detection)
+2. Brave Search MCP (API-based, requires key)
+3. Perplexity MCP (API-based, requires key)
+
+---
+
 *Validated by MCP Validation Harness - PR-8.4*
-*Functional testing: COMPLETE (FAIL)*
+*npm version: FAIL*
+*uvx version: FAIL*
+*Validation complete: 2026-01-09*

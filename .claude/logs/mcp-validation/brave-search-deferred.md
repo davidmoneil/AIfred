@@ -1,13 +1,15 @@
-# Brave Search MCP Validation - Deferred
+# Brave Search MCP Validation Results
 
 **Date**: 2026-01-09
-**Status**: DEFERRED (API key required)
+**Status**: INSTALLED (Phase 4 pending restart)
 **Tier Recommendation**: Tier 2 (Task-Scoped) — Expected
 
-## Reason for Deferral
+## Phase 1: Installation Verification
 
-Brave Search MCP requires `BRAVE_API_KEY` environment variable.
-No API key currently configured.
+- [x] MCP registered in Claude (`brave-search` in mcp list)
+- [x] Server connected: `npx -y @modelcontextprotocol/server-brave-search`
+- [x] API key configured via `-e BRAVE_API_KEY=xxx`
+- [x] No startup errors
 
 ## Phase 1: Prerequisites Check
 

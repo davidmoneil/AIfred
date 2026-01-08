@@ -42,3 +42,6 @@ venv/
 
 # Script configuration (contains sensitive data)
 scripts/config.sh
+# Sensitive credentials - never commit
+.claude/config/credentials.local.yaml
+*.credentials

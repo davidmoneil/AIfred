@@ -386,6 +386,32 @@ These MCPs will be installed to test the harness works on fresh installs:
    - Missing prerequisites = defer validation, don't attempt Phase 3+
    - Document API key acquisition steps
 
+5. **Multiple Implementations of Same MCP** (NEW - 2026-01-09)
+   - Different npm/pypi packages may expose same MCP concept
+   - Example: DuckDuckGo has at least 3 implementations:
+     - `zhsama/duckduckgo-mcp-server` (npm, TypeScript, uses duck-duck-scrape)
+     - `nickclyde/duckduckgo-mcp-server` (Python, uses duckduckgo-search)
+     - Community forks with varying maintenance
+   - **Always identify exact package/repo before troubleshooting**
+   - Different implementations have different rate limiting, features, reliability
+
+6. **Troubleshooting Bot Detection** (NEW - 2026-01-09)
+   - If MCP returns "anomaly detected" or rate limit errors:
+     1. Identify exact package implementation
+     2. Check if Python vs Node version available
+     3. Try longer delays (30-120s, not 3-5s)
+     4. Consider API-based alternative (Brave Search, Perplexity)
+   - Scraping-based MCPs are inherently unreliable for automation
+   - API-based MCPs should be preferred for critical workflows
+
+7. **"Connected" ≠ "Tools Available"** (NEW - 2026-01-09)
+   - `claude mcp list` shows MCP as "Connected" when server responds
+   - This does NOT guarantee tools are available in current session
+   - **Observed**: DuckDuckGo tools available, but Brave Search, arXiv, GitHub, Context7, Sequential Thinking tools NOT in session despite "Connected"
+   - **Hypothesis**: Tool loading may have limits, timing, or priority ordering
+   - **Workaround**: Restart session if expected tools not available
+   - **Validation Impact**: Phase 3 (Tool Inventory) must verify tools actually exist in session, not just that MCP is "Connected"
+
 ### Validation Results Summary
 
 | MCP | Status | Tier | Key Finding |
@@ -393,9 +419,26 @@ These MCPs will be installed to test the harness works on fresh installs:
 | Git | PASS | 1 | Reliable, ~2.5K tokens |
 | Memory | PASS | 1 | Reliable, ~1.8K tokens |
 | Filesystem | PASS | 1 | Reliable, ~2.8K tokens |
-| DuckDuckGo | FAIL | 3 | Bot detection blocks requests |
-| arXiv | PENDING | 2 | Phase 4 pending restart |
-| Brave Search | DEFERRED | 2 | Requires API key |
+| DuckDuckGo (npm) | FAIL | — | Bot detection blocks requests (zhsama package) |
+| DuckDuckGo (uvx) | FAIL | 3 | Bot detection persists with Python version |
+| arXiv | BLOCKED | — | Tools not loaded despite "Connected" |
+| Brave Search | BLOCKED | — | Tools not loaded despite "Connected" |
+
+### Troubleshooting Case Study: DuckDuckGo MCP
+
+**Problem**: All DuckDuckGo searches returned "DDG detected an anomaly" error
+
+**Investigation**:
+1. Checked MCP config: `~/.claude.json` showed `npx -y duckduckgo-mcp-server`
+2. Identified package: `npm view duckduckgo-mcp-server` → `zhsama/duckduckgo-mcp-server`
+3. Found root cause: TypeScript implementation uses `duck-duck-scrape` library which triggers DDG bot detection
+
+**Resolution**:
+1. Switched to Python implementation: `uvx duckduckgo-mcp-server` (nickclyde version)
+2. Added Brave Search MCP as reliable API-based alternative
+3. Testing pending session restart
+
+**Lesson**: Always identify exact package implementation when troubleshooting MCP issues
 
 ---
 
