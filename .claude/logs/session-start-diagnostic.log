@@ -40,3 +40,21 @@
 2026-01-08T03:45:52Z | SessionStart | Cleaned up .clear-pending marker
 2026-01-08T14:27:05Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
 2026-01-08T14:27:05Z | SessionStart | Launched watcher
+2026-01-08T16:16:42Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T16:16:42Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T16:16:42Z | PreCompact | Signal file created for auto-clear
+2026-01-08T16:18:19Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T16:51:49Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T16:51:49Z | SessionStart | Launched watcher
+2026-01-08T17:22:25Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T17:22:25Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T17:22:25Z | PreCompact | Signal file created for auto-clear
+2026-01-08T17:24:11Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T17:48:53Z | SessionStart | source=resume | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1
+2026-01-08T17:48:53Z | SessionStart | Launched watcher
+2026-01-08T18:31:20Z | SessionStart | source=startup | session=7cc0100b-7ff0-4d59-9b05-0463d462e21c
+2026-01-08T18:31:20Z | SessionStart | Launched watcher
+2026-01-08T18:31:51Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T18:31:51Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T18:31:51Z | PreCompact | Signal file created for auto-clear
+2026-01-08T18:32:51Z | SessionStart | source=compact | session=93b7d0dc-e6b8-4e9b-807e-c3ae57f08cb1

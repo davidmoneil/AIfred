@@ -699,18 +699,22 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
   https://docs.slack.dev/ai/mcp-server/
 
 ### 4.8 DBs
-- MongoDB MCP  
+- MongoDB MCP
   https://github.com/mongodb-js/mongodb-mcp-server
-- Supabase MCP  
+- Supabase MCP
   https://github.com/supabase-community/supabase-mcp
-- SQLite bun MCP  
+- SQLite bun MCP
   https://github.com/jacksteamdev/mcp-sqlite-bun-server
-- MindsDB MCP  
+- MindsDB MCP
   https://github.com/mindsdb/minds-mcp
-- Chroma  
+- Chroma
   https://github.com/chroma-core/chroma
-- Alpha Vantage MCP  
+- Alpha Vantage MCP
   https://github.com/alphavantage/alpha_vantage_mcp
+- PostgreSQL MCP
+  https://github.com/modelcontextprotocol/servers/tree/main/src/postgres
+- MySQL MCP
+  https://github.com/benborber/mysql-mcp-server
 
 ### 4.9 Docs
 - Markdownify MCP  

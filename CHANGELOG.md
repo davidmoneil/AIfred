@@ -9,7 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-*No unreleased changes*
+### Added
+- **Batch MCP Installation**: DateTime, DesktopCommander, Lotus Wisdom, Wikipedia, Chroma
+- **Database MCPs** added to roadmap backlog: PostgreSQL, MySQL
+- **Search API Research**: `.claude/context/integrations/search-api-research.md`
+
+### Changed
+- **Brave Search MCP**: Status BLOCKED → PASS (validated after restart)
+- **arXiv MCP**: Status PARTIAL → PASS (full workflow tested)
+- **DuckDuckGo MCP**: REMOVED (bot detection unreliable)
+- **mcp-validation-harness.md**: Updated results table with final validation status
+
+### Key Discoveries
+- **Discovery #7 Confirmed**: "Connected" ≠ "Tools Available" — MCPs require session restart for tools to load
 
 ---
 

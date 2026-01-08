@@ -99,7 +99,7 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
   - [x] Full end-to-end validation: checkpoint → auto-clear → auto-resume
 - [x] **Documentation**: `.claude/context/patterns/automated-context-management.md`
 
-**PR-8.4 MCP Validation Harness** (BLOCKED — 2026-01-09):
+**PR-8.4 MCP Validation Harness** (COMPLETE — 2026-01-09):
 - [x] Design 5-phase validation harness pattern
 - [x] Create validation script (validate-mcp-installation.sh)
 - [x] Validate design MCPs (Git, Memory, Filesystem) - all Tier 1
@@ -110,14 +110,22 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Install Brave Search MCP (with API key)
 - [x] Install arXiv MCP (uvx)
 - [x] Research DDG alternatives (OneSearch MCP recommended)
-- **BLOCKER**: Tool loading issue — MCPs show "Connected" but tools not in session
-  - Affected: Brave Search, arXiv, GitHub, Context7, Sequential Thinking
-  - Working: Memory, Filesystem, Fetch, Git, Playwright, DuckDuckGo
-  - Root cause: Likely context/token limits for tool definitions (~13K for Playwright)
-- [ ] Resolve tool loading blocker (try removing Playwright or reducing MCPs)
-- [ ] Test OneSearch MCP as DDG alternative
-- [ ] Complete Brave Search/arXiv Phase 4 testing
-- [ ] Standardize validation workflow
+- [x] **Discovery #7 Confirmed**: "Connected" ≠ "Tools Available" (resolved by restart)
+- [x] **Brave Search PASS** — Web search functional, local search rate limited
+- [x] **arXiv PASS** — Full workflow: search → download → read
+- [x] **DuckDuckGo REMOVED** — Bot detection unreliable
+- [x] Standardize validation workflow
+
+**PR-8.5 MCP Expansion — Batch Installation** (2026-01-09):
+- [x] DateTime MCP installed (✓ Connected)
+- [x] DesktopCommander MCP installed (✓ Connected)
+- [x] Lotus Wisdom MCP installed (✓ Connected)
+- [x] Wikipedia MCP installed (✓ Connected)
+- [x] Chroma MCP installed (✓ Connected)
+- [x] Database MCPs (PostgreSQL, MySQL) added to backlog
+- [ ] Perplexity MCP (deferred — needs API key)
+- [ ] GPTresearcher MCP (deferred — manual Python setup)
+- [ ] **Validate all 5 MCPs** (after restart)
 
 ### PR-9: Selection Intelligence (Approach Revised)
 - [ ] PR-9.0: Plugin decomposition investigation
