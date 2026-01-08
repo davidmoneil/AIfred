@@ -16,6 +16,13 @@ LOG_DIR="$CLAUDE_PROJECT_DIR/.claude/logs"
 mkdir -p "$LOG_DIR"
 echo "$TIMESTAMP | SessionStart | source=$SOURCE | session=$SESSION_ID" >> "$LOG_DIR/session-start-diagnostic.log"
 
+# Launch auto-clear watcher on startup (not on clear/compact to avoid duplicates)
+if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
+    # Launch watcher in background (don't block hook)
+    "$CLAUDE_PROJECT_DIR/.claude/scripts/launch-watcher.sh" &
+    echo "$TIMESTAMP | SessionStart | Launched watcher" >> "$LOG_DIR/session-start-diagnostic.log"
+fi
+
 # Check for checkpoint file
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
