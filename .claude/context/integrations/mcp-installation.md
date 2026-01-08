@@ -403,9 +403,9 @@ Before installing MCPs, ensure:
 | Context7 | ~8K | Task-Scoped | 2 | Pending |
 | Sequential Thinking | ~5K | Task-Scoped | 2 | Pending |
 | Playwright | ~6K | Triggered | 3 | Pending |
-| DuckDuckGo | ~2K | Task-Scoped | 2 | Not Installed |
+| DuckDuckGo | ~2K | Triggered | 3 | 2026-01-09 ⚠️ |
 | Brave Search | ~3K | Task-Scoped | 2 | Not Installed |
-| arXiv | ~2K | Triggered | 3 | Not Installed |
+| arXiv | ~2K | Task-Scoped | 2 | 2026-01-09 (partial) |
 
 **Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 

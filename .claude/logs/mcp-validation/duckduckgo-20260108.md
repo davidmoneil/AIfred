@@ -1,8 +1,8 @@
 # DuckDuckGo MCP Validation Results
 
-**Date**: 2026-01-08 16:45 UTC
-**Status**: PARTIAL (Functional testing pending restart)
-**Tier Recommendation**: Tier 2 (Task-Scoped)
+**Date**: 2026-01-08 (Updated 2026-01-09)
+**Status**: VALIDATED WITH ISSUES
+**Tier Recommendation**: Tier 3 (Triggered) — Downgraded due to reliability issues
 
 ## Phase 1: Installation Verification
 
@@ -30,13 +30,14 @@
 
 ## Phase 3: Tool Inventory
 
-| Tool | Purpose | Parameters | Rate Limit |
-|------|---------|------------|------------|
-| `search` | DuckDuckGo web search | query (str), max_results (int=10) | 30/min |
-| `fetch_content` | Fetch and parse webpage | url (str) | 20/min |
+| Tool | Purpose | Parameters | Status |
+|------|---------|------------|--------|
+| `duckduckgo_web_search` | DuckDuckGo web search | query (str), count (int) | Available |
 
-**Tool Count**: 2
+**Tool Count**: 1 (actual exposed tool)
 **Token Cost Estimate**: ~2K tokens
+
+**Note**: Documentation mentions `fetch_content` but only `duckduckgo_web_search` is exposed as an MCP tool.
 
 ### Features
 - Rate limiting built-in (30 searches/min, 20 fetches/min)
@@ -46,45 +47,68 @@
 
 ## Phase 4: Functional Tests
 
-**Status**: PENDING SESSION RESTART
+**Status**: COMPLETED WITH FAILURES
 
-MCP was installed mid-session. Tools not available until restart.
+### Test 1: duckduckgo_web_search
+```
+Input: query="Claude Code MCP server", count=3
+Output: ERROR - "DDG detected an anomaly in the request, you are likely making requests too quickly."
+Result: FAIL - Rate limited by DuckDuckGo
+```
 
-### Planned Tests (post-restart):
-1. **search**: Query "Claude Code MCP" → Expect formatted results
-2. **fetch_content**: Fetch a known URL → Expect cleaned text
+### Test 2: duckduckgo_web_search (retry after 3s delay)
+```
+Input: query="anthropic claude", count=3
+Output: ERROR - Same rate limit error
+Result: FAIL - Persistent rate limiting
+```
+
+### Critical Finding
+
+**DuckDuckGo's bot detection is triggering on fresh requests**, not just rate-limited ones. This is a known issue with DuckDuckGo's aggressive anti-bot measures. The MCP's internal rate limiting (30/min) cannot prevent DuckDuckGo's server-side detection.
+
+**Reliability**: LOW - Cannot guarantee successful searches even with proper delays.
 
 ## Phase 5: Tier Recommendation
 
-**Recommended Tier**: 2 (Task-Scoped)
+**Recommended Tier**: Tier 3 (Triggered) — DOWNGRADED
 
-**Justification**:
-- Not needed for every session (native WebSearch exists)
-- Low token cost (~2K)
-- Useful for specific research tasks
-- No API key = easy enable/disable
-- Rate limiting = safe for extended use
+**Original Assessment**: Tier 2 (Task-Scoped)
+
+**Revised Justification**:
+- ❌ Unreliable due to DuckDuckGo bot detection
+- ✅ Low token cost (~2K)
+- ❌ Cannot be depended on for research tasks
+- ✅ No API key = easy enable/disable
+- ❌ Rate limiting doesn't prevent DDG server-side blocks
+
+**Recommendation**: Consider removal or replacement with Brave Search MCP (requires API key but more reliable).
 
 ## Overlap Analysis
 
 | Capability | DuckDuckGo MCP | Alternative | Preference |
 |------------|----------------|-------------|------------|
-| Web search | search | WebSearch (native) | WebSearch (richer, no rate limit) |
-| Fetch content | fetch_content | mcp__fetch__fetch | Either (DDG cleans content better) |
+| Web search | duckduckgo_web_search | WebSearch (native) | **WebSearch** (reliable, no bot detection) |
 
-**Verdict**: DuckDuckGo MCP provides redundant search capability but with rate limiting. The fetch_content tool offers better content cleaning than raw fetch. Recommend enabling when:
-- Need rate-limited, respectful search
-- Need clean content extraction
-- Native WebSearch unavailable
+**Verdict**: DuckDuckGo MCP is NOT recommended due to reliability issues. Native WebSearch tool is strongly preferred. Consider Brave Search MCP as alternative if API-based search is needed.
 
 ## Harness Validation Notes
 
-**Discovery**: MCPs installed mid-session require restart for tools to appear.
-- `claude mcp list` shows "Connected"
-- Tools not in session until restart
-- Phase 4 must be deferred to next session
+**Discoveries from this validation**:
+
+1. **MCPs installed mid-session require restart** for tools to appear
+   - `claude mcp list` shows "Connected" immediately
+   - Tools not in session until restart
+
+2. **Documentation vs Reality gap**
+   - Docs mention 2 tools (search, fetch_content)
+   - Only 1 tool actually exposed (duckduckgo_web_search)
+
+3. **External service reliability matters**
+   - MCP can be "working" but external service blocks requests
+   - Validation must test actual external service behavior
 
 ---
 
 *Validated by MCP Validation Harness - PR-8.4*
-*Functional testing: PENDING*
+*Functional testing: COMPLETE (FAIL)*

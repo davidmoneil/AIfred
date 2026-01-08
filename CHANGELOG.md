@@ -13,6 +13,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.8.2] - 2026-01-09
+
+**PR-8.4: MCP Validation Harness** — Systematic validation of MCP installations
+
+### Added
+
+#### MCP Validation Harness Pattern
+- **`.claude/context/patterns/mcp-validation-harness.md`** — 5-phase validation framework
+  - Phase 1: Installation Verification
+  - Phase 2: Configuration Audit
+  - Phase 3: Tool Inventory
+  - Phase 4: Functional Testing
+  - Phase 5: Tier Recommendation
+  - Lessons learned from validation testing
+
+#### Validation Infrastructure
+- **`.claude/scripts/validate-mcp-installation.sh`** — Installation check script
+- **`.claude/skills/mcp-validation/SKILL.md`** — `/validate-mcp` command
+
+#### Validation Logs
+- **`.claude/logs/mcp-validation/git-20260108.md`** — Git MCP: PASS, Tier 1
+- **`.claude/logs/mcp-validation/memory-20260108.md`** — Memory MCP: PASS, Tier 1
+- **`.claude/logs/mcp-validation/filesystem-20260108.md`** — Filesystem MCP: PASS, Tier 1
+- **`.claude/logs/mcp-validation/duckduckgo-20260108.md`** — DuckDuckGo MCP: FAIL (bot detection)
+- **`.claude/logs/mcp-validation/arxiv-20260109.md`** — arXiv MCP: PARTIAL (Phase 4 pending)
+- **`.claude/logs/mcp-validation/brave-search-deferred.md`** — Brave Search: DEFERRED (requires API key)
+
+### Changed
+
+#### Updated Token Cost Estimates
+- Git MCP: ~2.5K (was ~6K)
+- Memory MCP: ~1.8K (was ~8-15K)
+- Filesystem MCP: ~2.8K (was ~8K)
+- Updated `mcp-installation.md` with accurate measurements
+
+### Key Discoveries
+
+1. **Mid-Session Installation**: MCPs installed mid-session require restart for tools to appear
+2. **External Service Reliability**: DuckDuckGo bot detection blocks MCP requests
+3. **Package Naming**: Documentation often references non-existent packages; always verify
+4. **API Key Gating**: Flag missing prerequisites early in Phase 2
+
+---
+
 ## [1.8.1] - 2026-01-07
 
 **PR-8.3.1: Zero-Action Context Management** — Fully automated checkpoint/clear/resume workflow

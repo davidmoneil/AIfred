@@ -360,4 +360,43 @@ These MCPs will be installed to test the harness works on fresh installs:
 
 ---
 
-*MCP Validation Harness Pattern — PR-8.4*
+## Lessons Learned (From Validation Testing)
+
+**Updated**: 2026-01-09
+
+### Critical Discoveries
+
+1. **Mid-Session Installation Limitation**
+   - MCPs installed during a session show "Connected" in `claude mcp list`
+   - Tools are NOT available until session restart
+   - Phase 4 must be deferred to next session for new installs
+
+2. **External Service Reliability**
+   - MCP can be "working" but external service may block requests
+   - DuckDuckGo triggers bot detection even on first request
+   - Phase 4 testing must verify actual external service behavior
+
+3. **Package Naming Inconsistency**
+   - Documentation often references non-existent packages
+   - Python (uvx) vs Node (npx) variants may have different names
+   - Always verify package exists: `npx -y [package] --help` or `uvx [package] --help`
+
+4. **API Key Gating**
+   - MCPs requiring API keys should be flagged early in Phase 2
+   - Missing prerequisites = defer validation, don't attempt Phase 3+
+   - Document API key acquisition steps
+
+### Validation Results Summary
+
+| MCP | Status | Tier | Key Finding |
+|-----|--------|------|-------------|
+| Git | PASS | 1 | Reliable, ~2.5K tokens |
+| Memory | PASS | 1 | Reliable, ~1.8K tokens |
+| Filesystem | PASS | 1 | Reliable, ~2.8K tokens |
+| DuckDuckGo | FAIL | 3 | Bot detection blocks requests |
+| arXiv | PENDING | 2 | Phase 4 pending restart |
+| Brave Search | DEFERRED | 2 | Requires API key |
+
+---
+
+*MCP Validation Harness Pattern — PR-8.4 (Updated 2026-01-09)*
