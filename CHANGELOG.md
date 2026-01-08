@@ -13,6 +13,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.8.1] - 2026-01-07
+
+**PR-8.3.1: Zero-Action Context Management** — Fully automated checkpoint/clear/resume workflow
+
+### Added
+
+#### Automated Context Management System
+- **`.claude/context/patterns/automated-context-management.md`** — Comprehensive documentation
+  - Architecture diagram showing hooks/watcher interaction
+  - Signal file patterns and data flow
+  - Testing checklist and troubleshooting guide
+
+#### Auto-Clear Watcher
+- **`.claude/scripts/auto-clear-watcher.sh`** — External keystroke automation
+  - Monitors for signal file (`.auto-clear-signal`)
+  - Sends `/clear` keystroke via AppleScript (macOS) or xdotool (Linux)
+  - Targets Claude window, avoids watcher window
+- **`.claude/scripts/launch-watcher.sh`** — Launches watcher in new Terminal window
+- **`.claude/scripts/stop-watcher.sh`** — Stops watcher process
+
+#### New Hooks
+- **`.claude/hooks/pre-compact.sh`** — Auto-checkpoint on context threshold
+  - Creates checkpoint before autocompaction
+  - Disables Tier 2 MCPs
+  - Writes signal file for watcher
+- **`.claude/hooks/stop-auto-clear.sh`** — Stop hook for clear sequence
+  - Blocks Claude from stopping after checkpoint
+  - Instructs to run `/trigger-clear`
+  - Uses `.clear-pending` marker to prevent loop
+
+#### New Commands
+- **`.claude/commands/trigger-clear.md`** — Signal watcher to send `/clear`
+  - Creates signal file + pending marker
+  - Invokable by Claude via Skill tool
+
+### Changed
+
+#### SessionStart Hook Enhanced
+- Auto-launches watcher on startup/resume
+- Cleans up `.clear-pending` marker
+- `additionalContext` injection for auto-resume without "continue" prompt
+
+#### Key Discovery: `disabledMcpServers` Array
+- MCP disabled state stored in `~/.claude.json` → `projects.<path>.disabledMcpServers[]`
+- Can programmatically disable/enable MCPs via `jq` manipulation
+- `/clear` applies changes without full restart
+
+### Technical Notes
+
+**External Watcher Pattern**: Claude cannot programmatically execute `/clear` (built-in CLI command).
+Solution: External watcher script sends keystrokes via AppleScript/xdotool.
+
+**Stop Hook Pattern**: Inspired by Ralph Wiggum plugin's `decision: block` mechanism.
+Prevents Claude from ending turn, injects prompt via `reason` field.
+
+---
+
 ## [1.8.0] - 2026-01-07
 
 **PR-8.1: Context Budget Optimization** — Reduce context window overhead and establish management patterns

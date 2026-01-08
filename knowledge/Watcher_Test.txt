@@ -1,0 +1,378 @@
+Watcher Clear Trigger Test
+  Debug mode enabled
+  Logging to: /Users/aircannon/.claude/debug/aff42bbf-b1cc-41e4-8c51-c8dc3e93cf35.txt
+  ⎿  SessionStart:clear hook succeeded: Success
+  ⎿  SessionStart:clear hook succeeded: Success
+  ⎿  SessionStart:clear says: CHECKPOINT LOADED (clear)\n\n# Context Checkpoint
+
+     **Created**: 2026-01-07
+     **Reason**: User-requested context optimization
+
+     ## Work Summary
+
+     Session started from previous checkpoint. User immediately requested a new context checkpoint for optimization. MCPs already in 
+     optimal state with Tier 2 disabled.
+
+     ## Next Steps After Restart
+
+     1. Review current priorities in `.claude/context/projects/current-priorities.md`
+     2. Begin next planned work (PR-8.4: MCP Validation Harness or other priority)
+     3. Re-enable MCPs as needed based on work type
+
+     ## Critical Context
+
+     - All PR-8.3.1 work complete and committed
+     - MCP tier system operational
+     - Scripts validated for MCP enable/disable workflow
+     - Tier 2 MCPs already disabled from previous optimization
+
+     ## MCP State
+
+     | MCP | Action | Reason |
+     |-----|--------|--------|
+     | memory | KEEP | Tier 1 - persistent knowledge |
+     | filesystem | KEEP | Tier 1 - file operations |
+     | fetch | KEEP | Tier 1 - web content |
+     | git | KEEP | Tier 1 - core workflow |
+     | github | DISABLED | No PR/issue work planned |
+     | context7 | DISABLED | No research/docs planned |
+     | sequential-thinking | DISABLED | No complex planning planned |
+
+     ## Re-enabling MCPs
+
+     When specific work requires disabled MCPs:
+     ```bash
+     .claude/scripts/enable-mcps.sh github context7 sequential-thinking
+     # Then /clear to load them
+     ```
+
+❯ /clear 
+  ⎿  (no content)
+
+❯ /context-checkpoint 
+  ⎿  Read .claude/context/patterns/context-budget-management.md (365 lines)
+  ⎿  Loaded .claude/CLAUDE.md
+  ⎿  UserPromptSubmit hook succeeded: Success
+  ⎿  UserPromptSubmit says: MINIMAL TEST HOOK FIRED SUCCESSFULLY
+  ⎿  UserPromptSubmit hook succeeded: Success
+
+⏺ I'll execute the context checkpoint procedure now.
+
+⏺ Bash(.claude/scripts/list-mcp-status.sh)
+  ⎿  PreToolUse:Bash hook succeeded: Success
+  ⎿  ════════════════════════════════════════════════════════════
+                         MCP Status Report
+     ════════════════════════════════════════════════════════════
+
+     Registered MCPs (mcpServers):
+       - context7
+       - fetch
+       - filesystem
+       - git
+       - github
+       - memory
+       - sequential-thinking
+
+     Disabled MCPs (disabledMcpServers):
+       - context7 (will not load)
+       - github (will not load)
+       - sequential-thinking (will not load)
+
+     Summary:
+       Registered: 7
+       Disabled:   3
+
+     ════════════════════════════════════════════════════════════
+     Note: Run 'claude mcp list' in session to see runtime state
+     ════════════════════════════════════════════════════════════
+  ⎿  PostToolUse:Bash hook succeeded: Success
+
+⏺ Read(.claude/context/session-state.md)
+  ⎿  PreToolUse:Read hook succeeded: Success
+  ⎿  Read 691 lines
+  ⎿  PostToolUse:Read hook succeeded: Success
+
+⏺ Read(.claude/context/projects/current-priorities.md)
+  ⎿  PreToolUse:Read hook succeeded: Success
+  ⎿  Read 251 lines
+  ⎿  PostToolUse:Read hook succeeded: Success
+
+⏺ Now I have the current state. Let me analyze the next steps and create the checkpoint.
+
+  Current MCP State: github, context7, sequential-thinking already disabled (3 of 7 registered MCPs)
+
+  Session Context Analysis:
+  - Last checkpoint was user-requested context optimization
+  - Previous work focused on PR-8.3.1 (context checkpoint workflow)
+  - No specific next task is in progress
+
+  MCP Evaluation for Next Steps:
+  Since no specific work is in progress and the session is fresh after /clear, I'll evaluate what MCPs are actually needed:
+
+  - memory: Keep (Tier 1, essential)
+  - filesystem: Keep (Tier 1, essential)
+  - fetch: Keep (Tier 1, essential)
+  - git: Keep (Tier 1, core workflow)
+  - github: Already disabled (no PR/issue work planned)
+  - context7: Already disabled (no research phase)
+  - sequential-thinking: Already disabled (no complex planning)
+
+  MCPs are already optimally configured. Let me create the checkpoint file and update session state.
+
+⏺ Bash(date '+%Y-%m-%d %H:%M:%S')
+  ⎿  PreToolUse:Bash hook succeeded: Success
+  ⎿  2026-01-07 20:44:54
+  ⎿  PostToolUse:Bash hook succeeded: Success
+
+⏺ Write(/Users/aircannon/Claude/Jarvis/.claude/context/.soft-restart-checkpoint.md)
+  ⎿  Error: File has not been read yet. Read it first before writing to it.
+
+⏺ Read(.claude/context/.soft-restart-checkpoint.md)
+  ⎿  PreToolUse:Read hook succeeded: Success
+  ⎿  Read 42 lines
+  ⎿  PostToolUse:Read hook succeeded: Success
+
+⏺ Write(/Users/aircannon/Claude/Jarvis/.claude/context/.soft-restart-checkpoint.md)
+  ⎿  PreToolUse:Write hook succeeded
+  ⎿  PreToolUse:Write hook succeeded: Success
+  ⎿  Added 15 lines, removed 23 lines                                                                                         
+       1  # Context Checkpoint
+       2  
+       3 -**Created**: 2026-01-07                                                                                             
+       4 -**Reason**: User-requested context optimization                                                                     
+       3 +**Created**: 2026-01-07 20:44:54                                                                                    
+       4 +**Reason**: Proactive context optimization                                                                          
+       5  
+       6  ## Work Summary
+       7  
+       8 -Session started from previous checkpoint. User immediately requested a new context checkpoint for optimization. MCPs
+         - already in optimal state with Tier 2 disabled.                                                                     
+       8 +Session started fresh after previous checkpoint. No specific task was in progress. MCPs were already optimized from 
+         +previous checkpoint (github, context7, sequential-thinking disabled).                                               
+       9  
+      10  ## Next Steps After Restart
+      11  
+      12 -1. Review current priorities in `.claude/context/projects/current-priorities.md`                                    
+      13 -2. Begin next planned work (PR-8.4: MCP Validation Harness or other priority)                                       
+      14 -3. Re-enable MCPs as needed based on work type                                                                      
+      12 +1. Continue with PR-8.4: MCP Validation Harness if desired                                                          
+      13 +2. Or await user direction for next task                                                                            
+      14 +3. Run `/context-budget` to verify reduced context                                                                  
+      15  
+      16  ## Critical Context
+      17  
+      18 -- All PR-8.3.1 work complete and committed                                                                          
+      19 -- MCP tier system operational                                                                                       
+      20 -- Scripts validated for MCP enable/disable workflow                                                                 
+      21 -- Tier 2 MCPs already disabled from previous optimization                                                           
+      18 +- PR-8.3.1 complete and validated                                                                                   
+      19 +- Context checkpoint workflow working end-to-end                                                                    
+      20 +- MCP disable/enable scripts functional                                                                             
+      21 +- Tier 1 MCPs active: memory, filesystem, fetch, git (~21K tokens)                                                  
+      22  
+      23  ## MCP State
+      24  
+      25  | MCP | Action | Reason |
+      26  |-----|--------|--------|
+      27 -| memory | KEEP | Tier 1 - persistent knowledge |                                                                   
+      28 -| filesystem | KEEP | Tier 1 - file operations |                                                                    
+      29 -| fetch | KEEP | Tier 1 - web content |                                                                             
+      27 +| memory | KEEP | Tier 1 - essential |                                                                              
+      28 +| filesystem | KEEP | Tier 1 - essential |                                                                          
+      29 +| fetch | KEEP | Tier 1 - essential |                                                                               
+      30  | git | KEEP | Tier 1 - core workflow |
+      31  | github | DISABLED | No PR/issue work planned |
+      32 -| context7 | DISABLED | No research/docs planned |                                                                  
+      33 -| sequential-thinking | DISABLED | No complex planning planned |                                                    
+      34 -                                                                                                                    
+      35 -## Re-enabling MCPs                                                                                                 
+      36 -                                                                                                                    
+      37 -When specific work requires disabled MCPs:                                                                          
+      38 -```bash                                                                                                             
+      39 -.claude/scripts/enable-mcps.sh github context7 sequential-thinking                                                  
+      40 -# Then /clear to load them                                                                                          
+      41 -```                                                                                                                 
+      32 +| context7 | DISABLED | No research phase |                                                                         
+      33 +| sequential-thinking | DISABLED | No complex planning |                                                            
+  ⎿  PostToolUse:Write hook succeeded: Success
+
+⏺ Now update the session state:
+
+⏺ Update(/Users/aircannon/Claude/Jarvis/.claude/context/session-state.md)
+  ⎿  PreToolUse:Edit hook succeeded
+  ⎿  PreToolUse:Edit hook succeeded: Success
+  ⎿  Added 5 lines, removed 5 lines                                                                                           
+      10  
+      11  **Status**: checkpoint (context-checkpoint)
+      12  
+      13 -**Last Completed**: Context checkpoint (user-requested)                                                             
+      13 +**Last Completed**: Proactive context checkpoint                                                                    
+      14  
+      15  **Next Step**: Run /clear to resume
+      16  
+      17  ### Checkpoint Info
+      18  
+      19  - **Type**: context-checkpoint
+      20 -- **Reason**: User-requested context optimization                                                                   
+      21 -- **Timestamp**: 2026-01-07                                                                                         
+      22 -- **MCPs Disabled**: github, context7, sequential-thinking (already disabled)                                       
+      20 +- **Reason**: Proactive context optimization                                                                        
+      21 +- **Timestamp**: 2026-01-07 20:44:54                                                                                
+      22 +- **MCPs Disabled**: github, context7, sequential-thinking (already optimal)                                        
+      23  - **Checkpoint File**: `.claude/context/.soft-restart-checkpoint.md`
+      24  
+      25  ### MCP State
+     ...
+      29  
+      30  ### On-Demand MCPs Enabled This Session
+      31  
+      32 -- None (Tier 2 MCPs remain disabled from previous checkpoint)                                                       
+      32 +- None (Tier 2 MCPs remain disabled - optimal configuration)                                                        
+      33  
+      34  ---
+      35  
+  ⎿  PostToolUse:Edit hook succeeded: Success
+
+⏺ MCPs are already in optimal state (github, context7, sequential-thinking already disabled). Now commit the checkpoint:
+
+⏺ Bash(git add -A && git commit -m "Context checkpoint: proactive optimization
+
+      MCPs disabled: github, context7, sequential-thinking (already optimal)
+      Next: Await user direction or continue PR-8.4
+
+      Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>")
+  ⎿  PreToolUse:Bash hook succeeded: Success
+  ⎿  [Project_Aion 9634682] Context checkpoint: proactive optimization
+      4 files changed, 25 insertions(+), 28 deletions(-)
+  ⎿  PostToolUse:Bash hook succeeded: Success
+
+⏺ ╔══════════════════════════════════════════════════════════════╗
+  ║              CONTEXT CHECKPOINT COMPLETE                      ║
+  ╚══════════════════════════════════════════════════════════════╝
+
+  ✅ Checkpoint saved: .claude/context/.soft-restart-checkpoint.md
+  ✅ Session state updated
+  ✅ MCPs disabled: github, context7, sequential-thinking (already optimal)
+  ✅ Changes committed: 9634682
+
+  Estimated Token Savings: ~28K (Tier 2 MCPs already disabled)
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  NEXT STEP (Just one!):
+
+    Type: /clear
+
+    ➜ Session restarts with reduced MCPs
+    ➜ Checkpoint loads automatically
+    ➜ Resume from where you left off
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⎿  Stop says: 🔄 Checkpoint detected - triggering auto-clear sequence
+
+⏺ Ran 3 stop hooks
+  ⎿  command: $CLAUDE_PROJECT_DIR/.claude/hooks/stop-auto-clear.sh
+  ⎿  command: python3 ${CLAUDE_PLUGIN_ROOT}/hooks/stop.py
+  ⎿  command: ${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh
+  ⎿  Stop hook error: A context checkpoint was just created. To apply MCP changes and reduce context, run /trigger-clear now.
+   This will signal the auto-clear watcher to send /clear.
+
+⏺ The stop hook correctly detected the checkpoint. Running /trigger-clear now to signal the auto-clear watcher.
+
+⏺ /trigger-clear
+  ⎿  PreToolUse:Skill hook succeeded: Success
+  ⎿  PostToolUse:Skill hook succeeded: Success
+
+⏺ Bash(TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) && echo "$TIMESTAMP" > .claude/context/.auto-clear-signal && echo "$TIMESTAMP" >
+      .claude/context/.clear-pending)
+  ⎿  PreToolUse:Bash hook succeeded: Success
+  ⎿  (No content)
+  ⎿  PostToolUse:Bash hook succeeded: Success
+
+✶ Crystallizing… (esc to interrupt · 1m 15s · ↑ 1.8k tokens)
+
+─────────────────────────────────────────────────────────────────────
+
+  ⎿  SessionStart:clear hook succeeded: Success
+  ⎿  SessionStart:clear hook succeeded: Success
+  ⎿  SessionStart:clear says: CHECKPOINT LOADED (clear)\n\n# Context Checkpoint
+
+     **Created**: 2026-01-07 20:44:54
+     **Reason**: Proactive context optimization
+
+     ## Work Summary
+
+     Session started fresh after previous checkpoint. No specific task was in progress. MCPs were already optimized from previous 
+     checkpoint (github, context7, sequential-thinking disabled).
+
+     ## Next Steps After Restart
+
+     1. Continue with PR-8.4: MCP Validation Harness if desired
+     2. Or await user direction for next task
+     3. Run `/context-budget` to verify reduced context
+
+     ## Critical Context
+
+     - PR-8.3.1 complete and validated
+     - Context checkpoint workflow working end-to-end
+     - MCP disable/enable scripts functional
+     - Tier 1 MCPs active: memory, filesystem, fetch, git (~21K tokens)
+
+     ## MCP State
+
+     | MCP | Action | Reason |
+     |-----|--------|--------|
+     | memory | KEEP | Tier 1 - essential |
+     | filesystem | KEEP | Tier 1 - essential |
+     | fetch | KEEP | Tier 1 - essential |
+     | git | KEEP | Tier 1 - core workflow |
+     | github | DISABLED | No PR/issue work planned |
+     | context7 | DISABLED | No research phase |
+     | sequential-thinking | DISABLED | No complex planning |
+
+❯ /clear 
+  ⎿  (no content)
+
+
+######### From the Watcher Window ############
+Last login: Wed Jan  7 20:41:28 on ttys001
+cd '/Users/aircannon/Claude/Jarvis' && echo '🔄 Auto-Clear Watcher' && echo 'Monitoring for checkpoint signals...' && echo '' && '/Users/aircannon/Claude/Jarvis/.claude/scripts/auto-clear-watcher.sh'; echo 'Watcher stopped. You can close this window.'
+aircannon@Nathaniels-MacBook-Air ~ % cd '/Users/aircannon/Claude/Jarvis' && echo '🔄 Auto-Clear Watcher' && echo 'Monitoring for checkpoint signals...' && echo '' && '/Users/aircannon/Claude/Jarvis/.claude/scripts/auto-clear-watcher.sh'; echo 'Watcher stopped. You can close this window.'
+🔄 Auto-Clear Watcher
+Monitoring for checkpoint signals...
+
+╔══════════════════════════════════════════════════════════╗
+║           JARVIS AUTO-CLEAR WATCHER                      ║
+╚══════════════════════════════════════════════════════════╝
+
+  Project: /Users/aircannon/Claude/Jarvis
+  Signal:  /Users/aircannon/Claude/Jarvis/.claude/context/.auto-clear-signal
+  Status:  ACTIVE
+
+  This window will auto-send /clear when context checkpoint
+  is triggered. Leave this window open during your session.
+
+  Press Ctrl+C to stop
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+20:43:42 📍 SIGNAL DETECTED
+           Checkpoint created at: 2026-01-08T03:43:41Z
+           Waiting 3s for Claude to complete...
+           ⌨️  Sending /clear to Terminal...
+           ✅ /clear sent successfully!
+
+           Session will restart and auto-resume.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+20:45:49 📍 SIGNAL DETECTED
+           Checkpoint created at: 2026-01-08T03:45:47Z
+           Waiting 3s for Claude to complete...
+           ⌨️  Sending /clear to Terminal...
+           ✅ /clear sent successfully!
+
+           Session will restart and auto-resume.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

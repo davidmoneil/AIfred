@@ -34,3 +34,7 @@
 2026-01-08T03:43:45Z | Stop | Clear already pending, allowing stop
 2026-01-08T03:43:46Z | SessionStart | source=clear | session=aff42bbf-b1cc-41e4-8c51-c8dc3e93cf35
 2026-01-08T03:43:46Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-08T03:45:40Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-08T03:45:51Z | Stop | Clear already pending, allowing stop
+2026-01-08T03:45:52Z | SessionStart | source=clear | session=cb3865a0-0413-47c1-bea7-bc8b132a9ceb
+2026-01-08T03:45:52Z | SessionStart | Cleaned up .clear-pending marker

@@ -82,7 +82,7 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Disable ≠ Uninstall — MCPs remain registered, just skipped at load
 - [x] Documentation updated across 4 files
 
-**PR-8.3.1 Implementation**: ✅ **COMPLETE + VALIDATED**
+**PR-8.3.1 Implementation**: ✅ **COMPLETE + FULLY AUTOMATED**
 - [x] Create `.claude/scripts/disable-mcps.sh`
 - [x] Create `.claude/scripts/enable-mcps.sh`
 - [x] Create `.claude/scripts/list-mcp-status.sh`
@@ -90,7 +90,14 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] Test full workflow: checkpoint → disable → /clear → resume
 - [x] Context reduced from ~16.2K to ~7.4K MCP tokens (54% reduction)
 - [x] **Bug Fix**: Checkpoint file deletion in session-start.sh hook
-- [x] **Automation**: Single command workflow (just `/clear` after checkpoint)
+- [x] **Zero-Action Automation** (2026-01-07):
+  - [x] Auto-clear watcher (external AppleScript keystroke automation)
+  - [x] Stop hook with decision:block (Ralph Wiggum pattern)
+  - [x] SessionStart watcher auto-launch
+  - [x] PreCompact hook for automatic checkpointing
+  - [x] additionalContext injection for auto-resume
+  - [x] Full end-to-end validation: checkpoint → auto-clear → auto-resume
+- [x] **Documentation**: `.claude/context/patterns/automated-context-management.md`
 
 **Remaining**:
 - [ ] PR-8.4: MCP Validation Harness
