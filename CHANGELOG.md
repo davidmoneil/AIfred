@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.4] - 2026-01-09
+
+**PR-9.4: Selection Validation (Quality Assurance)**
+
+### Added
+
+#### Selection Validation Framework
+- **`selection-validation-tests.md`** — 10 documented test cases with:
+  - Input prompts, expected selections, rationale
+  - Validation criteria (pass/acceptable/fail)
+  - Scoring system (80%+ target accuracy)
+
+#### /validate-selection Command
+- **Audit Mode**: Review recent selection decisions from logs
+- **Test Mode**: Run through 10 test cases and score results
+- **Report Mode**: Generate comprehensive validation report
+
+#### Selection Audit Logging
+- **`selection-audit.js`** — PostToolUse hook that logs:
+  - Task delegations (subagents)
+  - Skill invocations
+  - MCP tool selections
+  - Research tool selections
+- Logs to `.claude/logs/selection-audit.jsonl` in JSONL format
+
+### Changed
+
+- **`settings.json`** — Added selection-audit.js to PostToolUse hooks
+- **`CLAUDE.md`** — Version 1.9.3 → 1.9.4
+
+### Files Added
+
+- `.claude/context/patterns/selection-validation-tests.md`
+- `.claude/commands/validate-selection.md`
+- `.claude/hooks/selection-audit.js`
+
+---
+
 ## [1.9.3] - 2026-01-09
 
 **PR-9.2 & PR-9.3: Research Tool Routing + Deselection Intelligence**
