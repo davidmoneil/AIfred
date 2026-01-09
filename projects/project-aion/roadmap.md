@@ -628,8 +628,10 @@ Research Task Received
 - [x] Selection audit logging ✅ `selection-audit.js` hook
 
 **Acceptance Criteria**:
-- [x] 80%+ accuracy on test cases — Framework ready for testing
+- [x] 80%+ accuracy on test cases — **90% achieved** (8 pass, 2 acceptable, 0 fail)
 - [x] Selection audit logging implemented — Logs to `selection-audit.jsonl`
+
+**Validation Report**: `.claude/reports/selection-validation-run-2026-01-09.md`
 
 ---
 
