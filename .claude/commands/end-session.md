@@ -7,9 +7,34 @@ allowed-tools: Read, Write, Edit, Bash(git:*)
 
 You are running the Jarvis (Project Aion) session exit procedure.
 
+## Pre-Exit Context Preparation
+
+**Run this FIRST** to prepare context for clean restart:
+
+### 0. Context Reset Preparation
+
+Prepare context artifacts that help the next session start cleanly:
+
+1. **Extract key session context** (similar to pre-compact):
+   - Current task status from session-state.md
+   - Any blockers encountered
+   - MCPs currently enabled
+
+2. **Clear any checkpoint files** (will be regenerated if needed):
+   ```bash
+   rm -f .claude/context/.soft-restart-checkpoint.md 2>/dev/null || true
+   ```
+
+3. **Log session end**:
+   ```bash
+   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) | SessionEnd | /end-session invoked" >> .claude/logs/session-start-diagnostic.log
+   ```
+
+---
+
 ## Session Activity Check
 
-First, check what was done this session:
+Check what was done this session:
 
 1. Read `.claude/logs/.session-activity` to see tracked activities
 2. Check for uncommitted git changes: `git status`
@@ -123,7 +148,19 @@ git push origin vX.X.X
 
 Reset the session activity tracker for next session.
 
-### 9. Disable On-Demand MCPs
+### 9. Cross-Project Commit Check (If Multi-Repo)
+
+If commits were made to multiple repositories this session:
+
+1. Check tracking file: `.claude/logs/cross-project-commits.json`
+2. If exists and has unpushed commits:
+   ```
+   Ask user: "Push all unpushed commits across projects? [y/N]"
+   ```
+3. If yes, push each project's branch
+4. Report results per project
+
+### 10. Disable On-Demand MCPs
 
 Check session-state.md for any On-Demand MCPs enabled this session.
 List them for user to disable (they must be OFF by default per MCP Loading Strategy).

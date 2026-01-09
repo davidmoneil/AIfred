@@ -15,6 +15,24 @@ Only `git fetch` and `git pull` operations are allowed. Never edit, commit, bran
 - `$ARGUMENTS` — Optional: "dry-run" (report only) or "full" (include patch generation)
   - Default is "dry-run" if not specified
 
+## MANDATORY OUTPUTS
+
+**Every invocation MUST generate TWO report files:**
+
+1. **Formal Sync Report**: `.claude/context/upstream/sync-report-YYYY-MM-DD.md`
+   - Structured ADOPT/ADAPT/REJECT/DEFER classifications
+   - File-by-file analysis
+   - Rationales for each decision
+
+2. **Ad-Hoc Assessment**: `.claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md`
+   - Key discoveries (what was unexpected or important)
+   - Questions resolved during analysis
+   - Implications for Jarvis architecture
+   - Recommended next steps
+   - Any blockers or concerns
+
+**These reports are NOT optional** — they must be written to disk before the command completes.
+
 ## Phase 1: Fetch Baseline Updates
 
 ```bash
@@ -170,6 +188,60 @@ If `$ARGUMENTS` is "full" and user approves:
 2. Append to `.claude/context/upstream/port-log.md`
 3. Create patches for ADOPT items (optional)
 
+## Phase 6: Generate Ad-Hoc Assessment
+
+Create an ad-hoc assessment at `.claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md`:
+
+```markdown
+# AIfred Sync Ad-Hoc Assessment
+
+**Generated**: YYYY-MM-DD HH:MM
+**Baseline Commit**: <commit_hash>
+
+---
+
+## Key Discoveries
+
+- [Unexpected findings during analysis]
+- [Important patterns or implications]
+- [Jarvis capabilities that exceeded AIfred]
+
+---
+
+## Questions Resolved
+
+| Question | Resolution |
+|----------|------------|
+| [Question from analysis] | [Answer/finding] |
+
+---
+
+## Implications for Jarvis
+
+- [How this affects Jarvis architecture]
+- [New capabilities enabled]
+- [Potential conflicts or concerns]
+
+---
+
+## Recommended Next Steps
+
+1. [Immediate action]
+2. [Follow-up action]
+3. [Future consideration]
+
+---
+
+## Blockers or Concerns
+
+- [Any issues that need resolution]
+- [Dependencies or prerequisites]
+
+---
+
+*Assessment generated during /sync-aifred-baseline*
+```
+
 ## Output
 
 After completing the sync, provide:
@@ -188,7 +260,9 @@ Changes Analyzed:
 ├── REJECT: N items skipped
 └── DEFER:  N items for later review
 
-Report: .claude/context/upstream/sync-report-YYYY-MM-DD.md
+Reports Generated:
+├── Formal: .claude/context/upstream/sync-report-YYYY-MM-DD.md
+└── Ad-Hoc: .claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md
 
 Next Steps:
 - [Recommended actions based on findings]
