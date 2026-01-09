@@ -11,6 +11,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.8.5] - 2026-01-09
+
+**PR-9.0: Plugin Decomposition** — Extract and refactor plugin skills for on-demand loading
+
+### Added
+
+#### Extracted Skills (6 total, ~65.5K tokens on-demand)
+- **docx** (~12.5K) — Word document creation, editing, tracked changes
+- **xlsx** (~2.6K) — Spreadsheet creation with formulas and formatting
+- **pdf** (~8.3K) — PDF creation, forms, merge/split operations
+- **pptx** (~14K) — PowerPoint presentations with speaker notes
+- **mcp-builder** (~23K) — MCP server development guide
+- **skill-creator** (~5.1K) — Claude Code skill development guide
+
+#### Tooling
+- **`.claude/scripts/extract-skill.sh`** — Automated skill extraction from plugin cache
+  - Lists available skills: `--list <marketplace> <plugin>`
+  - Extracts to Jarvis: `<marketplace> <plugin> <skill>`
+  - Reports token estimates and file counts
+
+#### Documentation
+- **`.claude/reports/pr-9.0-decomposition-report.md`** — Full decomposition analysis
+  - Overlap matrices (document skills, development skills, cross-category)
+  - Capability matrix updates
+  - Validation test plan for post-restart testing
+
+### Changed
+- **`plugin-decomposition-pattern.md`** v2.0 → v3.0
+  - ALWAYS decompose policy (decompose or REJECT, never keep bundled)
+  - Progressive Disclosure Architecture compatibility requirements
+  - 11-field YAML frontmatter standard
+  - Tool-Use Validation Framework with checklist
+  - Selection Guidance section requirements
+
+### Token Impact
+- **Before**: Plugin bundles loaded ~86K tokens (document-skills + example-skills)
+- **After**: Individual skills load 2.6K-23K on-demand
+- **Savings**: Up to 96% reduction per task (86K → 2.6K for xlsx-only task)
+
+---
+
 ## [1.8.4] - 2026-01-09
 
 **PR-8.5: MCP Initialization Protocol** — Automated MCP lifecycle management

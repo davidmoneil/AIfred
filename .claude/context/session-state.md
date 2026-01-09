@@ -10,11 +10,47 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: PR-9 Tool Selection Intelligence pattern v0.7 (2026-01-09)
+**Last Completed**: PR-9.0 Plugin Decomposition Complete (2026-01-09)
 
 **Current Blocker**: None
 
-**Next Step**: Continue PR-9 work — validate pattern with test cases, begin PR-9.2 research tool routing.
+**Next Step**: Post-restart validation of 6 extracted skills, then PR-9.2 research tool routing.
+
+### Session Summary (2026-01-09 — PR-9.0 Plugin Decomposition)
+
+**PR-9.0 Plugin Decomposition — COMPLETE**
+
+1. **6 Skills Extracted** ✅
+   - Phase 1 (Document): docx (~12.5K), xlsx (~2.6K), pdf (~8.3K), pptx (~14K)
+   - Phase 2 (Development): mcp-builder (~23K), skill-creator (~5.1K)
+   - Total: ~65,500 tokens now available on-demand
+
+2. **Progressive Disclosure Compliance** ✅
+   - All skills refactored with 11-field YAML frontmatter
+   - Selection Guidance sections added (Use when/Do NOT use/Complements)
+   - Original resources and templates preserved
+
+3. **Tooling Created** ✅
+   - `extract-skill.sh` — Automated skill extraction from plugin cache
+   - `plugin-decomposition-pattern.md` v3.0 — Full decomposition workflow
+
+4. **Documentation** ✅
+   - `.claude/reports/pr-9.0-decomposition-report.md` — Full analysis
+   - Overlap matrices, capability updates, validation test plan
+
+**Token Impact**: Plugin bundles loaded ~86K tokens; now individual skills load 2.6K-23K on-demand.
+
+**Files Created**:
+- `.claude/scripts/extract-skill.sh`
+- `.claude/reports/pr-9.0-decomposition-report.md`
+- `.claude/skills/{docx,xlsx,pdf,pptx,mcp-builder,skill-creator}/`
+
+**Files Modified**:
+- `.claude/context/patterns/plugin-decomposition-pattern.md` (v3.0)
+
+**Next**: Post-restart validation per test plan in decomposition report.
+
+---
 
 ### Session Summary (2026-01-09 — PR-9 Selection Intelligence)
 
@@ -242,16 +278,16 @@
 
 **Current Session**:
 - **Tier 1 (Always-On)**: memory, filesystem, fetch, git
-- **Tier 2 (Enabled)**: github, context7, chroma, desktop-commander, perplexity, gptresearcher
+- **Tier 2 (Disabled for restart)**: github, context7, chroma, desktop-commander, perplexity, gptresearcher
 - **Tier 3 (On-Demand)**: playwright (disabled), lotus-wisdom (disabled)
 
 **Next Session Prediction** (based on "Next Step"):
-- Keywords detected: (none - ready for next work item)
-- Suggested MCPs: (run `.claude/scripts/suggest-mcps.sh` to generate)
+- Keywords detected: skill validation, PR-9.0.1
+- Suggested MCPs: Tier 1 only (skill validation doesn't require extra MCPs)
 
 **MCP Action on Exit**:
-- Disable: (list Tier 2/3 MCPs not needed for next step)
-- Keep enabled: (list MCPs needed for next step)
+- Disable: github, context7, chroma, desktop-commander, perplexity, gptresearcher
+- Keep enabled: memory, filesystem, fetch, git (Tier 1)
 
 ### Key Files Created/Modified
 

@@ -137,7 +137,14 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
   - Multi-Agent Team Patterns (Sequential, Feedback Loop, Parallel, Specialist)
   - Progressive Disclosure Architecture for all 9 modalities
   - Universal Three-Tier Framework (Metadata/Core/Links)
-- [ ] PR-9.0: Component extraction workflow (plugin → granular components)
+- [x] PR-9.0: Plugin Decomposition — **COMPLETE** ✅ (2026-01-09)
+  - 6 skills extracted: docx, xlsx, pdf, pptx, mcp-builder, skill-creator
+  - Total ~65.5K tokens available on-demand (vs 86K bundled)
+  - All refactored with 11-field PD-compliant frontmatter
+  - Created `extract-skill.sh` automation script
+  - Updated `plugin-decomposition-pattern.md` to v3.0
+  - Full report: `.claude/reports/pr-9.0-decomposition-report.md`
+- [ ] PR-9.0.1: Post-restart skill validation (6 skills per test plan)
 - [ ] PR-9.2: Research tool routing
 - [ ] PR-9.3: Deselection enhancements
 - [ ] PR-9.4: Selection validation (10 test cases, 80%+ accuracy)

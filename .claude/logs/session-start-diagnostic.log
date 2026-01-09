@@ -89,3 +89,21 @@
 2026-01-08T20:52:11Z | PreCompact | Disabled Tier 2 MCPs
 2026-01-08T20:52:11Z | PreCompact | Signal file created for auto-clear
 2026-01-08T20:53:11Z | SessionStart | source=compact | session=775dfddf-3b2b-4399-b13d-6c8f1e6baa4a
+2026-01-08T21:09:22Z | SessionStart | source=startup | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
+2026-01-08T21:09:22Z | SessionStart | Launched watcher
+2026-01-08T21:09:22Z | SessionStart | MCP suggestions: enable=[github, sequential-thinking] disable=[chroma, desktop-commander]
+2026-01-08T22:24:22Z | PreCompact | Auto-checkpoint triggered
+2026-01-08T22:24:22Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-08T22:24:22Z | PreCompact | Signal file created for auto-clear
+2026-01-08T22:25:19Z | SessionStart | source=compact | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
+2026-01-09T01:06:47Z | PreCompact | Auto-checkpoint triggered
+2026-01-09T01:06:47Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-09T01:06:47Z | PreCompact | Signal file created for auto-clear
+2026-01-09T01:08:00Z | SessionStart | source=compact | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
+2026-01-09T03:36:34Z | SessionStart | source=resume | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
+2026-01-09T03:36:34Z | SessionStart | Launched watcher
+2026-01-09T03:36:34Z | SessionStart | MCP suggestions: enable=[github, brave-search, playwright] disable=[context7, desktop-commander, lotus-wisdom]
+2026-01-09T05:02:47Z | PreCompact | Auto-checkpoint triggered
+2026-01-09T05:02:47Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-09T05:02:47Z | PreCompact | Signal file created for auto-clear
+2026-01-09T05:04:08Z | SessionStart | source=compact | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
