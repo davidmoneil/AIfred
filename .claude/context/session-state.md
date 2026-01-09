@@ -10,26 +10,45 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: PR-8.5 MCP Initialization Protocol (2026-01-09)
+**Last Completed**: PR-9 Tool Selection Intelligence pattern v0.7 (2026-01-09)
 
 **Current Blocker**: None
 
-**Next Step**: Begin PR-9 work or address backlog items.
+**Next Step**: Continue PR-9 work — validate pattern with test cases, begin PR-9.2 research tool routing.
 
-**PR-8.5 MCP WORK COMPLETE**:
+### Session Summary (2026-01-09 — PR-9 Selection Intelligence)
+
+**PR-9.1 Tool Selection Intelligence Pattern — v0.7 Draft Complete**
+
+1. **Pattern Document Created** ✅
+   - `.claude/context/patterns/tool-selection-intelligence.md`
+   - Research-backed framework based on Anthropic Agent Skills + LangChain Deep Agents
+
+2. **Major Sections Added**:
+   - **The Orchestration Principle**: Jarvis as Core Orchestrator (not tool-first)
+   - **Delegation Decision Framework**: Self-execute vs delegate decision tree
+   - **Context Value Matrix**: Difficulty × Bloat × Procedural Value
+   - **The Orchestration Tiers** (3-tier system):
+     - Tier 1: Self-execute OR simple subagent delegation
+     - Tier 2: Complex single-agent delegation (custom agents)
+     - Tier 3: Multi-agent orchestration (agent teams)
+   - **Multi-Agent Team Patterns**: Sequential Pipeline, Feedback Loop, Parallel with Aggregation, Specialist Consultation
+   - **Agent Team Configuration**: YAML example for team definitions
+   - **Progressive Disclosure Architecture**: Applied to all 9 tool modalities
+   - **Universal Three-Tier Framework**: Metadata/Core/Links pattern
+
+3. **Key Clarification**: Jeeves/Wallace are separate Archons (like Jarvis), NOT delegation targets — removed mega-agent concept from tier system
+
+**Files Created/Modified**:
+- NEW: `.claude/context/patterns/tool-selection-intelligence.md` (v0.7)
+
+---
+
+**PR-8.5 MCP WORK COMPLETE** (previous session):
 - Batch Validation: ✅ 13/13 task MCPs + 4 core MCPs validated
 - MCP Design Patterns: ✅ Created comprehensive per-MCP best practices guide
 - Documentation Revision: ✅ Updated 4 core documents based on MCP learnings
 - MCP Initialization Protocol: ✅ Full lifecycle automation implemented
-
-**Documents Created/Updated (This Session)**:
-- NEW: `.claude/scripts/suggest-mcps.sh` — Keyword-to-MCP suggestion script
-- UPDATED: `.claude/hooks/session-start.sh` — Auto-MCP suggestions on startup
-- UPDATED: `.claude/context/workflows/session-exit.md` — MCP state capture step (v2.0)
-- UPDATED: `.claude/context/session-state.md` — MCP State section template
-- UPDATED: `.claude/context/patterns/mcp-loading-strategy.md` — Full protocol (v2.1)
-- UPDATED: `.claude/context/patterns/mcp-design-patterns.md` — Lifecycle section (v1.1)
-- UPDATED: `.claude/context/_index.md` — Protocol implementation entry
 
 ### Session Summary (2026-01-08 — MCP Validation Harness)
 

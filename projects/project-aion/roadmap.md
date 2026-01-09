@@ -433,91 +433,227 @@ Requirements:
 
 ---
 
-### PR-9: "Selection Intelligence" Pattern (MCP vs Skill vs Plugin vs Agent vs Bash)
-**Goal:** Ensure Jarvis reliably chooses the right mechanism for the job AND automatically deselects unused tools.
+### PR-9: Selection Intelligence Pattern (Research-Backed Tool Modality Framework)
 
-> **Extended Scope (2026-01-07)**: PR-9 now includes both SELECTION and DESELECTION intelligence. When context grows large, Jarvis should automatically identify and deactivate unused Tier 2/3 MCPs.
+**Goal:** Establish a research-backed framework for tool selection AND component extraction that enables granular control over all tool modalities.
+
+> **Extended Scope (2026-01-09)**: PR-9 addresses THREE interconnected challenges:
+> 1. **Component Extraction** — Decompose plugins into granular components (skills, agents, hooks, MCPs, etc.)
+> 2. **Selection Theory** — Research-backed tool-type precedence framework
+> 3. **Selection Validation** — Measurable acceptance criteria for selection quality
 >
-> **Implementation Note**: Deselection uses `disabledMcpServers` array in `~/.claude.json` (discovered PR-8.3).
+> **Research Foundation**: Based on Anthropic Agent Skills architecture, LangChain Deep Agents patterns, and MCP design philosophy.
+> - References: [Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [LangChain Deep Agents](https://blog.langchain.com/using-skills-with-deep-agents/)
+> - Pattern: `.claude/context/patterns/tool-selection-intelligence.md`
 
-#### PR-9.0: Pre-PR-9 Investigation (Plugin Decomposition)
+---
 
-Requirements:
-- Execute plugin decomposition workflow from `plugin-decomposition-pattern.md`
-- Extract high-value skills from bundled plugins (docx, pdf, xlsx, pptx)
-- Create standalone Jarvis-customized versions
-- Validate extracted skills work independently
+#### PR-9.0: Component Extraction Workflow (Foundation)
 
-**Dependency**: Pattern created in PR-8.1 (`plugin-decomposition-pattern.md`)
+**Goal**: Establish universal workflow for decomposing ANY plugin/bundle into granular Jarvis-controlled components.
 
-#### PR-9.1: Selection Framework (Original Scope)
+**Theory** (from Anthropic Agent Skills research):
+- Plugins are simple directory structures (not compiled/obfuscated)
+- Skills use progressive disclosure: metadata → core → linked resources
+- Token efficiency: 50-100 tokens per skill summary vs 10K+ for full bundle
+- Granular components enable: MCP validation, context management, customization
 
-Requirements:
-- A documented decision framework and quick reference:
-  - when to use custom agent vs Claude subagent vs plugin vs skill vs MCP vs Bash
-- Conflict resolution rules:
-  - if two tools do the same thing, define primary + fallback
-- Include examples tied to real workflows:
-  - research tasks, repo exploration, code generation, web automation, file operations
+**Component Mapping**:
 
-Deliverables:
-- `agent-selection-pattern.md` v2 (or equivalent) + capability matrix updates.
+| Plugin Source | Jarvis Target | Purpose |
+|---------------|---------------|---------|
+| `skills/**/SKILL.md` | `.claude/skills/` | Standalone skills |
+| Agent patterns | `.claude/agents/` | Custom agents |
+| Hook implementations | `.claude/hooks/` | Behavioral hooks |
+| MCP registrations | MCP config | Validated MCPs |
+| Commands | `.claude/commands/` | Slash commands |
+| Config files | `.claude/config/` | Configuration |
+| Context injections | `.claude/context/` | Context files |
+| Patterns | `.claude/context/patterns/` | Design patterns |
+| Templates | `.claude/context/templates/` | Reusable templates |
 
-#### PR-9.2: Deselection Intelligence (Revised)
+**Deliverables**:
+- [ ] `/extract-skill <plugin> <skill>` command
+- [ ] Component analysis workflow documentation
+- [ ] Pilot extraction: `document-skills` → docx, pdf, xlsx, pptx
+- [ ] Token savings measurement (target: 10K+ reduction)
 
-**Goal**: Build a command+script system that evaluates MCP needs and disables unused MCPs.
+**Acceptance Criteria**:
+- [ ] Extracted skills work independently of source plugin
+- [ ] Extracted skills appear in `/skills` list
+- [ ] Token overhead reduced by measurable amount
+- [ ] Capability matrix updated with extracted components
 
-> **Status (2026-01-07)**: Core deselection functionality **COMPLETE** via PR-8.3.1 zero-action automation. Remaining: enhance MCP recommendation logic.
+---
 
-**Implementation Complete** (PR-8.3.1):
-- **MCP Control Scripts**: ✅
-  - `disable-mcps.sh <name...>` — Add to disabledMcpServers array
-  - `enable-mcps.sh <name...>` — Remove from disabledMcpServers array
-  - `list-mcp-status.sh` — Show registered vs disabled MCPs
-- **Zero-Action Automation**: ✅
-  - `/context-checkpoint` — Evaluates next steps, disables MCPs, creates checkpoint
-  - Stop hook blocks stop → instructs `/trigger-clear`
-  - Auto-clear watcher sends `/clear` via AppleScript
-  - SessionStart hook loads checkpoint + auto-resumes
+#### PR-9.1: Selection Theory & Framework (Research-Backed)
 
-**Automated Workflow** (Zero User Action After Trigger):
+**Goal**: Create authoritative, research-backed selection intelligence documentation.
+
+**Two-Layer Model** (from research):
 ```
-User runs /context-checkpoint (or PreCompact auto-triggers)
-  → Claude evaluates next steps
-  → Identifies MCPs to disable based on work type
-  → disable-mcps.sh runs automatically
-  → Checkpoint file created
-  → Stop hook blocks → tells Claude to run /trigger-clear
-  → Watcher detects signal → sends /clear keystroke
-  → /clear executes
-  → SessionStart hook loads checkpoint
-  → additionalContext triggers auto-resume
-  → Claude continues work (no user input needed)
+KNOWLEDGE LAYER (HOW to do things)
+├── Skills (SKILL.md)
+├── Agents (personas)
+├── Patterns (guides)
+└── Prompts (context)
+
+INTEGRATION LAYER (WHAT can be done)
+├── MCPs (servers)
+├── Plugins (bundles)
+├── Tools (built-in)
+└── Bash (shell)
 ```
+
+**Precedence Hierarchy** (research-backed):
+1. **Built-in Tools** — Zero overhead, if sufficient
+2. **Skills** — 50-100 token summary, procedural workflows
+3. **Specialized Subagents** — Context isolation
+4. **MCPs** — External integrations
+5. **Custom Agents** — Learning/memory tasks
+
+**LLM Selection Insight**: Claude Code uses LLM reasoning, NOT algorithmic routing. Tool descriptions are critical for selection quality (~0.91 accuracy).
+
+**Deliverables**:
+- [x] `tool-selection-intelligence.md` — Foundation pattern ✅ Created 2026-01-09
+- [ ] `agent-selection-pattern.md` v2.0 — Full rewrite with:
+  - All 17 MCPs with selection rules
+  - 3-tier MCP loading integration
+  - Research tool routing (Perplexity vs GPTresearcher)
+  - Browser automation routing
+- [ ] Unified `selection-intelligence-guide.md`:
+  1. Quick Selection Matrix
+  2. MCP Selection by Work Type
+  3. Research Tool Routing
+  4. Agent vs Subagent Decision
+  5. Skill Selection
+  6. Conflict Resolution
+  7. Fallback Chains
+- [ ] Updated CLAUDE.md Quick Selection section
+
+**Acceptance Criteria**:
+- [ ] agent-selection-pattern.md updated to v2.0
+- [ ] selection-intelligence-guide.md created
+- [ ] All tool modalities have documented selection rules
+- [ ] Research tool routing decision tree complete
+- [ ] Browser automation selection documented
+
+---
+
+#### PR-9.2: Research Tool Routing (Specialized)
+
+**Goal**: Optimize research task routing across 5 overlapping tools.
+
+**Decision Flowchart**:
+```
+Research Task Received
+├── Quick fact check → perplexity_search or WebSearch
+├── Current events → brave_web_search
+├── Q&A with citations → perplexity_ask
+├── Academic papers → arxiv_search + download
+├── Reference article → wikipedia_search
+├── Multi-source synthesis → perplexity_research
+└── Comprehensive (16+ sources) → gptresearcher_deep_research
+```
+
+**Latency/Depth/Cost Matrix**:
+
+| Tool | Latency | Depth | API Cost | Token Cost |
+|------|---------|-------|----------|------------|
+| `perplexity_search` | Fast | Shallow | Low | ~3K |
+| `brave_web_search` | Fast | Shallow | Low | ~3K |
+| `perplexity_ask` | Fast | Medium | Medium | ~3K |
+| `perplexity_research` | Medium | Deep | Medium | ~3K |
+| `gptresearcher_deep_research` | Slow | Very Deep | High | ~5K |
+| `arxiv_search` | Medium | Deep | Free | ~2K |
+| `wikipedia_search` | Fast | Medium | Free | ~2K |
+
+**Deliverables**:
+- [ ] Research decision flowchart in mcp-design-patterns.md
+- [ ] Latency/depth/cost documentation
+- [ ] 3 research validation scenarios tested
+
+---
+
+#### PR-9.3: Deselection Intelligence (Enhancement)
+
+**Status**: Core functionality **COMPLETE** via PR-8.3.1 (zero-action automation)
+
+**Completed Infrastructure**:
+- ✅ `disable-mcps.sh` / `enable-mcps.sh` / `list-mcp-status.sh`
+- ✅ `/context-checkpoint` with MCP evaluation
+- ✅ Auto-clear watcher + SessionStart hook integration
+- ✅ `suggest-mcps.sh` keyword-to-MCP mapping (v1.8.4)
 
 **Remaining Enhancements**:
-- [ ] Smarter MCP recommendation based on keyword analysis
-- [ ] Integration with TodoWrite for better next-step inference
-- [ ] Pre-session MCP selection based on planned work type
+- [ ] **Smarter keyword analysis** — Expand suggest-mcps.sh rules
+- [ ] **TodoWrite integration** — Infer MCPs from todo list
+- [ ] **Usage-based recommendation** — Track actual MCP tool usage per session
+- [ ] **Pre-session questionnaire** — "What MCPs do you need today?"
 
-**Commands**: ✅ All exist
-- `/context-budget` — Display context usage
-- `/context-checkpoint` — Full automated checkpoint workflow
-- `/trigger-clear` — Signal watcher to send /clear
+---
 
-**Scripts**: ✅ All exist
-- `.claude/scripts/disable-mcps.sh`
-- `.claude/scripts/enable-mcps.sh`
-- `.claude/scripts/list-mcp-status.sh`
-- `.claude/scripts/auto-clear-watcher.sh`
-- `.claude/scripts/launch-watcher.sh`
+#### PR-9.4: Selection Validation (Quality Assurance)
 
-Validation:
-- Evaluate selection behavior using at least:
-  - one repo exploration task
-  - one web automation task
-  - one documentation conversion task
-- **Required**: Demonstrate full workflow reducing context by 20%+
+**Goal**: Create measurable validation for selection intelligence.
+
+**10 Acceptance Test Cases**:
+
+| Test ID | Input | Expected Selection | Rationale |
+|---------|-------|-------------------|-----------|
+| SEL-01 | "Find package.json files" | `Glob` | Not Explore |
+| SEL-02 | "What files handle auth?" | `Explore` subagent | Context isolation |
+| SEL-03 | "Create a Word document" | `docx` skill | Skill over manual |
+| SEL-04 | "Research Docker networking" | `deep-research` agent | Custom agent |
+| SEL-05 | "Quick fact: capital of France" | `WebSearch` | Built-in first |
+| SEL-06 | "Comprehensive analysis of X" | `gptresearcher_deep_research` | Full research |
+| SEL-07 | "Navigate to example.com" | `Playwright MCP` | Browser automation |
+| SEL-08 | "Fill out the login form" | `browser-automation` | NL browser task |
+| SEL-09 | "Push changes to GitHub" | `engineering-workflow-skills` | Skill over bash |
+| SEL-10 | "Review this PR thoroughly" | `pr-review-toolkit` | Comprehensive |
+
+**Deliverables**:
+- [ ] `/validate-selection` skill
+- [ ] 10 documented test cases
+- [ ] Selection audit logging
+
+**Acceptance Criteria**:
+- [ ] 80%+ accuracy on test cases
+- [ ] Selection audit logging implemented
+
+---
+
+#### PR-9.5: Documentation Consolidation
+
+**Documents to Update**:
+- [ ] `capability-matrix.md` v1.5 — Add PR-9 selection framework
+- [ ] `overlap-analysis.md` v1.2 — Add research tool overlaps
+- [ ] `agent-selection-pattern.md` v2.0 — Full rewrite
+- [ ] `mcp-loading-strategy.md` v2.2 — Add selection integration
+- [ ] Context index updates
+
+---
+
+#### PR-9 Version Plan
+
+| Milestone | Version | Deliverables |
+|-----------|---------|--------------|
+| PR-9.0 Complete | 1.9.0 | Component extraction workflow |
+| PR-9.1 Complete | 1.9.1 | Selection theory & framework |
+| PR-9.2 Complete | 1.9.2 | Research tool routing |
+| PR-9.3 Complete | 1.9.3 | Deselection enhancements |
+| PR-9.4 Complete | 1.9.4 | Selection validation |
+| PR-9.5 Complete | 1.9.5 | Documentation consolidation |
+
+---
+
+#### PR-9 Validation Summary
+
+- [ ] Component extraction: 1 plugin fully decomposed
+- [ ] Selection framework: All modalities documented
+- [ ] Research routing: 3 scenarios tested
+- [ ] Deselection: 20%+ context reduction demonstrated
+- [ ] Validation: 80%+ test case accuracy
 
 ---
 

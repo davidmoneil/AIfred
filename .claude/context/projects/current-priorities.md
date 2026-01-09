@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-08
+**Last Updated**: 2026-01-09
 
 ---
 
@@ -130,10 +130,20 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] **Playwright VALIDATED** ✅ — navigate, snapshot, click, close all working
 - [x] **GPTresearcher VALIDATED** ✅ — quick_search, deep_research, get_sources all working
 
-### PR-9: Selection Intelligence (Approach Revised)
-- [ ] PR-9.0: Plugin decomposition investigation
-- [ ] PR-9.1: Selection framework
-- [ ] PR-9.2: Deselection intelligence — **SIMPLIFIED** (uses disabledMcpServers mechanism from PR-8.3)
+### PR-9: Selection Intelligence (Research-Backed — Revised 2026-01-09)
+- [x] PR-9.1: `tool-selection-intelligence.md` v0.7 — Orchestration-first paradigm complete ✅
+  - Orchestration Principle, Delegation Decision Framework, Context Value Matrix
+  - 3-tier Orchestration Tiers (Self-Execute → Custom Agents → Agent Teams)
+  - Multi-Agent Team Patterns (Sequential, Feedback Loop, Parallel, Specialist)
+  - Progressive Disclosure Architecture for all 9 modalities
+  - Universal Three-Tier Framework (Metadata/Core/Links)
+- [ ] PR-9.0: Component extraction workflow (plugin → granular components)
+- [ ] PR-9.2: Research tool routing
+- [ ] PR-9.3: Deselection enhancements
+- [ ] PR-9.4: Selection validation (10 test cases, 80%+ accuracy)
+- [ ] PR-9.5: Documentation consolidation
+
+**Research Foundation**: Anthropic Agent Skills + LangChain Deep Agents
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns

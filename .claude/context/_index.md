@@ -72,7 +72,8 @@ patterns/
 ├── plugin-decomposition-pattern.md    # Extract skills from plugins (PR-8)
 ├── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
 ├── mcp-validation-harness.md          # 5-phase MCP validation (PR-8.4)
-└── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
+├── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
+└── tool-selection-intelligence.md     # Research-backed tool modality selection (PR-9) ← NEW
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -84,12 +85,13 @@ patterns/
 - ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
 - ✅ **Workspace Path Policy**: Where projects and documentation live
 - ✅ **MCP Loading Strategy**: 3-tier loading (Always-On, Task-Scoped, On-Demand) (PR-8.5)
-- ✅ **MCP Design Patterns**: Per-MCP best practices based on validation (PR-8.5) ← NEW
+- ✅ **MCP Design Patterns**: Per-MCP best practices based on validation (PR-8.5)
 - ✅ **Context Budget Management**: MCP loading tiers, plugin pruning, token budgets (PR-8)
 - ✅ **Plugin Decomposition**: Extract/customize skills from bundled plugins (PR-8)
 - ✅ **Automated Context Management**: Smart checkpoint with MCP optimization (PR-8.4)
 - ✅ **MCP Validation Harness**: 5-phase validation for new MCPs (PR-8.4)
 - ✅ **Batch MCP Validation**: Test MCPs in groups within token limits (PR-8.5)
+- ✅ **Tool Selection Intelligence**: Research-backed precedence theory (PR-9) ← NEW
 
 ### Templates (Repeatable Workflow Templates)
 ```
