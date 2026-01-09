@@ -11,6 +11,180 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.3] - 2026-01-09
+
+**PR-9.2 & PR-9.3: Research Tool Routing + Deselection Intelligence**
+
+### Added
+
+#### PR-9.2: Research Tool Routing (Context-Lifecycle Aware)
+- **Research decision flowchart** in `mcp-design-patterns.md` with 7 decision branches
+- **Context-Aware Research Selection** table with token impact ratings
+- **Agent delegation patterns** with context headroom checks (50%/70% thresholds)
+- **Research tool contingencies** — 4 documented recovery scenarios
+- **Research MCP Loading Protocol** — session start/mid-session/cleanup
+- **Context Lifecycle Tracking** section:
+  - Agent context compression triggers
+  - JICM metrics and monitoring commands
+  - Session restart contingencies
+  - Context lifecycle log analysis command
+
+#### PR-9.3: Deselection Intelligence Enhancements
+- **Expanded keyword mappings** — 35 → 65+ keywords in `suggest-mcps.sh`
+- **Task-specific patterns** — "implement", "feature", "deploy", "bug", "fix"
+- **Research tool routing keywords** — Aligned with PR-9.2 decision tree
+- **MCP usage tracking** — `context-accumulator.js` logs MCP tool calls to `mcp-usage.json`
+- **`--usage` mode** — `suggest-mcps.sh --usage` shows:
+  - MCPs used this session with call counts
+  - Last used timestamps
+  - Unused MCPs as disable candidates
+
+### Changed
+
+- **`mcp-design-patterns.md`** — v1.1 → v1.2 with PR-9.2 additions
+- **`context-accumulator.js`** — Added `trackMcpUsage()` function for PR-9.3
+- **`CLAUDE.md`** — Version 1.9.1 → 1.9.3
+
+### Files Modified
+
+- `.claude/context/patterns/mcp-design-patterns.md` (Research Tool Routing + Context Lifecycle)
+- `.claude/scripts/suggest-mcps.sh` (65+ keywords, --usage mode)
+- `.claude/hooks/context-accumulator.js` (MCP usage tracking)
+
+---
+
+## [1.9.1] - 2026-01-09
+
+**PR-9.1: Selection Intelligence Framework Complete**
+
+### Added
+
+#### Selection Framework Documentation
+- **`selection-intelligence-guide.md`** — Lean quick reference (~2K tokens) with:
+  - Quick Selection Matrix (task → first choice)
+  - Research Tool Routing flowchart
+  - Agent Selection decision tree
+  - MCP Loading Tiers reference
+  - Conflict Resolution table
+  - Fallback Chains
+
+### Changed
+
+#### Documents Updated
+- **`agent-selection-pattern.md`** — Updated to v2.0:
+  - Decision flowchart with all tool modalities
+  - MCP-Agent pairing table
+  - Research agent routing
+  - Plugin agents reference (feature-dev, hookify, pr-review-toolkit)
+- **`CLAUDE.md`** — Quick Selection section enhanced:
+  - Added Decision Shortcuts table
+  - Referenced new selection-intelligence-guide.md
+
+### Fixed
+
+#### Critical: JS Hooks Not Executing
+- **5 JS hooks** were silently failing due to missing stdin/stdout handling
+- Hooks used `module.exports = {handler}` but Claude Code requires stdin/stdout JSON
+- **Fix**: Added `if (require.main === module)` wrapper to all JS hooks
+- **Affected hooks**:
+  - `context-accumulator.js` (JICM)
+  - `orchestration-detector.js`
+  - `cross-project-commit-tracker.js`
+  - `subagent-stop.js`
+  - `self-correction-capture.js`
+- **Result**: JICM now functional, context tracking active
+
+### Validated
+
+#### PR-9.0.1 Skill Validation
+- All 6 extracted skills tested: docx, xlsx, pdf, pptx, mcp-builder, skill-creator
+- Skills load correctly via `/skill-name` invocation
+- YAML frontmatter properly formatted
+- Independent of original plugin
+
+---
+
+## [1.9.0] - 2026-01-09
+
+**PR-9 / AIfred Sync: Major Infrastructure Expansion** — Orchestration, Agents, JICM
+
+### Added
+
+#### New Agents (3)
+- **`code-analyzer`** — Pre-implementation codebase analysis
+- **`code-implementer`** — Code writing with full git workflow
+- **`code-tester`** — Testing + Playwright automation
+
+#### Orchestration Framework (6 files)
+- **`.claude/orchestration/`** — Task decomposition system
+- **`/orchestration:plan`** — Decompose complex tasks into phases
+- **`/orchestration:status`** — Show progress tree
+- **`/orchestration:resume`** — Cross-session continuity
+- **`/orchestration:commit`** — Link commits to tasks
+
+#### JICM — Jarvis Intelligent Context Management
+- **`context-accumulator.js`** — PostToolUse hook tracks context consumption
+- **`subagent-stop.js`** (enhanced) — Post-agent checkpoint trigger at 75%
+- **`session-start.js`** (enhanced) — JICM state reset on /clear
+- **`/smart-compact`** — Manual context checkpoint trigger
+- Thresholds: 50% warning, 75% auto-trigger
+- Loop prevention via state flags and excluded paths
+
+#### Cross-Project Commit Tracking
+- **`cross-project-commit-tracker.js`** — PostToolUse hook for multi-repo tracking
+- **`/commits:status`** — View commits per project
+- **`/commits:summary`** — Generate session summary
+- Tracking stored in `.claude/logs/cross-project-commits.json`
+
+#### Orchestration Detection
+- **`orchestration-detector.js`** — UserPromptSubmit complexity scoring
+- Tiered response: Score <4 skip, 4-8 suggest, ≥9 auto-invoke
+- MCP tier detection (Tier 3 warnings for browser tasks)
+- Skill routing (suggests relevant skills based on prompt)
+
+#### Agent Launcher
+- **`/agent`** command — Launch agents with model selection
+- Model flags: `--sonnet` (default), `--opus`, `--haiku`
+- Dual memory: learnings.json + Memory MCP integration
+- Example: `/agent --opus deep-research "topic"`
+
+#### Documentation
+- **`lessons/corrections.md`** — Self-improvement documentation structure
+- **`worktree-shell-functions.md`** — Git worktree user shell functions (Project_Aion adapted)
+- **`hook-consolidation-assessment.md`** — Shell vs JS hook analysis
+- **`cross-project-commit-tracking.md`** — Pattern documentation
+- **`sync-report-2026-01-09.md`** — Full AIfred sync report
+- **`adhoc-assessment-2026-01-09.md`** — Key discoveries and implications
+
+### Changed
+
+#### Commands Updated
+- **`/end-session`** — Added Step 0 (context prep) and Step 9 (multi-repo push)
+- **`/sync-aifred-baseline`** — Mandatory dual-report generation (formal + ad-hoc)
+
+#### Hooks Registered (settings.json)
+- UserPromptSubmit: `orchestration-detector.js`, `self-correction-capture.js`
+- PostToolUse: `context-accumulator.js`, `cross-project-commit-tracker.js`
+- SubagentStop: `subagent-stop.js`
+
+#### paths-registry.yaml
+- AIfred baseline updated: af66364 → 2ea4e8b
+- Last sync: 2026-01-09
+
+### Key Discoveries
+- PreCompact cannot prevent autocompact (notification-only event)
+- Memory systems are NOT redundant (Memory MCP, learnings.json, corrections.md)
+- Git worktrees support branching from branches (not just main)
+- Jarvis hooks more advanced than AIfred in several areas
+
+### Statistics
+- **ADOPT**: 14 items from AIfred baseline
+- **ADAPT**: 7 items with Jarvis customization
+- **Total agents**: 4 → 7
+- **Total hooks registered**: 4 → 9
+
+---
+
 ## [1.8.5] - 2026-01-09
 
 **PR-9.0: Plugin Decomposition** — Extract and refactor plugin skills for on-demand loading

@@ -29,41 +29,82 @@ NC='\033[0m'
 
 # MCP keyword mappings (keyword -> MCP name)
 # Format: "keyword:mcp1,mcp2"
+# PR-9.3 Enhancement: Expanded keyword analysis with research tool routing
 declare -a MCP_KEYWORDS=(
+    # GitHub operations
     "PR:github"
     "pull request:github"
     "issue:github"
     "github:github"
+    "merge:github"
+    "review:github"
+    "branch:github"
+    # Documentation/Reference
     "documentation:context7,wikipedia"
     "library:context7"
     "docs:context7,wikipedia"
-    "research:brave-search,perplexity,gptresearcher"
+    "reference:wikipedia"
+    "encyclopedia:wikipedia"
+    "definition:wikipedia"
+    "wikipedia:wikipedia"
+    "api docs:context7"
+    "sdk:context7"
+    "framework:context7"
+    # Research - Tiered by depth (PR-9.2 research tool routing)
+    "quick fact:perplexity"
+    "current event:brave-search"
+    "news:brave-search"
     "search:brave-search,perplexity"
+    "research:perplexity,gptresearcher"
+    "deep research:gptresearcher"
+    "comprehensive:gptresearcher"
+    "multi-source:perplexity"
+    "synthesis:perplexity,gptresearcher"
+    "citations:perplexity"
+    "perplexity:perplexity"
+    # Academic
     "paper:arxiv"
     "academic:arxiv"
     "arxiv:arxiv"
+    "journal:arxiv"
+    "study:arxiv,perplexity"
+    # Architecture/Design
     "architecture:sequential-thinking"
     "design:sequential-thinking"
     "complex:sequential-thinking"
+    "tradeoff:sequential-thinking"
+    "decision:sequential-thinking"
+    "evaluate:sequential-thinking"
+    # Browser automation
     "browser:playwright"
-    "test:playwright"
+    "webapp:playwright"
     "QA:playwright"
-    "automation:playwright"
+    "e2e:playwright"
+    "scrape:playwright"
+    "form:playwright"
+    # Vector/Semantic
     "vector:chroma"
     "semantic:chroma"
     "embedding:chroma"
+    "similarity:chroma"
+    "RAG:chroma"
+    # Time/Scheduling
     "time:datetime"
     "timezone:datetime"
     "schedule:datetime"
-    "file:desktop-commander"
+    "date:datetime"
+    # System operations
     "process:desktop-commander"
     "system:desktop-commander"
-    "wikipedia:wikipedia"
-    "reference:wikipedia"
-    "deep research:gptresearcher"
-    "comprehensive:gptresearcher"
-    "perplexity:perplexity"
-    "citations:perplexity"
+    "long-running:desktop-commander"
+    "background:desktop-commander"
+    # Task-specific patterns (PR-9.3 TodoWrite integration)
+    "implement:context7"
+    "feature:context7,github"
+    "bug:github"
+    "fix:github"
+    "deploy:desktop-commander"
+    "test:playwright"
 )
 
 # Tier 1 MCPs (always on, don't suggest)
@@ -72,9 +113,13 @@ TIER1_MCPS="memory filesystem fetch git"
 # Tier 3 MCPs (warn, not auto-suggest)
 TIER3_MCPS="playwright lotus-wisdom"
 
+# MCP usage file (PR-9.3)
+MCP_USAGE_FILE="$PROJECT_PATH/.claude/logs/mcp-usage.json"
+
 # Parse arguments
 JSON_MODE=false
 CAPTURE_MODE=false
+USAGE_MODE=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -90,6 +135,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --capture)
             CAPTURE_MODE=true
+            shift
+            ;;
+        --usage)
+            USAGE_MODE=true
             shift
             ;;
         *)
@@ -150,6 +199,49 @@ suggest_mcps_for_text() {
 is_tier3() {
     echo "$TIER3_MCPS" | grep -q "$1"
 }
+
+# ============== USAGE MODE ==============
+# PR-9.3: Show MCP usage statistics from current session
+if $USAGE_MODE; then
+    if [[ -f "$MCP_USAGE_FILE" ]]; then
+        if $JSON_MODE; then
+            cat "$MCP_USAGE_FILE"
+        else
+            echo ""
+            echo "════════════════════════════════════════════════════════════"
+            echo "                MCP Usage Statistics (PR-9.3)"
+            echo "════════════════════════════════════════════════════════════"
+            echo ""
+            echo -e "${CYAN}Session Start:${NC} $(jq -r '.sessionStart' "$MCP_USAGE_FILE" 2>/dev/null)"
+            echo ""
+            echo -e "${GREEN}MCPs Used This Session:${NC}"
+            jq -r '.mcpCalls | to_entries | sort_by(-.value.count) | .[] | "  \(.key): \(.value.count) calls (last: \(.value.lastUsed | split("T")[1] | split(".")[0]))"' "$MCP_USAGE_FILE" 2>/dev/null
+            echo ""
+            echo -e "${YELLOW}Unused MCPs (candidates for disable):${NC}"
+            # Compare enabled MCPs against used MCPs
+            enabled=$(get_enabled_mcps)
+            used=$(jq -r '.mcpCalls | keys[]' "$MCP_USAGE_FILE" 2>/dev/null)
+            for mcp in $enabled; do
+                if ! echo "$TIER1_MCPS" | grep -q "$mcp"; then
+                    if ! echo "$used" | grep -q "^${mcp}$"; then
+                        echo "  - $mcp (enabled but not used)"
+                    fi
+                fi
+            done
+            echo ""
+            echo "════════════════════════════════════════════════════════════"
+            echo ""
+        fi
+    else
+        if $JSON_MODE; then
+            echo '{"message": "No usage data available"}'
+        else
+            echo -e "${YELLOW}No MCP usage data available for this session.${NC}"
+            echo "Usage tracking starts after first MCP tool call."
+        fi
+    fi
+    exit 0
+fi
 
 # ============== CAPTURE MODE ==============
 if $CAPTURE_MODE; then

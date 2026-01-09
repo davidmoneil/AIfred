@@ -104,41 +104,64 @@ function formatSuggestion(correction) {
   return lines.join('\n');
 }
 
+/**
+ * Handler function (can be called via require or stdin)
+ */
+async function handler(context) {
+  const { user_prompt } = context;
+
+  if (!user_prompt) {
+    return { proceed: true };
+  }
+
+  const detection = detectCorrection(user_prompt);
+
+  if (detection.detected) {
+    const correction = {
+      timestamp: new Date().toISOString(),
+      severity: detection.severity,
+      pattern: detection.pattern,
+      context: extractContext(user_prompt),
+      captured: false
+    };
+
+    // Log to file
+    await logCorrection(correction);
+
+    // Show suggestion for HIGH/MEDIUM severity (stderr to not interfere with JSON)
+    if (detection.severity === 'HIGH' || detection.severity === 'MEDIUM') {
+      console.error(formatSuggestion(correction));
+    }
+  }
+
+  return { proceed: true };
+}
+
+// Export for require() usage
 module.exports = {
   name: 'self-correction-capture',
   description: 'Detect user corrections and capture as lessons',
   event: 'UserPromptSubmit',
-
-  async handler(context) {
-    const { user_prompt } = context;
-
-    if (!user_prompt) {
-      return { proceed: true };
-    }
-
-    const detection = detectCorrection(user_prompt);
-
-    if (detection.detected) {
-      const correction = {
-        timestamp: new Date().toISOString(),
-        severity: detection.severity,
-        pattern: detection.pattern,
-        context: extractContext(user_prompt),
-        captured: false
-      };
-
-      // Log to file
-      await logCorrection(correction);
-
-      // Show suggestion for HIGH/MEDIUM severity
-      if (detection.severity === 'HIGH' || detection.severity === 'MEDIUM') {
-        console.log(formatSuggestion(correction));
-      }
-    }
-
-    return { proceed: true };
-  }
+  handler,
+  detectCorrection  // Export for testing
 };
 
-// Export for testing
-module.exports.detectCorrection = detectCorrection;
+// ============================================================
+// STDIN/STDOUT HANDLER - Required for Claude Code hooks
+// ============================================================
+if (require.main === module) {
+  let inputData = '';
+
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => { inputData += chunk; });
+  process.stdin.on('end', async () => {
+    try {
+      const context = JSON.parse(inputData || '{}');
+      const result = await handler(context);
+      console.log(JSON.stringify(result));
+    } catch (err) {
+      console.error(`[self-correction-capture] Parse error: ${err.message}`);
+      console.log(JSON.stringify({ proceed: true }));
+    }
+  });
+}

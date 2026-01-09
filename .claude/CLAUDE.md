@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.8.5 | **Baseline**: AIfred commit `af66364`
+**Version**: 1.9.3 | **Baseline**: AIfred commit `2ea4e8b`
 
 Master Archon for infrastructure, development, and self-improvement. AIfred baseline is **read-only**.
 
@@ -48,11 +48,24 @@ Master Archon for infrastructure, development, and self-improvement. AIfred base
 
 ## Quick Selection
 
-**Tool Selection**: @.claude/context/integrations/capability-matrix.md
-**Agent/Skill Choice**: @.claude/context/patterns/agent-selection-pattern.md
+**Quick Guide**: @.claude/context/patterns/selection-intelligence-guide.md
+**Tool Matrix**: @.claude/context/integrations/capability-matrix.md
+**Agent Selection**: @.claude/context/patterns/agent-selection-pattern.md
 **MCP Loading**: @.claude/context/patterns/context-budget-management.md
 
-### Agents
+### Decision Shortcuts
+
+| Task | First Choice |
+|------|--------------|
+| Find files | Glob, Explore subagent |
+| Understand code | Explore subagent |
+| Plan feature | Plan subagent |
+| Quick fact | WebSearch |
+| Deep research | `/agent deep-research` |
+| Create docs | docx/xlsx/pdf skills |
+| Browser tasks | browser-automation plugin |
+
+### Custom Agents
 
 | Agent | Purpose |
 |-------|---------|
@@ -110,4 +123,4 @@ For full documentation on any topic:
 
 ---
 
-*Jarvis v1.8.5 — Updated 2026-01-09*
+*Jarvis v1.9.3 — Updated 2026-01-09*

@@ -1,5 +1,5 @@
 /**
- * Session Start Hook (with Soft Restart Support)
+ * Session Start Hook (with Soft Restart + JICM Support)
  *
  * Auto-loads context when Claude Code starts:
  * - Current git branch and uncommitted changes count
@@ -14,6 +14,11 @@
  * - Clears checkpoint file after loading
  * - Handles both /clear (source="clear") and new session (source="startup")
  *
+ * JICM Support (PR-9):
+ * - Resets context-estimate.json to baseline after /clear
+ * - Clears .compaction-in-progress flag
+ * - Enables clean context tracking for new session segment
+ *
  * SessionStart Sources:
  * - "startup" - Fresh session start
  * - "resume" - From --resume, --continue, or /resume
@@ -25,6 +30,7 @@
  * Updated: 2026-01-07 (PR-8.3 - Dynamic Loading Protocol)
  * Updated: 2026-01-07 (PR-8.4 - Soft Restart/Checkpoint Support)
  * Updated: 2026-01-07 (Enhanced source detection for /clear)
+ * Updated: 2026-01-09 (JICM - context estimate reset)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
  */
 
@@ -38,6 +44,10 @@ const SESSION_STATE_PATH = path.join(WORKSPACE_ROOT, '.claude/context/session-st
 const PRIORITIES_PATH = path.join(WORKSPACE_ROOT, '.claude/context/projects/current-priorities.md');
 const AIFRED_BASELINE = '/Users/aircannon/Claude/AIfred';
 const CHECKPOINT_PATH = path.join(WORKSPACE_ROOT, '.claude/context/.soft-restart-checkpoint.md');
+
+// JICM paths
+const CONTEXT_ESTIMATE_PATH = path.join(WORKSPACE_ROOT, '.claude/logs/context-estimate.json');
+const COMPACTION_FLAG_PATH = path.join(WORKSPACE_ROOT, '.claude/context/.compaction-in-progress');
 
 const SESSION_STATE_MAX_CHARS = 2000;
 const PRIORITIES_MAX_CHARS = 1500;
@@ -260,6 +270,37 @@ async function clearCheckpoint() {
 }
 
 /**
+ * JICM: Reset context estimate to baseline after /clear or startup
+ */
+async function resetJicmState() {
+  try {
+    // Reset context estimate to baseline (Tier 1 MCPs ~30K)
+    const baseline = {
+      sessionStart: new Date().toISOString(),
+      totalTokens: 30000,
+      toolCalls: 0,
+      lastUpdate: new Date().toISOString(),
+      resetReason: 'SessionStart'
+    };
+
+    const logDir = path.dirname(CONTEXT_ESTIMATE_PATH);
+    await fs.mkdir(logDir, { recursive: true });
+    await fs.writeFile(CONTEXT_ESTIMATE_PATH, JSON.stringify(baseline, null, 2));
+
+    // Clear compaction-in-progress flag
+    try {
+      await fs.unlink(COMPACTION_FLAG_PATH);
+    } catch {
+      // Flag doesn't exist - that's fine
+    }
+
+  } catch (err) {
+    // Silent failure
+    console.error(`[session-start] JICM reset error: ${err.message}`);
+  }
+}
+
+/**
  * Format checkpoint resume message
  */
 function formatCheckpointMessage(checkpointContent, gitInfo, source) {
@@ -368,6 +409,9 @@ module.exports = {
       // Detect session source (startup, resume, clear, compact)
       const source = context?.source || 'unknown';
       const gitInfo = getGitInfo();
+
+      // JICM: Reset context estimate on every session start/clear
+      await resetJicmState();
 
       // Check for soft-restart checkpoint first (PR-8.4)
       // Works for both /clear (source="clear") and new sessions (source="startup")

@@ -516,27 +516,28 @@ INTEGRATION LAYER (WHAT can be done)
 
 **Deliverables**:
 - [x] `tool-selection-intelligence.md` — Foundation pattern ✅ Created 2026-01-09
-- [ ] `agent-selection-pattern.md` v2.0 — Full rewrite with:
-  - All 17 MCPs with selection rules
+- [x] `agent-selection-pattern.md` v2.0 — Full rewrite ✅ 2026-01-09:
+  - All tool modalities with selection rules
   - 3-tier MCP loading integration
   - Research tool routing (Perplexity vs GPTresearcher)
   - Browser automation routing
-- [ ] Unified `selection-intelligence-guide.md`:
+  - MCP-Agent pairing table
+- [x] Unified `selection-intelligence-guide.md` ✅ Created 2026-01-09:
   1. Quick Selection Matrix
   2. MCP Selection by Work Type
-  3. Research Tool Routing
+  3. Research Tool Routing flowchart
   4. Agent vs Subagent Decision
   5. Skill Selection
   6. Conflict Resolution
   7. Fallback Chains
-- [ ] Updated CLAUDE.md Quick Selection section
+- [x] Updated CLAUDE.md Quick Selection section ✅ 2026-01-09
 
 **Acceptance Criteria**:
-- [ ] agent-selection-pattern.md updated to v2.0
-- [ ] selection-intelligence-guide.md created
-- [ ] All tool modalities have documented selection rules
-- [ ] Research tool routing decision tree complete
-- [ ] Browser automation selection documented
+- [x] agent-selection-pattern.md updated to v2.0 ✅
+- [x] selection-intelligence-guide.md created ✅
+- [x] All tool modalities have documented selection rules ✅
+- [x] Research tool routing decision tree complete ✅
+- [x] Browser automation selection documented ✅
 
 ---
 
@@ -569,15 +570,17 @@ Research Task Received
 | `wikipedia_search` | Fast | Medium | Free | ~2K |
 
 **Deliverables**:
-- [ ] Research decision flowchart in mcp-design-patterns.md
-- [ ] Latency/depth/cost documentation
-- [ ] 3 research validation scenarios tested
+- [x] Research decision flowchart in mcp-design-patterns.md ✅ 2026-01-09
+- [x] Latency/depth/cost documentation ✅ Context-Aware Research Selection table
+- [x] Context lifecycle integration with agents and compression ✅
+- [x] 7 research validation scenarios documented ✅
+- [x] Agent delegation patterns with context headroom checks ✅
 
 ---
 
 #### PR-9.3: Deselection Intelligence (Enhancement)
 
-**Status**: Core functionality **COMPLETE** via PR-8.3.1 (zero-action automation)
+**Status**: **COMPLETE** ✅ 2026-01-09
 
 **Completed Infrastructure**:
 - ✅ `disable-mcps.sh` / `enable-mcps.sh` / `list-mcp-status.sh`
@@ -585,11 +588,16 @@ Research Task Received
 - ✅ Auto-clear watcher + SessionStart hook integration
 - ✅ `suggest-mcps.sh` keyword-to-MCP mapping (v1.8.4)
 
-**Remaining Enhancements**:
-- [ ] **Smarter keyword analysis** — Expand suggest-mcps.sh rules
-- [ ] **TodoWrite integration** — Infer MCPs from todo list
-- [ ] **Usage-based recommendation** — Track actual MCP tool usage per session
-- [ ] **Pre-session questionnaire** — "What MCPs do you need today?"
+**PR-9.3 Enhancements Completed**:
+- [x] **Smarter keyword analysis** — Expanded from 35 to 65+ keyword mappings ✅
+- [x] **Task-specific patterns** — Keywords like "implement", "feature", "deploy" ✅
+- [x] **Usage-based recommendation** — `context-accumulator.js` tracks MCP tool usage ✅
+- [x] **`--usage` mode** — `suggest-mcps.sh --usage` shows usage stats ✅
+- [x] **Unused MCP detection** — Shows enabled but unused MCPs as disable candidates ✅
+
+**Deferred (Low Priority)**:
+- [ ] TodoWrite integration — Infer MCPs from todo list (complex, limited value)
+- [ ] Pre-session questionnaire — "What MCPs do you need today?" (optional UX)
 
 ---
 
@@ -1074,7 +1082,7 @@ Acceptance:
 | PR-7 | Skills Inventory | 1.7.0 | ✅ Complete |
 | PR-8 | MCP Expansion + Context Budget | 1.8.2 | ✅ Complete |
 | PR-8.5 | MCP Expansion — Batch Install | **1.8.3** | ✅ Complete (10 MCPs validated) |
-| PR-9 | Selection Intelligence | 1.9.0 | 🔄 PR-9.0, PR-9.1 pending |
+| PR-9 | Selection Intelligence | 1.9.3 | 🔄 PR-9.0-9.3 ✅, PR-9.4-9.5 pending |
 | PR-10 | Setup Upgrade | **2.0.0** | ⏳ Pending |
 
 Deliverables:
