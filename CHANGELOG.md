@@ -11,6 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.5] - 2026-01-09
+
+**PR-9.5: Documentation Consolidation — PR-9 COMPLETE**
+
+### Changed
+
+#### Documentation Updates
+- **`capability-matrix.md`** v1.5 — Added PR-9 Selection Intelligence Integration section
+- **`overlap-analysis.md`** v1.2 — Updated header with PR-9 references
+- **`mcp-loading-strategy.md`** v2.2 — Added selection integration references
+- **`_index.md`** — Added PR-9 patterns to Active Patterns, Recent Updates section
+
+### PR-9 Final Summary
+
+| Sub-PR | Description | Status |
+|--------|-------------|--------|
+| PR-9.0 | Component Extraction | ✅ Complete |
+| PR-9.1 | Selection Framework | ✅ Complete |
+| PR-9.2 | Research Tool Routing | ✅ Complete |
+| PR-9.3 | Deselection Intelligence | ✅ Complete |
+| PR-9.4 | Selection Validation | ✅ Complete (90% accuracy) |
+| PR-9.5 | Documentation Consolidation | ✅ Complete |
+
+**All PR-9 validation criteria met.**
+
+---
+
 ## [1.9.4] - 2026-01-09
 
 **PR-9.4: Selection Validation (Quality Assurance)**

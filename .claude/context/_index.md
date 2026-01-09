@@ -73,7 +73,9 @@ patterns/
 ├── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
 ├── mcp-validation-harness.md          # 5-phase MCP validation (PR-8.4)
 ├── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
-└── tool-selection-intelligence.md     # Research-backed tool modality selection (PR-9) ← NEW
+├── tool-selection-intelligence.md     # Research-backed tool modality selection (PR-9)
+├── selection-intelligence-guide.md    # Quick selection reference (PR-9.1) ← NEW
+└── selection-validation-tests.md      # 10 selection test cases (PR-9.4) ← NEW
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -91,7 +93,9 @@ patterns/
 - ✅ **Automated Context Management**: Smart checkpoint with MCP optimization (PR-8.4)
 - ✅ **MCP Validation Harness**: 5-phase validation for new MCPs (PR-8.4)
 - ✅ **Batch MCP Validation**: Test MCPs in groups within token limits (PR-8.5)
-- ✅ **Tool Selection Intelligence**: Research-backed precedence theory (PR-9) ← NEW
+- ✅ **Tool Selection Intelligence**: Research-backed precedence theory (PR-9)
+- ✅ **Selection Intelligence Guide**: Quick reference for tool/agent/skill selection (PR-9.1) ← NEW
+- ✅ **Selection Validation Tests**: 10 standardized test cases, 90% accuracy (PR-9.4) ← NEW
 
 ### Templates (Repeatable Workflow Templates)
 ```
@@ -245,6 +249,16 @@ After setup, discovered systems will appear in the `systems/` directory.
 ---
 
 ## Recent Updates
+
+**2026-01-09**: PR-9 Selection Intelligence Complete (v1.9.4)
+- ✅ PR-9.0: Component Extraction — 6 skills extracted from document-skills plugin
+- ✅ PR-9.1: Selection Framework — selection-intelligence-guide.md, agent-selection-pattern v2.0
+- ✅ PR-9.2: Research Tool Routing — Decision flowchart with context-lifecycle awareness
+- ✅ PR-9.3: Deselection Intelligence — suggest-mcps.sh enhanced (65+ keywords), MCP usage tracking
+- ✅ PR-9.4: Selection Validation — 10 test cases, 90% accuracy achieved
+- ✅ PR-9.5: Documentation Consolidation — capability-matrix v1.5, overlap-analysis v1.2
+
+**Critical Fix (2026-01-09)**: JS hooks not executing — added stdin/stdout wrapper to 5 hooks
 
 **2026-01-09**: PR-8.5 MCP Initialization Protocol Implemented
 - ✅ Created `suggest-mcps.sh` — Keyword-to-MCP mapping script

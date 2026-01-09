@@ -1,7 +1,9 @@
 # Core Tooling Capability Matrix
 
 **Created**: 2026-01-06
-**PR Reference**: PR-5 (Core Tooling Baseline)
+**Updated**: 2026-01-09 (PR-9.5)
+**Version**: 1.5
+**PR Reference**: PR-5 (Core Tooling), PR-9 (Selection Intelligence)
 **Status**: Active
 
 ---
@@ -9,6 +11,11 @@
 ## Purpose
 
 This document maps task types to preferred tools, providing clear selection guidance for when to use which mechanism: MCP servers, Claude Code plugins, skills, built-in subagents, or bash commands.
+
+**Related Selection Docs**:
+- @selection-intelligence-guide.md — Quick selection reference
+- @agent-selection-pattern.md — Agent/subagent decision
+- @mcp-design-patterns.md — MCP-specific patterns
 
 ---
 
@@ -401,6 +408,29 @@ Need to accomplish a task?
 
 ---
 
+## PR-9 Selection Intelligence Integration
+
+### Quick Selection Reference
+
+For any task, follow this decision order:
+
+```
+1. Built-in tool? → Use it (Read, Write, Glob, Grep, WebSearch)
+2. Skill exists? → Use skill (docx, xlsx, pdf, pptx)
+3. Context isolation needed? → Use subagent (Explore, Plan)
+4. Domain expertise needed? → Use custom agent (/agent deep-research)
+5. MCP tool required? → Check if MCP enabled, use tool
+```
+
+### Selection Validation
+
+PR-9.4 validated selection intelligence with 10 test cases achieving **90% accuracy**.
+
+**Test Cases**: @selection-validation-tests.md
+**Validation Report**: `.claude/reports/selection-validation-run-2026-01-09.md`
+
+---
+
 ## Overlap Analysis Reference
 
 See @.claude/context/integrations/overlap-analysis.md for detailed conflict resolution.
@@ -409,10 +439,12 @@ See @.claude/context/integrations/overlap-analysis.md for detailed conflict reso
 
 ## Related Documentation
 
+- @.claude/context/patterns/selection-intelligence-guide.md - Quick selection reference (PR-9)
 - @.claude/context/patterns/mcp-loading-strategy.md - MCP loading strategies
 - @.claude/context/patterns/agent-selection-pattern.md - Agent vs subagent selection
+- @.claude/context/patterns/mcp-design-patterns.md - MCP-specific patterns
 - @.claude/context/integrations/overlap-analysis.md - Overlap/conflict resolution
 
 ---
 
-*Core Tooling Baseline - Capability Matrix v1.4 (Revised 2026-01-09 PR-8.5 MCPs)*
+*Core Tooling Baseline - Capability Matrix v1.5 (PR-9.5 Selection Intelligence 2026-01-09)*

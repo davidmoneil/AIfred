@@ -1,7 +1,9 @@
 # Tool Overlap & Conflict Analysis
 
 **Created**: 2026-01-06
-**PR Reference**: PR-5 (Core Tooling Baseline)
+**Updated**: 2026-01-09 (PR-9.5)
+**Version**: 1.2
+**PR Reference**: PR-5 (Core Tooling), PR-8.5 (Research MCPs), PR-9 (Selection Intelligence)
 **Status**: Active
 
 ---
@@ -9,6 +11,10 @@
 ## Purpose
 
 This document identifies overlapping functionality between tools and establishes clear selection rules to prevent conflicts and redundancy.
+
+**Related Selection Docs**:
+- @selection-intelligence-guide.md — Quick selection reference
+- @mcp-design-patterns.md — Research tool routing (PR-9.2)
 
 ---
 

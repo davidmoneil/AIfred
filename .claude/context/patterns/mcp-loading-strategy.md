@@ -1,9 +1,14 @@
 # MCP Loading Strategy Pattern
 
 **Created**: 2026-01-02
-**Updated**: 2026-01-09 (PR-8.5 Revision)
+**Updated**: 2026-01-09 (PR-9.5 Selection Integration)
+**Version**: 2.2
 **Status**: Active
 **Applies To**: Jarvis, all Claude Code projects
+
+**Related Selection Docs**:
+- @selection-intelligence-guide.md — Quick selection reference
+- @mcp-design-patterns.md — MCP-specific patterns and research routing
 
 ---
 
