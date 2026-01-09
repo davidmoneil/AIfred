@@ -6,6 +6,34 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ---
 
+## Recently Completed
+
+### PR-9: Selection Intelligence (v1.9.5)
+**Status**: ✅ Complete (2026-01-09)
+
+- [x] PR-9.0: Component Extraction — 6 skills from document-skills
+- [x] PR-9.1: Selection Framework — selection-intelligence-guide.md
+- [x] PR-9.2: Research Tool Routing — Context-lifecycle aware
+- [x] PR-9.3: Deselection Intelligence — 65+ keywords, MCP tracking
+- [x] PR-9.4: Selection Validation — 90% accuracy (exceeded 80% target)
+- [x] PR-9.5: Documentation Consolidation
+
+**Key Deliverables**: selection-intelligence-guide.md, selection-validation-tests.md, selection-audit.js
+
+---
+
+## Up Next
+
+### PR-10: Setup Upgrade
+**Status**: ⏳ Pending
+
+- [ ] Auto-install plugins/skills by default
+- [ ] MCP Stage 1 auto-install
+- [ ] User-approved optional MCPs
+- [ ] Setup re-validation with pass/fail output
+
+---
+
 ## In Progress
 
 ### PR-5 Extended: Tooling Implementation
