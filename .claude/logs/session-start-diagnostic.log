@@ -107,3 +107,28 @@
 2026-01-09T05:02:47Z | PreCompact | Disabled Tier 2 MCPs
 2026-01-09T05:02:47Z | PreCompact | Signal file created for auto-clear
 2026-01-09T05:04:08Z | SessionStart | source=compact | session=b4094f2e-4128-4cb9-bc51-5c5a52f04d05
+2026-01-09T05:07:22Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-09T05:07:36Z | Stop | Clear already pending, allowing stop
+2026-01-09T05:07:36Z | SessionStart | source=clear | session=c0a41623-3171-4a81-a458-7172cddc98e6
+2026-01-09T05:07:36Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-09T14:08:17Z | SessionStart | source=startup | session=e891ca37-b5c3-4777-8891-164ed173d74c
+2026-01-09T14:08:17Z | SessionStart | Launched watcher
+2026-01-09T14:08:17Z | SessionStart | MCP suggestions: enable=[github, brave-search, perplexity, gptresearcher] disable=[lotus-wisdom]
+2026-01-09T19:28:59Z | PreCompact | Auto-checkpoint triggered
+2026-01-09T19:28:59Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-09T19:28:59Z | PreCompact | Signal file created for auto-clear
+2026-01-09T19:29:53Z | SessionStart | source=compact | session=e891ca37-b5c3-4777-8891-164ed173d74c
+2026-01-09T19:29:56Z | SessionStart | source=clear | session=9e9d522b-82a9-405e-a4b2-ea3da45a9bc9
+2026-01-09T21:47:50Z | SessionEnd | /end-session invoked
+2026-01-09T21:49:52Z | SessionStart | source=startup | session=b02c4d5a-8703-4a79-af74-9804c3781740
+2026-01-09T21:49:52Z | SessionStart | Launched watcher
+2026-01-09T21:49:52Z | SessionStart | MCP suggestions: enable=[github] disable=[lotus-wisdom]
+2026-01-09T23:14:28Z | PreCompact | Auto-checkpoint triggered
+2026-01-09T23:14:28Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-09T23:14:28Z | PreCompact | Signal file created for auto-clear
+2026-01-09T23:15:30Z | SessionStart | source=compact | session=b02c4d5a-8703-4a79-af74-9804c3781740
+2026-01-09T23:45:44Z | PreCompact | Auto-checkpoint triggered
+2026-01-09T23:45:44Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-09T23:45:44Z | PreCompact | Signal file created for auto-clear
+2026-01-09T23:46:43Z | SessionStart | source=compact | session=b02c4d5a-8703-4a79-af74-9804c3781740
+2026-01-10T01:42:44Z | SessionEnd | /end-session invoked

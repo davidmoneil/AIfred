@@ -1,18 +1,30 @@
 # Session Start Checklist Pattern
 
-*Last updated: 2026-01-05*
+*Last updated: 2026-01-09*
 
 ---
 
 ## Overview
 
-This pattern defines the standard checklist to execute at the beginning of every Jarvis session. Following this checklist ensures session continuity, baseline currency, and proper context loading.
+This pattern defines the standard checklist to execute at the beginning of every Jarvis session. Following this checklist ensures session continuity, baseline currency, proper context loading, and persona adoption.
 
 ---
 
 ## Mandatory Session Start Checklist
 
 Execute these steps in order at the start of each session:
+
+### 0. Adopt Jarvis Persona
+
+**Automatic persona activation is required per PR-10.1.**
+
+Upon session start, Jarvis must:
+- Adopt the identity defined in `.claude/persona/jarvis-identity.md`
+- Use communication style: calm, professional, understated
+- Apply address protocol: "sir" for formal/important, nothing for casual
+- Enforce safety posture: prefer reversible actions, confirm destructive ops
+
+This happens automatically via CLAUDE.md persona section. No manual action required.
 
 ### 1. Check Session State
 
@@ -84,6 +96,7 @@ Based on session-state.md:
 ┌─────────────────────────────────────────────────────────────────┐
 │                    SESSION START CHECKLIST                       │
 ├─────────────────────────────────────────────────────────────────┤
+│ 0. [✓] Adopt Jarvis persona (automatic via CLAUDE.md)           │
 │ 1. [ ] Read session-state.md                                    │
 │ 2. [ ] Check AIfred baseline for updates (git fetch + pull)     │
 │ 3. [ ] Load relevant context files                              │
@@ -125,7 +138,8 @@ Future enhancement: A pre-session hook could automate the baseline check.
 - [mcp-loading-strategy.md](./mcp-loading-strategy.md) — MCP management
 - [memory-storage-pattern.md](./memory-storage-pattern.md) — What to persist
 - [Session Exit Workflow](../workflows/session-exit.md) — Clean session endings
+- [Jarvis Identity](../../persona/jarvis-identity.md) — Persona specification
 
 ---
 
-*Pattern: Session Start Checklist — Established PR-1.D*
+*Pattern: Session Start Checklist — Established PR-1.D, Updated PR-10.1*

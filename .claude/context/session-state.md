@@ -8,13 +8,32 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟢 Idle — PR-10.1-10.4 Complete
 
-**Last Completed**: PR-9 Selection Intelligence COMPLETE (v1.9.5) (2026-01-09)
+**Last Completed**: PR-10.4 Organization Cleanup (2026-01-09)
 
 **Current Blocker**: None
 
-**Next Step**: PR-10 Setup Upgrade — Auto-installs + Optional Approvals
+**Next Step**: PR-10.5 Setup Upgrade → PR-10.6 Validation & Release → v2.0.0
+
+### PR-10 Progress (2026-01-09)
+
+**Completed Phases**:
+- ✅ PR-10.1: Persona Implementation — `.claude/persona/jarvis-identity.md`, CLAUDE.md updated
+- ✅ PR-10.2: Reports Reorganization — PR reports moved to `projects/project-aion/reports/`
+- ✅ PR-10.3: Directory Cleanup — `knowledge/` phased out, `commands/` consolidated
+- ✅ PR-10.4: Documentation + Organization Cleanup (extended scope):
+  - Removed OpenCode artifacts (AGENTS.md, opencode.json, .opencode/)
+  - Split CLAUDE-full-reference.md into focused reference docs
+  - Moved reports from .claude/ to docs/reports/
+  - Consolidated OOXML schemas (47 duplicate files removed)
+  - Audited hooks registration (10 active, 16 need PR-10.5 review)
+  - Created /jarvis command menu
+  - Full inventory audit completed
+
+**Remaining Phases**:
+- ⏳ PR-10.5: Setup Upgrade — Register guardrail hooks (JS preferred), auto-install plugins/MCPs
+- ⏳ PR-10.6: Validation & Release — Bump to v2.0.0
 
 ### Session Summary (2026-01-09 — PR-9.4 Selection Validation)
 

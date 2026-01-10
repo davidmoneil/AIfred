@@ -682,20 +682,144 @@ Research Task Received
 
 ---
 
-### PR-10: Setup Upgrade (Auto-installs + Optional Approvals)
-**Goal:** Revisit `/setup` after tools exist to automate more installs safely.
+### PR-10: Jarvis Persona + Project Organization Reform + Setup Upgrade
+
+**Goal:** Codify Jarvis identity, establish clean project organization, then upgrade setup automation.
+
+> **Extended Scope (2026-01-09)**: PR-10 expands from "Setup Upgrade" to encompass three workstreams:
+> 1. **Jarvis Persona Codification** — Embed identity, voice, and behavioral rules into `.claude/`
+> 2. **Project Organization Reform** — Comprehensive cleanup and two-space classification
+> 3. **Setup Upgrade** — Original scope: auto-install plugins/skills, MCP Stage 1 auto-install
+>
+> **Design Document**: `projects/project-aion/plans/pr-10-design-plan.md`
+
+---
+
+#### PR-10.1: Persona Implementation (Complete)
+
+**Status**: ✅ **COMPLETE** (2026-01-09)
+
+**Deliverables**:
+- [x] `.claude/persona/jarvis-identity.md` — Full persona specification ✅
+- [x] CLAUDE.md persona quick-reference section ✅
+- [x] `session-start-checklist.md` updated with persona adoption ✅
+
+**Persona Definition**:
+- **Identity**: Calm, precise, safety-conscious orchestrator — scientific assistant, not butler
+- **Address**: Context-dependent ("sir" for formal/important, nothing for casual)
+- **Tone**: Professional, understated, technically precise
+- **Humor**: Rare, dry, NEVER during emergencies
+- **Safety**: Prefer reversible actions, confirm before destructive operations
+
+---
+
+#### PR-10.2: Reports Reorganization (Complete)
+
+**Status**: ✅ **COMPLETE** (2026-01-09)
+
+**Deliverables**:
+- [x] Create `projects/project-aion/reports/` directory ✅
+- [x] Move 6 PR-specific reports from `.claude/reports/` ✅
+- [x] Archive older tooling-health reports ✅
+- [x] Create READMEs for both report directories ✅
+
+**Classification Rule**:
+- **PR-specific reports** → `projects/project-aion/reports/` (human review)
+- **Operational reports** → `.claude/reports/` (tooling health, MCP validation, etc.)
+
+---
+
+#### PR-10.3: Directory Cleanup (Complete)
+
+**Status**: ✅ **COMPLETE** (2026-01-09)
+
+**Deliverables**:
+- [x] Phase out `knowledge/` directory ✅
+  - Templates → `.claude/context/templates/`
+  - Research notes → `projects/project-aion/ideas/`
+  - Test outputs → `docs/archive/`
+- [x] Consolidate root `commands/` → `.claude/commands/` ✅
+- [x] Update `paths-registry.yaml` with new template paths ✅
+- [x] Create archive manifest ✅
+
+**Two Conceptual Spaces**:
+- **Jarvis Ecosystem** (`.claude/`): Runtime, operational, everything Jarvis needs to function
+- **Project Aion** (`projects/project-aion/`): Development artifacts, human review, PR deliverables
+
+---
+
+#### PR-10.4: Documentation Refresh (Complete)
+
+**Status**: ✅ **COMPLETE** (2026-01-09)
+
+**Deliverables**:
+- [x] `.claude/legal/ATTRIBUTION.md` — Credits and acknowledgments ✅
+- [x] `docs/user-guide.md` — Comprehensive user documentation ✅
+- [x] Updated `README.md` — Reflects v1.9.5 structure ✅
+
+---
+
+#### PR-10.5: Setup Upgrade (Pending)
+
+**Status**: ⏳ **PENDING**
+
+**Original PR-10 Scope**:
 
 Requirements:
-- Plugins and skills likely default-required: enable/install by default where feasible.
+- Plugins and skills default-required: enable/install by default where feasible
 - MCP installs:
-  - auto-install Stage 1 defaults
-  - additional MCPs suggested and user-approved (optional), often dependency-driven
-- Setup re-runs validations and produces pass/fail readiness outputs.
-- Include guardrail reminders: **AIfred baseline is read-only** (pull-only).
+  - Auto-install Stage 1 defaults (memory, filesystem, fetch, git)
+  - Additional MCPs suggested and user-approved (optional)
+- Setup re-runs validations and produces pass/fail readiness outputs
+- Include guardrail reminders: **AIfred baseline is read-only**
 
-Validation:
-- Setup can bring a new machine to “baseline-ready” reproducibly.
-- Setup outputs a stable readiness report artifact.
+**PR-10.4 Hook Audit Findings** (added 2026-01-09):
+- Only 10 hooks are registered in settings.json; 16 JS files exist but are unregistered
+- Critical guardrail hooks (`dangerous-op-guard.js`, `workspace-guard.js`, `secret-scanner.js`, `permission-gate.js`) are **not active**
+- Some JS hooks were superseded by shell wrappers without cleanup
+- **Preferred approach**: JS hooks over shell scripts — greater capacity for logical structures and conditional triggering
+- Action: Register critical JS hooks, archive truly superseded files
+
+**Deliverables**:
+- [ ] Auto-install default plugins during setup
+- [ ] Auto-install Stage 1 MCPs during setup
+- [ ] User approval flow for optional MCPs
+- [ ] Setup validation with deterministic pass/fail
+- [ ] Setup readiness report artifact
+- [ ] Register critical guardrail hooks (JS preferred over sh)
+- [ ] Archive or remove superseded hook files
+
+---
+
+#### PR-10.6: Validation & Release (Pending)
+
+**Status**: ⏳ **PENDING**
+
+**Deliverables**:
+- [ ] Full validation run across all PR-10 changes
+- [ ] Update CHANGELOG.md with PR-10 entries
+- [ ] Bump version to **2.0.0** (Phase 5 complete)
+- [ ] Create release notes
+
+---
+
+#### PR-10 Version Plan
+
+| Milestone | Version | Deliverables |
+|-----------|---------|--------------|
+| PR-10.1-10.4 Complete | 1.10.0 | Persona + Organization + Docs |
+| PR-10.5 Complete | 1.10.5 | Setup Upgrade |
+| PR-10.6 Complete | **2.0.0** | Full validation + Phase 5 release |
+
+---
+
+#### PR-10 Validation Criteria
+
+- [ ] Persona adopted automatically at session start
+- [ ] All files in correct conceptual space (Jarvis Ecosystem vs Project Aion)
+- [ ] No orphan directories (`knowledge/`, root `commands/`)
+- [ ] Setup can bring new machine to baseline-ready reproducibly
+- [ ] Setup outputs stable readiness report artifact
 
 ---
 
@@ -1100,7 +1224,7 @@ Acceptance:
 | PR-8 | MCP Expansion + Context Budget | 1.8.2 | ✅ Complete |
 | PR-8.5 | MCP Expansion — Batch Install | **1.8.3** | ✅ Complete (10 MCPs validated) |
 | PR-9 | Selection Intelligence | **1.9.5** | ✅ **Complete** (PR-9.0-9.5 all done) |
-| PR-10 | Setup Upgrade | **2.0.0** | ⏳ Pending |
+| PR-10 | Persona + Organization + Setup | **2.0.0** | 🟡 In Progress (PR-10.1-10.4 done) |
 
 Deliverables:
 - PR-5: Core Tooling baseline enabled + validated + overlap matrix started.

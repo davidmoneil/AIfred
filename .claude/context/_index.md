@@ -1,6 +1,9 @@
 # Context Index
 
-Central navigation for the AIfred knowledge base.
+Central navigation for the Jarvis knowledge base.
+
+**Version**: 1.9.5 (PR-10 Organization Cleanup)
+**Philosophy**: Minimal, curated, always-relevant context
 
 ---
 
@@ -162,25 +165,38 @@ learning/
 
 ---
 
+## Reference Documents (On-Demand)
+
+Detailed documentation too verbose for always-on context:
+
+```
+reference/
+├── _index.md                # Reference navigation
+├── workflow-patterns.md     # PARC, DDLA, COSA patterns
+├── project-management.md    # Auto-detection, registration
+└── commands-quick-ref.md    # All commands by category
+```
+
+**When to Use**: Consult when CLAUDE.md doesn't have enough detail.
+
+---
+
 ## Project Aion Documentation
 
-All Project Aion evolution documentation is now consolidated in `projects/project-aion/`:
+All Project Aion evolution documentation is in `projects/project-aion/`:
 
 ```
 projects/project-aion/
 ├── roadmap.md                    # Master development roadmap
 ├── archon-identity.md            # Archon identity and terminology
 ├── versioning-policy.md          # Version bumping rules
-├── one-shot-prd.md               # Benchmark specification
-├── pr2-validation.md             # Validation document
 ├── ideas/                        # Brainstorms and future planning
-│   ├── tool-conformity-pattern.md
-│   ├── setup-regression-testing.md
-│   ├── testing-validation-cadence.md
-│   ├── project-structure-clarity.md
-│   └── venv-strategy.md
-└── plans/                        # PR implementation plans
-    └── pr-4-implementation-plan.md
+├── plans/                        # PR implementation plans
+│   ├── pr-4-implementation-plan.md
+│   ├── pr-10-design-plan.md
+│   ├── one-shot-prd.md           # Benchmark PRD (moved from root)
+│   └── pr2-validation.md         # Validation doc (moved from root)
+└── reports/                      # PR-specific reports
 ```
 
 **Design Principle**:
@@ -193,10 +209,11 @@ projects/project-aion/
 
 ## File Lifecycle
 
-1. **Discovery**: New findings go in `knowledge/notes/`
-2. **Documentation**: Clean notes move to `knowledge/docs/`
+1. **Discovery**: New findings go in context or ideas
+2. **Documentation**: Clean docs go in appropriate context subdirectory
 3. **Context**: Stable, frequently-used info becomes context files
 4. **Automation**: Proven processes become slash commands
+5. **Archive**: Outdated/one-off items move to `docs/archive/`
 
 ---
 
@@ -249,6 +266,15 @@ After setup, discovered systems will appear in the `systems/` directory.
 ---
 
 ## Recent Updates
+
+**2026-01-09**: PR-10 Organization Cleanup (v1.9.5)
+- ✅ Removed legacy OpenCode artifacts (AGENTS.md, opencode.json, .opencode/)
+- ✅ Split CLAUDE-full-reference.md into focused reference docs
+- ✅ Moved reports from .claude/ to docs/reports/
+- ✅ Consolidated OOXML schemas (47 files saved)
+- ✅ Audited hooks registration (10 active, 16 need review)
+- ✅ Created reference/ directory for on-demand docs
+- ✅ Added docs/reports/ for operational and validation reports
 
 **2026-01-09**: PR-9 Selection Intelligence Complete (v1.9.4)
 - ✅ PR-9.0: Component Extraction — 6 skills extracted from document-skills plugin

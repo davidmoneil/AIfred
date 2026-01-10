@@ -2,60 +2,77 @@
 
 Automatic behaviors that run before/after tool executions.
 
-**Last Updated**: 2026-01-06
-**Total Hooks**: 18
+**Last Updated**: 2026-01-09
+**Registered Hooks**: 10 (see settings.json)
+**Unregistered Files**: 16 (flagged for PR-10.5 review)
 
 ---
 
-## Installed Hooks
+## Registered Hooks (Active)
 
-### Lifecycle Hooks
+These hooks are registered in `settings.json` and actively execute:
+
+### Lifecycle
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `session-start.js` | SessionStart | Auto-load context on startup |
-| `session-stop.js` | Stop | Desktop notification when done |
+| `session-start.sh` | SessionStart | Auto-load context, checkpoint handling, MCP suggestions |
+| `pre-compact.sh` | PreCompact | Preserve context before compaction |
+| `stop-auto-clear.sh` | Stop | Clean up auto-clear watcher |
 | `subagent-stop.js` | SubagentStop | Agent chaining & activity logging |
-| `pre-compact.js` | PreCompact | Preserve context before compaction |
-| `self-correction-capture.js` | UserPromptSubmit | Detect corrections, save lessons |
-| `worktree-manager.js` | PostToolUse | Track worktrees, warn cross-access |
 
-### Guardrail Hooks (Jarvis-specific, PR-4a)
+### User Prompt Processing
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `workspace-guard.js` | PreToolUse | **Block** writes to AIfred baseline and forbidden paths |
-| `dangerous-op-guard.js` | PreToolUse | **Block** destructive shell commands |
-| `permission-gate.js` | UserPromptSubmit | **Soft gate** policy-crossing operations |
+| `minimal-test.sh` | UserPromptSubmit | Basic prompt validation |
+| `orchestration-detector.js` | UserPromptSubmit | Detect complex tasks, suggest orchestration |
+| `self-correction-capture.js` | UserPromptSubmit | Capture corrections as lessons |
 
-### Security Hooks
-
-| Hook | Event | Purpose |
-|------|-------|---------|
-| `secret-scanner.js` | PreToolUse | Block commits with secrets |
-
-### Observability Hooks
+### Post Tool Processing
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `audit-logger.js` | PreToolUse | Log all tool executions |
-| `session-tracker.js` | Notification | Track session lifecycle |
-| `session-exit-enforcer.js` | PostToolUse | Track activity for exit |
-| `context-reminder.js` | PostToolUse | Prompt for documentation |
-| `docker-health-check.js` | PostToolUse | Verify container health |
-| `memory-maintenance.js` | PostToolUse | Track Memory MCP entity access for pruning |
+| `context-accumulator.js` | PostToolUse | Track context token usage |
+| `cross-project-commit-tracker.js` | PostToolUse | Track commits across projects |
+| `selection-audit.js` | PostToolUse | Audit tool selection decisions |
 
-### Documentation Hooks
+---
 
-| Hook | Event | Purpose |
-|------|-------|---------|
-| `doc-sync-trigger.js` | PostToolUse | Track code changes, suggest sync after 5+ |
+## Unregistered Files (PR-10.5 Review Required)
 
-### Utility Hooks
+These JS files exist but are NOT registered in settings.json:
 
-| Hook | Event | Purpose |
-|------|-------|---------|
-| `project-detector.js` | UserPromptSubmit | Auto-detect GitHub URLs and "new project" requests |
+### Potentially Needed (Critical)
+
+| File | Intended Purpose | Status |
+|------|-----------------|--------|
+| `dangerous-op-guard.js` | Block destructive commands | **NEEDS REGISTRATION** |
+| `workspace-guard.js` | Block writes to AIfred baseline | **NEEDS REGISTRATION** |
+| `secret-scanner.js` | Block commits with secrets | **NEEDS REGISTRATION** |
+| `permission-gate.js` | Soft-gate policy-crossing ops | **NEEDS REGISTRATION** |
+
+### May Be Superseded
+
+| File | Reason |
+|------|--------|
+| `session-start.js` | Replaced by `session-start.sh` |
+| `pre-compact.js` | Replaced by `pre-compact.sh` |
+| `session-stop.js` | Possibly replaced by `stop-auto-clear.sh` |
+
+### Needs Evaluation
+
+| File | Intended Purpose |
+|------|-----------------|
+| `audit-logger.js` | Log all tool executions |
+| `context-reminder.js` | Prompt for documentation |
+| `doc-sync-trigger.js` | Track code changes, suggest sync |
+| `docker-health-check.js` | Verify container health |
+| `memory-maintenance.js` | Track Memory MCP entity access |
+| `project-detector.js` | Auto-detect GitHub URLs |
+| `session-exit-enforcer.js` | Track activity for exit |
+| `session-tracker.js` | Track session lifecycle |
+| `worktree-manager.js` | Track worktrees |
 
 ---
 
@@ -64,198 +81,96 @@ Automatic behaviors that run before/after tool executions.
 | Type | When | Use For |
 |------|------|---------|
 | `SessionStart` | When Claude starts | Auto-load context, initialize state |
-| `UserPromptSubmit` | User submits prompt | Correction detection, validation |
+| `UserPromptSubmit` | User submits prompt | Validation, detection |
 | `PreToolUse` | Before tool runs | Validation, logging, blocking |
-| `PostToolUse` | After tool completes | Verification, cleanup, notifications |
+| `PostToolUse` | After tool completes | Verification, cleanup |
 | `Notification` | Session events | Lifecycle tracking |
-| `Stop` | When Claude ends | Notifications, cleanup |
-| `SubagentStop` | Agent completes | Agent chaining, orchestration |
-| `PreCompact` | Before compaction | Preserve critical state |
+| `Stop` | When Claude ends | Cleanup |
+| `SubagentStop` | Agent completes | Agent chaining |
+| `PreCompact` | Before compaction | Preserve state |
 
 ---
 
-## Lifecycle Hooks Details
+## Registered Hook Details
 
-### session-start.js
-Auto-loads context when Claude Code starts:
-- Current git branch and uncommitted changes count
-- Session state (truncated to 2000 chars)
-- Current priorities (truncated to 1500 chars)
-- AIfred baseline status check
+### session-start.sh
 
-**Result**: No more manual "read session-state.md" at session start.
+Main session initialization hook:
+- Loads checkpoint files for context restoration
+- Suggests MCPs based on session-state.md
+- Launches auto-clear watcher on startup
+- Handles startup, resume, clear, compact events
 
-### session-stop.js
-Sends desktop notification when session ends:
-- ✅ "Jarvis Session Complete" - Normal completion
-- ⚠️ "Jarvis Session Stopped" - Error occurred
-- 🛑 "Jarvis Session Cancelled" - User cancelled
+### orchestration-detector.js
 
-**macOS**: Uses osascript (automatic)
-**Linux requirement**: `sudo apt install libnotify-bin`
+Detects complex tasks and suggests orchestration:
+- Scores prompts for complexity signals
+- Auto-invokes `/orchestration:plan` for high scores (18+)
+- Logs detections to `.claude/logs/orchestration-detections.jsonl`
 
-### subagent-stop.js
-Handles spawned agent completion:
-- Logs to `.claude/logs/agent-activity.jsonl`
-- Detects HIGH/CRITICAL issues in output
-- Suggests next actions based on agent type
+### context-accumulator.js
 
-### pre-compact.js
-Preserves critical context before compaction:
-- Key sections from session-state.md
-- Recent blockers
-- Compaction timestamp
-- Logs to `.claude/logs/compaction-history.jsonl`
+Tracks context token usage:
+- Monitors tool results for token consumption
+- Writes estimates to `.claude/logs/context-estimate.json`
+- Enables JICM (Jarvis Intelligent Context Management)
 
-### self-correction-capture.js
-Detects when user corrects Claude:
-- Patterns: "No, actually...", "That's wrong", "You should have..."
-- Severity levels: HIGH, MEDIUM, LOW
-- Logs to `.claude/logs/corrections.jsonl`
-- Prompts to save lessons for HIGH/MEDIUM severity
+### selection-audit.js
 
-### worktree-manager.js
-Tracks git worktree context:
-- Detects worktree vs main repo
-- Warns about cross-worktree file access
-- Logs state to `.claude/logs/.worktree-state.json`
-
----
-
-## Guardrail Hooks (PR-4a)
-
-### workspace-guard.js
-
-Enforces workspace boundaries by blocking write operations to protected paths:
-
-**Blocked (always)**:
-- Any Write/Edit to `/Users/aircannon/Claude/AIfred/**` (read-only baseline)
-- Operations to forbidden system paths (`/`, `/etc`, `/usr`, `~/.ssh`, etc.)
-
-**Warned (but allowed)**:
-- Write/Edit operations outside Jarvis workspace (may be registered projects)
-
-**Behavior**: Fail-open — if the hook encounters an error loading config, it logs a `[!] HIGH` warning but allows the operation to proceed.
-
-### dangerous-op-guard.js
-
-Blocks dangerous shell commands that could cause harm:
-
-**Blocked patterns**:
-- `rm -rf /` or similar root deletions
-- `sudo rm -rf` anywhere sensitive
-- `mkfs` (filesystem formatting)
-- `dd` to disk devices
-- Force push to main/master
-- Fork bombs
-
-**Warned patterns** (allowed but flagged):
-- `rm -r` (recursive delete)
-- `git reset --hard`
-- `git clean -fd`
-- Recursive chmod/chown
-
-**Behavior**: Fail-open — on pattern matching errors, logs warning but allows operation.
-
-### permission-gate.js
-
-Soft-gates policy-crossing operations by injecting system reminders:
-
-**Gated patterns**:
-- Operations mentioning AIfred baseline
-- Force push requests
-- Mass deletion requests
-- Protected branch operations (main/master)
-- Credential/secret handling
-
-**Behavior**: Does NOT block — adds `<permission-gate>` system reminders suggesting Claude use AskUserQuestion to confirm intent with the user.
-
----
-
-## Documentation Sync Trigger
-
-The `doc-sync-trigger.js` hook automatically tracks code changes:
-
-**How It Works**:
-1. Monitors Write/Edit operations on significant files
-2. Tracks changes in `.claude/logs/.doc-sync-state.json`
-3. After 5+ changes in 24 hours, suggests `/agent memory-bank-synchronizer`
-4. 4-hour cooldown between suggestions
-
-**Significant Files**:
-- `.claude/commands/`, `.claude/agents/`, `.claude/hooks/`, `.claude/skills/`
-- `projects/`, `scripts/`, `docker/`
-- `docker-compose*.yaml`, `external-sources/`
-
-**Related**: @.claude/agents/memory-bank-synchronizer.md
-
----
-
-## Memory Maintenance Hook
-
-The `memory-maintenance.js` hook automatically tracks when Memory MCP entities are accessed:
-
-**Tracked Data** (in `.claude/agents/memory/entity-metadata.json`):
-- `firstAccessed`: Date entity was first retrieved
-- `lastAccessed`: Most recent access date
-- `accessCount`: Total number of times accessed
-
-**Use Cases**:
-- Identify stale entities (not accessed in 90+ days)
-- Prioritize frequently-used entities
-- Enable intelligent pruning via `memory-prune.sh`
-
----
-
-## Creating New Hooks
-
-```javascript
-module.exports = {
-  name: 'hook-name',
-  description: 'What this hook does',
-  event: 'PreToolUse', // or PostToolUse, SessionStart, etc.
-
-  async handler(context) {
-    const { tool, parameters, result } = context;
-
-    // Your logic here
-
-    // Return { proceed: true } to continue
-    // Return { block: true, message: "reason" } to block
-    return { proceed: true };
-  }
-};
-```
+Audits tool selection decisions:
+- Logs to `.claude/logs/selection-audit.jsonl`
+- Used for selection intelligence validation
 
 ---
 
 ## Configuration
 
-### Audit Verbosity
+Hooks are registered in `.claude/settings.json` under the `hooks` key.
 
-```bash
-export CLAUDE_AUDIT_VERBOSITY=standard  # minimal | standard | full
-```
-
-### Session Name
-
-```bash
-echo "My Session" > .claude/logs/.current-session
+Example registration:
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/context-accumulator.js"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
 ---
 
 ## Logs
 
-- Audit log: `.claude/logs/audit.jsonl`
-- Session activity: `.claude/logs/.session-activity`
-- Entity metadata: `.claude/agents/memory/entity-metadata.json`
-- Agent activity: `.claude/logs/agent-activity.jsonl`
-- Corrections: `.claude/logs/corrections.jsonl`
-- Doc sync state: `.claude/logs/.doc-sync-state.json`
-- Worktree state: `.claude/logs/.worktree-state.json`
-- Compaction history: `.claude/logs/compaction-history.jsonl`
+Active logs written by registered hooks:
+
+| Log File | Written By |
+|----------|------------|
+| `session-start-diagnostic.log` | `session-start.sh` |
+| `orchestration-detections.jsonl` | `orchestration-detector.js` |
+| `corrections.jsonl` | `self-correction-capture.js` |
+| `context-estimate.json` | `context-accumulator.js` |
+| `selection-audit.jsonl` | `selection-audit.js` |
+| `agent-activity.jsonl` | `subagent-stop.js` |
 
 ---
 
-*Jarvis Hooks v1.4.0 - Added lifecycle hooks and doc-sync from AIfred baseline af66364*
+## PR-10.5 Action Items
+
+1. **Register critical guardrail hooks** if they should be active
+2. **Archive superseded JS files** that have shell replacements
+3. **Evaluate remaining hooks** for usefulness vs complexity cost
+
+See: `docs/reports/validation/hooks-registration-audit-2026-01-09.md`
+
+---
+
+*Jarvis Hooks — Updated 2026-01-09 (PR-10 audit)*
