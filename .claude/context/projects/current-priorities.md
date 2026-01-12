@@ -24,13 +24,18 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## Up Next
 
-### PR-10: Setup Upgrade
-**Status**: ⏳ Pending
+### PR-10: Jarvis Persona + Project Organization + Setup Upgrade
+**Status**: 🟡 In Progress (PR-10.1-10.4 Complete)
 
-- [ ] Auto-install plugins/skills by default
-- [ ] MCP Stage 1 auto-install
-- [ ] User-approved optional MCPs
-- [ ] Setup re-validation with pass/fail output
+**Completed**:
+- [x] PR-10.1: Persona Implementation — `jarvis-identity.md`, CLAUDE.md updated
+- [x] PR-10.2: Reports Reorganization — PR reports moved to `projects/project-aion/reports/`
+- [x] PR-10.3: Directory Cleanup — `knowledge/` phased out, `commands/` consolidated
+- [x] PR-10.4: Documentation + Organization Cleanup
+
+**Remaining**:
+- [ ] PR-10.5: Setup Upgrade — Auto-install plugins/skills, register guardrail hooks
+- [ ] PR-10.6: Validation & Release → v2.0.0
 
 ---
 
@@ -158,27 +163,16 @@ Validation performed by pushing a test file to AIfred baseline and running sync 
 - [x] **Playwright VALIDATED** ✅ — navigate, snapshot, click, close all working
 - [x] **GPTresearcher VALIDATED** ✅ — quick_search, deep_research, get_sources all working
 
-### PR-9: Selection Intelligence (Research-Backed — Revised 2026-01-09)
-- [x] PR-9.1: `tool-selection-intelligence.md` v0.7 — Orchestration-first paradigm complete ✅
-  - Orchestration Principle, Delegation Decision Framework, Context Value Matrix
-  - 3-tier Orchestration Tiers (Self-Execute → Custom Agents → Agent Teams)
-  - Multi-Agent Team Patterns (Sequential, Feedback Loop, Parallel, Specialist)
-  - Progressive Disclosure Architecture for all 9 modalities
-  - Universal Three-Tier Framework (Metadata/Core/Links)
-- [x] PR-9.0: Plugin Decomposition — **COMPLETE** ✅ (2026-01-09)
-  - 6 skills extracted: docx, xlsx, pdf, pptx, mcp-builder, skill-creator
-  - Total ~65.5K tokens available on-demand (vs 86K bundled)
-  - All refactored with 11-field PD-compliant frontmatter
-  - Created `extract-skill.sh` automation script
-  - Updated `plugin-decomposition-pattern.md` to v3.0
-  - Full report: `.claude/reports/pr-9.0-decomposition-report.md`
-- [ ] PR-9.0.1: Post-restart skill validation (6 skills per test plan)
-- [ ] PR-9.2: Research tool routing
-- [ ] PR-9.3: Deselection enhancements
-- [ ] PR-9.4: Selection validation (10 test cases, 80%+ accuracy)
-- [ ] PR-9.5: Documentation consolidation
+### PR-9: Selection Intelligence — COMPLETE ✅ (v1.9.5)
+- [x] PR-9.0: Plugin Decomposition — 6 skills extracted
+- [x] PR-9.0.1: Post-restart skill validation — All 6 skills validated
+- [x] PR-9.1: Selection Framework — `selection-intelligence-guide.md` created
+- [x] PR-9.2: Research Tool Routing — Context-lifecycle aware, 7 decision branches
+- [x] PR-9.3: Deselection Intelligence — 65+ keywords, MCP usage tracking
+- [x] PR-9.4: Selection Validation — **90% accuracy** (exceeded 80% target)
+- [x] PR-9.5: Documentation Consolidation — All docs updated
 
-**Research Foundation**: Anthropic Agent Skills + LangChain Deep Agents
+**Key Deliverables**: selection-intelligence-guide.md, selection-validation-tests.md, selection-audit.js
 
 ### Future PR Ideas (from brainstorms)
 - [ ] **PR-9b: Tool Conformity** — Normalize external tool behaviors to Jarvis patterns

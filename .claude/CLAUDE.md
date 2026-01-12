@@ -88,6 +88,9 @@ Full specification: @.claude/persona/jarvis-identity.md
 | `service-troubleshooter` | Issue diagnosis |
 | `deep-research` | Multi-source research |
 | `memory-bank-synchronizer` | Doc sync |
+| `code-analyzer` | Pre-implementation analysis |
+| `code-implementer` | Code writing with git workflow |
+| `code-tester` | Testing + Playwright automation |
 
 ### High-Value Plugins
 
@@ -122,7 +125,7 @@ Full: @.claude/context/patterns/session-start-checklist.md
 ## Project Status
 
 **Setup**: Configured 2026-01-03 | **Mode**: Full Automation
-**Installed**: 10 registered hooks, 4 agents, 16 plugins
+**Installed**: 10 registered hooks, 7 agents, 16 plugins
 
 Full details: @.claude/context/configuration-summary.md
 

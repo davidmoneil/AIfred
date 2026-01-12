@@ -473,16 +473,16 @@ Requirements:
 | Templates | `.claude/context/templates/` | Reusable templates |
 
 **Deliverables**:
-- [ ] `/extract-skill <plugin> <skill>` command
-- [ ] Component analysis workflow documentation
-- [ ] Pilot extraction: `document-skills` → docx, pdf, xlsx, pptx
-- [ ] Token savings measurement (target: 10K+ reduction)
+- [x] `extract-skill.sh` script (`.claude/scripts/extract-skill.sh`) ✅
+- [x] Component analysis workflow documentation (`plugin-decomposition-pattern.md` v3.0) ✅
+- [x] Pilot extraction: `document-skills` → docx, pdf, xlsx, pptx ✅
+- [x] Token savings measurement: 86K → 2.6K-23K per skill on-demand ✅
 
 **Acceptance Criteria**:
-- [ ] Extracted skills work independently of source plugin
-- [ ] Extracted skills appear in `/skills` list
-- [ ] Token overhead reduced by measurable amount
-- [ ] Capability matrix updated with extracted components
+- [x] Extracted skills work independently of source plugin ✅
+- [x] Extracted skills appear in `/skills` list ✅
+- [x] Token overhead reduced by measurable amount (up to 96% reduction) ✅
+- [x] Capability matrix updated with extracted components ✅
 
 ---
 
@@ -678,7 +678,7 @@ Research Task Received
 - `suggest-mcps.sh` — 65+ keyword mappings, --usage mode
 - `context-accumulator.js` — MCP usage tracking
 
-**Version**: v1.9.4
+**Version**: v1.9.5 (PR-9.5 Documentation Consolidation Complete)
 
 ---
 
@@ -946,40 +946,46 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
 > Note: MCPs are installed piecemeal. **Stage 1** is the minimal default set.
 
 ### 4.1 Stage 1 Default MCPs (Install First)
-- Memory Knowledge Graph (MCP)  
+- Memory Knowledge Graph (MCP) ✅ **INSTALLED**
   https://github.com/modelcontextprotocol/servers/tree/main/src/memory
-- Sequential Thinking (capability requirement; source/integration TBD—document what you choose)  
-  *(If you select a specific implementation, add its URL here.)*
-- Time / Fetch / Filesystem (core MCP servers)  
+- Sequential Thinking ✅ **INSTALLED** (using `@smithery/cli`)
+  https://github.com/smithery-ai/mcp-servers
+- Time / Fetch / Filesystem (core MCP servers) ✅ **INSTALLED**
   https://github.com/modelcontextprotocol/servers/tree/main
-- Context7  
+- Context7 ✅ **INSTALLED**
   https://github.com/upstash/context7
-- GitHub MCP  
+- GitHub MCP ✅ **INSTALLED** (local server with PAT)
   https://github.com/github/github-mcp-server
-- DuckDuckGo MCP  
-  https://github.com/nickclyde/duckduckgo-mcp-server
-- Playwright MCP  
+- Git MCP ✅ **INSTALLED**
+  https://github.com/modelcontextprotocol/servers/tree/main/src/git
+- ~~DuckDuckGo MCP~~ **REMOVED** (bot detection unreliable)
+  ~~https://github.com/nickclyde/duckduckgo-mcp-server~~
+- Brave Search MCP ✅ **INSTALLED**
+  https://github.com/brave/brave-search-mcp-server
+- Playwright MCP ✅ **INSTALLED**
   https://github.com/microsoft/playwright-mcp
 
 ### 4.2 Memory / Thought (Additional)
-- Graphiti MCP  
-  https://github.com/getzep/graphiti/blob/main/mcp_server  
+- Graphiti MCP
+  https://github.com/getzep/graphiti/blob/main/mcp_server
   Graphiti docs/framework: https://github.com/getzep/graphiti/tree/main
-- Cognee MCP  
+- Cognee MCP
   https://github.com/topoteretes/cognee/tree/main/cognee-mcp
-- Lotus Wisdom MCP  
+- Lotus Wisdom MCP ✅ **INSTALLED**
   https://github.com/linxule/lotus-wisdom-mcp
 
 ### 4.3 System / Web Autonomy (Additional)
-- DateTime MCP  
+- DateTime MCP ✅ **INSTALLED**
   https://github.com/pinkpixel-dev/datetime-mcp
-- DesktopCommander MCP  
+- DesktopCommander MCP ✅ **INSTALLED**
   https://github.com/wonderwhy-er/DesktopCommanderMCP
-- Brave Search MCP  
+- Brave Search MCP ✅ **INSTALLED**
   https://github.com/brave/brave-search-mcp-server
-- Puppeteer MCP (archived + alternative)
+- Puppeteer MCP (archived — prefer Playwright MCP)
   - archived: https://github.com/modelcontextprotocol/servers-archived/tree/main/src/puppeteer
   - alternative: https://github.com/merajmehrabi/puppeteer-mcp-server
+- **Playwright MCP** ✅ **INSTALLED** (preferred over Puppeteer)
+  https://github.com/microsoft/playwright-mcp
 
 ### 4.4 Dev / Code (Additional)
 - Semgrep MCP docs  
@@ -996,13 +1002,13 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
   https://github.com/yamadashy/repomix
 
 ### 4.5 Information / Grounding
-- Wikipedia MCP  
+- Wikipedia MCP ✅ **INSTALLED**
   https://github.com/rudra-ravi/wikipedia-mcp
-- GPTresearcher MCP  
+- GPTresearcher MCP ✅ **INSTALLED**
   https://github.com/assafelovic/gptr-mcp
-- Perplexity MCP  
+- Perplexity MCP ✅ **INSTALLED**
   https://github.com/perplexityai/modelcontextprotocol
-- arXiv MCP  
+- arXiv MCP ✅ **INSTALLED**
   https://github.com/blazickjp/arxiv-mcp-server
 
 ### 4.6 UI Dev
@@ -1026,7 +1032,7 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
   https://github.com/jacksteamdev/mcp-sqlite-bun-server
 - MindsDB MCP
   https://github.com/mindsdb/minds-mcp
-- Chroma
+- Chroma ✅ **INSTALLED**
   https://github.com/chroma-core/chroma
 - Alpha Vantage MCP
   https://github.com/alphavantage/alpha_vantage_mcp
@@ -1045,17 +1051,27 @@ A minimal web app with a tiny GUI and trivial functionality, designed to validat
   https://github.com/modelcontextprotocol/servers-archived/tree/main/src/google-maps
 
 ### 4.10 Skills (Official + Unofficial)
-- Anthropic skills (official)  
+
+**Extracted & Available in Jarvis** (PR-9.0):
+- `docx` ✅ — Word document creation/editing
+- `xlsx` ✅ — Spreadsheet creation with formulas
+- `pdf` ✅ — PDF creation, forms, merge/split
+- `pptx` ✅ — PowerPoint presentations
+- `mcp-builder` ✅ — MCP server development guide
+- `skill-creator` ✅ — Claude Code skill development
+
+**External References**:
+- Anthropic skills (official)
   https://github.com/anthropics/skills
-- ComposioHQ awesome skills  
+- ComposioHQ awesome skills
   https://github.com/ComposioHQ/awesome-claude-skills
-- tapestry skills  
+- tapestry skills
   https://github.com/michalparkola/tapestry-skills-for-claude-code
-- markdown-to-epub  
+- markdown-to-epub
   https://github.com/smerchek/claude-epub-skill
-- csv summarizer  
+- csv summarizer
   https://github.com/coffeefuelbump/csv-data-summarizer-claude-skill
-- developer-growth-analysis (priority)  
+- developer-growth-analysis (priority)
   https://github.com/ComposioHQ/awesome-claude-skills/tree/master/developer-growth-analysis
 
 ### 4.11 Claude Code Plugins

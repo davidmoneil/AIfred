@@ -132,3 +132,7 @@
 2026-01-09T23:45:44Z | PreCompact | Signal file created for auto-clear
 2026-01-09T23:46:43Z | SessionStart | source=compact | session=b02c4d5a-8703-4a79-af74-9804c3781740
 2026-01-10T01:42:44Z | SessionEnd | /end-session invoked
+2026-01-10T04:36:02Z | SessionStart | source=startup | session=46434378-e492-4fef-8ba5-ecec9b361ba6
+2026-01-10T04:36:02Z | SessionStart | Launched watcher
+2026-01-10T04:36:02Z | SessionStart | MCP suggestions: enable=[github] disable=[lotus-wisdom]
+2026-01-12T19:41:48Z | SessionEnd | /end-session invoked

@@ -1,0 +1,138 @@
+# Jarvis Paths Registry (Project Aion)
+#
+# Source of truth for all external paths and infrastructure.
+# Originally created by AIfred /setup on 2026-01-03
+# Adopted by Jarvis (Project Aion) - see roadmap.md for evolution
+#
+
+version: "1.9.5"
+last_updated: "2026-01-09"
+created_by: "Jarvis (originally AIfred /setup)"
+
+# =============================================================================
+# HOSTS
+# =============================================================================
+
+hosts:
+  local:
+    hostname: "Nathaniels-MacBook-Air.local"
+    ip: "192.168.5.9"
+    role: "Primary Jarvis host"
+    os: "macOS 26.2 (Darwin arm64)"
+    cpu_cores: 10
+    memory_gb: 16
+    status: "active"
+    notes: "Apple Silicon MacBook Air - Configured by Jarvis (originally AIfred setup)"
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+
+docker:
+  socket: "/var/run/docker.sock"
+  version: "29.1.3"
+  compose_base: "/Users/aircannon/Claude/Jarvis/docker"
+
+  # Populated by /discover command:
+  containers: {}
+
+# =============================================================================
+# NETWORK
+# =============================================================================
+
+network:
+  domain: "local"
+  dns:
+    primary: "auto"  # Using system DNS
+
+# =============================================================================
+# STORAGE
+# =============================================================================
+
+storage:
+  local:
+    root_disk: "228GB total, 169GB available"
+  # No network mounts detected
+
+# =============================================================================
+# TOOLS
+# =============================================================================
+
+tools:
+  git: "2.50.1"
+  docker: "29.1.3"
+  node: "24.12.0"  # via nvm
+  python: "3.9.6"
+  nvm: "0.40.0"
+
+# =============================================================================
+# DEVELOPMENT
+# =============================================================================
+# Jarvis is a "hub" that knows about projects but doesn't contain them.
+# Code lives in projects_root. Jarvis tracks and orchestrates.
+# Per PR-1.E workspace-path-policy:
+#   - Project code: /Users/aircannon/Claude/<ProjectName>/
+#   - Project summaries: /Users/aircannon/Claude/Jarvis/projects/
+
+development:
+  # Where project CODE lives (not in Jarvis)
+  projects_root: "/Users/aircannon/Claude"
+
+  # Where project SUMMARIES live (in Jarvis)
+  summaries_path: "/Users/aircannon/Claude/Jarvis/projects"
+
+  conventions:
+    naming: "lowercase-with-dashes"
+    summary_template: ".claude/context/templates/project-summary.md"
+    context_template: ".claude/context/templates/project-context.md"
+
+  # Registered projects (populated by /create-project or /register-project)
+  projects: {}
+
+# =============================================================================
+# JARVIS (Project Aion Master Archon)
+# =============================================================================
+
+jarvis:
+  base_path: "/Users/aircannon/Claude/Jarvis"
+  version: "1.9.5"
+  # BEHAVIOR: How Jarvis operates
+  context: ".claude/context"
+  commands: ".claude/commands"
+  agents: ".claude/agents"
+  hooks: ".claude/hooks"
+  logs: ".claude/logs"
+  # EVOLUTION: How Jarvis improves (Project Aion)
+  project_aion: "projects/project-aion"
+  project_summaries: "projects"
+
+# =============================================================================
+# AIFRED BASELINE (READ-ONLY)
+# =============================================================================
+
+aifred_baseline:
+  path: "/Users/aircannon/Claude/AIfred"
+  branch: "main"
+  status: "read-only"
+  current_commit: "2ea4e8b"
+  last_checked: "2026-01-09"
+  last_synced_commit: "2ea4e8b"  # Major sync: 14 ADOPT + 7 ADAPT including JICM
+  last_sync_date: "2026-01-09"
+  sync_command: "/sync-aifred-baseline"
+  port_log: ".claude/context/upstream/port-log.md"
+  notes: "Upstream reference only - never edit directly. Use /sync-aifred-baseline to check for updates."
+
+# =============================================================================
+# DISCOVERED REPOSITORIES
+# =============================================================================
+# Found during setup - can be registered as projects
+
+discovered_repos:
+  - path: "/Users/aircannon/Claude/AIfred"
+    status: "unregistered"
+  - path: "/Users/aircannon/Claude/ClaudeCode"
+    status: "unregistered"
+  - path: "/Users/aircannon/Documents/claude-flow"
+    status: "unregistered"
+  - path: "/Users/aircannon/Documents/Jarvis"
+    status: "unregistered"
