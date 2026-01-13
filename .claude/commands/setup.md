@@ -81,19 +81,38 @@ Create the core structure:
 @setup-phases/04-mcp-integration.md
 
 Set up MCP servers based on needs:
-- Deploy MCP Gateway with Docker
-- Configure Memory MCP
+- **Auto-install Stage 1 MCPs** (PR-10.5):
+  ```bash
+  .claude/scripts/setup-mcps.sh --tier1-only
+  ```
+- Configure Memory MCP for persistence
 - Set up additional MCP servers as needed
-- Verify connectivity
+- Verify connectivity with `claude mcp list`
+
+**Auto-install script options**:
+- `--check-only`: Only check current MCP status
+- `--tier1-only`: Install Tier 1 (Always-On) MCPs only (default)
+- `--all`: Install Tier 1 + Tier 2 MCPs
 
 ### Phase 5: Hooks & Automation
 @setup-phases/05-hooks-automation.md
 
 Install automation:
-- Core hooks (audit, session, security)
-- Cron jobs (log rotation, memory pruning)
-- Permission configuration
-- End-session workflow
+- **Guardrail hooks are pre-registered** (PR-10.5):
+  - `workspace-guard.js` - Blocks writes to AIfred baseline
+  - `dangerous-op-guard.js` - Blocks destructive commands
+  - `secret-scanner.js` - Scans for secrets before commits
+  - `permission-gate.js` - Soft-gates policy-crossing operations
+- **Auto-install plugins** (PR-10.5):
+  ```bash
+  .claude/scripts/setup-plugins.sh --core-only
+  ```
+- End-session workflow (`/end-session`)
+
+**Plugin auto-install script options**:
+- `--check-only`: Only check current plugin status
+- `--core-only`: Install core plugins only (default)
+- `--all`: Install all evaluated ADOPT plugins
 
 ### Phase 6: Agent Deployment
 @setup-phases/06-agent-deployment.md
@@ -133,15 +152,17 @@ docker info &> /dev/null && echo "✅ Docker running" || echo "❌ Docker not ru
 
 ---
 
-## PR-4 Setup Enhancements
+## Setup Enhancements by PR
 
 | Phase | PR | Enhancement |
 |-------|-----|-------------|
 | 0A Preflight | PR-4b | Workspace boundary validation |
-| 5 Hooks | PR-4a | Guardrail hooks (workspace-guard, dangerous-op-guard, permission-gate) |
+| 4 MCP | PR-10.5 | Auto-install Stage 1 MCPs (`setup-mcps.sh`) |
+| 5 Hooks | PR-4a, PR-10.5 | Guardrail hooks + hook registration |
+| 5 Plugins | PR-10.5 | Auto-install core plugins (`setup-plugins.sh`) |
 | 7 Finalization | PR-4c | Readiness report verification |
 
 ---
 
-*Jarvis Setup Wizard v1.3 — Project Aion Master Archon*
-*PR-4a: Guardrails, PR-4b: Preflight, PR-4c: Readiness*
+*Jarvis Setup Wizard v2.0 — Project Aion Master Archon*
+*PR-4: Preflight/Guardrails/Readiness, PR-10.5: Auto-install*

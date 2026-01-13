@@ -8,32 +8,45 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle — PR-9 Complete, PR-10.1-10.4 Complete
+**Status**: 🟢 Idle — **v2.0.0 Released** — PR-10 Complete, Phase 5 Complete
 
-**Last Completed**: Roadmap Analytical Review (2026-01-12)
+**Last Completed**: PR-10.5/10.6 Setup Upgrade & Release (2026-01-13)
 
 **Current Blocker**: None
 
-**Next Step**: PR-10.5 Setup Upgrade → PR-10.6 Validation & Release → v2.0.0
+**Next Phase**: Phase 6 — Autonomy, Self-Evolution, Benchmark Gates (PR-11 → PR-14)
 
-### PR-10 Progress (2026-01-09)
+### PR-10 Complete (2026-01-13) — v2.0.0 Released
 
-**Completed Phases**:
+**All Phases Complete**:
 - ✅ PR-10.1: Persona Implementation — `.claude/persona/jarvis-identity.md`, CLAUDE.md updated
 - ✅ PR-10.2: Reports Reorganization — PR reports moved to `projects/project-aion/reports/`
 - ✅ PR-10.3: Directory Cleanup — `knowledge/` phased out, `commands/` consolidated
-- ✅ PR-10.4: Documentation + Organization Cleanup (extended scope):
-  - Removed OpenCode artifacts (AGENTS.md, opencode.json, .opencode/)
-  - Split CLAUDE-full-reference.md into focused reference docs
-  - Moved reports from .claude/ to docs/reports/
-  - Consolidated OOXML schemas (47 duplicate files removed)
-  - Audited hooks registration (10 active, 16 need PR-10.5 review)
-  - Created /jarvis command menu
-  - Full inventory audit completed
+- ✅ PR-10.4: Documentation + Organization Cleanup
+- ✅ PR-10.5: Setup Upgrade — 4 guardrail hooks registered, auto-install scripts created
+- ✅ PR-10.6: Validation & Release — Bumped to v2.0.0
 
-**Remaining Phases**:
-- ⏳ PR-10.5: Setup Upgrade — Register guardrail hooks (JS preferred), auto-install plugins/MCPs
-- ⏳ PR-10.6: Validation & Release — Bump to v2.0.0
+### PR-10.5/10.6 Session (2026-01-13)
+
+**Guardrail Hooks Registered (4)**:
+- `workspace-guard.js` — Blocks writes to AIfred baseline and forbidden paths
+- `dangerous-op-guard.js` — Blocks destructive commands (rm -rf, mkfs, force push main)
+- `secret-scanner.js` — Scans for secrets before git commits
+- `permission-gate.js` — Soft-gates policy-crossing operations
+
+**Hook Fixes Applied (3)**:
+- Added stdin/stdout JSON wrapper to workspace-guard.js, dangerous-op-guard.js, secret-scanner.js
+- All JS hooks now properly execute via Claude Code's hook system
+
+**Auto-Install Scripts Created**:
+- `.claude/scripts/setup-mcps.sh` — Stage 1 (Tier 1) MCPs
+- `.claude/scripts/setup-plugins.sh` — Core plugins
+
+**Hooks Archived (12)**:
+- Superseded and unused hooks moved to `.claude/hooks/archive/`
+
+**Version Bump**: 1.9.5 → **2.0.0**
+**Hook Count**: 10 → **14** registered hooks
 
 ### Session Summary (2026-01-09 — PR-9.4 Selection Validation)
 
@@ -1243,4 +1256,4 @@ Iterative analysis and revision of `projects/project-aion/roadmap.md`:
 
 ---
 
-*Updated: 2026-01-12 — Roadmap analytical review complete (v1.9.5)*
+*Updated: 2026-01-13 — v2.0.0 Release (PR-10 Complete, Phase 5 Complete)*

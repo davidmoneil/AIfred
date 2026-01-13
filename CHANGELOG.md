@@ -11,6 +11,101 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.0] - 2026-01-13
+
+**MAJOR RELEASE: Phase 5 Tooling Complete**
+
+PR-10 Complete — Jarvis Persona, Project Organization, and Setup Upgrade.
+
+### Added
+
+#### PR-10.1: Jarvis Persona Implementation
+- **`jarvis-identity.md`** — Full persona specification:
+  - Identity: Calm, precise, safety-conscious orchestrator
+  - Address: "sir" for formal/important, nothing for casual
+  - Tone: Professional, understated, technically precise
+  - Safety: Prefer reversible actions, confirm destructive ops
+- **CLAUDE.md Persona section** — Quick-reference persona traits
+- **Session-start checklist** — Automatic persona adoption
+
+#### PR-10.2: Reports Reorganization
+- **`projects/project-aion/reports/`** — PR-specific reports moved
+- **Classification rule**: PR reports → project-aion, operational reports → .claude/reports/
+
+#### PR-10.3: Directory Cleanup
+- **`knowledge/` phased out** — Contents redistributed:
+  - Templates → `.claude/context/templates/`
+  - Research notes → `projects/project-aion/ideas/`
+  - Test outputs → `docs/archive/`
+- **Root `commands/` consolidated** → `.claude/commands/`
+- **Two conceptual spaces** established:
+  - Jarvis Ecosystem (`.claude/`) — Runtime, operational
+  - Project Aion (`projects/project-aion/`) — Development artifacts
+
+#### PR-10.4: Documentation + Organization Cleanup
+- **OpenCode artifacts removed** — AGENTS.md, opencode.json, .opencode/
+- **CLAUDE-full-reference.md split** — Focused reference docs in `.claude/context/reference/`
+- **Reports moved** — from .claude/ to docs/reports/
+- **OOXML schemas consolidated** — 47 duplicate files removed
+- **`/jarvis` command menu** — Quick access to common commands
+- **Configuration summary rewritten** — Complete rewrite of outdated file
+
+#### PR-10.5: Setup Upgrade
+- **4 critical guardrail hooks registered**:
+  - `workspace-guard.js` — Blocks writes to AIfred baseline
+  - `dangerous-op-guard.js` — Blocks destructive commands (rm -rf, mkfs, force push main)
+  - `secret-scanner.js` — Scans for secrets before git commits
+  - `permission-gate.js` — Soft-gates policy-crossing operations
+- **Auto-install scripts**:
+  - `setup-mcps.sh` — Auto-install Stage 1 (Tier 1) MCPs
+  - `setup-plugins.sh` — Auto-install core plugins
+- **12 superseded hooks archived** — Moved to `.claude/hooks/archive/`
+- **Setup wizard updated** — Phases 4 and 5 reference auto-install scripts
+
+### Changed
+
+- **settings.json** — Added PreToolUse hook section with 3 guardrail hooks
+- **settings.json** — Added permission-gate.js to UserPromptSubmit hooks
+- **setup.md** — Updated to v2.0 with PR-10.5 auto-install references
+- **Hook count** — 10 → 14 registered hooks
+
+### Fixed
+
+- **Guardrail hooks not executing** — Added stdin/stdout JSON wrapper to:
+  - `workspace-guard.js`
+  - `dangerous-op-guard.js`
+  - `secret-scanner.js`
+- **Hook format** — All JS hooks now use proper Claude Code stdin/stdout pattern
+
+### Hooks Summary (14 Registered)
+
+| Event | Hooks |
+|-------|-------|
+| SessionStart | session-start.sh |
+| PreCompact | pre-compact.sh |
+| Stop | stop-auto-clear.sh |
+| PreToolUse | workspace-guard.js, dangerous-op-guard.js, secret-scanner.js |
+| UserPromptSubmit | minimal-test.sh, orchestration-detector.js, self-correction-capture.js, permission-gate.js |
+| PostToolUse | context-accumulator.js, cross-project-commit-tracker.js, selection-audit.js |
+| SubagentStop | subagent-stop.js |
+
+### Phase 5 Complete
+
+This release marks the completion of **Phase 5: Tooling Baseline & Incremental Expansion**.
+
+| PR | Description | Status |
+|----|-------------|--------|
+| PR-5 | Core Tooling Baseline | ✅ Complete |
+| PR-6 | Plugins Expansion | ✅ Complete |
+| PR-7 | Skills Inventory | ✅ Complete |
+| PR-8 | MCP Expansion + Context Budget | ✅ Complete |
+| PR-9 | Selection Intelligence | ✅ Complete |
+| PR-10 | Persona + Organization + Setup | ✅ **Complete** |
+
+**Next Phase**: Phase 6 — Autonomy, Self-Evolution, Benchmark Gates (PR-11 → PR-14)
+
+---
+
 ## [1.9.5] - 2026-01-09
 
 **PR-9.5: Documentation Consolidation — PR-9 COMPLETE**

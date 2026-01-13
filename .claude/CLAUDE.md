@@ -1,6 +1,6 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 1.9.5 | **Baseline**: AIfred commit `2ea4e8b`
+**Version**: 2.0.0 | **Baseline**: AIfred commit `2ea4e8b`
 
 Master Archon for infrastructure, development, and self-improvement. AIfred baseline is **read-only**.
 
@@ -125,7 +125,7 @@ Full: @.claude/context/patterns/session-start-checklist.md
 ## Project Status
 
 **Setup**: Configured 2026-01-03 | **Mode**: Full Automation
-**Installed**: 10 registered hooks, 7 agents, 16 plugins
+**Installed**: 14 registered hooks, 7 agents, 16 plugins
 
 Full details: @.claude/context/configuration-summary.md
 
@@ -143,4 +143,4 @@ For full documentation on any topic:
 
 ---
 
-*Jarvis v1.9.5 — Updated 2026-01-09*
+*Jarvis v2.0.0 — Updated 2026-01-13*

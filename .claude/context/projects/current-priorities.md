@@ -2,11 +2,26 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-09
+**Last Updated**: 2026-01-13
 
 ---
 
 ## Recently Completed
+
+### PR-10: Jarvis Persona + Project Organization + Setup Upgrade (v2.0.0)
+**Status**: ✅ Complete (2026-01-13) — **Phase 5 Complete**
+
+- [x] PR-10.1: Persona Implementation — `jarvis-identity.md`, CLAUDE.md updated
+- [x] PR-10.2: Reports Reorganization — PR reports moved to `projects/project-aion/reports/`
+- [x] PR-10.3: Directory Cleanup — `knowledge/` phased out, `commands/` consolidated
+- [x] PR-10.4: Documentation + Organization Cleanup
+- [x] PR-10.5: Setup Upgrade — 4 guardrail hooks registered, auto-install scripts created
+- [x] PR-10.6: Validation & Release → v2.0.0
+
+**Key Deliverables**:
+- 4 guardrail hooks (workspace-guard, dangerous-op-guard, secret-scanner, permission-gate)
+- setup-mcps.sh, setup-plugins.sh auto-install scripts
+- 14 registered hooks (up from 10)
 
 ### PR-9: Selection Intelligence (v1.9.5)
 **Status**: ✅ Complete (2026-01-09)
@@ -24,18 +39,10 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## Up Next
 
-### PR-10: Jarvis Persona + Project Organization + Setup Upgrade
-**Status**: 🟡 In Progress (PR-10.1-10.4 Complete)
+### Phase 6: Autonomy, Self-Evolution & Benchmark Gates (PR-11 → PR-14)
+**Status**: ⏳ Pending
 
-**Completed**:
-- [x] PR-10.1: Persona Implementation — `jarvis-identity.md`, CLAUDE.md updated
-- [x] PR-10.2: Reports Reorganization — PR reports moved to `projects/project-aion/reports/`
-- [x] PR-10.3: Directory Cleanup — `knowledge/` phased out, `commands/` consolidated
-- [x] PR-10.4: Documentation + Organization Cleanup
-
-**Remaining**:
-- [ ] PR-10.5: Setup Upgrade — Auto-install plugins/skills, register guardrail hooks
-- [ ] PR-10.6: Validation & Release → v2.0.0
+See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 
 ---
 

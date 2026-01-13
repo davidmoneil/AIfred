@@ -127,92 +127,118 @@ function extractTargetPath(tool, parameters) {
  */
 function logBlocked(severity, message, details) {
   const prefix = severity === 'CRITICAL' ? '[X]' : '[!]';
-  console.log(`\n${prefix} ${severity}: ${message}`);
+  console.error(`\n${prefix} ${severity}: ${message}`);
   if (details) {
     for (const line of details) {
-      console.log(`    ${line}`);
+      console.error(`    ${line}`);
     }
   }
-  console.log('');
+  console.error('');
 }
 
 /**
  * Log a warning (non-blocking)
  */
 function logWarning(message, details) {
-  console.log(`\n[!] HIGH: ${message}`);
+  console.error(`\n[!] HIGH: ${message}`);
   if (details) {
     for (const line of details) {
-      console.log(`    ${line}`);
+      console.error(`    ${line}`);
     }
   }
-  console.log('');
+  console.error('');
 }
 
+/**
+ * Handler function for workspace guard
+ */
+async function handler(context) {
+  const { tool, tool_input } = context;
+  const parameters = tool_input || context.parameters || {};
+
+  // Only check tools that modify files
+  if (!ALL_MODIFY_TOOLS.includes(tool)) {
+    return { proceed: true };
+  }
+
+  try {
+    const targetPath = extractTargetPath(tool, parameters);
+
+    // No path detected - allow (can't verify)
+    if (!targetPath) {
+      return { proceed: true };
+    }
+
+    // === CRITICAL: AIfred Baseline Protection ===
+    if (isBaselinePath(targetPath)) {
+      logBlocked('CRITICAL', 'BLOCKED - AIfred Baseline Modification', [
+        `Path: ${targetPath}`,
+        'The AIfred baseline repository is READ-ONLY.',
+        'Use /sync-aifred-baseline to review upstream changes.',
+        'All modifications should be made in Jarvis workspace only.',
+      ]);
+      return { proceed: false };
+    }
+
+    // === CRITICAL: Forbidden System Paths ===
+    if (isForbiddenPath(targetPath)) {
+      logBlocked('CRITICAL', 'BLOCKED - Forbidden System Path', [
+        `Path: ${targetPath}`,
+        'This path is outside allowed workspaces.',
+        'System directories and sensitive paths are protected.',
+      ]);
+      return { proceed: false };
+    }
+
+    // === WARNING: Outside Jarvis Workspace ===
+    // For Write/Edit tools, warn but allow (may be registered project)
+    if (WRITE_TOOLS.includes(tool) && !isJarvisWorkspace(targetPath)) {
+      logWarning('Operation outside Jarvis workspace', [
+        `Path: ${targetPath}`,
+        'This may be a registered project workspace.',
+        'Use /register-project to formally add workspaces.',
+      ]);
+      // Allow but warned - future: check against allowlist
+      return { proceed: true };
+    }
+
+    return { proceed: true };
+
+  } catch (error) {
+    // FAIL-OPEN: On error, log warning but allow operation
+    logWarning('Workspace guard check failed - proceeding with caution', [
+      `Error: ${error.message}`,
+      'Unable to verify workspace boundaries.',
+      'Operation allowed but not validated.',
+    ]);
+    return { proceed: true };
+  }
+}
+
+// Export for require() usage
 module.exports = {
   name: 'workspace-guard',
   description: 'Enforce workspace boundaries for file operations',
   event: 'PreToolUse',
-
-  async handler(context) {
-    const { tool, parameters } = context;
-
-    // Only check tools that modify files
-    if (!ALL_MODIFY_TOOLS.includes(tool)) {
-      return { proceed: true };
-    }
-
-    try {
-      const targetPath = extractTargetPath(tool, parameters);
-
-      // No path detected - allow (can't verify)
-      if (!targetPath) {
-        return { proceed: true };
-      }
-
-      // === CRITICAL: AIfred Baseline Protection ===
-      if (isBaselinePath(targetPath)) {
-        logBlocked('CRITICAL', 'BLOCKED - AIfred Baseline Modification', [
-          `Path: ${targetPath}`,
-          'The AIfred baseline repository is READ-ONLY.',
-          'Use /sync-aifred-baseline to review upstream changes.',
-          'All modifications should be made in Jarvis workspace only.',
-        ]);
-        return { proceed: false };
-      }
-
-      // === CRITICAL: Forbidden System Paths ===
-      if (isForbiddenPath(targetPath)) {
-        logBlocked('CRITICAL', 'BLOCKED - Forbidden System Path', [
-          `Path: ${targetPath}`,
-          'This path is outside allowed workspaces.',
-          'System directories and sensitive paths are protected.',
-        ]);
-        return { proceed: false };
-      }
-
-      // === WARNING: Outside Jarvis Workspace ===
-      // For Write/Edit tools, warn but allow (may be registered project)
-      if (WRITE_TOOLS.includes(tool) && !isJarvisWorkspace(targetPath)) {
-        logWarning('Operation outside Jarvis workspace', [
-          `Path: ${targetPath}`,
-          'This may be a registered project workspace.',
-          'Use /register-project to formally add workspaces.',
-        ]);
-        // Allow but warned - future: check against allowlist
-        return { proceed: true };
-      }
-
-      return { proceed: true };
-
-    } catch (error) {
-      // FAIL-OPEN: On error, log warning but allow operation
-      logWarning('Workspace guard check failed - proceeding with caution', [
-        `Error: ${error.message}`,
-        'Unable to verify workspace boundaries.',
-        'Operation allowed but not validated.',
-      ]);
-      return { proceed: true };
-    }
-  }
+  handler
 };
+
+// ============================================================
+// STDIN/STDOUT HANDLER - Required for Claude Code hooks
+// ============================================================
+if (require.main === module) {
+  let inputData = '';
+
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => { inputData += chunk; });
+  process.stdin.on('end', async () => {
+    try {
+      const context = JSON.parse(inputData || '{}');
+      const result = await handler(context);
+      console.log(JSON.stringify(result));
+    } catch (err) {
+      console.error(`[workspace-guard] Parse error: ${err.message}`);
+      console.log(JSON.stringify({ proceed: true }));
+    }
+  });
+}

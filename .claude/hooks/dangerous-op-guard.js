@@ -105,79 +105,105 @@ const WARN_PATTERNS = [
  * Log a blocked operation
  */
 function logBlocked(name, command, message) {
-  console.log('\n[X] CRITICAL: DANGEROUS OPERATION BLOCKED');
-  console.log(`    Pattern: ${name}`);
-  console.log(`    Reason: ${message}`);
-  console.log(`    Command: ${command.length > 80 ? command.substring(0, 80) + '...' : command}`);
-  console.log('\n    This operation is not permitted for safety reasons.');
-  console.log('    If this is intentional, please execute manually in terminal.\n');
+  console.error('\n[X] CRITICAL: DANGEROUS OPERATION BLOCKED');
+  console.error(`    Pattern: ${name}`);
+  console.error(`    Reason: ${message}`);
+  console.error(`    Command: ${command.length > 80 ? command.substring(0, 80) + '...' : command}`);
+  console.error('\n    This operation is not permitted for safety reasons.');
+  console.error('    If this is intentional, please execute manually in terminal.\n');
 }
 
 /**
  * Log a warning (non-blocking)
  */
 function logWarning(name, command, message) {
-  console.log('\n[!] HIGH: DANGEROUS OPERATION DETECTED');
-  console.log(`    Pattern: ${name}`);
-  console.log(`    Reason: ${message}`);
-  console.log(`    Command: ${command.length > 80 ? command.substring(0, 80) + '...' : command}`);
-  console.log('\n    Proceeding with caution. Verify this is intentional.\n');
+  console.error('\n[!] HIGH: DANGEROUS OPERATION DETECTED');
+  console.error(`    Pattern: ${name}`);
+  console.error(`    Reason: ${message}`);
+  console.error(`    Command: ${command.length > 80 ? command.substring(0, 80) + '...' : command}`);
+  console.error('\n    Proceeding with caution. Verify this is intentional.\n');
 }
 
 /**
  * Log an error during checking (fail-open)
  */
 function logError(error) {
-  console.log('\n[!] HIGH: Dangerous operation check failed');
-  console.log(`    Error: ${error.message}`);
-  console.log('    Proceeding with caution - unable to verify safety.\n');
+  console.error('\n[!] HIGH: Dangerous operation check failed');
+  console.error(`    Error: ${error.message}`);
+  console.error('    Proceeding with caution - unable to verify safety.\n');
 }
 
+/**
+ * Handler function for dangerous operation guard
+ */
+async function handler(context) {
+  const { tool, tool_input } = context;
+  const parameters = tool_input || context.parameters || {};
+
+  // Only check Bash commands
+  if (tool !== 'Bash') {
+    return { proceed: true };
+  }
+
+  const command = parameters?.command || '';
+
+  // Skip empty commands
+  if (!command.trim()) {
+    return { proceed: true };
+  }
+
+  try {
+    // Check BLOCK patterns (always blocked)
+    for (const { name, pattern, message } of BLOCK_PATTERNS) {
+      if (pattern.test(command)) {
+        logBlocked(name, command, message);
+        return { proceed: false };
+      }
+    }
+
+    // Check WARN patterns (allow but warn)
+    for (const { name, pattern, message } of WARN_PATTERNS) {
+      if (pattern.test(command)) {
+        logWarning(name, command, message);
+        // Proceed after warning
+        return { proceed: true };
+      }
+    }
+
+    // No dangerous patterns detected
+    return { proceed: true };
+
+  } catch (error) {
+    // FAIL-OPEN: On error, log and allow
+    logError(error);
+    return { proceed: true };
+  }
+}
+
+// Export for require() usage
 module.exports = {
   name: 'dangerous-op-guard',
   description: 'Block dangerous shell operations',
   event: 'PreToolUse',
-
-  async handler(context) {
-    const { tool, parameters } = context;
-
-    // Only check Bash commands
-    if (tool !== 'Bash') {
-      return { proceed: true };
-    }
-
-    const command = parameters?.command || '';
-
-    // Skip empty commands
-    if (!command.trim()) {
-      return { proceed: true };
-    }
-
-    try {
-      // Check BLOCK patterns (always blocked)
-      for (const { name, pattern, message } of BLOCK_PATTERNS) {
-        if (pattern.test(command)) {
-          logBlocked(name, command, message);
-          return { proceed: false };
-        }
-      }
-
-      // Check WARN patterns (allow but warn)
-      for (const { name, pattern, message } of WARN_PATTERNS) {
-        if (pattern.test(command)) {
-          logWarning(name, command, message);
-          // Proceed after warning
-          return { proceed: true };
-        }
-      }
-
-      // No dangerous patterns detected
-      return { proceed: true };
-
-    } catch (error) {
-      // FAIL-OPEN: On error, log and allow
-      logError(error);
-      return { proceed: true };
-    }
-  }
+  handler
 };
+
+// ============================================================
+// STDIN/STDOUT HANDLER - Required for Claude Code hooks
+// ============================================================
+if (require.main === module) {
+  let inputData = '';
+
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => { inputData += chunk; });
+  process.stdin.on('end', async () => {
+    try {
+      const context = JSON.parse(inputData || '{}');
+      const result = await handler(context);
+      console.log(JSON.stringify(result));
+    } catch (err) {
+      console.error(`[dangerous-op-guard] Parse error: ${err.message}`);
+      console.log(JSON.stringify({ proceed: true }));
+    }
+  });
+}
