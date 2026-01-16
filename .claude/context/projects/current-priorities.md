@@ -40,7 +40,30 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## Up Next
 
 ### Phase 6: Autonomy, Self-Evolution & Benchmark Gates (PR-11 → PR-14)
-**Status**: ⏳ Pending
+**Status**: 🟡 Design Complete — Implementation Pending
+
+**Design Document**: `projects/project-aion/ideas/phase-6-autonomy-design.md`
+
+**Eight Autonomic Systems** (to be implemented):
+1. Self-Launch Protocol — Initialize with full context awareness
+2. Wiggum Loop Integration — Drive work to completion
+3. Independent Milestone Review — Quality gate for PR completion
+4. Enhanced Context Management (JICM v2) — Resource optimization
+5. Self-Reflection Cycles — Learn from experience
+6. Self-Evolution Cycles — Safe self-modification
+7. R&D Cycles — External innovation discovery
+8. Maintenance Workflows — Codebase hygiene
+9. Session Completion — Clean handoff
+
+**Restructured PRs**:
+| PR | Description | Sub-PRs |
+|----|-------------|---------|
+| PR-11 | Autonomic Component Framework | 6 (11.1-11.6) |
+| PR-12 | Autonomic Component Implementation | 9 (12.1-12.9) |
+| PR-13 | Monitoring, Benchmarking, Scoring | 5 (13.1-13.5) |
+| PR-14 | Open-Source Catalog & SOTA | 5 (14.1-14.5) |
+
+**Next Step**: Begin PR-11.1 (Component Specification Standard)
 
 See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 

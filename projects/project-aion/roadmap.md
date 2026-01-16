@@ -1,5 +1,5 @@
 # Project Aion — Jarvis (AIfred “Archon”) Feature Request & Development Roadmap
-*Current date: 2026-01-09*  
+*Current date: 2026-01-13*  
 *Target environment: Claude Code (primary) + OpenCode (secondary)*  
 *Baseline reference (vanilla template, upstream-only): **AIfred mainline by David O’Neil** (“AIfred baseline”)*  
 *Project Aion Archons: **Jarvis**, **Jeeves**, **Wallace** (and future Archons as needed)*  
@@ -823,77 +823,227 @@ Requirements:
 
 ---
 
-### PR-11: Autonomy & Permission Reduction (Scoped) + One-shot PRD Validation Standard
-**Goal:** Increase autonomy while enforcing safety via measurable standards.
+### PR-11: Autonomic Component Framework
 
-Requirements:
-- Claude Code should not ask permission for operations:
-  - inside Jarvis workspace
-  - inside the active target project workspace(s)
-- Use allowlists and auditing; consider `--dangerously-skip-permissions` only within allowlists.
-- Use the **one-shot PRD** (Section 3) as the validation standard:
-  - Jarvis executes end-to-end with minimal human intervention
-  - safety constraints satisfied (no ops outside allowlisted paths)
-  - audit log shows full traceability
+**Goal:** Establish the generalized templates, patterns, and standards that all autonomic components must follow.
 
-Deliverables:
-- “Autonomy policy” doc + enforcement plan.
-- “One-shot PRD runbook” (how to run, what success looks like).
+**Scope:** Foundation work — no component implementation, just architecture.
 
-Validation:
-- Successful run of Demo A (Section 6) becomes required evidence for PR-11 readiness.
+> **Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md`
 
----
+#### PR-11.1: Component Specification Standard
+- Define the Autonomic Component Specification Template
+- Mandatory fields: Identity, Triggers, Inputs, Outputs, Dependencies, Consumers, Gates, Metrics, Failure Modes
+- Create template file at `.claude/context/templates/autonomic-component-spec.md`
 
-### PR-12: Self-Evolution Loop (Reflect → Propose → Validate → Version → Push)
-**Goal:** Jarvis improves itself without drifting into bloat.
+#### PR-11.2: Component Interaction Protocol
+- Define how systems communicate (events, files, Memory MCP)
+- Event naming conventions
+- State file formats
+- Error propagation patterns
 
-Requirements:
-- Add hooks/patterns for reflection:
-  - capture blockers and inefficiencies per session
-  - propose code/doc changes (diff + rationale + risk)
-  - require review gates for destructive/systemwide changes
-- Tie proposals to benchmark outcomes:
-  - do not ship regressions without explicit user approval
-- Implement version bump + release note automation aligned with PR-1.
+#### PR-11.3: Metrics Collection Standard
+- Define common metrics all components must emit
+- Token cost, execution time, success/failure
+- Storage format (JSONL, Memory MCP, etc.)
+- Aggregation patterns
 
-Validation:
-- Demonstrate one full loop on a small, safe change:
-  - reflection → proposal → benchmark check → version bump → push.
+#### PR-11.4: Gate Pattern Standard
+- Define approval checkpoint pattern
+- Risk levels (low/medium/high) and corresponding gates
+- User notification patterns
+- Override mechanisms
 
----
+#### PR-11.5: Override and Disable Pattern
+- How to disable any autonomic system
+- Emergency stop mechanisms
+- Per-session vs persistent configuration
+- Audit logging requirements
 
-### PR-13: Benchmark Demos & Scoring (Regression Gates)
-**Goal:** Make evolution measurable and repeatable.
+#### PR-11.6: Testing Framework
+- How to test autonomic components in isolation
+- Mock patterns for dependencies
+- Validation harness integration
+- Regression test patterns
 
-Requirements:
-- Define 2–3 end-to-end demos with:
-  - success criteria
-  - metrics
-  - artifacts and report outputs
-- One demo MUST be full product delivery from the one-shot PRD:
-  - create new GitHub repo under CannonCoPilot
-  - implement a trivial but complete tool with a small web GUI
-  - tests/validation
-  - push repo and generate report
+**Deliverables**:
+- 6 pattern documents in `.claude/context/patterns/autonomy/`
+- Autonomic Component Specification Template
+- Testing framework skeleton
 
-Deliverables:
-- A benchmark runner doc/runbook.
-- A report format template and storage location.
+**Acceptance Criteria**:
+- All patterns reviewed and approved
+- Template can express all 8 planned systems
+- Testing framework validates at least one mock component
 
 ---
 
-### PR-14: Research & Comparative Analysis (SOTA Projects) + Adopt/Adapt/Reject
-**Goal:** Incorporate best ideas while avoiding bloat.
+### PR-12: Autonomic Component Implementation
 
-Requirements:
-- Maintain curated references and periodically compare Jarvis patterns to the SOTA list (Section 4).
-- For each comparison cycle:
-  - propose “adopt/adapt/reject” items with rationale and risk
-  - ensure changes map back to benchmarks and do not introduce redundancy
+**Goal:** Implement each of the eight autonomic systems following PR-11 framework.
 
-Validation:
-- Each cycle produces a dated report with explicit decisions and follow-up PR references.
+> **Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md` (Part I: The Eight Autonomic Systems)
+
+#### PR-12.1: Self-Launch System
+- Enhanced session-start hook
+- Startup protocol implementation (environment validation, context restoration, baseline sync, work detection)
+- Autonomy configuration (opt-in autonomous initiation)
+- Testing and validation
+
+#### PR-12.2: Wiggum Loop Integration
+- Loop state management (`loop-state.json`)
+- Stop hook enhancement (block until objectives met)
+- Safety mechanisms (iteration limits, time-based checkpoints, scope drift detection)
+- Scope boundaries and stopping conditions
+
+#### PR-12.3: Independent Milestone Review
+- `milestone-reviewer` agent definition
+- Review criteria files (per-PR in `review-criteria/` directory)
+- 5-phase review process (deliverables, validation, documentation, regression, report)
+- Remediation workflow integration
+
+#### PR-12.4: Enhanced Context Management (JICM v2)
+- Predictive loading (analyze upcoming work, pre-load required MCPs)
+- Intelligent offloading (automatic subagent delegation)
+- Automated compression (threshold-based, preserve critical context)
+- Enhanced `/context-budget` dashboard
+
+#### PR-12.5: Self-Reflection Cycles
+- Reflection engine (`reflection-engine.js`)
+- Data source integration (corrections.md, selection-audit.jsonl, session-state.md, Memory MCP, git history)
+- Analysis categories (blockers, patterns, mistakes, proposals)
+- Report generation and Memory MCP persistence
+
+#### PR-12.6: Self-Evolution Cycles
+- Evolution pipeline (triage → design → approval → implementation → validation → release → rollback)
+- Proposal queue management (`evolution-queue.yaml`)
+- Risk-based approval gates (low=auto, medium=notify, high=explicit)
+- Rollback capability for any change
+
+#### PR-12.7: R&D Cycles
+- Research agenda management (`research-agenda.yaml`)
+- Discovery automation (scan MCP lists, plugins, SOTA projects)
+- Classification workflow (ADOPT/ADAPT/DEFER/REJECT)
+- Proposal generation to evolution queue
+
+#### PR-12.8: Maintenance Workflows
+- Task scheduler (cleanup, freshness audits, health checks, optimization)
+- `freshness-auditor.js` for documentation checks
+- Health checker for hooks/settings/MCPs
+- `/maintain` command for manual invocation
+
+#### PR-12.9: Session Completion System
+- Enhanced `/end-session` (work state capture, memory persistence, context updates, git operations)
+- Handoff preparation (checkpoint file, "Next Session" instructions)
+- Session summary generation
+- Cleanup procedures
+
+**Deliverables**:
+- 9 implemented systems with full specification docs
+- Hooks, scripts, commands for each
+- Integration tests
+
+**Acceptance Criteria**:
+- Each system passes its validation tests
+- Systems can run independently
+- Systems interact correctly when combined
+
+---
+
+### PR-13: Monitoring, Benchmarking, and Scoring
+
+**Goal:** Create the infrastructure to measure, benchmark, and score autonomous behavior.
+
+#### PR-13.1: Telemetry System
+- Event collection from all PR-12 components
+- Centralized event log (`telemetry.jsonl`)
+- Query interface for analysis
+- Retention policies (log rotation, archival)
+
+#### PR-13.2: Benchmark Suite
+- End-to-end scenario definitions (including One-shot PRD from Section 3)
+- Benchmark runner with deterministic execution
+- Baseline measurement and storage
+- Before/after comparison tooling
+
+#### PR-13.3: Scoring Framework
+- Component effectiveness metrics
+- Scoring algorithms per system (e.g., Loop completion rate, Review accuracy, Evolution success)
+- Threshold definitions for pass/warn/fail
+- Trend analysis over time
+
+#### PR-13.4: Dashboard and Reporting
+- Real-time visibility into autonomous behavior
+- Historical trends and graphs
+- Alert definitions for anomalies
+- Report generation templates
+
+#### PR-13.5: Regression Detection
+- Automatic regression identification against baselines
+- Integration with evolution gates (block evolution on regression)
+- Alert generation and escalation
+- Remediation tracking
+
+**Deliverables**:
+- Telemetry infrastructure
+- 10+ defined benchmarks (including Demo A, B, C from Section 6)
+- Scoring system with thresholds
+- Reporting templates
+- Regression detector with evolution gate integration
+
+**Acceptance Criteria**:
+- All PR-12 components emit telemetry
+- Benchmarks can run end-to-end
+- Scoring produces meaningful metrics
+- Regressions are automatically detected
+
+---
+
+### PR-14: Open-Source Catalog and SOTA Reference
+
+**Goal:** Create and maintain a catalog of reference projects for R&D cycles and self-evolution.
+
+#### PR-14.1: Catalog Structure
+- Define catalog schema (name, URL, category, status, last-reviewed, relevance-score)
+- Categorization system (MCPs, Plugins, Agents, Frameworks, Patterns)
+- Evaluation criteria template
+- Storage location: `projects/project-aion/sota-catalog/`
+
+#### PR-14.2: Initial Population
+- Populate from roadmap Section 4 references (~50 entries)
+- Categorize MCP server repositories (4.1-4.9)
+- Categorize plugin repositories (4.10-4.11)
+- Categorize agent framework references (4.12-4.14)
+
+#### PR-14.3: Comparison Framework
+- Gap analysis template (Jarvis capability vs SOTA capability)
+- Opportunity identification workflow
+- Priority scoring for adoption candidates
+- Integration effort estimation
+
+#### PR-14.4: Adoption/Adaptation Pipeline
+- Workflow for evaluating catalog items against Jarvis needs
+- Integration with PR-12.7 (R&D Cycles) and PR-12.6 (Evolution)
+- Tracking adoption status per catalog entry
+- Success/failure documentation
+
+#### PR-14.5: Scheduled Research Integration
+- Research scheduling (weekly/monthly cadence)
+- Automatic catalog updates from source lists
+- Stale entry detection (items not updated in 90+ days)
+- Integration with R&D Cycles for periodic discovery
+
+**Deliverables**:
+- Catalog at `projects/project-aion/sota-catalog/`
+- 50+ cataloged references (initial population)
+- Comparison framework with gap analysis template
+- Research scheduler with cron-like behavior
+
+**Acceptance Criteria**:
+- Catalog is populated and properly structured
+- At least one full comparison cycle completed
+- Research scheduler operational
+- Integration with R&D Cycles validated
 
 ---
 
@@ -1262,22 +1412,39 @@ Acceptance:
 
 **Target Version**: 3.0.0 (MAJOR — Autonomous Operation)
 
-| PR | Description | Version |
-|----|-------------|---------|
-| PR-11 | Autonomy & Permission Reduction | 2.1.0 |
-| PR-12 | Self-Evolution Loop | 2.2.0 |
-| PR-13 | Benchmark Demos | 2.3.0 |
-| PR-14 | SOTA Research & Comparison | **3.0.0** |
+> **Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md`
+
+| PR | Description | Sub-PRs | Version |
+|----|-------------|---------|---------|
+| PR-11 | Autonomic Component Framework | 6 (11.1-11.6) | 2.1.0 |
+| PR-12 | Autonomic Component Implementation | 10 (12.1-12.10) | 2.5.0 |
+| PR-13 | Monitoring, Benchmarking, Scoring | 5 (13.1-13.5) | 2.8.0 |
+| PR-14 | Open-Source Catalog & SOTA | 5 (14.1-14.5) | **3.0.0** |
+
+**Nine Autonomic Systems** (implemented in PR-12):
+1. Self-Launch Protocol — Initialize with full context awareness + greeting
+2. Wiggum Loop Integration — Drive work to completion (DEFAULT behavior)
+3. Independent Milestone Review — Semi-autonomous quality gate
+4. Enhanced Context Management (JICM v2) — Triggers continuation, not exit
+5. Self-Reflection Cycles — Learn from experience (Jarvis codebase only)
+6. Self-Evolution Cycles — Safe self-modification with downtime trigger
+7. R&D Cycles — External + internal token efficiency research
+8. Maintenance Workflows — Jarvis codebase AND active project
+9. Session Completion — USER-PROMPTED ONLY
+
+**Plus**: `/self-improve` command (PR-12.10) to trigger Systems 5-8 as a session
 
 Deliverables:
-- PR-11: Autonomy policy + one-shot PRD runbook + scoped permissions.
-- PR-12: Self-evolution loop established with review gates.
-- PR-13: Benchmark demos + scoring + report outputs (including full PRD-based product delivery and repo push).
-- PR-14: Regular SOTA comparison reports with adopt/adapt/reject pipeline.
+- PR-11: 6 foundation patterns, component specification template, testing framework
+- PR-12: 10 sub-PRs implementing 9 systems + `/self-improve` command
+- PR-13: Telemetry infrastructure, 10+ benchmarks, scoring system, regression detection
+- PR-14: SOTA catalog with 50+ entries, comparison framework, research scheduler
 
 Acceptance:
-- Jarvis can execute the one-shot PRD end-to-end safely, with auditable traces.
-- Improvements are measurable and regressions detectable.
+- All 9 autonomic systems pass validation tests
+- Systems can run independently AND interact correctly when combined
+- Jarvis can execute the one-shot PRD end-to-end safely, with auditable traces
+- Improvements are measurable and regressions automatically detected
 
 ---
 
