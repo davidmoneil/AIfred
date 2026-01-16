@@ -1,6 +1,10 @@
 ---
 description: Clean session exit with documentation
-allowed-tools: Read, Write, Edit, Bash(git:*)
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash(git:*)
 ---
 
 # End Session

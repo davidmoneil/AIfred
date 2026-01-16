@@ -20,7 +20,8 @@ const LOG_DIR = path.join(__dirname, '..', 'logs');
 
 // Files to preserve context from
 const PRESERVE_FILES = [
-  { path: '.claude/context/session-state.md', maxChars: 1500, label: 'Session State' }
+  { path: '.claude/context/compaction-essentials.md', maxChars: 2000, label: 'Core Essentials', extractKey: false },
+  { path: '.claude/context/session-state.md', maxChars: 1500, label: 'Session State', extractKey: true }
 ];
 
 // Blockers file (updated by other hooks/processes)
@@ -112,10 +113,11 @@ module.exports = {
         const content = await readFileSafe(fullPath, file.maxChars);
 
         if (content) {
-          const keyInfo = extractKeyInfo(content);
-          if (keyInfo.trim().length > 0) {
+          // Some files should be included as-is, others need key extraction
+          const finalContent = file.extractKey ? extractKeyInfo(content) : content;
+          if (finalContent.trim().length > 0) {
             preservedParts.push(`--- ${file.label} (preserved) ---`);
-            preservedParts.push(keyInfo);
+            preservedParts.push(finalContent);
           }
         }
       }

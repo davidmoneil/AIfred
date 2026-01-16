@@ -4,7 +4,7 @@ Skills are comprehensive workflow guides that consolidate related commands, hook
 Unlike commands (single actions), skills provide end-to-end guidance for complex workflows.
 
 **Created**: 2026-01-05
-**Last Updated**: 2026-01-05
+**Last Updated**: 2026-01-16
 **Ported from**: AIProjects
 
 ---
@@ -13,7 +13,9 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 
 | Skill | Description | Related Commands |
 |-------|-------------|------------------|
-| [session-management](session-management/SKILL.md) | Session lifecycle management | /checkpoint, /update-priorities, /audit-log |
+| [session-management](session-management/SKILL.md) | Session lifecycle management | /checkpoint, /end-session |
+| [project-lifecycle](project-lifecycle/SKILL.md) | Project creation, registration, consolidation | /create-project, /register-project |
+| [infrastructure-ops](infrastructure-ops/SKILL.md) | Health checks, container discovery, monitoring | /health-report, /agent service-troubleshooter |
 
 ---
 
@@ -61,8 +63,23 @@ description: One-line description
 category: workflow | infrastructure | development
 tags: [tag1, tag2]
 created: YYYY-MM-DD
+context: fork | shared    # Execution isolation (optional)
+agent: agent-name         # Associated agent (optional)
+allowed-tools:            # Tool restrictions (optional)
+  - Read
+  - Write
+  - Bash(pattern:*)
+  - mcp__service__operation
 ---
 ```
+
+### Extended Fields
+
+| Field | Purpose |
+|-------|---------|
+| `context: fork` | Indicates skill can fork context (isolated execution) |
+| `agent` | Links skill to autonomous agent for guided execution |
+| `allowed-tools` | YAML array restricting which tools skill can invoke |
 
 ---
 

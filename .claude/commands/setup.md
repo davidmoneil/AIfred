@@ -1,6 +1,13 @@
 ---
 description: AIfred initial configuration wizard
-allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep, mcp__mcp-gateway__*
+allowed-tools:
+  - Bash(*)
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - mcp__mcp-gateway__*
 ---
 
 # AIfred Setup Wizard

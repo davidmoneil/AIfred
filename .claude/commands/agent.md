@@ -1,7 +1,11 @@
 ---
 argument-hint: <agent-name> [args]
 description: Launch a specialized agent to work independently
-allowed-tools: Read, Write, Task, Bash(date:*)
+allowed-tools:
+  - Read
+  - Write
+  - Task
+  - Bash(date:*)
 ---
 
 Launch the **$ARGUMENTS** agent to work independently with its own context window.

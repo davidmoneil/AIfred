@@ -14,6 +14,7 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 
 - @.claude/context/_index.md - Navigate the knowledge base
 - @.claude/context/session-state.md - **Current work status** (check here first when returning)
+- @.claude/context/compaction-essentials.md - **Core context** (survives compaction)
 - @.claude/context/projects/current-priorities.md - Active tasks
 - @paths-registry.yaml - Source of truth for all paths
 - @.claude/context/standards/severity-status-system.md - Severity/status terminology
@@ -35,6 +36,7 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 5. **Memory for Decisions**: Store decisions and lessons in Memory MCP, details in context files
 6. **MCP-First Tools**: Use MCP tools before bash commands when available
 7. **Hub, Not Container**: AIfred tracks code projects but doesn't contain them. Code lives in `projects_root`.
+8. **Compaction Sync**: When updating design patterns, paths, or core workflows, also update `compaction-essentials.md` so context survives compression.
 
 ---
 
@@ -150,7 +152,9 @@ Your infrastructure-specific agents with persistent memory:
 
 | Skill | Purpose | Key Commands |
 |-------|---------|--------------|
-| [session-management](@.claude/skills/session-management/SKILL.md) | Session lifecycle management | `/checkpoint`, `/update-priorities`, `/audit-log` |
+| [session-management](@.claude/skills/session-management/SKILL.md) | Session lifecycle management | `/checkpoint`, `/end-session` |
+| [project-lifecycle](@.claude/skills/project-lifecycle/SKILL.md) | Project creation and registration | `/create-project`, `/register-project` |
+| [infrastructure-ops](@.claude/skills/infrastructure-ops/SKILL.md) | Health checks and monitoring | `/health-report`, `/agent service-troubleshooter` |
 
 ### When to Use Skills vs Commands vs Agents
 
@@ -233,6 +237,7 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 | `/design-review` | PARC pattern design review |
 | `/discover <target>` | Discover and document services |
 | `/health-check` | Verify system health |
+| `/context-loss` | Report forgotten context (after compaction) |
 
 ---
 
@@ -328,5 +333,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.3 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-05 - Added Skills System and Documentation Synchronization (ported from AIProjects)*
+*AIfred v1.4 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-01-16 - Added Context Compaction Preservation (compaction-essentials.md, /context-loss)*
