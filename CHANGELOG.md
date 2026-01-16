@@ -11,6 +11,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.0] - 2026-01-16
+
+**Phase 6 Autonomy Design Complete**
+
+All specifications for Phase 6 (Autonomy, Self-Evolution & Benchmark Gates) created.
+
+### Added
+
+#### PR-11: Autonomic Component Framework (6 sub-PRs)
+- **Component Specification Standard** — 9-section template for all autonomic components
+- **Component Interaction Protocol** — Event-driven communication patterns
+- **Metrics Collection Standard** — Telemetry schema and storage patterns
+- **Gate Pattern Standard** — Risk-based approval checkpoints
+- **Override and Disable Pattern** — Emergency stop and configuration
+- **Testing Framework** — Isolation testing and validation harness
+
+#### PR-12: Autonomic Component Implementation (10 sub-PRs)
+- **AC-01 Self-Launch** — Environmental awareness, greeting, autonomous startup
+- **AC-02 Wiggum Loop** — Default-on iterative work driver
+- **AC-03 Milestone Review** — Two-level review (technical + project)
+- **AC-04 JICM** — Enhanced context management with liftover
+- **AC-05 Self-Reflection** — Lessons directory, pattern detection
+- **AC-06 Self-Evolution** — Safe self-modification with gates
+- **AC-07 R&D Cycles** — External discovery and token efficiency
+- **AC-08 Maintenance** — Dual-scope hygiene workflows
+- **AC-09 Session Completion** — User-prompted clean handoff
+- **/self-improve Command** — Orchestrates Systems 5-8
+
+#### PR-13: Monitoring, Benchmarking, Scoring (5 sub-PRs)
+- **Telemetry System** — Event collection, JSONL storage, Memory MCP integration
+- **Benchmark Suite** — Component, E2E, performance, quality benchmarks
+- **Scoring Framework** — 0-100 component scores, session composites, trends
+- **Dashboard & Reporting** — /status, /health, session/weekly/evolution reports
+- **Regression Detection** — Baseline comparison, evolution gates
+
+#### PR-14: Open-Source Catalog & SOTA Reference (5 sub-PRs)
+- **Catalog Structure** — YAML schema, categories, evaluation criteria
+- **Initial Population** — 50+ item inventory, templates, workflow
+- **Comparison Framework** — Gap analysis, opportunity identification
+- **Adoption Pipeline** — 4-stage workflow, decision matrix
+- **Research Scheduler** — Scheduled tasks, queue management
+
+### Files Created
+
+**Components** (`.claude/context/components/`):
+- AC-01 through AC-09 specification documents
+
+**Patterns** (`.claude/context/patterns/`):
+- startup-protocol.md, wiggum-loop-pattern.md, milestone-review-pattern.md
+- jicm-pattern.md, self-reflection-pattern.md, self-evolution-pattern.md
+- rd-cycles-pattern.md, maintenance-pattern.md, session-completion-pattern.md
+- self-improvement-pattern.md
+
+**Standards** (`.claude/context/standards/`):
+- metrics-collection-standard.md, gate-pattern-standard.md
+
+**Infrastructure** (`.claude/context/infrastructure/`):
+- telemetry-system.md, benchmark-suite.md, scoring-framework.md
+- dashboard-reporting.md, regression-detection.md
+- sota-catalog-structure.md, sota-catalog-population.md
+- sota-comparison-framework.md, sota-adoption-pipeline.md
+- sota-research-scheduler.md
+
+**Commands** (`.claude/commands/`):
+- self-improve.md
+
+**Configuration** (`.claude/config/`):
+- autonomy-config.yaml
+
+### Summary
+
+| PR | Sub-PRs | Focus |
+|----|---------|-------|
+| PR-11 | 6 | Autonomic Component Framework |
+| PR-12 | 10 | Autonomic Component Implementation |
+| PR-13 | 5 | Monitoring, Benchmarking, Scoring |
+| PR-14 | 5 | Open-Source Catalog & SOTA Reference |
+
+**Total**: 26 sub-PRs, 40+ specification documents
+
+---
+
 ## [2.0.0] - 2026-01-13
 
 **MAJOR RELEASE: Phase 5 Tooling Complete**
