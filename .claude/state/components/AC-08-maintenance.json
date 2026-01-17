@@ -1,0 +1,42 @@
+{
+  "component": "AC-08",
+  "name": "maintenance",
+  "version": "1.0.0",
+  "status": "implementing",
+  "created": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-01-17T00:00:00.000Z",
+  "implementation": {
+    "spec_complete": true,
+    "pattern_complete": true,
+    "maintain_command": true,
+    "reports_directory": true,
+    "triggers_tested": false,
+    "integration_tested": false,
+    "metrics_emission": false
+  },
+  "validation_checklist": {
+    "all_9_sections_completed": true,
+    "triggers_tested": false,
+    "inputs_outputs_validated": false,
+    "dependencies_verified": true,
+    "gates_implemented": false,
+    "metrics_emission_working": false,
+    "failure_modes_tested": false,
+    "integration_with_consumers_verified": false,
+    "documentation_updated": true
+  },
+  "last_runs": {
+    "cleanup": null,
+    "freshness": null,
+    "health": null,
+    "organization": null,
+    "optimization": null
+  },
+  "metrics": {
+    "total_maintenance_cycles": 0,
+    "files_cleaned": 0,
+    "stale_files_flagged": 0,
+    "health_issues_found": 0,
+    "optimization_proposals": 0
+  }
+}

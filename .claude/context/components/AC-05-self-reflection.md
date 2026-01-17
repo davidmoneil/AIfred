@@ -318,11 +318,16 @@ requires separate approval in AC-06.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-05-self-reflection.md` | this file |
-| Pattern document | `.claude/context/patterns/self-reflection-pattern.md` | planned |
+| Component spec | `.claude/context/components/AC-05-self-reflection.md` | exists |
+| Pattern document | `.claude/context/patterns/self-reflection-pattern.md` | exists |
 | Corrections file | `.claude/context/lessons/corrections.md` | exists |
-| Lessons directory | `.claude/context/lessons/` | partial |
-| Reflection command | `.claude/commands/reflect.md` | planned |
+| Self-corrections file | `.claude/context/lessons/self-corrections.md` | exists |
+| Lessons index | `.claude/context/lessons/index.md` | exists |
+| Lessons directories | `.claude/context/lessons/{problems,solutions,patterns}/` | exists |
+| Reflection command | `.claude/commands/reflect.md` | exists |
+| Evolution queue | `.claude/state/queues/evolution-queue.yaml` | exists |
+| State file | `.claude/state/components/AC-05-reflection.json` | exists |
+| Reports directory | `.claude/reports/reflections/` | exists |
 
 ### Lessons Directory Structure
 
@@ -419,15 +424,15 @@ requires separate approval in AC-06.
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (manual, session-end, PR completion)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (lessons directory exists)
+- [x] Dependencies verified (lessons directory exists)
 - [ ] Gates implemented (all low-risk, auto-approve)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (no data, no Memory MCP)
 - [ ] Integration with consumers verified (AC-06 reads proposals)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

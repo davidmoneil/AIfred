@@ -1,0 +1,30 @@
+{
+  "$schema": "wiggum-state-v1",
+  "component_id": "AC-02",
+  "version": "1.0.0",
+  "status": "idle",
+  "last_updated": "2026-01-17T01:10:00.000Z",
+
+  "current_loop": null,
+
+  "passes": [],
+
+  "todos": {
+    "total": 0,
+    "completed": 0,
+    "in_progress": 0,
+    "pending": 0
+  },
+
+  "metrics": {
+    "total_token_cost": 0,
+    "total_duration_ms": 0,
+    "avg_pass_duration_ms": 0
+  },
+
+  "history": {
+    "last_completed_task": null,
+    "total_tasks_completed": 0,
+    "avg_passes_per_task": 0
+  }
+}

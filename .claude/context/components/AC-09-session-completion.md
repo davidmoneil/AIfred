@@ -361,10 +361,11 @@ clean session handoff.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-09-session-completion.md` | this file |
-| Pattern document | `.claude/context/patterns/session-completion-pattern.md` | planned |
-| End-session command | `.claude/commands/end-session.md` | exists (enhance) |
-| Session summary template | `.claude/context/templates/session-summary.md` | planned |
+| Component spec | `.claude/context/components/AC-09-session-completion.md` | exists |
+| Pattern document | `.claude/context/patterns/session-completion-pattern.md` | exists |
+| End-session command | `.claude/commands/end-session.md` | exists |
+| State file | `.claude/state/components/AC-09-session.json` | exists |
+| Session summary template | `.claude/context/templates/session-summary.md` | optional |
 
 ### Seven-Step Completion Protocol
 
@@ -475,15 +476,15 @@ If user declines:
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (manual command, phrase detection)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (git, file system)
+- [x] Dependencies verified (git, file system)
 - [ ] Gates implemented (configurable push)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (no git, no MCP)
 - [ ] Integration with consumers verified (AC-01 reads checkpoint)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

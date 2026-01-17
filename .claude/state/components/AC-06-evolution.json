@@ -1,0 +1,60 @@
+{
+  "component": "AC-06",
+  "name": "self-evolution",
+  "version": "1.0.0",
+  "status": "implementing",
+  "created": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-01-17T00:00:00.000Z",
+  "implementation": {
+    "spec_complete": true,
+    "pattern_complete": true,
+    "evolve_command": true,
+    "evolution_queue": true,
+    "reports_directory": true,
+    "triggers_tested": false,
+    "integration_tested": false,
+    "metrics_emission": false
+  },
+  "validation_checklist": {
+    "all_9_sections_completed": true,
+    "triggers_tested": false,
+    "inputs_outputs_validated": false,
+    "dependencies_verified": true,
+    "gates_implemented": false,
+    "metrics_emission_working": false,
+    "failure_modes_tested": false,
+    "integration_with_consumers_verified": false,
+    "documentation_updated": true
+  },
+  "dependencies": {
+    "evolution_queue": {
+      "path": ".claude/state/queues/evolution-queue.yaml",
+      "status": "exists"
+    },
+    "autonomy_config": {
+      "path": ".claude/config/autonomy-config.yaml",
+      "status": "exists"
+    },
+    "git_mcp": {
+      "status": "available",
+      "required": true
+    },
+    "memory_mcp": {
+      "status": "available",
+      "required": false
+    }
+  },
+  "current_session": {
+    "evolutions_this_session": 0,
+    "rate_limit": 3,
+    "active_branch": null
+  },
+  "last_evolution": null,
+  "evolutions_completed": 0,
+  "metrics": {
+    "total_evolutions": 0,
+    "successful_evolutions": 0,
+    "failed_evolutions": 0,
+    "rollbacks": 0
+  }
+}

@@ -346,11 +346,13 @@ R&D-SOURCED (any risk level):
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-06-self-evolution.md` | this file |
-| Pattern document | `.claude/context/patterns/self-evolution-pattern.md` | planned |
-| Evolution queue | `.claude/state/queues/evolution-queue.yaml` | planned |
-| Evolution command | `.claude/commands/evolve.md` | planned |
-| Downtime detector | `.claude/hooks/downtime-detector.js` | planned |
+| Component spec | `.claude/context/components/AC-06-self-evolution.md` | exists |
+| Pattern document | `.claude/context/patterns/self-evolution-pattern.md` | exists |
+| Evolution queue | `.claude/state/queues/evolution-queue.yaml` | exists |
+| Evolution command | `.claude/commands/evolve.md` | exists |
+| State file | `.claude/state/components/AC-06-evolution.json` | exists |
+| Reports directory | `.claude/reports/evolutions/` | exists |
+| Downtime detector | `.claude/hooks/downtime-detector.js` | optional |
 
 ### Seven-Step Evolution Pipeline
 
@@ -453,15 +455,15 @@ R&D-SOURCED (any risk level):
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (manual, downtime, backlog)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (git available)
+- [x] Dependencies verified (git available)
 - [ ] Gates implemented (risk-based approval)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (validation failure, rollback)
 - [ ] Integration with consumers verified (proposals flow through)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

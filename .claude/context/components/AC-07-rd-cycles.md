@@ -329,11 +329,13 @@ discoveries without human review.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-07-rd-cycles.md` | this file |
-| Pattern document | `.claude/context/patterns/rd-cycles-pattern.md` | planned |
-| Research agenda | `.claude/state/queues/research-agenda.yaml` | planned |
-| Research command | `.claude/commands/research.md` | planned |
-| File usage tracker | `.claude/hooks/file-usage-tracker.js` | planned |
+| Component spec | `.claude/context/components/AC-07-rd-cycles.md` | exists |
+| Pattern document | `.claude/context/patterns/rd-cycles-pattern.md` | exists |
+| Research agenda | `.claude/state/queues/research-agenda.yaml` | exists |
+| Research command | `.claude/commands/research.md` | exists |
+| State file | `.claude/state/components/AC-07-rd.json` | exists |
+| Reports directory | `.claude/reports/research/` | exists |
+| File usage tracker | `.claude/hooks/file-usage-tracker.js` | optional |
 
 ### Dual Research Focus
 
@@ -427,15 +429,15 @@ discoveries without human review.
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (manual, downtime, scheduled)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (web access, deep-research)
+- [x] Dependencies verified (web access, deep-research)
 - [ ] Gates implemented (proposals require approval)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (no web, no agent)
 - [ ] Integration with consumers verified (AC-06 receives proposals)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

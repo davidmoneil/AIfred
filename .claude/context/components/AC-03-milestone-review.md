@@ -278,9 +278,14 @@ Blocking release for major issues requires user decision.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-03-milestone-review.md` | this file |
-| Pattern document | `.claude/context/patterns/milestone-review-pattern.md` | planned |
-| Review criteria dir | `.claude/review-criteria/` | planned |
+| Component spec | `.claude/context/components/AC-03-milestone-review.md` | exists |
+| Pattern document | `.claude/context/patterns/milestone-review-pattern.md` | exists |
+| code-review agent | `.claude/agents/code-review.md` | exists |
+| project-manager agent | `.claude/agents/project-manager.md` | exists |
+| Review criteria dir | `.claude/review-criteria/` | exists |
+| Review criteria defaults | `.claude/review-criteria/defaults.yaml` | exists |
+| Reports directory | `.claude/reports/reviews/` | exists |
+| State file | `.claude/state/components/AC-03-review.json` | exists |
 | Report template | `.claude/context/templates/review-report.md` | planned |
 
 ### Two-Level Review Process
@@ -343,15 +348,15 @@ Blocking release for major issues requires user decision.
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (completion detection, manual command)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (agents defined)
+- [x] Dependencies verified (agents defined)
 - [ ] Gates implemented (release blocking)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (missing roadmap, agent failure)
 - [ ] Integration with consumers verified (AC-02 remediation)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

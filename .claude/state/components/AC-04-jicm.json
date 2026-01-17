@@ -1,0 +1,60 @@
+{
+  "component": "AC-04",
+  "name": "jicm",
+  "version": "1.0.0",
+  "status": "implementing",
+  "created": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-01-17T00:00:00.000Z",
+  "implementation": {
+    "spec_complete": true,
+    "pattern_complete": true,
+    "context_accumulator": true,
+    "mcp_scripts": true,
+    "context_budget_command": true,
+    "triggers_tested": false,
+    "integration_tested": false,
+    "metrics_emission": false
+  },
+  "validation_checklist": {
+    "all_9_sections_completed": true,
+    "triggers_tested": false,
+    "inputs_outputs_validated": false,
+    "dependencies_verified": true,
+    "gates_implemented": false,
+    "metrics_emission_working": false,
+    "failure_modes_tested": false,
+    "integration_with_consumers_verified": false,
+    "documentation_updated": true
+  },
+  "dependencies": {
+    "context_accumulator": {
+      "path": ".claude/hooks/context-accumulator.js",
+      "status": "exists"
+    },
+    "disable_mcps": {
+      "path": ".claude/scripts/disable-mcps.sh",
+      "status": "exists"
+    },
+    "enable_mcps": {
+      "path": ".claude/scripts/enable-mcps.sh",
+      "status": "exists"
+    },
+    "context_budget": {
+      "path": ".claude/commands/context-budget.md",
+      "status": "exists"
+    }
+  },
+  "current_session": {
+    "threshold_status": "HEALTHY",
+    "estimated_tokens": null,
+    "estimated_percent": null,
+    "checkpoints_created": 0,
+    "compression_events": 0
+  },
+  "metrics": {
+    "total_checkpoints": 0,
+    "total_compressions": 0,
+    "liftover_success_rate": null,
+    "avg_checkpoint_size_tokens": null
+  }
+}

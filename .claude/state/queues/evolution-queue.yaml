@@ -1,0 +1,58 @@
+# Evolution Queue
+# Proposals from AC-05 Self-Reflection for AC-06 Self-Evolution
+# Version: 1.0.0
+# Updated: 2026-01-17
+
+queue:
+  # Proposals waiting for processing
+  pending: []
+
+  # Proposals approved by user, ready for implementation
+  approved: []
+
+  # Proposals currently being implemented
+  in_progress: []
+
+  # Completed proposals (for history)
+  completed: []
+
+  # Rejected proposals (for record)
+  rejected: []
+
+# Proposal schema:
+# - id: string (unique identifier, e.g., "evo-2026-01-001")
+# - source: string (AC-05, AC-07, manual)
+# - created: ISO8601 timestamp
+# - title: string (brief description)
+# - description: string (detailed explanation)
+# - risk_level: low | medium | high
+# - files_affected: list of file paths
+# - rationale: string (why this change)
+# - related_problem: string (link to problem entry)
+# - status: pending | approved | in_progress | completed | rejected
+# - approved_at: ISO8601 timestamp (when approved)
+# - completed_at: ISO8601 timestamp (when completed)
+# - rejection_reason: string (if rejected)
+
+# Example pending proposal:
+# - id: evo-2026-01-001
+#   source: AC-05
+#   created: "2026-01-16T18:00:00.000Z"
+#   title: "Add stdin wrapper to all JS hooks"
+#   description: >
+#     All JavaScript hooks need stdin/stdout JSON wrapper
+#     to work with Claude Code's hook system.
+#   risk_level: low
+#   files_affected:
+#     - .claude/hooks/*.js
+#   rationale: >
+#     JS hooks were not executing because they used module.exports
+#     instead of stdin/stdout JSON communication.
+#   related_problem: lessons/problems/2026-01-problem-hook-format.md
+#   status: pending
+
+metadata:
+  last_updated: "2026-01-17T00:00:00.000Z"
+  total_proposals: 0
+  pending_count: 0
+  completed_count: 0

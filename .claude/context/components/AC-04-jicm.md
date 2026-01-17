@@ -310,13 +310,15 @@ that essential state is preserved.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-04-jicm.md` | this file |
+| Component spec | `.claude/context/components/AC-04-jicm.md` | exists |
+| Pattern document | `.claude/context/patterns/jicm-pattern.md` | exists |
 | Context accumulator | `.claude/hooks/context-accumulator.js` | exists |
 | MCP disable script | `.claude/scripts/disable-mcps.sh` | exists |
 | MCP enable script | `.claude/scripts/enable-mcps.sh` | exists |
 | Context budget command | `.claude/commands/context-budget.md` | exists |
-| Pattern document | `.claude/context/patterns/jicm-pattern.md` | planned |
-| JICM Agent | `.claude/agents/jicm-agent.md` | planned |
+| MCP status script | `.claude/scripts/list-mcp-status.sh` | exists |
+| State file | `.claude/state/components/AC-04-jicm.json` | exists |
+| JICM Agent | `.claude/agents/jicm-agent.md` | optional |
 
 ### Preservation vs Cutting
 
@@ -375,15 +377,15 @@ that essential state is preserved.
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (threshold detection, manual command)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (scripts exist)
+- [x] Dependencies verified (scripts exist)
 - [ ] Gates implemented (checkpoint before /clear)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (no tracking, no watcher)
 - [ ] Integration with consumers verified (AC-01 resume, AC-02 queries)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

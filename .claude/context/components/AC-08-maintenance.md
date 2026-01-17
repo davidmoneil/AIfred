@@ -340,12 +340,14 @@ before execution.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Component spec | `.claude/context/components/AC-08-maintenance.md` | this file |
-| Pattern document | `.claude/context/patterns/maintenance-pattern.md` | planned |
-| Maintenance command | `.claude/commands/maintain.md` | planned |
-| Health checker | `.claude/hooks/health-checker.js` | planned |
-| Freshness auditor | `.claude/hooks/freshness-auditor.js` | planned |
-| Organization auditor | `.claude/hooks/organization-auditor.js` | planned |
+| Component spec | `.claude/context/components/AC-08-maintenance.md` | exists |
+| Pattern document | `.claude/context/patterns/maintenance-pattern.md` | exists |
+| Maintenance command | `.claude/commands/maintain.md` | exists |
+| State file | `.claude/state/components/AC-08-maintenance.json` | exists |
+| Reports directory | `.claude/reports/maintenance/` | exists |
+| Health checker | `.claude/hooks/health-checker.js` | optional |
+| Freshness auditor | `.claude/hooks/freshness-auditor.js` | optional |
+| Organization auditor | `.claude/hooks/organization-auditor.js` | optional |
 
 ### Maintenance Task Details
 
@@ -443,15 +445,15 @@ before execution.
 
 Before marking this component as "active":
 
-- [ ] All 9 specification sections completed
+- [x] All 9 specification sections completed
 - [ ] Triggers tested (manual, session, downtime)
 - [ ] Inputs/outputs validated
-- [ ] Dependencies verified (file system, git)
+- [x] Dependencies verified (file system, git)
 - [ ] Gates implemented (deletion requires approval)
-- [ ] Metrics emission working
+- [ ] Metrics emission working (waiting for PR-13 telemetry)
 - [ ] Failure modes tested (missing files, timeout)
 - [ ] Integration with consumers verified (AC-06, AC-07)
-- [ ] Documentation updated
+- [x] Documentation updated
 
 ---
 

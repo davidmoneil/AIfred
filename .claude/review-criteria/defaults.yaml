@@ -1,0 +1,107 @@
+# Default Review Criteria
+# Used when no PR-specific criteria file exists
+# Version: 1.0.0
+# Created: 2026-01-17
+
+version: 1.0.0
+
+# Level 1: Technical Review Criteria
+technical:
+  # Required - must pass for approval
+  required:
+    files_exist: true
+    no_syntax_errors: true
+    no_secrets_committed: true
+
+  # Recommended - warnings if not met
+  recommended:
+    tests_exist: true
+    tests_pass: true
+    test_coverage_min: 60
+    no_warnings: true
+    docs_updated: true
+    error_handling_present: true
+
+# Level 2: Progress Review Criteria
+progress:
+  # Required - must pass for approval
+  required:
+    deliverables_complete: true
+    changelog_updated: true
+
+  # Recommended - warnings if not met
+  recommended:
+    version_bumped: true
+    no_scope_creep: true
+    readme_updated_if_applicable: true
+    commits_follow_convention: true
+
+# Scoring Thresholds
+thresholds:
+  # Minimum score (out of 10) for pass verdict
+  min_score_for_pass: 7
+
+  # Maximum issues allowed by severity
+  critical_issues_allowed: 0
+  error_issues_allowed: 0
+  warning_issues_allowed: 5
+  note_issues_allowed: 999
+
+# Verdict Determination
+verdict_rules:
+  # Conditions that force rejection
+  force_reject:
+    - critical_issues > 0
+    - error_issues > 0
+    - required_checklist_failed
+
+  # Conditions that result in conditional approval
+  conditional:
+    - warning_issues > 0
+    - recommended_checklist_partially_failed
+
+  # Conditions for full approval
+  approved:
+    - all_required_pass
+    - score >= min_score_for_pass
+    - warning_issues <= warning_issues_allowed
+
+# Review Scope Settings
+scope:
+  # File patterns to always review
+  always_review:
+    - "*.md"
+    - "*.yaml"
+    - "*.yml"
+    - "*.json"
+    - "*.js"
+    - "*.ts"
+    - "*.sh"
+
+  # File patterns to skip
+  skip_review:
+    - "node_modules/**"
+    - ".git/**"
+    - "*.log"
+    - "*.tmp"
+
+  # Maximum files to review (segment if more)
+  max_files_per_segment: 10
+
+# Validation Commands
+validation_commands:
+  # Commands to run for Jarvis PRs
+  jarvis:
+    - command: "/tooling-health"
+      description: "Validate tooling configuration"
+      required: false
+
+    - command: "/validate-selection"
+      description: "Validate tool selection patterns"
+      required: false
+
+  # Commands to run for all PRs
+  general:
+    - command: "git status"
+      description: "Check for uncommitted changes"
+      required: true
