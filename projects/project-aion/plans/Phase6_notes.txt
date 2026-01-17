@@ -1,0 +1,146 @@
+Phase6_notes
+System 1: Self-Launch Protocol
+The overarching aim of self-launch is that Jarvis shuold automatically run through all of these start session stages WITH NO ADDITIONAL PROMPTING.  Is it possible to trigger ClaudeCode to ingest a template prompt from a file without any prompting from the user?
+Self-launch should include:
+ - a weather check, time and date check
+ - location check (need to add an ip locator app later?)
+ - should trigger Jarvis to greet the user in a congenial and temporospatially appropriate way
+
+Jarvis should then say something like "One moment Sir, while I review the surrent system state and previous work."  Jarvis then:
+ - proceeds, unprompted, to run through all that session start stuff including for example:
+  - reviewing and ingesting the core .claude instruction files
+  - checking the AIfred main branch
+  - identifying the curreny/most recently active project
+  - ingesting project design documentation
+  - doing a quick review of the project space organization
+
+Once done Jarvis will present the user with:
+ - options for AIfred adopt/adapt/defer (as relevent)
+ - a summary or recent work and options for continuation
+ - any concerns he has noted about the project or system state
+ - and will solicit instructions from the user
+
+Critical Revisions - Remove these from any consideration for design features:
+	"**Opt-In Autonomy**: Autonomous initiation requires explicit enablement" - No, Jarvis' default state should be autonomous initiation and self-directed completion of tasks.  Jarvis updates the user along the way, and only pauses for direction if and when multi-task work stages have been completed.
+	"**Fail-Safe**: Default to "await user" if any check fails" - No, Jarvis should NEVER simply stop and "await user".  It should always have as a fallback a default to run Wiggum Loops to investigate and failures or procedural questions and then continue unprompted to resolve those issues.  Once a resolution has been attempted, THEN Jarvis should report back to the user with an INFORMED assessment of what the problem is and an explanation of his resolution attempt.  Jarvis will prompt the user for insights.
+	"**User Override**: Always allow user to interrupt autonomous startup" - No, this is unnecessary.  ClaudeCode already provides the user with the ability to interrput any AI process. We don't need to waste space on superfluous instructions and design patterns, especially ones that are aimed at curtailing Jarvis's self-directedness.
+- Keep in mind that System 1 applies in all sessions and project spaces.
+
+
+System 2: Wiggum Loop Integration
+The overall purpose of the Ralph Wiggum loop is to add multiple layers of reflective reasoning, self-checking, and revisionary correction to everything that Jarvis produces.  Here are some slight adjustments to the ideas in this section:
+ - "User explicitly requests "keep going until done" " - No.  This should ALWAYS be the default behavior.  In order for Jarvis to NOT invoke a Ralph Wiggum loop the user should have to explicitly invoke language to that effect; e.g. "quick solutions only", "rough pass", "first pass", "simple sketch".
+ - "Self-Launch detects in-progress PR" - Yes, and in effect there is ALWAYS an in-progress PR, except at the very beginning of a project.  Even the fact that there is supposed to be anautomatic start-up procedure counts as "in-progress" work that Jarvis should do unprompted and on a Wiggum loop until the work passes review.
+ - "Stop hook blocks until todos complete" Almost, but no.  Hook blocks until ToDo completion is reviewed and found to be sufficient and without error.
+ - Stopping Condition: "Context exhaustion (after checkpoint/clear)" - No, any context exhaustion and clean-up cycle should re-trigger a Wiggam Loop for Jarvis to iteratively proceed along the previously interrupted workflow.
+ - "Time-based checkpoints (every N minutes)" - Maybe, but make this a really large N, like 360 minutes.  I'm more than happy to let Jarvis work autonomously for several hours at a time.
+ - "Scope drift detection (work exceeds original task)" - Yes!  Essential.  The basic Wiggum Loop structure should include a check for drift detection.  However, this should not trigger a loop exit, but should perpetuate the loop in the form of Jarvis realigning the work loop with the aims of the task within the context of the project.
+ - "**Context Awareness**: Integrates with JICM for resource management" - Yes.  This should be part of the Wiggum Loop structire, to include context awareness checks (hooks are probably already going to run regardless, but perhaps some explicit loop instruction would ensure the hooks don't act as interruptors, but rather simple pause points for the Wiggum Loop to re-enter at the review step)
+ - Keep in mind that System 2 applies in all sessions and project spaces.
+
+
+System 3: Independent Milestone Review
+This component should be one of the semi-autonomous parts of the system. Jarvis can tell when major phases are complete, and should prompt the user to see if the user has any specific notes to consider before Jarvis launches a full review of the project state and progress.
+ - "Scheduled periodic review (weekly?)" - No, not needed.  Jarvis has other scheduled tasks that will suffice to maintain project organization and perform code validations.  Jarvis should inform the user that a review is recommended, and the user should manually approve when ready, or stop Jarvis when the user believes additional review is necessary.
+ - "Check context budget impact" No, the aim of Milestone Review isn't primarily for Jarvis' own evaluation of himself, but rather for Jarvis to evaluate his work within the currently active project.  Thus, impact on context usage isn't inherently important to how Jarvis should perform project milestone reviews.  Although, it's possible that a large review needs to be broken up into smaller segments for the sake of context management and maintaining task-oriented focus.
+ - "Use separate agent (code-analyzer?) for review" Yes, and I think there is a code-review agent, right?  If not, we will have one to add very soon, so plan on that.  Maybe a code-review agent and then a project-manager agent should review progress and project status at two different level.
+ - Keep in mind that System 3 applies in all sessions and project spaces.
+
+
+System 4: Context Window Management (Enhanced JICM)
+The purpose is to manage the context window "live" and prevent auto-compression behavior from ClaudeCode.  JICM should have rulesets to guide how it extracts and maintains highly detailed important info, cuts out junk text like tool-calls, code text, and long recursive self-talk.  JICM should be triggered autonomously.  JICM should complete and then re-trigger continuation of the previosly interrupted in-progress work.  It should be aware of and respect/integrate Wiggam Loop processes Jarvis is currently using.  Ideally there is a JICM Agent which is invoked who will handle all of this, thus not letting intelligent context compression end up clogging the context itself.
+ - "Consider token cost of each tool call before execution" - Yes and No, this and other similar paradigms will lead to too much additional context burden for very little gains in reduction of context accumulation.  Context accumulation is less of a problem, and JICM should prioritize its autonomic nature and efficiency and intelligence with which it scrapes the context down to the essentially important bits of information.  However, Jarvis, at his top level of "self", that is the orchestrator mode, should be the one to review the output from subagents and custom agents and intelligently evaluate how much of their task context to maintain as part of the Orchestrator-level context.  Since deferral to subagents and custom agents should be a primary behavior, Jarvis Orchestrator doesn't need to guestimate context usage of that delegated agent.
+ IMPORTANT: JICM should be active for any and all subagent and custom agent context windows.  They should self manage as much as Jarvis himself (orchestrator level) should.
+ - "Archive to checkpoint file before compression" Yes, these should be rich and information dense.  OR, the checkpoint file should be lean like it currently is, and then reference a full uncompresses context stored in another file.
+ - "CONTEXT BUDGET DASHBOARD" Yes, awesome!  context-budget should have a clean summary-stats view/dashboard when invoked by the user.  Maybe a variation of the /context tool for the user to call, and a non-dashboard version that is called for automation work by Jarvis.  Let's not worry about too much overdesign and advanced functionality.  It should at least have total tokens spent per session, track trend of current session context window, category breakdowns, and plot with marked thresholds for JICM target limit, and ClaudeCode auto-compression limit.
+ - "**Continuity**: Never lose work state, always checkpoint first". This is especially important.  We not only want checkpoints, but the liftover of the freshly trimmed context across the gap from pre-compressed to compressed or cleared, with Jarvis automatically picking up work where left off.  ClaudeCode is able to pick up automatically right as it finished auto-compression, so this should be feasible.
+ - Keep in mind that System 4 applies in all sessions and project spaces.
+
+
+
+ System 5: Self-Reflection Cycles
+ Main purpose is to create and organized system for storing lessons learned, problems identified, solutions proposed, metrics of behavior and performance, which all feed into Jarvis' own efforts to refine his codebase.
+  - "DATA SOURCES" - There are probably additional places to look, like possibly "/Users/aircannon/Claude/Jarvis/.claude/agents/memory/service-troubleshooter/learnings.json" and "/Users/aircannon/Claude/Jarvis/.claude/agents/memory/deep-research/learnings.json".  If "/Users/aircannon/Claude/Jarvis/.claude/context/lessons" is to be the target location for Jarvis to keep reference material for problems-to-solve and solutions-to-problems kinds of documents, then it needs to be a little more advanced than a single "corrections.md" file.  If corrections.md is a place that stores corrections provided by the user, what about Jarvis' own corrections of himself?  This system needs to reflect the more complext process of identification, reflection, proposed solution in the whole self-reflection cycle.  It would also be really great for this stuff to get organized chronologically or categorically/conceptually over time for ease of rediscovery of prior solutions to assess new proposals.
+  - Keep in mind that System 5 applies to only Jarvis' own system files, and not to other project spaces.  System 5 can and should be triggered during any active session.
+
+
+
+System 6: Self-Evolution Cycles
+  "**Key Design Decisions**:"  This all looks pretty great.  However the one key design principle that needs to underpin this and every other system is that of self-directedness and autonomy.  Jarvis should rely on user prompting as well as automation-triggers to decide when to launcg into a Self-Evolution cycle.  For example, Jarvis might need to read and evaluate self-reflection proposals to decide if it has gotten too long of a back log.  It might then request that the user allow it to run self-evolution upgrades to itself.  Jarvis could also keep a session-timer running (just check some timestamps from a conversation log like every ~30 minutes or something) and if there has been no user input during a session for ~30 min then a hook should trigger Jarvis to perform self-evolution autonomically.
+  - Keep in mind that System 6 applies to only Jarvis' own system files, and not to other project spaces. System 6 can and should be triggered during any active session.
+
+
+
+System 7: R&D Cycles
+Similarly, as with Self-evolution cycles, Jarvis should have a kind of "down-time" detector, where if a session is active but there is no user input or feedback for x minutes, then Jarvis could choose to launch into R&D cycles.  It will keep a running tab on what resources (what git repo, what plugin, etc) have been investigated and which ones in the list of user suggestions have yet to have been researched.  It will then choose among these to do some independent research.  This will then go into self-reflection by way of comparative analysis, and will add evolution proposals with a flag that they aren't to be auto-implemented by Jarvis without approval from the user.  R&D reports should include pro and con, cost/benefit anaysis in terms of missingness of features, value of features, cost to context and token usage, and complexity of implementation.  Again, the name of the game is self-directed autonomy.  I think that this section currently reflects that very well.
+ - One key R&D track of investigation that should be reviewed in every cycle is that of token efficiency of .claude files and other Jarvis system codebase files.  We want these files to be lean, linked, and layered in their scope.  We don't want Jarvis to always have every design pattern and project aim in context at all times, but Jarvis needs to make sure that important instructions, patterns, and guardrails aren't going unused, and also aren't redundantly repeated in many locations, wasting context space and token count.  Mantenance Cycle work will note files that haven't been updated in 30 days.  Maybe every session there should be an invisible update to any .claude file that was loaded into memory, or a log file kept of any .claude or other Jarvis design file that has been read into context.  There should be some way along these lines to keep track of high-use and low-use codebase within Jarvis, and propose revisions to files and to the overall structure of files and information shared and spread among them, using this info. 
+ - "**Scoped**: Only maintain Jarvis workspace, not AIfred baseline". Keep in mind that System 7 applies to only Jarvis' own system files, and not to other project spaces. System 7 can and should be triggered during any active session.
+
+
+System 8: Maintenance Workflows
+Similarly, as with Self-evolution cycles, Jarvis should have a kind of "down-time" detector, where if a session is active but there is no user input or feedback for x minutes, then Jarvis could choose to launch into Maintenance Workflows.
+ - Mantenance Workflows should include a review of the logic and organization of the file system (of Jarvis himself, within his own codebase) and ALSO the currently active project space.  This should have save locations and file context checked against Jarvis' behavioral requirements, or against the project design specifications.  In short, stuff should be kept in the right place and should be referenced/linked to the correct other docs, resources, and other items in their correct places.
+
+
+ * There should be a single option or command that the user could invoke to simply trigger Jarvis to run through Systems 5-8 as the entire purpose of a current session.  The user might want to just connect to Jarvis and prompt him to spend time running through all the self-improvement and maintenance that he can without user oversight for a time.
+
+
+System 9: Session Completion
+ - This needs to be highly autonomic, once triggered by the user.  So it is semi-autonomous.  Jarvis should refer to an exhaustive list of session-end tasks, and not fail to review their use and applicbiltiy to the current session situation.  The following should not trigger session ends, because we want Jarvis to do other things like R&D and Mantenance during timed out or idle sessions:
+ 	Context exhaustion (after checkpoint)                      
+    Wiggum Loop completes                                      
+    Idle timeout (if implemented) 
+ - Jarvis should always check during end-session the following questions: Can I do self-reflection, can I do self-evolution, can I do maintenance, can I do R&D, can I do anything else useful... while "Sir" is otherwise occupied?  Jarvis should prompt the user to give approval for him to perform any of these cycles or workflows before fully
+ - At session end, or perhaps at timepoints during a session (like during context management JICM) Jarvis should store chat history and context window contents somewhere easily referenced or discovered at the nest session start.
+
+
+ ## Part II: System Interdependencies
+ In the flow diagram, think of Maintenance as more part of the self-reflection and R&D tier.  It's tricky, there is some recursion in the way these systems relate.  I would picture it more like this:
+                    ┌─────────────────┐
+                    │  Self-Launch    │
+                    │  (Entry Point)  │
+                    └────────┬────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+     ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+     │  Wiggum     │  │  Context    │  │  Milestone  │
+     │  Loop       │◀▶│  Management │◀▶│  Review     │
+     └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+            │                │                │
+            └────────────────┼────────────────┘
+                             │
+                             ▼
+     				┌─────────────────┐
+     				│  Session        │
+     				│  Completion     │
+     				└─────────────────┘ 
+
+            ┌─────────────┐  ┌─────────────┐
+            │ Reflection  │◀▶│ R&D Cycles  │
+            │ Cycles      │  │             │
+            └──────┬──────┘  └──────┬──────┘
+            ^      │                │
+            |      └───────┬────────┘
+            |              │
+            |              ▼
+            ┌─────────────┐  ┌─────────────┐
+            │Maintenance  │◀▶│Self-Evolution│
+            │Workflows    │  │(Change Engine)│
+            └──────┬──────┘  └──────┬──────┘
+                   │                │ 
+            	   └─────────┬──────┘
+                             │
+                             ▼
+                  ┌─────────────────┐
+                  │Session Completion│
+                  │ (User prompted) │
+                  └─────────────────┘
+ And these design decisions aren't compatible with the aims of session-long Jarvis autonomy, and idle session self-directedness:
+ - Context MgmtSession CompleteContext exhaustion triggers completion - Should not trigger session end
+
+
+Everything else looks grand.  Review and reflect on all of the notes I've provided here.  Take them into consideration, not as absolute dictat, but rather as my strong preferences.  If anything that I ahve suggested would critically compromise any of the other features and systems that we are putting into place then try to compromise (adapt) or set aside as a future request (defer).
+ 
+

@@ -1,0 +1,247 @@
+Needs_review
+1) Need to update Jarvis/projects/project-aion/roadmap.md with a brief outline of Jarvis/projects/project-aion/plans/pr-10-design-plan.md.  See PR-8 and PR-9 for how extensive PR-10 might need to be in the roadmap doc.  We can still follow the pr-10-design-plan.md though, for detail.
+
+2) Create a /Jarvis command.  It brings up a menu of commonly used manual commands.  There are so many commands now, I don't want to remember them or cycle through long list anymore.  Include the follwing: /context /context-budget /context-checkpoint /end-session /smart-compact /health-report /setup /setup-readiness /sync-aifred-baseline /tooling-health /validate-mcp /clear /compact /config /doctor /export /plan /rename /resume /stats /todos /usage
+
+...but could you make the selection list sorted alphabetically?
+
+3) You primary major next task is to complete a full and exhaustive inventory of every iteam and artifact within /Users/aircannon/Claude/Jarvis and create a report with information about the item, whether it's part of the Jarvis operational ecosystem, whether its part of the Project Aion planning and design project documents, whether it appears to be in the correct place, and where you would recommend moving it to, and whether or not it is a legacy version of a newer item, and whether its contents are up-to-date with respect to Jarvis' version and current state of directory structure.  I want to review this information manually to help me shape the design of Jarvis' organization principles and patterns.
+
+
+
+####################################
+Inventory Audit Feedback
+`.opencode/`DirLegacy⚠️**REVIEW**OpenCode compatibility — possibly obsolete	[REMOVE]
+`AGENTS.md`FileEcosystem✅ YesOpenCode agent instructions [MERGE INTO Jarvis/.claude/persona/jarvis-identity.md]
+`opencode.json`FileLegacy⚠️**REVIEW**OpenCode config — still needed? [REMOVE]
+`paths-registry.yaml.template`FileLegacy⚠️**REVIEW**Template — still needed? [YES, BUT ARCHIVE]
+`CLAUDE-full-reference.md`File✅ Yes⚠️ CheckFull reference — verify alignment [SPLIT - create several smaller .md docs to be linked from the main claude.md doc text]
+`setup-phases/`Dir⚠️**OLD SETUP PHASES** — 9 files [KEEP - these are references by Jarvis for as-needed repair of set up component. [NEEDS REFACTORED]
+`soft-restart.md` ⚠️ **DEPRECATED** — superseded by checkpoint [REMOVE]
+`_index.md`⚠️ CheckMay need update after PR-10 [UPDATE]
+Audit `settings.json` to verify which hooks are actually registered. Many JS hooks may be legacy (not registered). [YES]
+`mcp-unload-workflow.sh`MCP unload workflow⚠️ May be legacy [FLAG FOR REVIEW]
+`docx/ooxml/` and `pptx/ooxml/` contain identical OOXML schemas (~70 files duplicated). Consider consolidating to shared location. [YES]
+`one-shot-prd.md`FileBenchmark PRD (PR-2) ✅ [MOVE - to plans subfolder]
+`pr2-validation.md`File⚠️ Old validation doc — archive? [MOVE - to plans subfolder]
+`scripts/` Directory (Root) [VERIFY - that each script is referenced to be run as part of some other hook, workflow, or command]
+
+
+Please revisit the full project space audit, taking into account the above feedback.  Here is some more detailed advice for how to conceptualize and reorganize the Jarvis project space:
+Below is a practical rule-set for what **should live in `.claude/`** (high-signal, “always relevant” guardrails and operational brain) vs what becomes **context clutter** (project artifacts, verbose logs, long reports, research dumps) and should live elsewhere and only be pulled in on demand.
+
+I’ll ground this in the actual `.claude/` tree you linked in `davidmoneil/AIfred` at ref `2db8388…`:
+
+- `.claude/CLAUDE.md`
+- `.claude/CLAUDE-full-reference.md`
+- `.claude/settings.json`
+- `.claude/agents/`
+- `.claude/archive/`
+- `.claude/commands/`
+- `.claude/config/`
+- `.claude/context/`
+- `.claude/hooks/`
+- `.claude/jobs/`
+- `.claude/logs/`
+- `.claude/orchestration/`
+- `.claude/reports/`
+- `.claude/scripts/`
+- `.claude/skills/`
+
+---
+
+## The guiding principle
+`.claude/` should contain **only the minimum set of durable instructions and operational assets** needed for the assistant to:
+1) behave safely and consistently,
+2) locate and use its own patterns/tools,
+3) resume sessions correctly,
+4) execute workflows reproducibly.
+
+Everything else (especially big, time-bound artifacts) should move out of `.claude/` into a normal `docs/`, `knowledge/`, `reports/`, or an `external-sources/` area, and be referenced *by link*.
+
+---
+
+## What belongs in `.claude/` (high-signal “always-on”)
+These categories are “core brain” and should stay in `.claude/`:
+
+### 1) The top-level instruction contract
+**Keep in `.claude/`:**
+- `.claude/CLAUDE.md` — **short**: the “constitution” Jarvis should always follow.
+- `.claude/settings.json` — tool permissions, automation posture, etc.
+
+**Avoid clutter:**
+- Don’t let `CLAUDE.md` become a long wiki. Keep it as an index + non-negotiables + pointers.
+
+**Pattern recommendation:**
+- `CLAUDE.md` should link to “heavy” docs (patterns, standards) rather than contain them inline.
+
+### 2) Stable, reusable behavior definitions
+**Keep in `.claude/`:**
+- `.claude/agents/` — agent definitions used repeatedly.
+- `.claude/skills/` — skill definitions or wrappers (if you keep local copies).
+- `.claude/commands/` — slash command implementations/docs (things you *want repeated*).
+- `.claude/orchestration/` — your “how Jarvis runs multi-step work” patterns.
+- `.claude/context/` — curated, *actively used* context: indexes, standards, patterns, session-state.
+
+**This is not clutter** because it directly shapes behavior and repeatability.
+
+### 3) Enforcement and instrumentation
+**Keep in `.claude/`:**
+- `.claude/hooks/` — hooks are operational enforcement; must be close to the instruction set.
+- `.claude/jobs/` — if jobs are part of the assistant’s lifecycle (cron-like routines), keep the definitions here.
+
+---
+
+## What becomes context clutter (should not be “always loaded”)
+These are the typical offenders:
+
+### A) Logs (almost always clutter in context)
+- `.claude/logs/` can grow quickly.
+- Logs are **valuable for audits**, but they are **not valuable in-context by default**.
+
+**Recommendation:**
+- Keep logs in `.claude/logs/` if that’s your convention, but:
+  - ensure `CLAUDE.md` does **not** inline or summarize logs
+  - add an index file that explains:
+    - what logs exist
+    - how to query them
+    - retention policy (rotate/compress/archive)
+
+### B) Reports (often clutter unless they’re active inputs)
+- `.claude/reports/` is a mixed bag:
+  - current, reusable “operational reports” can be useful
+  - but old PR reports, one-off analyses, and long narrative dumps become noise.
+
+**Rule of thumb:**
+- If Jarvis needs the report repeatedly to make decisions → keep it but normalize and index it.
+- If it’s a one-time artifact for human review → move to `docs/` (or `docs/project-aion/reports/`) and link it.
+
+### C) Archives
+- `.claude/archive/` is fine, but archived content should be treated as cold storage:
+  - indexed, but not “consulted by default.”
+
+### D) “Full reference” mega-docs
+- `.claude/CLAUDE-full-reference.md` can be useful as a reference, but it’s often too large for always-on context.
+
+**Recommendation:**
+- Keep it, but treat it as **on-demand**:
+  - Your main `CLAUDE.md` should link to it as “Full reference (only consult when needed).”
+
+---
+
+## A directory-by-directory “keep vs move” opinion for this repo’s `.claude/`
+### `.claude/CLAUDE.md` (Keep; keep it short)
+**Keep:** core identity, safety constraints, “how to start a session,” pointers to patterns.  
+**Move out:** long explanations, large lists, historical narrative.
+
+### `.claude/CLAUDE-full-reference.md` (Keep, but make it explicitly on-demand)
+Good place for:
+- deep rationale,
+- extended examples,
+- “rarely needed but authoritative” detail.
+
+### `.claude/settings.json` (Keep)
+This is operational configuration; belongs here.
+
+### `.claude/agents/` (Keep)
+Agent definitions are core runtime behavior. Avoid too many near-duplicate agents—overlap is a different kind of clutter.
+
+### `.claude/commands/` (Keep)
+Commands are reusable workflows. Keep them compact and consistent.
+
+### `.claude/context/` (Keep, but curate aggressively)
+This is the easiest place to accumulate clutter. To keep it healthy:
+- require `_index.md` navigation
+- archive anything not referenced in 30–60 days
+- prefer “decision records” to “essays”
+- split “standards/patterns” (stable) from “session notes” (ephemeral)
+
+### `.claude/hooks/` (Keep)
+Hooks enforce safety, logging, and lifecycle behavior. Must be close to `.claude` config.
+
+### `.claude/jobs/` (Keep, but define scope)
+Jobs belong here if:
+- they are part of Jarvis lifecycle automation,
+- they are installed/managed by setup,
+- they’re reproducible.
+
+If jobs are highly personal machine-specific cron configs, consider:
+- keeping *templates* in `.claude/jobs/`
+- installing real crontabs outside the repo via `/setup`.
+
+### `.claude/scripts/` (Keep if they’re operational utilities)
+Scripts that support setup, validation, generation, and maintenance belong here.
+But if scripts are project deliverables (for the user), they belong in project root `scripts/` not `.claude/scripts/`.
+
+### `.claude/config/` (Keep, but ensure it’s truly “runtime config”)
+If it contains:
+- schemas,
+- registries,
+- default settings for Jarvis behavior,
+then yes.
+
+If it contains:
+- “notes,” “plans,” “one-off experiments,”
+move those out.
+
+### `.claude/orchestration/` (Keep; this is high leverage)
+This should contain the canonical multi-step patterns:
+- selection intelligence,
+- tool choice matrices,
+- phase workflows.
+
+Keep it tight: patterns should be stable, not diary-like.
+
+### `.claude/reports/` (Usually split: operational vs project)
+I recommend splitting conceptually (even if you keep the directory):
+- **Operational reports** (used by Jarvis repeatedly): keep in `.claude/reports/`
+- **Project reports** (one-offs, PR writeups): move to `docs/` or `docs/project-aion/reports/`
+
+### `.claude/logs/` (Keep, but treat as cold storage)
+Keep logs there for auditability, but they should never be “front of mind” unless debugging.
+
+### `.claude/archive/` (Keep; don’t let it sprawl)
+Make sure archiving has:
+- an index/log
+- clear “why archived” notes
+- retention policy
+
+---
+
+## A simple “clutter test” you can apply to any file
+Ask three questions:
+
+1) **Is it needed for correct behavior every session?**  
+   - Yes → keep in `.claude/`
+2) **Is it a stable pattern reused across sessions/projects?**  
+   - Yes → keep in `.claude/` (patterns/standards/agents/commands)
+3) **Is it time-bound, verbose, or a one-off artifact?**  
+   - Yes → move to `docs/`, `knowledge/notes/`, or an archive directory and link to it.
+
+---
+
+## A recommended layout for Jarvis / Project Aion (matches your goals)
+- `.claude/` = operational brain (minimal, curated)
+- `docs/project-aion/` = roadmaps, PRDs, reports, evolution logs
+- `knowledge/` = long-form knowledge base (not necessarily loaded every session)
+- `external-sources/` + `paths-registry.yaml` = linked external data
+- `docs/archive/` or `.claude/archive/` = cold storage + index
+
+---
+
+## Two concrete refactors I’d recommend to reduce clutter risk
+1) **Demote “reports” by default**
+   - Keep only “currently active” operational reports in `.claude/reports/`.
+   - Move PR-specific narrative reports to `docs/project-aion/reports/`.
+
+2) **Turn `.claude/context/` into a curated index, not a warehouse**
+   - Enforce an `_index.md` per subsection.
+   - Add an archive policy: “if not referenced by any index, archive it.”
+
+---
+
+## Quick question (so I can be more specific)
+Do you want `.claude/reports/` and `.claude/logs/` to be considered **Jarvis-internal operational artifacts** (used by the agent itself), or primarily **human-facing outputs**?  
+Your answer determines whether they stay in `.claude/` or migrate to `docs/project-aion/` by default.
+I want these to be both, but they aren't going to be needed often (mostly for auditing workflows, self-reflection analyses) so they can be moved out of .claude and references by workflow patterns.
+

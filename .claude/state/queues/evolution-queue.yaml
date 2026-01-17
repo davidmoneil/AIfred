@@ -5,7 +5,81 @@
 
 queue:
   # Proposals waiting for processing
-  pending: []
+  pending:
+    - id: evo-2026-01-017
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add weather integration to startup greeting"
+      description: >
+        Phase A greeting could include weather context via WebSearch.
+        Currently skipped. Would enhance user experience with personalized
+        environmental awareness. Example: "Good morning, sir. Clear skies today."
+      risk_level: low
+      files_affected:
+        - .claude/hooks/session-start.sh
+        - .claude/scripts/startup-greeting.js (new)
+      rationale: >
+        Specification mentions weather as optional enhancement. Current
+        implementation skips it entirely. Low-risk addition that improves
+        the congenial assistant experience.
+      related_problem: null
+      status: pending
+
+    - id: evo-2026-01-018
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add AIfred baseline sync check to startup"
+      description: >
+        Phase B should include automatic `git fetch` on AIfred baseline
+        to detect upstream changes. Currently this check is manual.
+        Would enable proactive sync notifications.
+      risk_level: low
+      files_affected:
+        - .claude/hooks/session-start.sh
+      rationale: >
+        Specification Phase B includes "Baseline Synchronization" step
+        but hook doesn't implement it. Adding git fetch would enable
+        automatic detection of upstream AIfred changes.
+      related_problem: null
+      status: pending
+
+    - id: evo-2026-01-019
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add environment validation to startup"
+      description: >
+        Phase B should verify environment health: git status (clean tree,
+        correct branch), hooks registration validation, workspace boundaries.
+        Currently delegated to Claude rather than automated.
+      risk_level: low
+      files_affected:
+        - .claude/hooks/session-start.sh
+      rationale: >
+        Specification includes environment validation but hook doesn't
+        automate these checks. Could catch issues early (wrong branch,
+        uncommitted changes, disabled hooks).
+      related_problem: null
+      status: pending
+
+    - id: evo-2026-01-020
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Create startup-greeting.js helper for complex logic"
+      description: >
+        Specification mentions a JS helper for DateTime MCP integration,
+        weather fetching, and template selection. Currently all logic
+        is in shell script. Moving complex logic to JS would improve
+        maintainability and enable MCP tool calls.
+      risk_level: medium
+      files_affected:
+        - .claude/scripts/startup-greeting.js (new)
+        - .claude/hooks/session-start.sh
+      rationale: >
+        Shell script has limitations for MCP integration. A JS helper
+        could call DateTime MCP directly and handle weather API calls
+        with proper error handling.
+      related_problem: null
+      status: pending
 
   # Proposals approved by user, ready for implementation
   approved: []
@@ -52,7 +126,7 @@ queue:
 #   status: pending
 
 metadata:
-  last_updated: "2026-01-17T00:00:00.000Z"
-  total_proposals: 0
-  pending_count: 0
+  last_updated: "2026-01-17T02:00:00.000Z"
+  total_proposals: 4
+  pending_count: 4
   completed_count: 0

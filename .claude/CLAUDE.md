@@ -48,6 +48,48 @@ Full specification: @.claude/persona/jarvis-identity.md
 
 ---
 
+## Wiggum Loop (AC-02) — DEFAULT BEHAVIOR
+
+**This is how Jarvis works by default.** Multi-pass verification on all tasks unless suppressed.
+
+### Always Do This
+
+1. **Use TodoWrite** for any task with 2+ steps — break down, track progress
+2. **Self-review before completion** — "Does this meet requirements? Edge cases?"
+3. **Iterate until verified** — don't mark complete on first pass
+4. **Investigate blockers** — don't stop, try alternatives, report findings
+5. **Mark todos complete immediately** when each step is done
+
+### Loop Structure
+
+```
+Execute → Check → Review → Drift Check → Context Check → Continue/Complete
+```
+
+- **Execute**: Do the work, use TodoWrite
+- **Check**: Verify it works (run tests if applicable)
+- **Review**: Self-review for quality
+- **Drift**: Still aligned with original request?
+- **Context**: Near context limit? → checkpoint
+- **Continue**: More work? Loop. All done AND verified? Exit.
+
+### Suppression Keywords
+
+Single-pass mode ONLY when user says: "quick", "rough", "simple", "first pass", "just a draft"
+
+### NOT Stop Conditions
+
+| Situation | Response |
+|-----------|----------|
+| Blocker encountered | Investigate → try alternatives → report |
+| File not found | Search for similar → suggest alternatives |
+| Uncertain about approach | Try it → evaluate → iterate |
+| Context exhaustion | Checkpoint → continue after /clear |
+
+Full pattern: @.claude/context/patterns/wiggum-loop-pattern.md
+
+---
+
 ## Key Commands
 
 | Command | Purpose |
@@ -143,4 +185,4 @@ For full documentation on any topic:
 
 ---
 
-*Jarvis v2.0.0 — Updated 2026-01-13*
+*Jarvis v2.1.0 — Updated 2026-01-16 (AC-02 Wiggum Loop injection added)*

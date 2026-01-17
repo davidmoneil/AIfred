@@ -1,0 +1,486 @@
+Pre_PR_7
+Additional pre-PR-7 instructions:
+
+1) We need a template and repeatable workflow to regenerate the Jarvis/.claude/reports/pr-6-overlap-analysis.md and Jarvis/.claude/reports/pr-6-plugin-evaluation.md (note that I saw reference to 1 'reject' but could not find which one that was in the report).  We will want to repeat this process with all future tooling expansions, including hooks, MCPs, plugins, skills, and agents.  We also want a template and repeatable workflow for generating the Jarvis/.claude/context/integrations/capability-matrix.md.  Together, the evaluation, capability matrix, and overlap will form the basis for deciding how/whether to integrate new tools as well as the basis for revising the Jarvis development patterns and behavior standards.  It is essential that not only do we test and validate each new tool, but that we document its usage, and also adapt Jarvis to effectively incorporate the tool into its ecosystem.
+
+2) We need at least one, preferably a few Web-search and browser-navigation tools to be part of general testing.  We will add playwrigt as part of the MCP expansion of PR-8. claude mcp add playwright npx '@playwright/mcp@latest' 
+
+3) Add a future PR that will implement a repeatable and reproducible system for toolset expansion.  You need the ability to review and integrate additional tools on-demand.  This should work both as either a user-directed process (user finds a tool they like and triggers the review-intergation process) and also an automated one, where if Jarvis detects that a particular pattern is working sub-optiimally, or finds that there is a highly repeated process that could be encapsulated in a tool, that Jarvis then has all of these resources as reference below to find examples for self-improvement.
+
+In this future PR you will take all of these following references, pull the repo to its own dir under ~/Claude/GitRepos.  Do a deep code review, including structure, readmes, scripts and hooks, everything.  Write a consice summary of function, philosophy, design principles.  Write a detailed review of script-by-script and tool-by-tool functionality. Save for later when we will do groupings and cross-comparisons. Generate a capability-matrix.  Later, if and when we choose to review and integrate a new tool it is at that point that you will do an "evaluation" report and a "overlap analysis" to help decide what to do with the tool.
+
+'Future References for a second iteration of, and formalization and automation of the process completed in "Phase 5 — Tooling Baseline & Incremental Expansion (PR-5 → PR-10)": Self-directed and user-prompted iterative and recursive self-evolution through explore/adopt/adapt/reject/revise':
+
+https://github.com/obra/superpowers
+https://github.com/nizos/tdd-guard
+https://github.com/metabase/metabase/tree/master
+https://github.com/scopecraft/command/tree/main especially https://github.com/scopecraft/command/blob/main/.claude/commands/create-command.md
+https://github.com/basicmachines-co/basic-memory/tree/main
+https://github.com/davila7/claude-code-templates
+https://github.com/SuperClaude-Org/SuperClaude_Framework
+https://github.com/NeoLabHQ/context-engineering-kit
+https://github.com/eyaltoledano/claude-task-master
+https://github.com/ayoubben18/ab-method
+https://github.com/diet103/claude-code-infrastructure-showcase
+https://github.com/automazeio/ccpm
+https://github.com/GWUDCAP/cc-sessions
+https://github.com/ericbuess/claude-code-docs
+https://github.com/sirmalloc/ccstatusline
+https://github.com/ryoppippi/ccusage
+https://github.com/snipeship/ccflare
+https://github.com/tombii/better-ccflare/
+https://github.com/Maciek-roboblog/Claude-Code-Usage-Monitor
+ - Roo Commander (https://github.com/jezweb/roo-commander)
+ - rUvnet (https://github.com/ruvnet/rUv-dev)
+ - rUvnet/Claude-Flow (https://github.com/ruvnet/claude-flow) 
+ - Symphony (https://github.com/sincover/Symphony)
+ - Maestro (https://github.com/pedramamini/Maestro)
+ - Serena (https://github.com/oraios/serena)
+ - CCswarm (https://github.com/nwiizo/ccswarm)
+ - CustomModes (https://github.com/jtgsystems/Custom-Modes-Roo-Code)
+ - Multi-Agent Squad (https://github.com/bijutharakan/multi-agent-squad)
+ - Agentwise (https://github.com/VibeCodingWithPhil/agentwise)
+ - Agentic Cursor Rules (https://github.com/s-smits/agentic-cursorrules)
+ - Hephaestus (https://github.com/Ido-Levi/Hephaestus)
+ - EvoAgentX (https://github.com/EvoAgentX/EvoAgentX)
+ - EquilateralAgents (https://github.com/Equilateral-AI/equilateral-agents-open-core)
+ - Claude Code Plugins: Orchestration and Automation (https://github.com/wshobson/agents)
+
+
+Also in that future PR, take a look at this and review how we can improve based on these simple practices:
+https://www.reddit.com/r/ClaudeAI/comments/1q2c0ne/claude_code_creator_boris_shares_his_setup_with/
+
+
+
+
+
+################
+PR-9
+Is there an order of selection for skills, MCPs, agents and plugins?  Some of these (plugins especially) represent a suite of tools (agents, MCPs?) bundled for a more complex purpose.  Some are simple instructions or single-tool widgets for converting between file types.  How do we rank and choose what agents and workflows are permitted access to each tool, and how do we establish some logic for agents to select from among available tools, expecially when there is overlap as well as the possibility that a tool selected by a subagent might trigger additional agent workflows, ad infinitum?
+
+The Theory of Skills, Agents and general tools.
+https://blog.langchain.com/using-skills-with-deep-agents/
+https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills?ref=blog.langchain.com
+
+Compare arXiv skill versus MCP
+https://github.com/langchain-ai/deepagents/tree/master/libs/deepagents-cli/examples/skills/arxiv-search
+https://github.com/blazickjp/arxiv-mcp-server
+https://github.com/langchain-ai/deepagents/tree/master
+
+Advantages, disadvantages?  Especially I want to prioritize reducing the bulk of all of the tool documentation, selection logic, and chance of non-deterministic agent behavior (i.e. sometimes using one approach for a task, and sometimes another based on agentic 'feels')
+
+See also RalphMode and consider how different overlapping options might help or hinder development in terms of focus, staying on task, finding solutions to stubborn problems, working in parallel and autonomously, and etc.
+https://github.com/langchain-ai/deepagents/tree/master/examples/ralph_mode
+
+See also:
+https://code.claude.com/docs/en/terminal-config#iterm-2-system-notifications
+https://code.claude.com/docs/en/slash-commands#bash-command-execution
+https://code.claude.com/docs/en/hooks-guide
+
+I'm Boris and I created Claude Code. Lots of people have asked how I use Claude Code, so I wanted to show off my setup a bit.
+
+My setup might be surprisingly vanilla. Claude Code works great out of the box, so I personally don't customize it much.
+
+There is no one correct way to use Claude Code: we intentionally build it in a way that you can use it, customize it and hack it however you like. Each person on the Claude Code team uses it very differently. So, here goes.
+
+I run 5 Claudes in parallel in my terminal. I number my tabs 1-5, and use system notifications to know when a Claude needs input
+
+🔗: https://code.claude.com/docs/en/terminal-config#iterm-2-system-notifications
+
+2) I also run 5-10 Claudes on claude.ai/code, in parallel with my local Claudes. As I code in my terminal, I will often hand off local sessions to web (using &), or manually kick off sessions in Chrome, and sometimes I will --teleport back and forth. I also start a few sessions from my phone (from the Claude iOS app) every morning and throughout the day, and check in on them later.
+
+3) I use Opus 4.5 with thinking for everything. It's the best coding model I've ever used, and even though it's bigger & slower than Sonnet, since you have to steer it less and it's better at tool use, it is almost always faster than using a smaller model in the end.
+
+4) Our team shares a single CLAUDE.md for the Claude Code repo. We check it into git, and the whole team contributes multiple times a week. Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time.
+
+Other teams maintain their own CLAUDE.md's. It is each team's job to keep theirs up to date.
+
+5) During code review, I will often tag @.claude on my coworkers' PRs to add something to the CLAUDE.md as part of the PR. We use the Claude Code Github action (/install-github-action) for this. It's our version of @danshipper's Compounding Engineering
+
+6) Most sessions start in Plan mode (shift+tab twice). If my goal is to write a Pull Request, I will use Plan mode, and go back and forth with Claude until I like its plan. From there, I switch into auto-accept edits mode and Claude can usually 1-shot it. A good plan is really important.
+
+7) I use slash commands for every "inner loop" workflow that I end up doing many times a day. This saves me from repeated prompting, and makes it so Claude can use these workflows, too. Commands are checked into git and live in .claude/commands/.
+
+For example, Claude and I use a /commit-push-pr slash command dozens of times every day. The command uses inline bash to pre-compute git status and a few other pieces of info to make the command run quickly and avoid back-and-forth with the model
+
+🔗 https://code.claude.com/docs/en/slash-commands#bash-command-execution
+
+8) I use a few subagents regularly: code-simplifier simplifies the code after Claude is done working, verify-app has detailed instructions for testing Claude Code end to end, and so on. Similar to slash commands, I think of subagents as automating the most common workflows that I do for most PRs.
+
+🔗 https://code.claude.com/docs/en/sub-agents
+
+9) We use a PostToolUse hook to format Claude's code. Claude usually generates well-formatted code out of the box, and the hook handles the last 10% to avoid formatting errors in CI later.
+
+10) I don't use --dangerously-skip-permissions. Instead, I use /permissions to pre-allow common bash commands that I know are safe in my environment, to avoid unnecessary permission prompts. Most of these are checked into .claude/settings.json and shared with the team.
+
+11) Claude Code uses all my tools for me. It often searches and posts to Slack (via the MCP server), runs BigQuery queries to answer analytics questions (using bq CLI), grabs error logs from Sentry, etc. The Slack MCP configuration is checked into our .mcp.json and shared with the team.
+
+12) For very long-running tasks, I will either (a) prompt Claude to verify its work with a background agent when it's done, (b) use an agent Stop hook to do that more deterministically, or (c) use the ralph-wiggum plugin (originally dreamt up by @GeoffreyHuntley).
+
+I will also use either --permission-mode=dontAsk or --dangerously-skip-permissions in a sandbox to avoid permission prompts for the session, so Claude can cook without being blocked on me.
+
+🔗: https://github.com/anthropics/claude-plugins-official/tree/main/plugins%2Fralph-wiggum
+
+https://code.claude.com/docs/en/hooks-guide
+
+13) A final tip: probably the most important thing to get great results out of Claude Code -- give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result.
+
+Claude tests every single change I land to claude.ai/code using the Claude Chrome extension. It opens a browser, tests the UI, and iterates until the code works and the UX feels good.
+
+Verification looks different for each domain. It might be as simple as running a bash command, or running a test suite, or testing the app in a browser or phone simulator. Make sure to invest in making this rock-solid.
+
+
+TL;DR generated automatically after 100 comments.
+
+Alright, settle down, latecomers. The consensus is that the creator of Claude Code, Boris, uses a surprisingly simple and "vanilla" setup, which has the community both impressed and mega-jealous of his unlimited employee token budget.
+
+The thread is full of users sarcastically noting the lack of "17 parallel subagents" or "vibe-coded memory add-ons," suggesting that a simpler, more direct approach is often better than the over-engineered setups some people build. However, the biggest point of contention is his resource usage. Many users feel his workflow, which can burn through millions of tokens, is unrealistic for regular Pro users who have to worry about rate limits. The general vibe is "cool setup, but must be nice."
+
+A helpful user compiled Boris's answers from the thread. Here are the highlights:
+
+On creating verification loops: He says people over-complicate it. Just give Claude a tool to see the output of its code (e.g., a way to start a server or interact with a UI) and describe the tool well. Claude will figure out the rest.
+
+On managing multiple features: He runs multiple agents in parallel, but each one works in its own separate git checkout of the repo to avoid conflicts.
+
+On "Skills" vs. "Slash Commands": He uses the terms interchangeably. They can be invoked by both the user and the model.
+
+On his productivity: He completes around 50-100 PRs per week. Yes, you read that right.
+
+
+
+
+##############
+PR-15
+Improved Tool expansion:
+Should repeat the evaluation, overlap analysis, capability matrix, and should re-evaluate the custom instructions for the use of each tool.  ***I need to research best pratices for minimizing context, minimizing analysis paralysis (see PR-9)***
+
+Include all of the following for further expansion review (some of these are probably already investigated and incorporated into Jarvis):
+    *Thought/Memory
+    Memory-Knowledge Graph (https://github.com/modelcontextprotocol/servers/tree/main/src/memory)
+    Grafiti MCP (https://github.com/getzep/graphiti/blob/main/mcp_server) (see also documentation of the entire graphRAG knowledge framework at https://github.com/getzep/graphiti/tree/main)
+    Cognee (https://github.com/topoteretes/cognee/tree/main/cognee-mcp)
+    Sequential Thinking - how does this actually work?  Is it adding anything for a model that can already reason and reflect?
+    Lotus Wisdom (https://github.com/linxule/lotus-wisdom-mcp)
+
+    *System/Web Autonomy
+    Time
+    DateTime (https://github.com/pinkpixel-dev/datetime-mcp)
+    Fetch
+    Filesystem
+    DesktopCommander (https://github.com/wonderwhy-er/DesktopCommanderMCP)
+    DuckDuckGo (https://github.com/nickclyde/duckduckgo-mcp-server)
+    BraveSearch (https://github.com/brave/brave-search-mcp-server) [I have an API key]
+    Puppeteer (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/puppeteer) AND (https://github.com/merajmehrabi/puppeteer-mcp-server)
+
+    *Dev/Code
+    Context7 (https://github.com/upstash/context7)
+    GitHub Official (https://github.com/github/github-mcp-server)
+    Semgrep (https://semgrep.dev/docs/mcp)
+    Playwright (https://github.com/microsoft/playwright-mcp)
+    Notion (https://github.com/awkoy/notion-mcp-server)
+    Obsidian (https://github.com/iansinnott/obsidian-claude-code-mcp)
+    TaskMaster (https://github.com/eyaltoledano/claude-task-master)
+    n8n (https://github.com/czlonkowski/n8n-mcp)
+    Repomix (https://github.com/yamadashy/repomix)
+
+    *Information/Grounding
+    Wikipedia (https://github.com/rudra-ravi/wikipedia-mcp)
+    GPTresearcher (https://github.com/assafelovic/gptr-mcp) but modified to use free DuckDuckGo search and my BraveSearch API key)
+    Perplexity (https://github.com/perplexityai/modelcontextprotocol) [I have an API key]
+    arXiv (https://github.com/blazickjp/arxiv-mcp-server)
+
+    UIdev
+    ChromeDevTools (https://github.com/ChromeDevTools/chrome-devtools-mcp/)
+    BrowserStack (https://github.com/browserstack/mcp-server)
+    MagicUI (https://github.com/magicuidesign/mcp)
+
+    Comms
+    Slack (https://docs.slack.dev/ai/mcp-server/)
+
+    DBs
+    MongoDB (https://github.com/mongodb-js/mongodb-mcp-server)
+    Supabase (https://github.com/supabase-community/supabase-mcp)
+    SQLite-bun (https://github.com/jacksteamdev/mcp-sqlite-bun-server)
+    MindsDB (https://github.com/mindsdb/minds-mcp)
+    Chroma (https://github.com/chroma-core/chroma)
+
+    Docs
+    Markdownify (https://github.com/zcaceres/markdownify-mcp)
+    GoogleDrive (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/gdrive) AND (https://github.com/piotr-agier/google-drive-mcp) [This should wait for me to decide on Google Cloud Project API billing]
+    GoogleMaps (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/google-maps) [This should wait for me to decide on Google Cloud Project API billing]
+
+    Skills - Learn all of the skills found at https://github.com/anthropics/skills/tree/main and categorize them with simple to use documentation that will help agents select skills to help complete their tasks efficiently, reliably, and reproducibly.  See the readme at https://github.com/anthropics/skills/blob/main/README.md to learn more.  The available Claude skills from Anthropic cover a wide range of useful tasks, and could be organized similarly to the MCP servers above.  There may be a lot of overlap.  We need to evaluate MCP/skill overlap, and create a design pattern that will allow Jarvis to reliably select from among similar MCP server tools and Claude Skills.  The skill-creator skill readme explains the basic philosophy of skills and skill building https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md
+
+    Additional unofficial Claude Skills
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/file-organizer
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/image-enhancer
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/artifacts-builder
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/changelog-generator
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/content-research-writer
+    https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/article-extractor
+    https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/ship-learn-next
+    https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/tapestry
+    https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/youtube-transcript
+    https://github.com/smerchek/claude-epub-skill/blob/main/markdown-to-epub
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/docx
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/pdf
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/pptx
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/xlsx
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/image-enhancer
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/video-downloader
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/webapp-testing
+    https://github.com/coffeefuelbump/csv-data-summarizer-claude-skill
+    https://github.com/alphavantage/alpha_vantage_mcp
+
+    The following skill is probably going to be a crucial addition to the reflective self-evolution:
+    https://github.com/ComposioHQ/awesome-claude-skills/tree/master/developer-growth-analysis
+
+    - ClaudeCode Plugins: (https://github.com/anthropics/claude-code/blob/main/plugins/README.md) Install all of these, analyze them against any already existing agents.  Merge or replace where agent functions significantly overlap.  Document all agents with descriptions and explanations of how and when they are best used (this is mostly already done in the got repo readme files, so pull info from there and add anything novel from your own analysis and assessment). Pay special attention to Ralph Wiggum and think about how to revise design patterns in ways that will improve autonomy and tend towards task and project completion with little or no need for user aprovals. See also: https://awesomeclaude.ai/ralph-wiggum
+
+
+################
+Impact of tools on Context
+
+The output of /context should be analyzed for context usage and efficiency.  Based on overlap analysis, plus context usage, we need to decide whether and when to dynamically load/unload MCPs and other tools from the context window.  Integrate context use, dynamic loading/unloading, temporary use by subagents versus permanent load into main JArvis agent state, and other strategies and criteria as part of our "evaluation" report.  Examples of "always on" tools would include:
+MCPs - 
+    Keep "always-on":
+        mcp__memory
+        mcp__filesystem
+        mcp__time
+        mcp__fetch
+        mcp__git
+    Dynamically load/unload any others (Important! We should do this now, before moving forward with adding and testing more MCPs, plugins, agents or skills, to avoid context overrun.)
+
+Can plugins be dynamically loaded/unloaded in the context? If so we can review plugins for "always on" versus dynamic loading, or agent-specific contexts
+    Important! Drop the follwing completely, NOT needed at all
+        └ algorithmic-art: 4.8k tokens
+        └ doc-coauthoring: 3.8k tokens
+        └ slack-gif-creator: 1.9k tokens
+
+    Which is which?  How do these differ? Can we remove one?
+     └ frontend-design: 990 tokens
+     └ frontend-design: 989 tokens
+
+Memory files · /memory
+     └ .claude/CLAUDE.md: 5.2k tokens
+        This is gettig really big.  We will need to review, reduce redundany language, add in pointers to secondary docs that can contain situational command and control instructions.  What needs to live here versus in design pattern docs, knowledge-base docs/databases, tool-specific readme files, project plans and records, session logs, and so on?
+
+/commands - Do these need to live in context? It's ok if they must, or if there is a benefit.  This category is not token heavy...
+     └ tooling-health: 2.6k tokens
+     └ session-management: 2.0k tokens
+     └ sync-aifred-baseline: 1.2k tokens
+     └ setup: 1.1k tokens
+     └ end-session: 922 tokens
+     └ setup-readiness: 908 tokens
+     └ health-report: 820 tokens
+     └ design-review: 576 tokens
+     └ checkpoint: 540 tokens
+
+
+################
+    Session-Start Behaviors:
+    enhance the session-start.js hook in a future session.
+
+
+################
+    Session terminal cleanup:
+Notice how you seem to be trained to output things to the terminal using 'echo'?  That can be useful, especially when pulling things like paths or env variables out and piping them to files and so on.  However, it looks to me like a lot of the echoes sent are actually intended to give the user a kind of work-in-progress message, when in reality all it does it clutter up the terminal output.  Perhaps you yourself use the echo text to hook back into the results of the process and link to the next step deterministically.  But if not, you could probably revise your design patterns to exclude echo of unnecessary informational details.  ClaudeCode itself already wraps your CLI in such a way as to give me control over the transparency of your operations.  See below for the kind of clutter I'm referring to:
+
+⏺ I'll start by checking the session state and understanding the current context, then work through your instructions systematically.
+
+⏺ Read(.claude/context/session-state.md)
+  ⎿  Read 379 lines
+
+⏺ Read(.claude/reports/pr-6-plugin-evaluation.md)
+  ⎿  Read 465 lines
+
+⏺ Read(.claude/reports/pr-6-overlap-analysis.md)
+  ⎿  Read 294 lines
+
+⏺ I can see the session context. Let me also check the capability matrix and roadmap, then create a task list for this session.
+
+⏺ Read(.claude/context/integrations/capability-matrix.md)
+  ⎿  Read 314 lines
+
+⏺ Read(projects/project-aion/roadmap.md)
+  ⎿  Read 922 lines
+
+⏺ Bash(ls -la ~/.claude/plugins/cache/claude-plugins-official/ 2>/dev/null | head -30)
+  ⎿  total 0                                            
+     drwxr-xr-x  4 aircannon  staff  128 Jan  7 08:33 .
+     drwx------  7 aircannon  staff  224 Jan  7 08:56 ..
+     … +2 lines (ctrl+o to expand)
+
+⏺ Good - I can see the current state. Let me check the browser-automation plugin that's in the cache:
+
+⏺ Bash(ls -la ~/.claude/plugins/cache/claude-plugins-official/playwright/)
+  ⎿  total 0                                            
+     drwxr-xr-x  4 aircannon  staff  128 Jan  7 08:33 .
+     drwxr-xr-x  4 aircannon  staff  128 Jan  7 08:33 ..
+     … +2 lines (ctrl+o to expand)
+
+  Bash(claude plugins list 2>/dev/null || echo "Checking installed plugins another way...")
+  ⎿  Running PreToolUse hook…
+  ⎿  Running…
+     ctrl+b to run in background
+
+✢ Determining… (esc to interrupt · 1m 32s · ↓ 1.6k tokens · thought for 9s)
+
+
+
+
+
+/context 
+  ⎿   Context Usage
+     ⛁ ⛀ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   claude-opus-4-5-20251101 · 75k/200k tokens (37%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛁ ⛁ ⛁ ⛁   ⛁ System prompt: 3.1k tokens (1.6%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ System tools: 17.7k tokens (8.8%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛶   ⛁ MCP tools: 5.5k tokens (2.8%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Custom agents: 2.7k tokens (1.4%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Memory files: 951 tokens (0.5%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Skills: 3.6k tokens (1.8%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛝ ⛝ ⛝   ⛁ Messages: 41.2k tokens (20.6%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛶ Free space: 80k (40.1%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛝ Autocompact buffer: 45.0k tokens (22.5%)
+
+     MCP tools · /mcp
+     └ mcp__fetch__fetch: 326 tokens
+     └ mcp__memory__create_entities: 186 tokens
+     └ mcp__memory__create_relations: 189 tokens
+     └ mcp__memory__add_observations: 168 tokens
+     └ mcp__memory__delete_entities: 112 tokens
+     └ mcp__memory__delete_observations: 166 tokens
+     └ mcp__memory__delete_relations: 190 tokens
+     └ mcp__memory__read_graph: 68 tokens
+     └ mcp__memory__search_nodes: 107 tokens
+     └ mcp__memory__open_nodes: 109 tokens
+     └ mcp__git__git_status: 81 tokens
+     └ mcp__git__git_diff_unstaged: 119 tokens
+     └ mcp__git__git_diff_staged: 113 tokens
+     └ mcp__git__git_diff: 127 tokens
+     └ mcp__git__git_commit: 101 tokens
+     └ mcp__git__git_add: 113 tokens
+     └ mcp__git__git_reset: 83 tokens
+     └ mcp__git__git_log: 343 tokens
+     └ mcp__git__git_create_branch: 151 tokens
+     └ mcp__git__git_checkout: 104 tokens
+     └ mcp__git__git_show: 102 tokens
+     └ mcp__git__git_branch: 264 tokens
+     └ mcp__filesystem__read_file: 151 tokens
+     └ mcp__filesystem__read_text_file: 232 tokens
+     └ mcp__filesystem__read_media_file: 103 tokens
+     └ mcp__filesystem__read_multiple_files: 180 tokens
+     └ mcp__filesystem__write_file: 132 tokens
+     └ mcp__filesystem__edit_file: 229 tokens
+     └ mcp__filesystem__create_directory: 128 tokens
+     └ mcp__filesystem__list_directory: 130 tokens
+     └ mcp__filesystem__list_directory_with_sizes: 174 tokens
+     └ mcp__filesystem__directory_tree: 181 tokens
+     └ mcp__filesystem__move_file: 146 tokens
+     └ mcp__filesystem__search_files: 201 tokens
+     └ mcp__filesystem__get_file_info: 126 tokens
+     └ mcp__filesystem__list_allowed_directories: 107 tokens
+
+     Custom agents · /agents
+
+     Plugin
+     └ pr-review-toolkit:code-reviewer: 466 tokens
+     └ pr-review-toolkit:comment-analyzer: 438 tokens
+     └ pr-review-toolkit:pr-test-analyzer: 385 tokens
+     └ pr-review-toolkit:silent-failure-hunter: 361 tokens
+     └ pr-review-toolkit:type-design-analyzer: 342 tokens
+     └ hookify:conversation-analyzer: 175 tokens
+     └ agent-sdk-dev:agent-sdk-verifier-ts: 72 tokens
+     └ agent-sdk-dev:agent-sdk-verifier-py: 70 tokens
+     └ engineering-workflow-skills:plan-implementer: 65 tokens
+     └ feature-dev:code-architect: 53 tokens
+     └ feature-dev:code-reviewer: 52 tokens
+     └ feature-dev:code-explorer: 47 tokens
+     └ pr-review-toolkit:code-simplifier: 25 tokens
+     └ plugin-dev:agent-creator: 20 tokens
+     └ plugin-dev:skill-reviewer: 20 tokens
+     └ plugin-dev:plugin-validator: 20 tokens
+
+     Project
+     └ memory-bank-synchronizer: 38 tokens
+     └ service-troubleshooter: 33 tokens
+     └ deep-research: 31 tokens
+     └ docker-deployer: 28 tokens
+
+     Memory files · /memory
+     └ .claude/CLAUDE.md: 951 tokens
+
+     Skills and slash commands · /skills
+
+     Project
+     └ session-management: 33 tokens
+     └ soft-restart: 24 tokens
+     └ checkpoint: 23 tokens
+     └ smart-checkpoint: 22 tokens
+     └ sync-aifred-baseline: 21 tokens
+     └ context-budget: 21 tokens
+     └ setup-readiness: 18 tokens
+     └ end-session: 12 tokens
+     └ setup: 10 tokens
+     └ tooling-health: 10 tokens
+     └ health-report: 9 tokens
+     └ design-review: 9 tokens
+
+     Plugin
+     └ Hook Development: 138 tokens
+     └ Command Development: 130 tokens
+     └ xlsx: 117 tokens
+     └ MCP Integration: 116 tokens
+     └ Plugin Structure: 115 tokens
+     └ doc-coauthoring: 115 tokens
+     └ Plugin Settings: 109 tokens
+     └ frontend-design: 108 tokens
+     └ Agent Development: 97 tokens
+     └ internal-comms: 90 tokens
+     └ algorithmic-art: 89 tokens
+     └ git-pushing: 88 tokens
+     └ code-refactor: 82 tokens
+     └ conversation-analyzer: 80 tokens
+     └ codebase-documenter: 80 tokens
+     └ Skill Development: 80 tokens
+     └ canvas-design: 80 tokens
+     └ architecture-diagram-creator: 78 tokens
+     └ project-bootstrapper: 77 tokens
+     └ code-auditor: 77 tokens
+     └ mcp-builder: 76 tokens
+     └ technical-doc-creator: 73 tokens
+     └ theme-factory: 73 tokens
+     └ pptx: 73 tokens
+     └ code-execution: 71 tokens
+     └ dashboard-creator: 68 tokens
+     └ pdf: 68 tokens
+     └ code-transfer: 67 tokens
+     └ timeline-creator: 67 tokens
+     └ frontend-design: 67 tokens
+     └ slack-gif-creator: 65 tokens
+     └ skill-creator: 64 tokens
+     └ test-fixing: 63 tokens
+     └ flowchart-creator: 63 tokens
+     └ file-operations: 60 tokens
+     └ webapp-testing: 59 tokens
+     └ review-implementing: 57 tokens
+     └ Writing Hookify Rules: 53 tokens
+     └ feature-planning: 49 tokens
+     └ plugin-dev:create-plugin: 30 tokens
+     └ hookify:hookify: 28 tokens
+     └ feature-dev:feature-dev: 25 tokens
+     └ engineering-workflow-skills:pr: 20 tokens
+     └ agent-sdk-dev:new-sdk-app: 19 tokens
+     └ pr-review-toolkit:review-pr: 19 tokens
+     └ ralph-wiggum:help: 18 tokens
+     └ ralph-wiggum:ralph-loop: 17 tokens
+     └ hookify:configure: 16 tokens
+     └ ralph-wiggum:cancel-ralph: 14 tokens
+     └ code-review:code-review: 13 tokens
+     └ hookify:list: 12 tokens
+     └ hookify:help: 11 tokens
+
+
+ 
+     
+

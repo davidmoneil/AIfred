@@ -1,0 +1,76 @@
+Jarvis-Brainstorm-Scratch
+
+###########
+Homemade skills, skills directly imported from github, etc -> Need a simlar treatment for Progresive Disclosure and Intelligent Selection standards as the decomposed plugins.  See e.g. "I see that mcp-validation and session-management don't have the new frontmatter format (they're older skills from before this PR). That's fine - they're existing skills that work." This is too much of a functional gloss.  When a discrepancy is identified, make note, don't assume it's fine, and add it to a backlog of future potential PRs.
+
+###########
+What session life-sycle stages exist and what reproducible events should be triggered o what conditions?
+
+*Session Start
+	check AIfred, adopt/adapt/reject
+	Jarvis should automatically provide a selectable list or:
+		1. continue with last session's work? -> Jarvis reads last session, reads relevant project docs, loads design patterns into context, makes a plan, replies to user for approval/input
+		2. continue with a specific session id or conversatoin name? -> Jarvis reads named session, reads relevant project docs, loads design patterns into context, makes a plan, replies to user for approval/input
+		3. custom instructions
+			a) switch to a new project (there's no session IDs, etc) -> Jarvis prompts the user for the info needed to set up new project space
+			b) switch to an existing project (for which there's not a session ID or named chat, but Jarvis looks for a session-state or checkpoint) -> Jarvis reads session state and/or checkpoint, reads relevant project docs, loads design patterns into context, makes a plan, replies to user for approval/input
+			c) custom prompt -> Jarvis creates plan to address prompt, makes a scratch space for session outputs if needed (example: user wants to work specifically on Jarvis ecosystem improvement)
+
+	Upon new session Jarvis shouldn't ever just sit there waiting for a prompt
+	New session triggers watcher script
+
+*Delegation/Persistance
+	Jarvis delegates based on session plan (the WHOLE session was planned during session startup)
+	Follows up if/when agents think the job is done
+	Jarvis evaluates and triggers wiggum loop if unsatisfied
+	Repeat until Jarvis is happy
+	Jarvis manages context
+
+*Report/Review
+	Jarvis summarizes completed work for the session
+	User gives feedback
+	Jarvis evaluates additional work needed
+	Jarvis plans and delegates
+	OR Jarvis and User agree that session work is satisfactory
+	User requests end session
+
+*Session End
+	Jarvis reviews delegated agentic work for efficiency, completeness and accuracy
+	Jarvis reviews interactions with user
+	Jarvis reviews Jarvis' planning, decision-making, context management
+	Jarvis derives insights and distills into design pattern improvements
+	Jarvis applies improvements
+	Session state updated
+  	Priorities updated
+  	Checkpoint created
+  	MCPs enabled reset to Tier 1 (no need for auto-clear, just reset)
+  	Version bump
+  	Changes committed
+  	Pushed to Project_Aion branch
+  	User exits
+
+
+###############
+I want a /Jarvis command.  All it does is bring up a menu of my commonly used manual commands.  There are so many commands now, I don't want to remember them or cycle through long list anymore.  Include /context /context-budget /context-checkpoint /end-session /smart-compact /health-report /setup /setup-readiness /sync-aifred-baseline /tooling-health /validate-mcp /clear /compact /config /doctor /export /plan /rename /resume /stats /todos /usage
+
+...but could you make the selection list sorted alphabetically?
+
+CURRENTLY NOT WORKING
+
+
+###############
+I want Jarvis to know the weather and the date/time at startup.  He should say something politely conversational at session start.  A session start hook should trigger a prompt to be submitted to him right at initialization of the terminal.
+
+
+##############
+For context budget estimation, maybe there should just be a somewhat constant trigger for /context and then a check by the model or script parse, puts the updated contex size into an env var, when if that env var value is >x then the context compression command is invoked.
+
+
+##############
+Need to critically review the pocesses and triggers that manage session starts, mcp loading/unloading from context (probably the buggiest), context budgeting and compression, self-reflection (not in place yet), project space cleaning, end session, etc
+
+
+
+
+
+

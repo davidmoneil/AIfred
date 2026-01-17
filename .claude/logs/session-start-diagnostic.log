@@ -229,3 +229,15 @@
 2026-01-17T01:20:37Z | SessionStart | Cleaned up .clear-pending marker
 2026-01-17T01:20:37Z | SessionStart | current_work='' next_step=''
 2026-01-17T01:30:12Z | SessionEnd | /end-session invoked
+2026-01-17T01:45:39Z | SessionStart | source=startup | session=759b2e2c-544d-42ea-a88f-113ada6b0e0c | local_time=18:45
+2026-01-17T01:45:39Z | SessionStart | time_of_day=evening
+2026-01-17T01:45:39Z | SessionStart | Launched watcher
+2026-01-17T01:45:39Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-17T01:45:39Z | SessionStart | current_work='' next_step=''
+2026-01-17T03:06:52Z | SessionStart | source=startup | session=2f43ad92-8bcc-4f1a-8ddf-a30e377beb8d | local_time=20:06
+2026-01-17T03:06:52Z | SessionStart | time_of_day=evening
+2026-01-17T03:06:52Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-17T03:06:52Z | SessionStart | Launched watcher
+2026-01-17T03:06:52Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-17T03:06:52Z | SessionStart | current_work='' next_step=''
+2026-01-17T03:37:13Z | SessionEnd | /end-session invoked

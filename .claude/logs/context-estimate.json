@@ -1,7 +1,7 @@
 {
-  "sessionStart": "2026-01-09T22:46:23.274Z",
-  "totalTokens": 117800,
-  "toolCalls": 878,
-  "lastUpdate": "2026-01-17T01:30:45.285Z",
-  "percentage": 58.9
+  "sessionStart": "2026-01-17T03:06:52Z",
+  "totalTokens": 32700,
+  "toolCalls": 27,
+  "lastUpdate": "2026-01-17T03:38:04.662Z",
+  "percentage": 16.35
 }

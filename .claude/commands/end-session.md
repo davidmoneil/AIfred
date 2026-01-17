@@ -7,6 +7,27 @@ allowed-tools: Read, Write, Edit, Bash(git:*)
 
 You are running the Jarvis (Project Aion) session exit procedure.
 
+## Pre-Completion Offer (AC-09 Tier 2 Cycles)
+
+**BEFORE proceeding with exit**, offer the user the option to run self-improvement cycles:
+
+```
+Before ending the session, would you like me to run any self-improvement cycles?
+
+Available options:
+1. `/self-improve` — Full cycle (reflection → maintenance → research → evolution)
+2. `/maintain` — Quick maintenance check only
+3. `/reflect` — Review session for learnings only
+4. Skip — Proceed directly to exit
+
+[Enter choice or press Enter to skip]
+```
+
+**If user chooses an option**: Run the selected command, then return here to complete exit.
+**If user skips or presses Enter**: Proceed to exit procedure below.
+
+---
+
 ## Pre-Exit Context Preparation
 
 **Run this FIRST** to prepare context for clean restart:
@@ -193,4 +214,4 @@ Next Time:
 
 ---
 
-*Jarvis v1.2.0 — Project Aion Master Archon*
+*Jarvis v2.1.0 — Project Aion Master Archon (AC-09 pre-completion offer added)*

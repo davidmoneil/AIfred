@@ -24,6 +24,7 @@ const { execSync } = require('child_process');
 const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
 const CONTEXT_DIR = path.join(WORKSPACE_ROOT, '.claude/context');
 const LOG_DIR = path.join(WORKSPACE_ROOT, '.claude/logs');
+const CONFIG_FILE = path.join(WORKSPACE_ROOT, '.claude/config/autonomy-config.yaml');
 
 const ESTIMATE_FILE = path.join(LOG_DIR, 'context-estimate.json');
 const MCP_USAGE_FILE = path.join(LOG_DIR, 'mcp-usage.json');  // PR-9.3: Track MCP tool usage
@@ -31,10 +32,30 @@ const COMPACTION_FLAG = path.join(CONTEXT_DIR, '.compaction-in-progress');
 const CHECKPOINT_FILE = path.join(CONTEXT_DIR, '.soft-restart-checkpoint.md');
 const SIGNAL_FILE = path.join(CONTEXT_DIR, '.auto-clear-signal');
 
-// Thresholds (percentage of 200K tokens)
-const WARNING_THRESHOLD = 50;       // Show warning
-const VERIFY_THRESHOLD = 75;        // Call /context to verify
+// Default thresholds (can be overridden by config)
 const MAX_CONTEXT_TOKENS = 200000;
+let WARNING_THRESHOLD = 50;       // Show warning (default)
+let VERIFY_THRESHOLD = 75;        // Trigger checkpoint (default)
+
+/**
+ * Load thresholds from autonomy-config.yaml
+ * Falls back to defaults if config unavailable
+ */
+async function loadConfigThresholds() {
+  try {
+    const content = await fs.readFile(CONFIG_FILE, 'utf8');
+    // Simple YAML parsing for threshold_tokens
+    const match = content.match(/threshold_tokens:\s*(\d+)/);
+    if (match) {
+      const thresholdTokens = parseInt(match[1], 10);
+      // Convert token threshold to percentage
+      VERIFY_THRESHOLD = Math.round((thresholdTokens / MAX_CONTEXT_TOKENS) * 100);
+      WARNING_THRESHOLD = Math.round(VERIFY_THRESHOLD * 0.67); // Warning at ~2/3 of threshold
+    }
+  } catch {
+    // Use defaults if config unavailable
+  }
+}
 
 // Rough token estimates (characters / 4)
 const CHAR_TO_TOKEN_RATIO = 4;
@@ -314,6 +335,9 @@ async function handler(context) {
   }
 
   try {
+    // Load config thresholds (reads from autonomy-config.yaml)
+    await loadConfigThresholds();
+
     // Load current estimate
     const estimate = await loadEstimate();
 

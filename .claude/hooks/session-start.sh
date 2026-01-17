@@ -74,6 +74,32 @@ if [[ -f "$PENDING_FILE" ]]; then
     echo "$TIMESTAMP | SessionStart | Cleaned up .clear-pending marker" >> "$LOG_DIR/session-start-diagnostic.log"
 fi
 
+# ============== JICM RESET (AC-04 Integration) ==============
+# Reset context estimate on startup or clear (but NOT on resume/compact to preserve tracking)
+CONTEXT_ESTIMATE_FILE="$LOG_DIR/context-estimate.json"
+COMPACTION_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.compaction-in-progress"
+
+if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "clear" ]]; then
+    # Reset context estimate to baseline
+    BASELINE_TOKENS=30000  # Base MCP load estimate
+    cat > "$CONTEXT_ESTIMATE_FILE" << EOF
+{
+  "sessionStart": "$TIMESTAMP",
+  "totalTokens": $BASELINE_TOKENS,
+  "toolCalls": 0,
+  "lastUpdate": "$TIMESTAMP",
+  "percentage": 15.0
+}
+EOF
+    echo "$TIMESTAMP | SessionStart | JICM reset: context-estimate.json baseline=$BASELINE_TOKENS" >> "$LOG_DIR/session-start-diagnostic.log"
+
+    # Clear compaction-in-progress flag if exists
+    if [[ -f "$COMPACTION_FLAG" ]]; then
+        rm -f "$COMPACTION_FLAG"
+        echo "$TIMESTAMP | SessionStart | JICM: Cleared compaction-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+fi
+
 # Launch auto-clear watcher on startup (not on clear/compact to avoid duplicates)
 if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     # Launch watcher in background (don't block hook)

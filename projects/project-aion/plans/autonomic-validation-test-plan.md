@@ -437,7 +437,7 @@ Check documentation freshness
 | AC-06 Self-Evolution | ✅ | ❌ | ✅ /evolve | NEEDS TESTING |
 | AC-07 R&D Cycles | ✅ | ❌ | ✅ /research | NEEDS TESTING |
 | AC-08 Maintenance | ✅ | ❌ | ✅ /maintain | NEEDS TESTING |
-| AC-09 Session Completion | ✅ | ❌ | ✅ /end-session | NEEDS TESTING |
+| AC-09 Session Completion | ✅ | ❌ | ✅ /end-session | ⚠️ **PARTIAL** |
 
 **Key**: ✅ = Implemented/Validated, ❌ = Not implemented/Failed, PARTIAL = Some components exist
 
@@ -448,6 +448,7 @@ Check documentation freshness
 | AC-01 | ✅ PASS | All 3 tests passed. Hook working. AIfred baseline check missing (documented gap). |
 | AC-02 | ❌ FAIL | Pattern documented but NOT active. Single-pass behavior observed. Needs injection mechanism. |
 | AC-04 | ✅ PASS | /context-budget and /context-checkpoint both working. Checkpoint resume triggers autonomous work! |
+| AC-09 | ⚠️ PARTIAL | Exit procedure works (state update, git commit, push, summary). Missing: pre-completion Tier 2 offer. |
 
 ---
 
