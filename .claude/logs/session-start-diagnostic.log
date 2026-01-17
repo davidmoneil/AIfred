@@ -211,3 +211,21 @@
 2026-01-17T00:57:00Z | SessionStart | Launched watcher
 2026-01-17T00:57:00Z | SessionStart | MCP suggestions: enable=[] disable=[]
 2026-01-17T00:57:00Z | SessionStart | current_work='' next_step=''
+2026-01-17T01:04:49Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-17T01:04:59Z | Stop | Clear already pending, allowing stop
+2026-01-17T01:05:02Z | SessionStart | source=clear | session=66e281dd-fecb-4bf8-9da9-feebf83fbc02 | local_time=18:05
+2026-01-17T01:05:02Z | SessionStart | time_of_day=evening
+2026-01-17T01:05:02Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-17T01:05:02Z | SessionStart | current_work='' next_step=''
+2026-01-17T01:07:58Z | SessionStart | source=startup | session=36c9f001-563a-4804-b813-a50fab0f087c | local_time=18:07
+2026-01-17T01:07:58Z | SessionStart | time_of_day=evening
+2026-01-17T01:07:58Z | SessionStart | Launched watcher
+2026-01-17T01:07:58Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-17T01:07:58Z | SessionStart | current_work='' next_step=''
+2026-01-17T01:20:24Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-17T01:20:35Z | Stop | Clear already pending, allowing stop
+2026-01-17T01:20:37Z | SessionStart | source=clear | session=6ee68a7b-1bea-4802-b262-1857d2231e68 | local_time=18:20
+2026-01-17T01:20:37Z | SessionStart | time_of_day=evening
+2026-01-17T01:20:37Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-17T01:20:37Z | SessionStart | current_work='' next_step=''
+2026-01-17T01:30:12Z | SessionEnd | /end-session invoked
