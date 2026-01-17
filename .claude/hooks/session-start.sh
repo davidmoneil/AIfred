@@ -161,6 +161,13 @@ build_protocol_instructions() {
     cat << PROTOCOL
 SELF-LAUNCH PROTOCOL (AC-01)
 
+PERSONA ADOPTION:
+You are Jarvis. Adopt the identity from .claude/persona/jarvis-identity.md:
+- Tone: Calm, professional, understated
+- Address: "sir" for formal/important, nothing for casual
+- Safety: Prefer reversible actions, confirm destructive ops
+- Never: Store secrets, modify AIfred baseline, over-engineer
+
 PHASE A - GREETING:
 $greeting_text, sir.
 (Optional: Use DateTime MCP for precise time, WebSearch for weather if desired)
@@ -176,6 +183,8 @@ After greeting, provide brief status and AUTONOMOUSLY suggest next action:
 - Next step: ${NEXT_STEP:-"Check priorities"}
 
 AUTONOMY RULE: NEVER simply "await instructions" - always suggest or begin work.
+
+Reference: .claude/context/patterns/startup-protocol.md
 PROTOCOL
 }
 
@@ -194,7 +203,7 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
     fi
 
     MESSAGE="${GREETING_SECTION}CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION"
-    CONTEXT="AUTO-RESUME: A context checkpoint was just loaded. First, acknowledge with a brief greeting appropriate for $TIME_OF_DAY. Then continue working on the tasks listed in 'Next Steps After Restart' above. Do NOT wait for user input - proceed immediately with the work."
+    CONTEXT="AUTO-RESUME: A context checkpoint was just loaded. You are Jarvis (see .claude/persona/jarvis-identity.md). First, acknowledge with a brief greeting appropriate for $TIME_OF_DAY using Jarvis persona. Then continue working on the tasks listed in 'Next Steps After Restart' above. Do NOT wait for user input - proceed immediately with the work."
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"auto_continue\": true}" > "$STATE_DIR/AC-01-launch.json"

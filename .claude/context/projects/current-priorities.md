@@ -8,6 +8,32 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## Recently Completed
 
+### RLE-001: Ralph Loop Comparison Experiment (2026-01-17)
+**Status**: ✅ Complete — Research Documentation Created
+
+**Objective**: Compare tool construction using Official vs Native Ralph Loop systems
+
+**Phases Completed**:
+- [x] Phase 1: Build Decompose-Official using Official Ralph Loop
+- [x] Phase 2: Integrate ralph-loop natively, seal official artifacts
+- [x] Phase 3: Build Decompose-Native blind (using native ralph-loop)
+- [x] Phase 4: Formal validation suite (11/11 tests PASS)
+- [x] Phase 5: Integration test with example-plugin
+- [x] Phase 6: Comparison analysis
+
+**Key Findings**:
+- Native Ralph Loop enables agent self-invocation (Official cannot)
+- 24.3% code reduction in blind build (1375 vs 1817 lines)
+- Feature parity achieved: 9/9 features, 100% test pass rate
+- Bug discovered and fixed during blind development
+
+**Deliverables**:
+- `.claude/scripts/plugin-decompose.sh` — Decompose tool (1151 lines)
+- `projects/project-aion/reports/ralph-loop-experiment/` — Research documentation
+- `.claude/commands/ralph-loop.md` — Native Ralph Loop command
+
+---
+
 ### PR-10: Jarvis Persona + Project Organization + Setup Upgrade (v2.0.0)
 **Status**: ✅ Complete (2026-01-13) — **Phase 5 Complete**
 

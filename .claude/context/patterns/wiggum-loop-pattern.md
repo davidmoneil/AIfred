@@ -1,9 +1,10 @@
 # Wiggum Loop Pattern
 
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Created**: 2026-01-16
+**Updated**: 2026-01-17
 **Component**: AC-02 Wiggum Loop
-**PR**: PR-12.2
+**PR**: PR-12.2 (Implementation Complete)
 
 ---
 
@@ -482,4 +483,83 @@ Pass 3: Complete implementation
 
 ---
 
-*Wiggum Loop Pattern — Jarvis Phase 6 PR-12.2*
+## 11. Implementation (2026-01-17)
+
+### Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/ralph-loop "prompt" [options]` | Start Ralph Loop |
+| `/cancel-ralph` | Cancel active loop |
+
+### Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--max-iterations N` | Maximum iterations before auto-stop | unlimited |
+| `--completion-promise "TEXT"` | Promise phrase to signal completion | none |
+
+### Usage Examples
+
+```bash
+# Simple iteration with max limit
+/ralph-loop "Build todo API. Run tests after changes." --max-iterations 10
+
+# With completion promise
+/ralph-loop "Implement auth per docs/spec.md" --completion-promise "ALL TESTS PASS" --max-iterations 20
+
+# Unlimited iterations (careful!)
+/ralph-loop "Refactor until code quality improves"
+```
+
+### Harness Prompt Best Practices
+
+The harness prompt should include:
+
+1. **Clear task description**: What to build/fix/improve
+2. **Success criteria**: How to know when done
+3. **Validation instructions**: Tests to run, specs to check
+
+**Good harness prompt:**
+```
+Implement the authentication system per docs/auth-spec.md.
+
+Requirements:
+- JWT token generation and validation
+- Session management with Redis
+- Rate limiting on login endpoints
+
+Run `npm test` after each change. Do not stop until all tests pass.
+Output <promise>AUTH COMPLETE</promise> when spec fully implemented.
+```
+
+### Implementation Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/scripts/ralph-setup.sh` | Initialize loop state |
+| `.claude/hooks/ralph-stop-hook.sh` | Intercept exit, feed prompt |
+| `.claude/hooks/wiggum-loop-tracker.js` | Status visibility |
+| `.claude/ralph-loop.local.md` | Runtime state (gitignored) |
+| `.claude/state/components/AC-02-wiggum.json` | Metrics state |
+| `.claude/logs/wiggum-loop.log` | Event log |
+
+### Monitoring
+
+```bash
+# Current iteration
+grep '^iteration:' .claude/ralph-loop.local.md
+
+# Full state
+head -15 .claude/ralph-loop.local.md
+
+# AC-02 metrics
+cat .claude/state/components/AC-02-wiggum.json
+
+# Event log
+tail -20 .claude/logs/wiggum-loop.log
+```
+
+---
+
+*Wiggum Loop Pattern — Jarvis Phase 6 PR-12.2 (Implementation Complete)*

@@ -44,12 +44,13 @@ This skill consolidates everything related to Claude Code session management:
 ┌─────────────────────────────────────────────────────────────────┐
 │                    SESSION LIFECYCLE                            │
 ├─────────────────────────────────────────────────────────────────┤
-│  START                                                          │
-│  └─ session-start.js hook (automatic)                           │
-│     ├─ Loads session-state.md content                           │
-│     ├─ Loads current-priorities.md content                      │
-│     ├─ Shows git branch context                                 │
-│     └─ Checks AIfred baseline for updates                       │
+│  START (AC-01 Self-Launch Protocol)                             │
+│  └─ session-start.sh hook (automatic)                           │
+│     ├─ Phase A: Time-aware greeting with Jarvis persona         │
+│     ├─ Phase B: Loads session-state.md + current-priorities.md  │
+│     ├─ Phase C: Autonomous initiation based on state            │
+│     ├─ Creates AC-01-launch.json state file                     │
+│     └─ Launches auto-clear watcher for context management       │
 ├─────────────────────────────────────────────────────────────────┤
 │  DURING                                                         │
 │  ├─ audit-logger.js → Logs all tool executions                  │
@@ -83,7 +84,7 @@ These run automatically - no action needed.
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `session-start.js` | SessionStart | Auto-load context files |
+| `session-start.sh` | SessionStart | AC-01 Self-Launch Protocol |
 | `session-stop.js` | Stop | Desktop notification |
 | `session-exit-enforcer.js` | PostToolUse | Track exit checklist |
 | `audit-logger.js` | PreToolUse | Log all activity |
@@ -118,18 +119,25 @@ These files persist across sessions.
 
 ### Starting a Session
 
-**What happens automatically**:
-1. `session-start.js` hook fires
-2. Reads and injects `session-state.md` (truncated to 2000 chars)
-3. Reads and injects `current-priorities.md` (truncated to 1500 chars)
-4. Shows git branch and uncommitted changes count
-5. Checks AIfred baseline for upstream changes
+**What happens automatically** (AC-01 Self-Launch Protocol):
+1. `session-start.sh` hook fires
+2. **Phase A**: Time-aware greeting with Jarvis persona (morning/afternoon/evening)
+3. **Phase B**: Context loading
+   - Reads `session-state.md` for previous work status
+   - Reads `current-priorities.md` for task backlog
+   - Checks for checkpoint file (auto-resume if present)
+   - Resets JICM context estimate
+4. **Phase C**: Autonomous initiation
+   - Suggests next action based on state
+   - Never simply "awaits instructions"
 
 **What you should do**:
-1. Review the injected context (shown automatically)
-2. Check for blockers or next steps from previous session
+1. Receive the greeting and status briefing
+2. Jarvis will suggest continuing pending work or alternatives
 3. If baseline has updates, run `/sync-aifred-baseline`
-4. Continue from where you left off
+4. Proceed with suggested work or redirect as needed
+
+**Reference**: @.claude/context/patterns/startup-protocol.md
 
 ### During a Session
 
@@ -234,8 +242,20 @@ When you need an On-Demand MCP that's not enabled:
 
 ## Related Documentation
 
+### Core References
 - @.claude/context/session-state.md - Session state file
 - @.claude/context/projects/current-priorities.md - Priorities file
+- @.claude/persona/jarvis-identity.md - Jarvis persona specification
+
+### Patterns
+- @.claude/context/patterns/startup-protocol.md - AC-01 three-phase startup protocol
 - @.claude/context/patterns/session-start-checklist.md - Session start checklist
 - @.claude/context/patterns/mcp-loading-strategy.md - MCP On-Demand pattern
+- @.claude/context/patterns/automated-context-management.md - JICM context management
+
+### Components
+- @.claude/context/components/AC-01-self-launch.md - Self-Launch component spec
+
+### Infrastructure
+- @.claude/hooks/session-start.sh - Main startup hook
 - @.claude/hooks/README.md - All hooks documentation

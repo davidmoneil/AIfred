@@ -4,8 +4,8 @@
 **Version**: 1.0.0
 **Status**: active
 **Created**: 2026-01-16
-**Last Modified**: 2026-01-16
-**PR**: PR-12.2
+**Last Modified**: 2026-01-17
+**PR**: PR-12.2 (Implementation Complete)
 
 ---
 
@@ -282,9 +282,56 @@ Destructive operations always require explicit user confirmation.
 ### Current Implementation
 | Artifact | Path | Status |
 |----------|------|--------|
-| Pattern document | `.claude/context/patterns/wiggum-loop-pattern.md` | planned |
-| State file | `.claude/state/components/AC-02-wiggum.json` | planned |
-| ralph-wiggum skill | External plugin | exists |
+| Setup script | `.claude/scripts/ralph-setup.sh` | **active** |
+| Stop hook | `.claude/hooks/ralph-stop-hook.sh` | **active** |
+| Tracker hook | `.claude/hooks/wiggum-loop-tracker.js` | **active** |
+| Command | `.claude/commands/ralph-loop.md` | **active** |
+| Cancel command | `.claude/commands/cancel-ralph.md` | **active** |
+| State file | `.claude/ralph-loop.local.md` | runtime (gitignored) |
+| AC-02 state | `.claude/state/components/AC-02-wiggum.json` | **active** |
+| Event log | `.claude/logs/wiggum-loop.log` | **active** |
+| Pattern document | `.claude/context/patterns/wiggum-loop-pattern.md` | **active** |
+
+### Architecture
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                    AC-02 RALPH LOOP SYSTEM                          │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  /ralph-loop command                                                │
+│       │                                                             │
+│       ▼                                                             │
+│  ┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐  │
+│  │  ralph-setup.sh │────▶│ ralph-loop.local │◀────│ stop-hook   │  │
+│  │  (entry point)  │     │ .md (state file) │     │ (intercept) │  │
+│  └─────────────────┘     └────────┬─────────┘     └──────┬──────┘  │
+│                                   │                      │         │
+│                                   ▼                      ▼         │
+│                    ┌──────────────────────────┐                    │
+│                    │ AC-02-wiggum.json (state)│                    │
+│                    │ wiggum-loop.log (events) │                    │
+│                    └──────────────────────────┘                    │
+│                                                                     │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+### How It Works
+
+1. **`/ralph-loop "prompt"` starts the loop**
+   - Creates `ralph-loop.local.md` with harness prompt and config
+   - Initializes `AC-02-wiggum.json` with active state
+   - Logs `loop_start` event
+
+2. **Stop hook intercepts exit attempts**
+   - Reads state file frontmatter
+   - Checks for `<promise>TEXT</promise>` in assistant output
+   - If not complete: returns `{decision: "block", reason: prompt}`
+   - If complete: removes state file, updates AC-02 state
+
+3. **Loop continues until**
+   - Completion promise detected in output
+   - Max iterations reached
+   - Manual cancellation via `/cancel-ralph`
 
 ### Loop Structure (6 Steps)
 
@@ -329,8 +376,8 @@ Destructive operations always require explicit user confirmation.
 - "Idle/timeout" → Switch to R&D/Maintenance/Reflection
 
 ### Open Questions
-- [ ] Integration point with existing ralph-wiggum skill?
-- [ ] JICM pause point detection mechanism?
+- [x] ~~Integration point with existing ralph-wiggum skill?~~ **Resolved**: Decomposed official plugin into native Jarvis components
+- [x] ~~JICM pause point detection mechanism?~~ **Resolved**: JICM not integrated with Ralph Loop (each iteration is fresh context)
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
@@ -338,6 +385,10 @@ Destructive operations always require explicit user confirmation.
 | 2026-01-16 | Default ON | Autonomy-first design principle |
 | 2026-01-16 | Explicit keywords to disable | Clear, unambiguous suppression |
 | 2026-01-16 | 6-step iteration structure | Comprehensive verification |
+| 2026-01-17 | Decompose official ralph-loop plugin | Customizable, observable implementation |
+| 2026-01-17 | No JICM integration | Each Ralph iteration is fresh context anyway |
+| 2026-01-17 | Harness prompt for validation | More flexible than TodoWrite tracking |
+| 2026-01-17 | State file format compatible with official | Allows side-by-side testing |
 
 ---
 
@@ -346,14 +397,24 @@ Destructive operations always require explicit user confirmation.
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [x] Triggers tested (default ON via behavioral pattern, suppression keywords documented)
-- [x] Inputs/outputs validated (state file AC-02-wiggum.json created)
-- [x] Dependencies verified (TodoWrite available, JICM pattern documented)
+- [x] Triggers tested (`/ralph-loop` command, stop hook intercept)
+- [x] Inputs/outputs validated (state files created and updated)
+- [x] Dependencies verified (stop hook registered in settings.json)
 - [x] Gates implemented (destructive ops handled by existing guardrail hooks)
-- [ ] Metrics emission working (placeholder - telemetry system not yet implemented)
-- [x] Failure modes tested (max iterations, drift detection documented in pattern)
+- [x] Metrics emission working (AC-02-wiggum.json updated, wiggum-loop.log written)
+- [x] Failure modes tested (max iterations termination, promise detection)
 - [x] Integration with consumers verified (AC-03 Review pattern exists)
-- [x] Documentation updated (wiggum-loop-pattern.md complete)
+- [x] Documentation updated (component spec and pattern updated)
+
+### Validation Test Results (2026-01-17)
+| Test | Result |
+|------|--------|
+| Setup script creates state | ✅ PASS |
+| Stop hook increments iteration | ✅ PASS |
+| Completion promise detection | ✅ PASS |
+| Max iterations termination | ✅ PASS |
+| AC-02 state file updated | ✅ PASS |
+| Log emission | ✅ PASS |
 
 ---
 

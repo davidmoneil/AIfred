@@ -1,6 +1,6 @@
 # Jarvis Full Reference
 
-**Version**: 1.9.5
+**Version**: 2.1.0
 **Status**: On-demand reference (not always-loaded)
 
 This document provides navigation to detailed documentation. For quick reference, use @.claude/CLAUDE.md.
@@ -26,11 +26,20 @@ This document provides navigation to detailed documentation. For quick reference
 ### Patterns (Operational)
 | Pattern | Purpose |
 |---------|---------|
-| @.claude/context/patterns/session-start-checklist.md | Session startup procedure |
+| @.claude/context/patterns/startup-protocol.md | AC-01 three-phase startup protocol |
+| @.claude/context/patterns/session-start-checklist.md | Session startup checklist |
+| @.claude/context/patterns/wiggum-loop-pattern.md | AC-02 multi-pass verification |
 | @.claude/context/patterns/agent-selection-pattern.md | Choose agents vs tools |
 | @.claude/context/patterns/selection-intelligence-guide.md | Tool selection guide |
 | @.claude/context/patterns/context-budget-management.md | Token management |
 | @.claude/context/patterns/memory-storage-pattern.md | When to use Memory MCP |
+
+### Autonomic Components
+| Component | Purpose |
+|-----------|---------|
+| @.claude/context/components/AC-01-self-launch.md | Session startup automation |
+| @.claude/context/components/AC-02-wiggum-loop.md | Multi-pass verification |
+| @.claude/context/components/AC-04-jicm.md | Context management |
 
 ### Integration Guides
 | Guide | Purpose |
@@ -67,4 +76,4 @@ For routine work, CLAUDE.md provides sufficient context.
 
 ---
 
-*Jarvis v1.9.5 — Full Reference Navigation*
+*Jarvis v2.1.0 — Full Reference Navigation*

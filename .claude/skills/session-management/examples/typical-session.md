@@ -16,13 +16,19 @@ You're implementing a new feature over multiple sessions. Here's how to manage t
 
 ```
 [Claude Code starts]
-[session-start.js auto-loads context]
+[session-start.sh fires AC-01 Self-Launch Protocol]
 
-Context injected:
+Phase A - Greeting:
+"Good morning, sir."
+
+Phase B - System Review:
 - Session state: idle
 - Priorities: "Implement PR-5 Core Tooling Baseline"
 - Branch: Project_Aion (0 uncommitted changes)
-- AIfred baseline: 2 commits ahead → run /sync-aifred-baseline
+
+Phase C - Briefing:
+"System review complete. Last session completed baseline sync.
+AIfred baseline: 2 commits ahead → suggesting /sync-aifred-baseline"
 ```
 
 ### During
@@ -64,14 +70,17 @@ User: "Let's end the session"
 
 ```
 [Claude Code starts]
-[session-start.js auto-loads context]
+[session-start.sh fires AC-01 Self-Launch Protocol]
 
-Context injected:
-- Session state: "Ported baseline hooks, next: PR-5 Core Tooling"
-- Branch: Project_Aion (0 uncommitted changes)
-- AIfred baseline: up to date
+"Good afternoon, sir.
 
-User: "Let's continue with PR-5"
+System review complete.
+Status: 'Ported baseline hooks'
+Next step: PR-5 Core Tooling
+
+Continuing with PR-5 implementation."
+
+[Jarvis proceeds autonomously with suggested work]
 ```
 
 ### During (Needs MCP Restart)
@@ -91,10 +100,17 @@ User: "I need to check the memory graph"
 [Enable Memory MCP]
 [Restart Claude Code]
 
-[session-start.js loads context including checkpoint info]
+[session-start.sh detects checkpoint, auto-resumes]
 
-User: "Continue from checkpoint"
-→ Resumes PR-5 work
+"Good afternoon, sir. Resuming from checkpoint.
+
+CHECKPOINT LOADED
+- Current task: PR-5 research phase
+- Pending: Identify default MCPs to enable
+
+Continuing with MCP identification..."
+
+[No user prompt needed - auto-resume]
 ```
 
 ### End
@@ -156,9 +172,10 @@ Consider running: /agent memory-bank-synchronizer"
 
 ## Key Takeaways
 
-1. **Context auto-loads** - No manual file reading needed at start
-2. **Baseline sync integrated** - Upstream changes detected automatically
-3. **Checkpoint preserves state** - MCP restarts don't lose context
-4. **Doc sync keeps things fresh** - Code changes trigger sync suggestions
-5. **Proper exit ensures continuity** - Next session picks up seamlessly
-6. **Guardrails protect workspace** - Can't accidentally modify AIfred baseline
+1. **AC-01 Self-Launch** - Three-phase startup (greeting, review, briefing)
+2. **Autonomous initiation** - Jarvis suggests next work, never just waits
+3. **Checkpoint auto-resume** - MCP restarts continue seamlessly
+4. **Persona consistency** - Jarvis identity adopted automatically
+5. **Context management** - JICM tracks and manages context budget
+6. **Proper exit ensures continuity** - Next session picks up seamlessly
+7. **Guardrails protect workspace** - Can't accidentally modify AIfred baseline

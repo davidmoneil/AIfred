@@ -1,0 +1,168 @@
+# Research Agenda — Jarvis Project Aion
+# Purpose: Track R&D priorities for AC-07 cycles
+# Created: 2026-01-17
+# Source: projects/project-aion/reports/ralph-loop-experiment/FURTHER-PLANS.md
+
+version: "1.0"
+last_updated: "2026-01-17"
+
+# =============================================================================
+# ACTIVE RESEARCH
+# =============================================================================
+
+active:
+  - id: RLE-002
+    title: "Multi-Plugin Integration Study"
+    priority: HIGH
+    status: PLANNED
+    source: "RLE-001 FURTHER-PLANS.md"
+    objective: "Validate Tier 2 reliability across diverse Tier 3 targets"
+    targets:
+      - name: feature-dev
+        type: complex plugin
+        status: pending
+      - name: security-guidance
+        type: hooks-heavy
+        status: pending
+      - name: typescript-lsp
+        type: technical plugin
+        status: pending
+      - name: hookify
+        type: meta-plugin
+        status: pending
+    metrics:
+      - integration_success_rate
+      - manual_fixes_required
+      - components_integrated
+      - path_translation_issues
+    hypothesis: "Code reduction trend will persist across diverse targets"
+    estimated_effort: "1-2 hours per plugin"
+
+  - id: RLE-003
+    title: "Cross-Model Comparison"
+    priority: MEDIUM
+    status: PLANNED
+    source: "RLE-001 FURTHER-PLANS.md"
+    objective: "Determine if findings generalize across LLM models"
+    models:
+      - name: "Claude Opus 4.5"
+        status: DONE (baseline)
+      - name: "Claude Sonnet"
+        status: pending
+      - name: "Claude Haiku"
+        status: pending
+    metrics:
+      - lines_of_code_produced
+      - feature_completion_rate
+      - development_iterations
+      - bug_discovery_rate
+    hypothesis: "Model capability correlates with code efficiency"
+    estimated_effort: "2-3 hours per model"
+
+# =============================================================================
+# BACKLOG
+# =============================================================================
+
+backlog:
+  - id: RLE-004
+    title: "Token Usage Analysis"
+    priority: MEDIUM
+    status: BACKLOG
+    source: "RLE-001 Gap 1.4"
+    objective: "Analyze token consumption during construction"
+    resolution: "Instrument transcript parsing to extract token counts per phase"
+
+  - id: RLE-005
+    title: "Bug Repair Capability Study"
+    priority: LOW
+    status: BACKLOG
+    source: "RLE-001 Section 2.3"
+    objective: "Test whether Tier 2 can repair buggy Tier 3 systems"
+    design:
+      - Identify or create buggy plugin
+      - Run Tier 2 analysis
+      - Evaluate bug detection
+      - Attempt automated repair
+
+  - id: RLE-006
+    title: "Long-term Evolution Tracking"
+    priority: LOW
+    status: BACKLOG
+    source: "RLE-001 Section 2.4"
+    objective: "Measure tool quality over multiple improvement cycles"
+    hypothesis: "Quality will improve over cycles (self-improvement)"
+
+  - id: RLE-007
+    title: "Spontaneous Feature Generation Study"
+    priority: LOW
+    status: BACKLOG
+    source: "RLE-001 Section 2.5"
+    objective: "Identify if blind builds spontaneously generate novel features"
+
+  - id: INFRA-001
+    title: "SOTA Catalog Population"
+    priority: MEDIUM
+    status: BACKLOG
+    source: "PR-14 Design"
+    objective: "Populate sota-catalog with initial 50+ items"
+    categories:
+      - MCPs
+      - Plugins
+      - Agents
+      - Frameworks
+
+  - id: INFRA-002
+    title: "Telemetry System Implementation"
+    priority: HIGH
+    status: BACKLOG
+    source: "PR-13 Design"
+    objective: "Implement telemetry for AC component metrics"
+    dependencies:
+      - AC-02 instrumentation gap (identified 2026-01-17)
+
+# =============================================================================
+# COMPLETED
+# =============================================================================
+
+completed:
+  - id: RLE-001
+    title: "Ralph Loop Comparison Experiment"
+    priority: HIGH
+    status: COMPLETE
+    completed_date: "2026-01-17"
+    summary: "6-phase controlled experiment comparing Official vs Native Ralph Loop"
+    key_findings:
+      - "Native Ralph Loop enables agent self-invocation"
+      - "24.3% code reduction in blind build (1375 vs 1817 lines)"
+      - "Feature parity achieved: 9/9 features, 100% test pass"
+      - "Bug discovered during blind development (empty array handling)"
+    artifacts:
+      - ".claude/scripts/plugin-decompose.sh"
+      - "projects/project-aion/reports/ralph-loop-experiment/"
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+config:
+  # Maximum concurrent research items
+  max_active: 3
+
+  # Default classification for new discoveries
+  default_classification: DEFER
+
+  # Require user approval for all adoptions
+  require_approval: true
+
+  # Research sources to monitor
+  sources:
+    - awesome-mcp
+    - claude-plugins-official
+    - anthropic-agent-skills
+    - github-trending
+
+  # Scheduled research frequency
+  schedule:
+    discovery: weekly
+    freshness_check: monthly
+    deep_dive: quarterly

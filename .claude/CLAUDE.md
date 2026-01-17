@@ -147,11 +147,18 @@ Full pattern: @.claude/context/patterns/wiggum-loop-pattern.md
 
 ## Session Workflow
 
-**Start**: Check session-state.md → Check baseline updates → Continue work
+**Start** (AC-01 Self-Launch Protocol):
+1. Greeting with Jarvis persona (time-aware)
+2. Review session-state.md and priorities
+3. Autonomous initiation — suggest or begin work
+
 **During**: Use TodoWrite → Update context → Store decisions in Memory
 **End**: Run `/end-session`
 
-Full: @.claude/context/patterns/session-start-checklist.md
+**References**:
+- Protocol: @.claude/context/patterns/startup-protocol.md
+- Checklist: @.claude/context/patterns/session-start-checklist.md
+- Skill: @.claude/skills/session-management/SKILL.md
 
 ---
 

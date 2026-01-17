@@ -45,3 +45,4 @@ scripts/config.sh
 # Sensitive credentials - never commit
 .claude/config/credentials.local.yaml
 *.credentials
+.claude/ralph-loop.local.md

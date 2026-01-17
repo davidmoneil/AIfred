@@ -1,9 +1,11 @@
 # Plugin Decomposition Pattern
 
-**Created**: 2026-01-07 | **Updated**: 2026-01-09
+**Created**: 2026-01-07 | **Updated**: 2026-01-17
 **PR Reference**: PR-9.0 (Component Extraction Workflow)
-**Version**: 3.0
+**Version**: 3.1
 **Status**: Active — MANDATORY for all plugins
+
+> **New (2026-01-17)**: The Decompose Tool (`.claude/scripts/plugin-decompose.sh`) now provides automated plugin analysis and integration. See [Decompose Tool](#decompose-tool-automated) section below.
 
 ---
 
@@ -430,13 +432,73 @@ After extracting a skill:
 
 ---
 
+## Decompose Tool (Automated)
+
+The Decompose Tool (`.claude/scripts/plugin-decompose.sh`) automates plugin analysis and integration workflows. Created during RLE-001 experiment (2026-01-17).
+
+### Features (9 total)
+
+| Feature | Flag | Purpose |
+|---------|------|---------|
+| Browse | `--browse` | List all installed plugins across marketplaces |
+| Discover | `--discover <plugin>` | Find a plugin and show basic info |
+| Review | `--review <plugin>` | Deep structural analysis |
+| Analyze | `--analyze <plugin>` | Component extraction analysis |
+| Scan Redundancy | `--scan-redundancy <plugin>` | Compare with existing Jarvis components |
+| Decompose | `--decompose <plugin>` | Generate integration plan |
+| Execute | `--execute <plugin>` | Perform integration (with backups) |
+| Dry Run | `--execute --dry-run <plugin>` | Preview integration without changes |
+| Rollback | `--rollback <file>` | Restore from rollback file |
+
+### Usage
+
+```bash
+# Browse all plugins
+.claude/scripts/plugin-decompose.sh --browse
+
+# Full workflow
+.claude/scripts/plugin-decompose.sh --discover example-plugin
+.claude/scripts/plugin-decompose.sh --review example-plugin
+.claude/scripts/plugin-decompose.sh --analyze example-plugin
+.claude/scripts/plugin-decompose.sh --scan-redundancy example-plugin
+.claude/scripts/plugin-decompose.sh --decompose example-plugin
+.claude/scripts/plugin-decompose.sh --execute --dry-run example-plugin
+.claude/scripts/plugin-decompose.sh --execute example-plugin
+
+# Rollback if needed
+.claude/scripts/plugin-decompose.sh --rollback .rollback-example-plugin-*.json
+```
+
+### Integration with Ralph Loop
+
+The Decompose Tool can be used within Ralph Loop for automated plugin integration:
+
+```bash
+/ralph-loop "Integrate the feature-dev plugin using plugin-decompose.sh" \
+  --max-iterations 5 \
+  --completion-promise "All plugin components integrated and verified"
+```
+
+### RLE-001 Experiment Results
+
+The tool was validated through the Ralph Loop Experiment:
+- **Official-Built**: 1817 total lines
+- **Native-Built**: 1375 total lines (24.3% reduction)
+- **Both**: 16 functions, 9 features, 100% test pass rate
+
+See: `projects/project-aion/reports/ralph-loop-experiment/RESEARCH-REPORT.md`
+
+---
+
 ## Related Documentation
 
 - @.claude/context/patterns/context-budget-management.md
 - @.claude/context/integrations/skills-selection-guide.md
 - @.claude/skills/_index.md
 - @.claude/scripts/extract-skill.sh
+- @.claude/scripts/plugin-decompose.sh
+- @projects/project-aion/reports/ralph-loop-experiment/
 
 ---
 
-*Plugin Decomposition Pattern v2.0 — PR-9.0 Implementation (2026-01-08)*
+*Plugin Decomposition Pattern v3.1 — Updated 2026-01-17 (Decompose Tool integration)*

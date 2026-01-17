@@ -241,3 +241,39 @@
 2026-01-17T03:06:52Z | SessionStart | MCP suggestions: enable=[] disable=[]
 2026-01-17T03:06:52Z | SessionStart | current_work='' next_step=''
 2026-01-17T03:37:13Z | SessionEnd | /end-session invoked
+2026-01-17T03:42:00Z | SessionStart | source=startup | session=e7c8c9f1-8c6e-4f0f-b2ae-982252027378 | local_time=20:42
+2026-01-17T03:42:00Z | SessionStart | time_of_day=evening
+2026-01-17T03:42:00Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-17T03:42:00Z | SessionStart | Launched watcher
+2026-01-17T03:42:00Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-17T03:42:00Z | SessionStart | current_work='' next_step=''
+2026-01-17T04:17:14Z | PreCompact | Auto-checkpoint triggered
+2026-01-17T04:17:14Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-17T04:17:14Z | PreCompact | Signal file created for auto-clear
+2026-01-17T04:17:19Z | SessionStart | source=clear | session=f5cab99c-fdee-458c-9f4b-984124a38995 | local_time=21:17
+2026-01-17T04:17:19Z | SessionStart | time_of_day=night
+2026-01-17T04:17:19Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-17T04:17:19Z | SessionStart | current_work='' next_step=''
+2026-01-17T18:30:16Z | PreCompact | Auto-checkpoint triggered
+2026-01-17T18:30:16Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-17T18:30:16Z | PreCompact | Signal file created for auto-clear
+2026-01-17T18:31:41Z | SessionStart | source=compact | session=f5cab99c-fdee-458c-9f4b-984124a38995 | local_time=11:31
+2026-01-17T18:31:41Z | SessionStart | time_of_day=morning
+2026-01-17T18:31:41Z | SessionStart | current_work='' next_step=''
+2026-01-17T18:32:03Z | SessionStart | source=clear | session=ab10a419-0190-461b-be11-43ab5cf8f775 | local_time=11:32
+2026-01-17T18:32:03Z | SessionStart | time_of_day=morning
+2026-01-17T18:32:03Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-17T18:32:03Z | SessionStart | current_work='' next_step=''
+2026-01-17T19:56:55Z | PreCompact | Auto-checkpoint triggered
+2026-01-17T19:56:55Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-17T19:56:55Z | PreCompact | Signal file created for auto-clear
+2026-01-17T19:57:57Z | SessionStart | source=compact | session=ab10a419-0190-461b-be11-43ab5cf8f775 | local_time=12:57
+2026-01-17T19:57:57Z | SessionStart | time_of_day=afternoon
+2026-01-17T19:57:57Z | SessionStart | current_work='' next_step=''
+2026-01-17T21:32:30Z | PreCompact | Auto-checkpoint triggered
+2026-01-17T21:32:30Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-17T21:32:30Z | PreCompact | Signal file created for auto-clear
+2026-01-17T21:33:30Z | SessionStart | source=compact | session=ab10a419-0190-461b-be11-43ab5cf8f775 | local_time=14:33
+2026-01-17T21:33:30Z | SessionStart | time_of_day=afternoon
+2026-01-17T21:33:30Z | SessionStart | current_work='' next_step=''
+2026-01-17T21:46:14Z | SessionEnd | /end-session invoked

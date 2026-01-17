@@ -133,19 +133,30 @@ The AIfred baseline may receive improvements that Jarvis should consider adoptin
 
 ## Integration with Hooks
 
-The session-tracker hook (`audit-logger.js`) logs session start events. This pattern works alongside the hook system but is not enforced by hooks—it's a documented best practice.
+The `session-start.sh` hook implements AC-01 Self-Launch Protocol automatically:
+- Phase A: Time-aware greeting
+- Phase B: Context loading (session-state.md, current-priorities.md)
+- Phase C: Autonomous initiation with work suggestions
 
-Future enhancement: A pre-session hook could automate the baseline check.
+See: `.claude/context/patterns/startup-protocol.md` for full protocol design.
+See: `.claude/context/components/AC-01-self-launch.md` for component specification.
 
 ---
 
 ## Related Patterns
 
+- [startup-protocol.md](./startup-protocol.md) — AC-01 three-phase protocol design
+- [wiggum-loop-pattern.md](./wiggum-loop-pattern.md) — AC-02 multi-pass verification
 - [mcp-loading-strategy.md](./mcp-loading-strategy.md) — MCP management
 - [memory-storage-pattern.md](./memory-storage-pattern.md) — What to persist
 - [Session Exit Workflow](../workflows/session-exit.md) — Clean session endings
 - [Jarvis Identity](../../persona/jarvis-identity.md) — Persona specification
 
+## Related Components
+
+- [AC-01-self-launch.md](../components/AC-01-self-launch.md) — Component specification
+- [session-management SKILL](../../skills/session-management/SKILL.md) — Full session lifecycle skill
+
 ---
 
-*Pattern: Session Start Checklist — Established PR-1.D, Updated PR-10.1*
+*Pattern: Session Start Checklist — Established PR-1.D, Updated PR-12.1 (AC-01 integration)*

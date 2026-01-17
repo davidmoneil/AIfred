@@ -10,7 +10,26 @@
 
 ### January
 
-*No entries yet.*
+### 2026-01-17 — Empty Array Iteration Bug in plugin-decompose.sh
+
+**What I Did Wrong**: In the --scan-redundancy feature of plugin-decompose.sh, iterated over `${plugin_functions[@]}` without checking if the array was empty first, causing "unbound variable" errors.
+
+**How I Noticed**: During blind development (Phase 3 of RLE-001), the --scan-redundancy test failed with a bash error when the plugin had no functions to compare.
+
+**Correction Applied**: Added array length check before iteration:
+```bash
+if [[ ${#plugin_functions[@]} -gt 0 ]]; then
+    for func in "${plugin_functions[@]}"; do
+        # ... iteration code
+    done
+else
+    print_info "No functions to compare"
+fi
+```
+
+**Prevention**: Always check array length before iterating in bash scripts, especially when array contents are dynamically generated.
+
+**Related**: `projects/project-aion/reports/ralph-loop-experiment/RESEARCH-REPORT.md`
 
 ---
 

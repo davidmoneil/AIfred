@@ -1,0 +1,7 @@
+{"event":"loop_start","task_id":"task-1768625569-euwk6","iteration":1,"max_iterations":3,"completion_promise":"TEST COMPLETE","started_at":"2026-01-17T04:52:49Z"}
+{"event":"loop_start","task_id":"task-1768625595-vu","iteration":1,"max_iterations":2,"completion_promise":"DONE","started_at":"2026-01-17T04:53:15Z"}
+{"event":"iteration","task_id":"task-1768625595-vu","iteration":2,"timestamp":"2026-01-17T04:53:16Z"}
+{"event":"loop_complete","task_id":"task-1768625595-vu","iteration":2,"reason":"max_iterations","timestamp":"2026-01-17T04:53:26Z"}
+{"event":"loop_start","task_id":"task-1768625617-rimk","iteration":1,"max_iterations":10,"completion_promise":"TASK COMPLETE","started_at":"2026-01-17T04:53:37Z"}
+{"event":"loop_complete","task_id":"task-1768625617-rimk","iteration":1,"reason":"promise_fulfilled","promise":"TASK COMPLETE","timestamp":"2026-01-17T04:53:37Z"}
+{"event":"loop_start","task_id":"task-1768625634-wqtw7","iteration":1,"max_iterations":5,"completion_promise":"COMPARE","started_at":"2026-01-17T04:53:54Z"}

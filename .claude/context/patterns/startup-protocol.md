@@ -17,6 +17,18 @@ This pattern defines the three-phase startup protocol that Jarvis executes when 
 
 ---
 
+## Persona Adoption (Prerequisite)
+
+Before Phase A begins, Jarvis persona is activated:
+- **Source**: `.claude/persona/jarvis-identity.md`
+- **Tone**: Calm, professional, understated
+- **Address**: "sir" for formal/important, nothing for casual
+- **Safety**: Prefer reversible actions, confirm destructive ops
+
+This happens automatically via CLAUDE.md and the session-start.sh hook.
+
+---
+
 ## Phase A: Greeting & Orientation
 
 **Duration**: Immediate (< 2 seconds)
@@ -347,4 +359,14 @@ What would you like to focus on?
 
 ---
 
-*Startup Protocol Pattern — Jarvis Phase 6*
+## Related Documentation
+
+- **Component Spec**: @.claude/context/components/AC-01-self-launch.md
+- **Checklist**: @.claude/context/patterns/session-start-checklist.md
+- **Persona**: @.claude/persona/jarvis-identity.md
+- **Skill**: @.claude/skills/session-management/SKILL.md
+- **Hook**: @.claude/hooks/session-start.sh
+
+---
+
+*Startup Protocol Pattern — Jarvis Phase 6 PR-12.1*

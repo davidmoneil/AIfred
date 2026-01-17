@@ -2,12 +2,26 @@
   "$schema": "wiggum-state-v1",
   "component_id": "AC-02",
   "version": "1.0.0",
-  "status": "idle",
-  "last_updated": "2026-01-17T01:10:00.000Z",
+  "status": "active",
+  "last_updated": "2026-01-17T04:53:54Z",
 
-  "current_loop": null,
+  "current_loop": {
+    "task_id": "task-1768625634-wqtw7",
+    "task_description": "Compare test ",
+    "started_at": "2026-01-17T04:53:54Z",
+    "current_pass": 1,
+    "max_passes": 5,
+    "suppressed": false,
+    "suppression_reason": null
+  },
 
-  "passes": [],
+  "passes": [
+    {
+      "pass_number": 1,
+      "started_at": "2026-01-17T04:53:54Z",
+      "completed_at": null
+    }
+  ],
 
   "todos": {
     "total": 0,
