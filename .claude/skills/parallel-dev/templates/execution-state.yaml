@@ -1,0 +1,77 @@
+# Execution State Template
+# Tracks active parallel execution of a decomposed plan
+# Location: .claude/parallel-dev/executions/{plan-name}/state.yaml
+
+name: "{PLAN_NAME}"
+plan_file: ".claude/parallel-dev/plans/{PLAN_SLUG}.md"
+tasks_file: ".claude/parallel-dev/plans/{PLAN_SLUG}-tasks.yaml"
+created: "{TIMESTAMP}"
+status: pending  # pending | executing | paused | completed | failed | abandoned
+
+# Execution environment
+environment:
+  worktree: null           # Path to worktree (set on start)
+  branch: null             # feature/{plan-name}
+  base_branch: "main"      # Branch we started from
+  started_at: null
+  paused_at: null
+  resumed_at: null
+  completed_at: null
+
+# Agent configuration
+agents:
+  max_parallel: 3          # Max concurrent agents
+  active: []               # Currently running agents
+  completed: []            # Finished agents this session
+
+# Progress tracking
+progress:
+  phases_total: 0
+  phases_complete: 0
+  tasks_total: 0
+  tasks_pending: 0
+  tasks_in_progress: 0
+  tasks_complete: 0
+  tasks_blocked: 0
+  tasks_failed: 0
+  percent: 0
+
+# Current phase focus
+current_phase:
+  id: null
+  name: null
+  started_at: null
+
+# Active agent assignments
+assignments:
+  # Example:
+  # - agent_id: "agent-001"
+  #   task_id: "T2.1"
+  #   task_name: "User model"
+  #   started_at: "2026-01-17T10:00:00Z"
+  #   stream: "database"
+  #   status: "running"  # running | completed | failed
+
+# Dependency tracking
+ready_tasks: []            # Tasks with all dependencies met, ready to start
+blocked_tasks: []          # Tasks waiting on dependencies
+
+# Execution log (recent events)
+log:
+  - timestamp: "{TIMESTAMP}"
+    event: "created"
+    details: "Execution state initialized"
+
+# Error tracking
+errors: []
+  # - timestamp: "..."
+  #   task_id: "T2.1"
+  #   agent_id: "agent-001"
+  #   error: "Build failed"
+  #   resolved: false
+
+# Pause/Resume state
+pause_state:
+  reason: null
+  paused_by: null          # "user" | "error" | "dependency"
+  resume_instructions: null

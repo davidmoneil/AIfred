@@ -108,6 +108,16 @@ development:
     #   context_file: ".claude/context/projects/example-project.md"
     #   notes: "Description of what this project does"
 
+  # Parallel development configuration (used by /parallel-dev:* commands)
+  parallel_dev:
+    worktree_base: "~/tmp/worktrees"  # Where git worktrees are created
+    port_pool:
+      start: 8100                      # First port for dev servers
+      end: 8199                        # Last port in pool
+    models:
+      planning: "opus"                 # Model for plan creation
+      execution: "sonnet"              # Model for task execution
+
 # =============================================================================
 # AIFRED
 # =============================================================================

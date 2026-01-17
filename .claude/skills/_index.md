@@ -16,6 +16,7 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [session-management](session-management/SKILL.md) | Session lifecycle management | /checkpoint, /end-session |
 | [project-lifecycle](project-lifecycle/SKILL.md) | Project creation, registration, consolidation | /create-project, /register-project |
 | [infrastructure-ops](infrastructure-ops/SKILL.md) | Health checks, container discovery, monitoring | /health-report, /agent service-troubleshooter |
+| [parallel-dev](parallel-dev/SKILL.md) | Autonomous parallel development | /parallel-dev:plan, /parallel-dev:start, /parallel-dev:validate, /parallel-dev:merge |
 
 ---
 

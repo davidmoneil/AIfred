@@ -1,0 +1,23 @@
+{
+  "worktreeBase": "~/tmp/worktrees",
+  "registryPath": ".claude/parallel-dev/registry.json",
+  "plansPath": ".claude/parallel-dev/plans",
+  "executionsPath": ".claude/parallel-dev/executions",
+  "maxParallelAgents": 5,
+  "staleThresholdMinutes": 30,
+  "autoCleanupWorktrees": true,
+  "portPool": {
+    "start": 8100,
+    "end": 8199
+  },
+  "portsPerWorktree": 2,
+  "defaultValidation": [
+    "lint",
+    "typecheck",
+    "test",
+    "build"
+  ],
+  "terminal": "tmux",
+  "agentModel": "sonnet",
+  "planningModel": "opus"
+}

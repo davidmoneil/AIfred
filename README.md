@@ -77,6 +77,12 @@ Both CLIs share:
 - **service-troubleshooter**: Diagnose issues with learned patterns
 - **deep-research**: In-depth investigation with citations
 
+### Skills (Comprehensive Workflows)
+- **session-management**: End-to-end session lifecycle (start, track, checkpoint, exit)
+- **project-lifecycle**: Project creation, registration, and consolidation
+- **infrastructure-ops**: Health checks, container discovery, monitoring
+- **parallel-dev**: Autonomous parallel development with planning, execution, validation, and merge
+
 ---
 
 ## Design Patterns

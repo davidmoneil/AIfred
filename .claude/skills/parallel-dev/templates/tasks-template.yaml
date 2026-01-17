@@ -1,0 +1,140 @@
+# Task Decomposition Template
+# Generated from: {PLAN_NAME}
+# Created: {TIMESTAMP}
+
+name: "{PLAN_NAME}"
+plan_file: ".claude/parallel-dev/plans/{PLAN_SLUG}.md"
+created: "{TIMESTAMP}"
+status: pending  # pending | executing | completed | abandoned
+
+# Execution tracking
+execution:
+  worktree: null           # Set when execution starts
+  branch: null             # feature/{plan-name}
+  started_at: null
+  completed_at: null
+
+# Progress summary (auto-calculated)
+progress:
+  phases_total: 0
+  phases_complete: 0
+  tasks_total: 0
+  tasks_complete: 0
+  tasks_in_progress: 0
+  percent: 0
+
+# Phase and task definitions
+phases:
+  - id: "phase-1"
+    name: "Foundation"
+    description: "Core setup and infrastructure"
+    status: pending        # pending | in_progress | completed | blocked
+    blocked_by: null       # Phase ID if blocked
+
+    tasks:
+      - id: "T1.1"
+        name: "Task name"
+        description: |
+          Detailed description of what needs to be done.
+          Include any specific requirements or considerations.
+
+        # Acceptance criteria - how do we know it's done?
+        done_criteria:
+          - "Criterion 1 is met"
+          - "Criterion 2 is verified"
+          - "Tests pass"
+
+        # Execution metadata
+        status: pending    # pending | in_progress | completed | blocked | skipped
+        assigned_agent: null
+        estimated_hours: 2
+        actual_hours: null
+
+        # Dependencies
+        depends_on: []     # Task IDs that must complete first
+        blocks: []         # Task IDs that depend on this (auto-calculated)
+
+        # Parallelization
+        parallel_safe: true   # Can run concurrently with other parallel_safe tasks
+        stream: "database"    # Logical grouping (database, api, frontend, tests)
+
+        # Files this task will likely touch
+        files:
+          - "src/db/schema.ts"
+          - "src/db/migrations/*.ts"
+
+        # Git tracking
+        commits: []        # Commit hashes linked to this task
+
+        # Notes and updates
+        notes: ""
+        started_at: null
+        completed_at: null
+
+  - id: "phase-2"
+    name: "Implementation"
+    description: "Core feature implementation"
+    status: pending
+    blocked_by: "phase-1"
+
+    tasks:
+      - id: "T2.1"
+        name: "Example task"
+        description: "Description here"
+        done_criteria:
+          - "Feature works as specified"
+        status: pending
+        estimated_hours: 4
+        depends_on: ["T1.1"]
+        parallel_safe: true
+        stream: "api"
+        files: []
+        commits: []
+        notes: ""
+
+  - id: "phase-3"
+    name: "Testing & Polish"
+    description: "Quality assurance and refinement"
+    status: pending
+    blocked_by: "phase-2"
+
+    tasks:
+      - id: "T3.1"
+        name: "Write tests"
+        description: "Comprehensive test coverage"
+        done_criteria:
+          - "Unit tests pass"
+          - "Integration tests pass"
+          - "Coverage > 80%"
+        status: pending
+        estimated_hours: 3
+        depends_on: ["T2.1"]
+        parallel_safe: true
+        stream: "tests"
+        files: []
+        commits: []
+        notes: ""
+
+# Streams define logical groupings for parallel execution
+streams:
+  - name: "database"
+    description: "Database schema, migrations, models"
+    max_parallel: 1        # Usually sequential within stream
+
+  - name: "api"
+    description: "API endpoints, services, middleware"
+    max_parallel: 3
+
+  - name: "frontend"
+    description: "UI components, pages, styling"
+    max_parallel: 3
+
+  - name: "tests"
+    description: "Unit tests, integration tests, e2e"
+    max_parallel: 2
+
+# Execution history
+history:
+  - timestamp: "{TIMESTAMP}"
+    event: "created"
+    details: "Task decomposition generated from plan"

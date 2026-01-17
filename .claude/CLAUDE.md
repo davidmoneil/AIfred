@@ -155,6 +155,7 @@ Your infrastructure-specific agents with persistent memory:
 | [session-management](@.claude/skills/session-management/SKILL.md) | Session lifecycle management | `/checkpoint`, `/end-session` |
 | [project-lifecycle](@.claude/skills/project-lifecycle/SKILL.md) | Project creation and registration | `/create-project`, `/register-project` |
 | [infrastructure-ops](@.claude/skills/infrastructure-ops/SKILL.md) | Health checks and monitoring | `/health-report`, `/agent service-troubleshooter` |
+| [parallel-dev](@.claude/skills/parallel-dev/SKILL.md) | Autonomous parallel development | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate`, `/parallel-dev:merge` |
 
 ### When to Use Skills vs Commands vs Agents
 

@@ -1,0 +1,160 @@
+# Validation Pipeline Configuration
+# Defines QA checks to run before merge
+# Location: .claude/parallel-dev/executions/{plan-name}/validation.yaml
+
+name: "{PLAN_NAME}"
+created: "{TIMESTAMP}"
+status: pending  # pending | running | passed | failed | partial
+
+# Overall results
+results:
+  total_checks: 0
+  passed: 0
+  failed: 0
+  skipped: 0
+  warnings: 0
+
+# Validation stages (run in order)
+stages:
+
+  # Stage 1: Static Analysis
+  - id: "static-analysis"
+    name: "Static Analysis"
+    status: pending
+    checks:
+
+      - id: "lint"
+        name: "Linting"
+        status: pending  # pending | running | passed | failed | skipped
+        required: true   # Fail validation if this fails
+        tool: "auto"     # auto-detect or specify: eslint, ruff, golint, etc.
+        command: null    # Auto-populated based on project type
+        output: null
+        errors: []
+        warnings: []
+
+      - id: "typecheck"
+        name: "Type Checking"
+        status: pending
+        required: true
+        tool: "auto"     # tsc, mypy, etc.
+        command: null
+        output: null
+        errors: []
+
+      - id: "format"
+        name: "Code Formatting"
+        status: pending
+        required: false  # Warning only
+        tool: "auto"     # prettier, black, gofmt, etc.
+        command: null
+        output: null
+
+  # Stage 2: Testing
+  - id: "testing"
+    name: "Testing"
+    status: pending
+    checks:
+
+      - id: "unit-tests"
+        name: "Unit Tests"
+        status: pending
+        required: true
+        command: null    # npm test, pytest, go test, etc.
+        output: null
+        coverage: null
+        passed: 0
+        failed: 0
+        skipped: 0
+
+      - id: "integration-tests"
+        name: "Integration Tests"
+        status: pending
+        required: false  # May not exist
+        command: null
+        output: null
+        passed: 0
+        failed: 0
+
+  # Stage 3: Build Verification
+  - id: "build"
+    name: "Build Verification"
+    status: pending
+    checks:
+
+      - id: "build"
+        name: "Production Build"
+        status: pending
+        required: true
+        command: null    # npm run build, cargo build --release, etc.
+        output: null
+        artifacts: []
+
+      - id: "bundle-size"
+        name: "Bundle Size Check"
+        status: pending
+        required: false
+        max_size_kb: null
+        actual_size_kb: null
+
+  # Stage 4: Acceptance Criteria
+  - id: "acceptance"
+    name: "Acceptance Criteria"
+    status: pending
+    checks:
+
+      - id: "criteria-review"
+        name: "Criteria Verification"
+        status: pending
+        required: true
+        criteria: []     # Populated from tasks file
+        # Example:
+        # - criterion: "User can log in with email/password"
+        #   verified: true
+        #   evidence: "Login endpoint works, tested manually"
+        # - criterion: "Passwords are hashed with bcrypt"
+        #   verified: true
+        #   evidence: "Verified in auth.service.ts:45"
+
+# Tool detection rules
+detection:
+  javascript:
+    lint: "eslint . || npx eslint ."
+    typecheck: "tsc --noEmit || npx tsc --noEmit"
+    format: "prettier --check . || npx prettier --check ."
+    test: "npm test"
+    build: "npm run build"
+
+  typescript:
+    lint: "eslint . || npx eslint ."
+    typecheck: "tsc --noEmit"
+    format: "prettier --check ."
+    test: "npm test"
+    build: "npm run build"
+
+  python:
+    lint: "ruff check . || flake8 ."
+    typecheck: "mypy . || pyright ."
+    format: "black --check . || ruff format --check ."
+    test: "pytest"
+    build: "python -m build || pip install -e ."
+
+  go:
+    lint: "golangci-lint run"
+    typecheck: "go build ./..."  # Go checks types at build
+    format: "gofmt -l ."
+    test: "go test ./..."
+    build: "go build -o /dev/null ./..."
+
+  rust:
+    lint: "cargo clippy"
+    typecheck: "cargo check"
+    format: "cargo fmt --check"
+    test: "cargo test"
+    build: "cargo build --release"
+
+# Execution log
+log:
+  - timestamp: "{TIMESTAMP}"
+    event: "created"
+    details: "Validation pipeline initialized"
