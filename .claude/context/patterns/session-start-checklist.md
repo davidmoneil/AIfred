@@ -1,12 +1,15 @@
 # Session Start Checklist Pattern
 
-*Last updated: 2026-01-09*
+*Last updated: 2026-01-16*
 
 ---
 
 ## Overview
 
 This pattern defines the standard checklist to execute at the beginning of every Jarvis session. Following this checklist ensures session continuity, baseline currency, proper context loading, and persona adoption.
+
+> **Note**: This checklist is partially automated by AC-01 Self-Launch (`.claude/hooks/session-start.sh`).
+> See also: `.claude/context/patterns/startup-protocol.md` for the three-phase protocol design.
 
 ---
 
@@ -40,6 +43,9 @@ Review:
 ### 2. Check AIfred Baseline Updates
 
 **This step is mandatory per PR-1.D.**
+
+> ⚠️ **Implementation Status**: This step is designed but NOT automated in AC-01 hook.
+> It must be performed manually or will be added in a future PR-12.1 enhancement.
 
 ```bash
 cd /Users/aircannon/Claude/AIfred && git fetch origin && git status

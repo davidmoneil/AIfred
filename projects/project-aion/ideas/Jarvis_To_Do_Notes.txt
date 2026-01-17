@@ -1,0 +1,176 @@
+Jarvis To Do
+
+The following is a semi-structured list of the major areas or facets of development that I would like to take Jarvis through.  I need you to review all of my notes below and transform them into a well organized, detailed plan of action for exploring and implementing all of the following ideas.
+
+MCPs & Skills
+- Needs to include more MCP servers in installation, or be ready to suggest and install MCPs as useful opportunities arise:
+	See https://github.com/modelcontextprotocol/servers/tree/main for core MCPs like Time, Memory, etc:
+
+	*Thought/Memory
+	Memory-Knowledge Graph (https://github.com/modelcontextprotocol/servers/tree/main/src/memory)
+	Grafiti MCP (https://github.com/getzep/graphiti/blob/main/mcp_server) (see also documentation of the entire graphRAG knowledge framework at https://github.com/getzep/graphiti/tree/main)
+	Cognee (https://github.com/topoteretes/cognee/tree/main/cognee-mcp)
+	Sequential Thinking
+	Lotus Wisdom (https://github.com/linxule/lotus-wisdom-mcp)
+
+	*System/Web Autonomy
+	Time
+	DateTime (https://github.com/pinkpixel-dev/datetime-mcp)
+	Fetch
+	Filesystem
+	DesktopCommander (https://github.com/wonderwhy-er/DesktopCommanderMCP)
+	DuckDuckGo (https://github.com/nickclyde/duckduckgo-mcp-server)
+	BraveSearch (https://github.com/brave/brave-search-mcp-server) [I have an API key]
+	Puppeteer (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/puppeteer) AND (https://github.com/merajmehrabi/puppeteer-mcp-server)
+
+	*Dev/Code
+	Context7 (https://github.com/upstash/context7)
+	GitHub Official (https://github.com/github/github-mcp-server)
+	Semgrep (https://semgrep.dev/docs/mcp)
+	Playwright (https://github.com/microsoft/playwright-mcp)
+	Notion (https://github.com/awkoy/notion-mcp-server)
+	Obsidian (https://github.com/iansinnott/obsidian-claude-code-mcp)
+	TaskMaster (https://github.com/eyaltoledano/claude-task-master)
+	n8n (https://github.com/czlonkowski/n8n-mcp)
+	Repomix (https://github.com/yamadashy/repomix)
+
+	*Information/Grounding
+	Wikipedia (https://github.com/rudra-ravi/wikipedia-mcp)
+	GPTresearcher (https://github.com/assafelovic/gptr-mcp) but modified to use free DuckDuckGo search and my BraveSearch API key)
+	Perplexity (https://github.com/perplexityai/modelcontextprotocol) [I have an API key]
+	arXiv (https://github.com/blazickjp/arxiv-mcp-server)
+
+	UIdev
+	ChromeDevTools (https://github.com/ChromeDevTools/chrome-devtools-mcp/)
+	BrowserStack (https://github.com/browserstack/mcp-server)
+	MagicUI (https://github.com/magicuidesign/mcp)
+
+	Comms
+	Slack (https://docs.slack.dev/ai/mcp-server/)
+
+	DBs
+	MongoDB (https://github.com/mongodb-js/mongodb-mcp-server)
+	Supabase (https://github.com/supabase-community/supabase-mcp)
+	SQLite-bun (https://github.com/jacksteamdev/mcp-sqlite-bun-server)
+	MindsDB (https://github.com/mindsdb/minds-mcp)
+	Chroma (https://github.com/chroma-core/chroma)
+
+	Docs
+	Markdownify (https://github.com/zcaceres/markdownify-mcp)
+	GoogleDrive (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/gdrive) AND (https://github.com/piotr-agier/google-drive-mcp) [This should wait for me to decide on Google Cloud Project API billing]
+	GoogleMaps (https://github.com/modelcontextprotocol/servers-archived/tree/main/src/google-maps) [This should wait for me to decide on Google Cloud Project API billing]
+
+	Skills - Learn all of the skills found at https://github.com/anthropics/skills/tree/main and categorize them with simple to use documentation that will help agents select skills to help complete their tasks efficiently, reliably, and reproducibly.  See the readme at https://github.com/anthropics/skills/blob/main/README.md to learn more.  The available Claude skills from Anthropic cover a wide range of useful tasks, and could be organized similarly to the MCP servers above.  There may be a lot of overlap.  We need to evaluate MCP/skill overlap, and create a design pattern that will allow Jarvis to reliably select from among similar MCP server tools and Claude Skills.  The skill-creator skill readme explains the basic philosophy of skills and skill building https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md
+
+	Additional unofficial Claude Skills
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/file-organizer
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/image-enhancer
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/artifacts-builder
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/changelog-generator
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/content-research-writer
+	https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/article-extractor
+	https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/ship-learn-next
+	https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/tapestry
+	https://github.com/michalparkola/tapestry-skills-for-claude-code/tree/main/youtube-transcript
+	https://github.com/smerchek/claude-epub-skill/blob/main/markdown-to-epub
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/docx
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/pdf
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/pptx
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/document-skills/xlsx
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/image-enhancer
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/video-downloader
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/webapp-testing
+	https://github.com/coffeefuelbump/csv-data-summarizer-claude-skill
+	https://github.com/alphavantage/alpha_vantage_mcp
+
+	The following skill is probably going to be a crucial addition to the reflective self-evolution:
+	https://github.com/ComposioHQ/awesome-claude-skills/tree/master/developer-growth-analysis
+
+	- ClaudeCode Plugins: (https://github.com/anthropics/claude-code/blob/main/plugins/README.md) Install all of these, analyze them against any already existing agents.  Merge or replace where agent functions significantly overlap.  Document all agents with descriptions and explanations of how and when they are best used (this is mostly already done in the got repo readme files, so pull info from there and add anything novel from your own analysis and assessment). Pay special attention to Ralph Wiggum and think about how to revise design patterns in ways that will improve autonomy and tend towards task and project completion with little or no need for user aprovals. See also: https://awesomeclaude.ai/ralph-wiggum
+
+	
+ - Setup needs a concrete test to validate each MCP server
+
+Pre-reqs and Env
+ - Needs a better pre-req stage (especially any manual installs and desktop apps) that checks the system and walks the user through all of the installs.
+ - Instructions to create and load a virtual environment, then install all dependencies
+ - Explicitly inherit all permissions at and below the root project directory.
+ - Is the Jarvis project configured to create and save project code spaces in their own subfolders in '/Users/aircannon/Claude'?  I want projects to go into their own subfolders of '/Users/aircannon/Claude' and a project summary doc to be saved to '/Users/aircannon/Claude/Jarvis/projects' as when working on said project from within '/Users/aircannon/Claude/Jarvis'
+ - ClaudeCode when running from the Jarvis project needs way more autonomy.  It shouldn't ask for permission to perform ANY operation that is done within the Jarvis project space, or done within any other project space that is the target for the codebase of the current session's project.
+ - At project start the user should be encouraged to run '/setup', which if run in a fully initialized AIfred-style project space, est up then goes through and validates logs, system docs, previous session notes and 'To Do' docs, pulls the AIfred Main branch down to '/Users/aircannon/Claude/AIfred' which is always used as the baseline reference for potential updates to port over to Jarvis, and then runs the comparative analysis and updating of itself based on any useful non-conflicting updates made to AIfred.
+ - start Claude Code with claude --debug --verbose
+ - Claude Code actually makes it really easy to see the tool descriptions for all of your enabled MCPs. Just issue the /mcp slash command and keep drilling down until you get to the tool you're interested in. Eventually you'll see the tool description.
+ - setup should strongly encourage n8n installed locally or configure remote connection to n8n server
+ - setup should strongly encourage user to stand up an embeddings model service, and provide suggestions on how to do it if one isn't already available. Especially important for graphRAG and RAG MCP servers like Graphiti
+ - Make more use of '--dangerously-skip-permissions' to reduce amount of user-approval for tasks within the project space.
+
+ GitHub
+ - Jarvis version to be 'JARVIS' branch of AIfred repo. Set up the project folder as github repo and commit and push changes.
+ - Still needs to pull updates from AIfred Main branch into '/Users/aircannon/Claude/AIfred' and then review changes, analyze in context of current Jarvis project state, and recommend changes to be applied to keep the Jarvis core on par with AIfred Main.
+ - Individual projects pushed to their own repos in CannonCoPilot when developing from within Jarvis
+ 
+ Aeon philosophy: Flavors ('Aeons') of AIfred Main are developed for custom ClaudCode development and content creation experiences.
+ - Jarvis: The 'Master' version of AIfred.  Is does all general dev work, system management, and also builds other AIfred flavors as seen below.
+ 	* Re-write all setup files, documentation, and anything else to refer to this flavor of the AIfred code-base as 'Jarvis'.  In the readme include an explanation that this branch is more like a fork, and is not meant to be merged, and that 'Jarvis' is a derivative development track of AIfred (created by David O'Neil) under development by Nathaniel Cannon.
+ - Jeeves: Non-dev, has knowledge bases of family bios and profiles, access to personal records and financials, work data.  Needs a large set of advanced tools, lots of self-automation (initiative). Lives in its own ''/Users/aircannon/Claude' subfolder like any other 'Project'
+ - Wallace: The creative writer version of AIfred. Radically different. In very early conceptual stages. Builds knowledge bases of literary fiction, politics, history, philosophy and religion. Knows about and uses computational linquistics tools built by Jarvis. Helps the user access, read, understand, interpret and analyze written works.
+
+ Evolutionary Philosophy:
+ - Jarvis will self evolve.  It needs more hooks to prompt it to reflect on inefficiencies and blockers from each session, propose optimal updates to its own code base for improvement, wait for user review and approval, and then apply changes.  It should track versions and then push to the Jarvis branch of AIfred.  It will review its own codebase for redundancy, bloat, and conflicting or inconsistent patterns, behaviors, scripts workflows and etc.
+ - The user will direct Jarvis towards other SOTA resources (repos, white papers, news and documentation) which Jarvis will analyze for ideas for self-improvement.  It will balance expansion against bloat, reasoning that "bells and whistles" are not always improvements to a coherent and thoughtfully designed system.  Suggested changes must meet the following criteria:
+ 	- Extend and fill gaps in tool use, skill sets, and agent functionality, while seeking to refine the wide variety of tool options into effective workflows and design principles that aim for session continuity, development stage completion and validation, 
+ 	- Refine design principles, design patterns, 'knowledge' and 'rules' with an aim towards elegance, sophistication, compliance, creativity reliability and predicability.
+ - Jarvis will periodically review the Anthropic/ClaudeCode documentation and resoruces looking for novel design principles, features, agents etc.  It should favor installing anything developed or in testing by Anthropic as long as it does not look like it conflicts or is redundant.  
+ - As Jarvis grows in terms of available tools and resources at its disposal it will rely on a self-e aluation design pattern to thoroughly and thoughtfully redesign and refine its own documentation to ensure a high degree of flexibility in switching between different development frameworks, favor design patterns and workflows that tend towards autonomous self-directed self-initialized project improvement, validation, and completion.  As the internal documentation of Jarvis grows it should periodically review and analyze itself to improve the efficiency of its own codebase, aiming to prevent context window bloat, and giving it the ability to context switch by loading and unloading the relevant and needed portions of its code base for any particular set of tasks at hand.
+ - To evaluate, guide, and guardrail evolutionary versioning of Jarvis and the other Aeons (Jeeves, Wallace) we need a small (2-3) number of end-to-end project demos/deliverables that can be used for benchmarking.  We need repeatable, replicable design to gather performance and behavior and success data.  This should be done in between (immediately following, or during the very next session) pushes of Jarvis (or the other Aeons) to GitHub. Evaluations testing should prodice reports, which are then pushed as a version x.x.1.  Otherwise, each GitHub repo commit/push iterates the version by 0.1
+
+The main References for research, comparison and iterative evolution:
+ - Roo Commander (https://github.com/jezweb/roo-commander)
+ - rUvnet (https://github.com/ruvnet/rUv-dev)
+ - rUvnet/Claude-Flow (https://github.com/ruvnet/claude-flow) 
+ - Symphony (https://github.com/sincover/Symphony)
+ - Maestro (https://github.com/pedramamini/Maestro)
+ - Serena (https://github.com/oraios/serena)
+ - CCswarm (https://github.com/nwiizo/ccswarm)
+ - CustomModes (https://github.com/jtgsystems/Custom-Modes-Roo-Code)
+ - Multi-Agent Squad (https://github.com/bijutharakan/multi-agent-squad)
+ - Agentwise (https://github.com/VibeCodingWithPhil/agentwise)
+ - Agentic Cursor Rules (https://github.com/s-smits/agentic-cursorrules)
+ - Hephaestus (https://github.com/Ido-Levi/Hephaestus)
+ - EvoAgentX (https://github.com/EvoAgentX/EvoAgentX)
+ - EquilateralAgents (https://github.com/Equilateral-AI/equilateral-agents-open-core)
+ - Claude Code Plugins: Orchestration and Automation (https://github.com/wshobson/agents)
+
+ Examples of Agent Swarms:
+ https://github.com/The-Swarm-Corporation/AutoHedge
+ https://github.com/The-Swarm-Corporation/AI-CoScientist
+
+ Output-styles in ClaudeCode can allow Jarvis/AIfred to even further customize agent behavior and communication.  Impose structured response formats, ensure certain features or data are always included in queries and replies, and so on.  (https://github.com/hesreallyhim/awesome-claude-code-output-styles-that-i-really-like)
+
+ More agents - https://github.com/hesreallyhim/a-list-of-claude-code-agents
+
+Explore the tips and best practices found at https://github.com/hesreallyhim/awesome-claude-code
+
+ Other references for agetic processes and tools
+ - MetaGPT (https://github.com/geekan/MetaGPT-docs/tree/main/src/en/guide) AND (https://github.com/FoundationAgents/MetaGPT/tree/main/metagpt)
+ - Agno (https://github.com/agno-agi/agno/tree/main) AND (https://docs.agno.com/introduction)
+ - LangGraph (https://github.com/langchain-ai/langgraph/tree/main/docs/docs) AND (https://github.com/langchain-ai/deepagents/blob/master/libs/deepagents/README.md) AND (https://github.com/langchain-ai/deepagents/blob/master/libs/deepagents-cli/README.md)
+
+
+
+ Long-shot Feature
+  - Does an analysis of the codebase for Roo-Code (https://github.com/RooCodeInc/Roo-Code) reveal a way in which Jarvis could built itself an MCP or other type of tool that would allow it to send prompt queries through to the models I have available throughmy GitHub Copilot Pro account? Ideally we want to incorporate a design principle
+
+
+
+
+
+
+
+
+
+Commit these changes, and also make note that Project Archon, insofar as it involves modifying and evolving Jeeves, and the
+  update and evolution process itself, should be pushed to a new branch of https://github.com/davidmoneil/AIfred.git which you
+  should name Project_Archon
+
+
