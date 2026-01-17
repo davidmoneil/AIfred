@@ -1,0 +1,37 @@
+=== Function Comparison ===
+
+DECOMPOSE-OFFICIAL FUNCTIONS:
+print_header() {
+print_section() {
+print_success() {
+print_warning() {
+print_error() {
+print_info() {
+usage() {
+discover_plugin() {
+review_plugin() {
+analyze_plugin() {
+scan_redundancy() {
+decompose_plugin() {
+browse_plugins() {
+execute_plugin() {
+rollback_plugin() {
+main() {
+
+DECOMPOSE-NATIVE FUNCTIONS:
+print_header() {
+print_section() {
+print_success() {
+print_warning() {
+print_error() {
+print_info() {
+usage() {
+discover_plugin() {
+review_plugin() {
+analyze_plugin() {
+scan_redundancy() {
+decompose_plugin() {
+browse_plugins() {
+execute_integration() {
+rollback_integration() {
+main() {

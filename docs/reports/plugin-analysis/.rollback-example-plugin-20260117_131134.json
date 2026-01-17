@@ -1,0 +1,14 @@
+{
+  "plugin": "example-plugin",
+  "plugin_path": "/Users/aircannon/.claude/plugins/marketplaces/claude-plugins-official/plugins/example-plugin",
+  "timestamp": "20260117_131134",
+  "files_copied": [
+    "/Users/aircannon/Claude/Jarvis/.claude/commands/example-command.md"
+  ],
+  "dirs_created": [
+    "/Users/aircannon/Claude/Jarvis/.claude/skills/example-skill"
+  ],
+  "backups_created": [
+    "/Users/aircannon/Claude/Jarvis/.claude/commands/example-command.md.backup.20260117_131134"
+  ]
+}

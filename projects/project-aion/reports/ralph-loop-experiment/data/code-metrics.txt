@@ -1,0 +1,18 @@
+=== Extracting Code Metrics ===
+
+DECOMPOSE-OFFICIAL METRICS:
+  plugin-decompose.sh:     1467 lines
+  plugin-decompose.md:      151 lines
+  SKILL.md:      199 lines
+  Functions: 16
+  Bytes:    52611
+
+DECOMPOSE-NATIVE METRICS:
+  plugin-decompose.sh:     1151 lines
+  plugin-decompose.md:       98 lines
+  SKILL.md:      126 lines
+  Functions: 16
+  Bytes:    38391
+
+DELTA ANALYSIS:
+  Line difference: -316 (-21.5%)
