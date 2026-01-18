@@ -67,6 +67,32 @@ fi
 
 echo "$TIMESTAMP | SessionStart | time_of_day=$TIME_OF_DAY" >> "$LOG_DIR/session-start-diagnostic.log"
 
+# ============== WEATHER INTEGRATION (evo-2026-01-017) ==============
+# Fetch weather from wttr.in (no API key required)
+# Default location: Salt Lake City (configurable via JARVIS_WEATHER_LOCATION)
+WEATHER_INFO=""
+WEATHER_LOCATION="${JARVIS_WEATHER_LOCATION:-Salt+Lake+City}"
+
+if [[ "$SOURCE" == "startup" ]] && [[ "$JARVIS_DISABLE_WEATHER" != "true" ]]; then
+    # Fetch weather data (timeout 3s to not block startup)
+    WEATHER_JSON=$(curl -s --max-time 3 "wttr.in/${WEATHER_LOCATION}?format=j1" 2>/dev/null)
+
+    if [[ -n "$WEATHER_JSON" ]] && echo "$WEATHER_JSON" | jq -e '.current_condition[0]' >/dev/null 2>&1; then
+        # Parse weather data
+        TEMP_F=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].temp_F // "?"')
+        WEATHER_DESC=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].weatherDesc[0].value // "Unknown"')
+        FEELS_LIKE=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].FeelsLikeF // "?"')
+        HUMIDITY=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].humidity // "?"')
+
+        # Build weather string
+        WEATHER_INFO="${TEMP_F}°F (feels like ${FEELS_LIKE}°F), ${WEATHER_DESC}, ${HUMIDITY}% humidity"
+
+        echo "$TIMESTAMP | SessionStart | Weather: $WEATHER_INFO" >> "$LOG_DIR/session-start-diagnostic.log"
+    else
+        echo "$TIMESTAMP | SessionStart | Weather: fetch failed or invalid response" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+fi
+
 # Clean up clear-pending marker from previous session
 PENDING_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.clear-pending"
 if [[ -f "$PENDING_FILE" ]]; then
@@ -130,6 +156,84 @@ if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     fi
 fi
 
+# ============== PHASE B ENHANCEMENTS (evo-2026-01-018, evo-2026-01-019) ==============
+
+# --- AIfred Baseline Sync Check (evo-2026-01-018) ---
+AIFRED_SYNC_STATUS=""
+AIFRED_REPO="/Users/aircannon/Claude/AIfred"
+if [[ -d "$AIFRED_REPO/.git" ]] && [[ "$SOURCE" == "startup" ]]; then
+    # Fetch upstream changes (silent, non-blocking)
+    cd "$AIFRED_REPO" 2>/dev/null
+    if git fetch --quiet 2>/dev/null; then
+        # Check if behind origin
+        LOCAL_HEAD=$(git rev-parse HEAD 2>/dev/null)
+        REMOTE_HEAD=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null)
+        BEHIND_COUNT=$(git rev-list --count HEAD..origin/main 2>/dev/null || git rev-list --count HEAD..origin/master 2>/dev/null || echo "0")
+
+        if [[ "$BEHIND_COUNT" -gt 0 ]]; then
+            AIFRED_SYNC_STATUS="AIfred baseline is $BEHIND_COUNT commits behind origin. Run /sync-aifred-baseline to review changes."
+            echo "$TIMESTAMP | SessionStart | AIfred behind by $BEHIND_COUNT commits" >> "$LOG_DIR/session-start-diagnostic.log"
+        else
+            echo "$TIMESTAMP | SessionStart | AIfred baseline up-to-date" >> "$LOG_DIR/session-start-diagnostic.log"
+        fi
+    fi
+    cd "$CLAUDE_PROJECT_DIR" 2>/dev/null
+fi
+
+# --- Environment Validation (evo-2026-01-019) ---
+ENV_ISSUES=""
+ENV_WARNINGS=""
+
+if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
+    # Check 1: Git status (uncommitted changes)
+    cd "$CLAUDE_PROJECT_DIR" 2>/dev/null
+    GIT_STATUS=$(git status --porcelain 2>/dev/null | head -20)
+    if [[ -n "$GIT_STATUS" ]]; then
+        CHANGE_COUNT=$(echo "$GIT_STATUS" | wc -l | xargs)
+        ENV_WARNINGS="${ENV_WARNINGS}- $CHANGE_COUNT uncommitted changes in workspace\n"
+        echo "$TIMESTAMP | SessionStart | EnvCheck: $CHANGE_COUNT uncommitted changes" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+
+    # Check 2: Current branch
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null)
+    if [[ "$CURRENT_BRANCH" != "main" ]] && [[ "$CURRENT_BRANCH" != "master" ]] && [[ "$CURRENT_BRANCH" != "Project_Aion" ]]; then
+        ENV_WARNINGS="${ENV_WARNINGS}- On branch '$CURRENT_BRANCH' (not main/Project_Aion)\n"
+        echo "$TIMESTAMP | SessionStart | EnvCheck: On branch $CURRENT_BRANCH" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+
+    # Check 3: Hooks directory exists and has content
+    HOOKS_DIR="$CLAUDE_PROJECT_DIR/.claude/hooks"
+    if [[ ! -d "$HOOKS_DIR" ]] || [[ -z "$(ls -A $HOOKS_DIR 2>/dev/null)" ]]; then
+        ENV_ISSUES="${ENV_ISSUES}- Hooks directory missing or empty\n"
+        echo "$TIMESTAMP | SessionStart | EnvCheck: ISSUE - hooks directory problem" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+
+    # Check 4: Settings.json exists
+    if [[ ! -f "$CLAUDE_PROJECT_DIR/.claude/settings.json" ]]; then
+        ENV_ISSUES="${ENV_ISSUES}- Settings.json missing\n"
+        echo "$TIMESTAMP | SessionStart | EnvCheck: ISSUE - settings.json missing" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+
+    # Check 5: Context files exist
+    if [[ ! -f "$CLAUDE_PROJECT_DIR/.claude/context/session-state.md" ]]; then
+        ENV_WARNINGS="${ENV_WARNINGS}- session-state.md missing (run /setup)\n"
+    fi
+fi
+
+# Build environment status message
+ENV_STATUS=""
+if [[ -n "$ENV_ISSUES" ]]; then
+    ENV_STATUS="\n\n--- ENVIRONMENT ISSUES ---\n$ENV_ISSUES---"
+fi
+if [[ -n "$ENV_WARNINGS" ]]; then
+    ENV_STATUS="${ENV_STATUS}\n\n--- ENVIRONMENT NOTES ---\n$ENV_WARNINGS---"
+fi
+if [[ -n "$AIFRED_SYNC_STATUS" ]]; then
+    ENV_STATUS="${ENV_STATUS}\n\n--- AIFRED BASELINE ---\n$AIFRED_SYNC_STATUS\n---"
+fi
+
+echo "$TIMESTAMP | SessionStart | EnvValidation complete" >> "$LOG_DIR/session-start-diagnostic.log"
+
 # ============== SESSION STATE CHECK ==============
 SESSION_STATE_FILE="$CLAUDE_PROJECT_DIR/.claude/context/session-state.md"
 PRIORITIES_FILE="$CLAUDE_PROJECT_DIR/.claude/context/projects/current-priorities.md"
@@ -158,6 +262,13 @@ build_protocol_instructions() {
         return
     fi
 
+    # Include weather in greeting if available
+    local weather_note=""
+    if [[ -n "$WEATHER_INFO" ]]; then
+        weather_note="
+Weather: $WEATHER_INFO"
+    fi
+
     cat << PROTOCOL
 SELF-LAUNCH PROTOCOL (AC-01)
 
@@ -169,8 +280,7 @@ You are Jarvis. Adopt the identity from .claude/persona/jarvis-identity.md:
 - Never: Store secrets, modify AIfred baseline, over-engineer
 
 PHASE A - GREETING:
-$greeting_text, sir.
-(Optional: Use DateTime MCP for precise time, WebSearch for weather if desired)
+$greeting_text, sir.$weather_note
 
 PHASE B - SYSTEM REVIEW:
 Review these files silently:
@@ -202,7 +312,7 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
         GREETING_SECTION=""
     fi
 
-    MESSAGE="${GREETING_SECTION}CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION"
+    MESSAGE="${GREETING_SECTION}CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION$ENV_STATUS"
     CONTEXT="AUTO-RESUME: A context checkpoint was just loaded. You are Jarvis (see .claude/persona/jarvis-identity.md). First, acknowledge with a brief greeting appropriate for $TIME_OF_DAY using Jarvis persona. Then continue working on the tasks listed in 'Next Steps After Restart' above. Do NOT wait for user input - proceed immediately with the work."
 
     # Write state file
@@ -221,7 +331,7 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
 
 elif [[ "$SOURCE" == "clear" ]]; then
     # No checkpoint, source is clear
-    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context.$MCP_SUGGESTION"
+    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context.$MCP_SUGGESTION$ENV_STATUS"
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": false}" > "$STATE_DIR/AC-01-launch.json"
@@ -245,7 +355,7 @@ Do not wait for user confirmation unless the task requires it."
 Present status and offer to continue with pending work or suggest alternatives."
     fi
 
-    MESSAGE="Session started ($SOURCE)$MCP_SUGGESTION"
+    MESSAGE="Session started ($SOURCE)$MCP_SUGGESTION$ENV_STATUS"
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": $AUTO_CONTINUE}" > "$STATE_DIR/AC-01-launch.json"

@@ -279,6 +279,59 @@ claude -p "Use Playwright MCP to navigate to https://example.com and take a snap
 **Loading Strategy**: Isolated (spawn per-invocation, high resource usage)
 **Token Cost**: ~15K
 
+### Local RAG — Semantic Code Search (evo-2026-01-028)
+
+**Purpose**: Local semantic + keyword search for code and documents, fully private with no API keys
+
+**Installation**:
+```bash
+claude mcp add local-rag --scope project --env BASE_DIR=/path/to/documents -- npx -y mcp-local-rag
+```
+
+**Configuration** (via environment variables):
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `BASE_DIR` | Current directory | Document root (security boundary) |
+| `DB_PATH` | `./lancedb/` | Vector database location |
+| `MODEL_NAME` | `Xenova/all-MiniLM-L6-v2` | Embedding model |
+| `RAG_HYBRID_WEIGHT` | 0.6 | Keyword boost factor (0-1.0) |
+
+**Tools Provided**:
+- `ingest_data` - Index files/directories for search
+- `search` - Semantic + keyword hybrid search
+- `list_sources` - Show indexed documents
+
+**First Use**:
+```bash
+# Model downloads automatically (~90MB, 1-2 minutes first time)
+# Then fully offline operation
+```
+
+**Validation**:
+```bash
+claude -p "Use local-rag to ingest the .claude directory, then search for 'session state'"
+```
+
+**Key Features**:
+- Runs entirely locally (Transformers.js on CPU)
+- No API keys or external services required
+- Hybrid search: vector similarity + keyword boosting
+- Supports: PDF, DOCX, TXT, Markdown, HTML
+
+**Alternative Embedding Models**:
+- Code-optimized: `jinaai/jina-embeddings-v2-base-code`
+- Multilingual: `onnx-community/embeddinggemma-300m-ONNX`
+- Scientific: `sentence-transformers/allenai-specter`
+
+⚠️ Changing MODEL_NAME requires re-indexing (delete DB_PATH first)
+
+**Loading Strategy**: Task-Scoped (enable for code exploration)
+**Token Cost**: ~4K (estimated)
+
+**Installed**: 2026-01-18 (R&D Cycle)
+
+---
+
 ### Context7 (Upstash) — Documentation Provider
 
 **Purpose**: Provides up-to-date, version-specific library documentation to prevent hallucinations
@@ -413,6 +466,7 @@ Before installing MCPs, ensure:
 | **Perplexity** | ~3K | Task-Scoped | 2 | **2026-01-09 ✅** |
 | ~~DuckDuckGo~~ | — | — | — | REMOVED (bot detection) |
 | **GPTresearcher** | ~5K | Task-Scoped | 2 | **2026-01-09 ✅** |
+| **Local RAG** | ~4K | Task-Scoped | 2 | **2026-01-18 ✅** |
 
 **Note**: Token costs updated via validation harness (PR-8.4). Earlier estimates were based on total session overhead, not isolated MCP cost.
 

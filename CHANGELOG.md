@@ -11,6 +11,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.1] - 2026-01-18
+
+**Implementation Sprint: Evolution Queue**
+
+Implemented 9 evolution proposals from R&D cycle, adding significant startup enhancements and new hooks.
+
+### Added
+
+- **Setup Hook** (evo-2026-01-022) — Directory validation, required files check, auto-create missing directories
+- **Context Injector Hook** (evo-2026-01-023) — PreToolUse additionalContext injection for tool guidance
+- **Startup Greeting Helper** (evo-2026-01-020) — Node.js weather and time-of-day greeting generator
+- **Local RAG MCP** (evo-2026-01-028) — Semantic code search with local Transformers.js embeddings
+- **Weather Integration** (evo-2026-01-017) — wttr.in weather in startup greeting
+- **AIfred Sync Check** (evo-2026-01-018) — Baseline sync status in session-start.sh
+- **Environment Validation** (evo-2026-01-019) — Git status, branch, hooks validation at startup
+- **/rename Integration** (evo-2026-01-026) — Session naming in checkpoint workflow
+
+### Changed
+
+- `settings.json`: Added `mcpToolSearch: "auto:15"` (evo-2026-01-024)
+- `settings.json`: Registered Setup and PreToolUse context-injector hooks
+- `session-start.sh`: Weather, AIfred sync, environment validation sections
+- `checkpoint.md`: Session naming best practices with /rename
+
+### Files Created
+
+- `.claude/hooks/setup-hook.sh`
+- `.claude/hooks/context-injector.js`
+- `.claude/scripts/startup-greeting.js`
+- `.claude/reports/reflections/reflection-2026-01-18.md`
+- `.claude/reports/maintenance/maintenance-2026-01-18.md`
+
+### Documentation
+
+- Updated `mcp-installation.md` with Local RAG MCP documentation
+- Updated `evolution-queue.yaml`: 10 proposals completed
+- Updated `lessons/corrections.md`: wttr.in header requirement
+- Updated `lessons/self-corrections.md`: Weather API fix
+
+---
+
 ## [2.1.0] - 2026-01-16
 
 **Phase 6 Autonomy Design Complete**

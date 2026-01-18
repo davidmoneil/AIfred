@@ -1,86 +1,11 @@
 # Evolution Queue
 # Proposals from AC-05 Self-Reflection for AC-06 Self-Evolution
-# Version: 1.0.0
-# Updated: 2026-01-17
+# Version: 1.2.0
+# Updated: 2026-01-18 (Implementation Sprint)
 
 queue:
   # Proposals waiting for processing
   pending:
-    - id: evo-2026-01-017
-      source: AC-05
-      created: "2026-01-17T02:00:00.000Z"
-      title: "Add weather integration to startup greeting"
-      description: >
-        Phase A greeting could include weather context via WebSearch.
-        Currently skipped. Would enhance user experience with personalized
-        environmental awareness. Example: "Good morning, sir. Clear skies today."
-      risk_level: low
-      files_affected:
-        - .claude/hooks/session-start.sh
-        - .claude/scripts/startup-greeting.js (new)
-      rationale: >
-        Specification mentions weather as optional enhancement. Current
-        implementation skips it entirely. Low-risk addition that improves
-        the congenial assistant experience.
-      related_problem: null
-      status: pending
-
-    - id: evo-2026-01-018
-      source: AC-05
-      created: "2026-01-17T02:00:00.000Z"
-      title: "Add AIfred baseline sync check to startup"
-      description: >
-        Phase B should include automatic `git fetch` on AIfred baseline
-        to detect upstream changes. Currently this check is manual.
-        Would enable proactive sync notifications.
-      risk_level: low
-      files_affected:
-        - .claude/hooks/session-start.sh
-      rationale: >
-        Specification Phase B includes "Baseline Synchronization" step
-        but hook doesn't implement it. Adding git fetch would enable
-        automatic detection of upstream AIfred changes.
-      related_problem: null
-      status: pending
-
-    - id: evo-2026-01-019
-      source: AC-05
-      created: "2026-01-17T02:00:00.000Z"
-      title: "Add environment validation to startup"
-      description: >
-        Phase B should verify environment health: git status (clean tree,
-        correct branch), hooks registration validation, workspace boundaries.
-        Currently delegated to Claude rather than automated.
-      risk_level: low
-      files_affected:
-        - .claude/hooks/session-start.sh
-      rationale: >
-        Specification includes environment validation but hook doesn't
-        automate these checks. Could catch issues early (wrong branch,
-        uncommitted changes, disabled hooks).
-      related_problem: null
-      status: pending
-
-    - id: evo-2026-01-020
-      source: AC-05
-      created: "2026-01-17T02:00:00.000Z"
-      title: "Create startup-greeting.js helper for complex logic"
-      description: >
-        Specification mentions a JS helper for DateTime MCP integration,
-        weather fetching, and template selection. Currently all logic
-        is in shell script. Moving complex logic to JS would improve
-        maintainability and enable MCP tool calls.
-      risk_level: medium
-      files_affected:
-        - .claude/scripts/startup-greeting.js (new)
-        - .claude/hooks/session-start.sh
-      rationale: >
-        Shell script has limitations for MCP integration. A JS helper
-        could call DateTime MCP directly and handle weather API calls
-        with proper error handling.
-      related_problem: null
-      status: pending
-
     - id: evo-2026-01-021
       source: AC-05
       created: "2026-01-17T23:00:00.000Z"
@@ -104,7 +29,29 @@ queue:
         beneficial features to improve autonomy and context management.
         Features were documented in Memory MCP entity "Jarvis Self-Evolution".
       related_problem: null
+      status: mostly_complete
+      implementation_notes: >
+        Most features implemented via individual proposals. Remaining:
+        ${CLAUDE_SESSION_ID} in telemetry (evo-2026-01-027).
+
+    - id: evo-2026-01-027
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Add ${CLAUDE_SESSION_ID} to telemetry skills"
+      description: >
+        Skills can now access ${CLAUDE_SESSION_ID} for session-aware
+        execution. Jarvis telemetry and logging should use this for
+        correlation across session events.
+      risk_level: low
+      files_affected:
+        - .claude/skills/session-management/SKILL.md
+        - .claude/context/infrastructure/telemetry-system.md
+      rationale: >
+        R&D cycle identified as ADOPT item. Enables better session
+        tracking and telemetry correlation.
+      related_problem: null
       status: pending
+      rd_source: rd-cycle-2026-01-18
 
   # Proposals approved by user, ready for implementation
   approved: []
@@ -113,45 +60,175 @@ queue:
   in_progress: []
 
   # Completed proposals (for history)
-  completed: []
+  completed:
+    - id: evo-2026-01-017
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add weather integration to startup greeting"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T19:00:00.000Z"
+      implementation_notes: >
+        Implemented wttr.in integration in session-start.sh.
+        Also created startup-greeting.js helper for future enhancements.
+        Weather fetched on startup, displayed in greeting context.
+      files_modified:
+        - .claude/hooks/session-start.sh
+        - .claude/scripts/startup-greeting.js (new)
+
+    - id: evo-2026-01-018
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add AIfred baseline sync check to startup"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T19:00:00.000Z"
+      implementation_notes: >
+        Added git fetch for AIfred repo in session-start.sh.
+        Detects commits behind origin and suggests /sync-aifred-baseline.
+      files_modified:
+        - .claude/hooks/session-start.sh
+
+    - id: evo-2026-01-019
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Add environment validation to startup"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T19:00:00.000Z"
+      implementation_notes: >
+        Added environment checks in session-start.sh:
+        - Git status (uncommitted changes)
+        - Current branch verification
+        - Hooks directory presence
+        - Settings.json existence
+        - Context files presence
+      files_modified:
+        - .claude/hooks/session-start.sh
+
+    - id: evo-2026-01-020
+      source: AC-05
+      created: "2026-01-17T02:00:00.000Z"
+      title: "Create startup-greeting.js helper for complex logic"
+      risk_level: medium
+      status: completed
+      completed_at: "2026-01-18T19:21:00.000Z"
+      implementation_notes: >
+        Created comprehensive JS helper with:
+        - Time-of-day detection
+        - Weather fetching via wttr.in (with User-Agent)
+        - JSON output for shell integration
+        - Standalone and importable modes
+      files_modified:
+        - .claude/scripts/startup-greeting.js (new)
+
+    - id: evo-2026-01-022
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Implement Setup hook for /setup and /maintain"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T19:00:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Created setup-hook.sh with:
+        - Directory structure validation
+        - Required files check
+        - Hooks configuration validation
+        - MCP configuration check
+        - Auto-create missing directories
+        Registered in settings.json as Setup hook.
+      files_modified:
+        - .claude/hooks/setup-hook.sh (new)
+        - .claude/settings.json
+
+    - id: evo-2026-01-023
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Add PreToolUse additionalContext to JICM hooks"
+      risk_level: medium
+      status: completed
+      completed_at: "2026-01-18T19:15:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Created context-injector.js hook with:
+        - Tool-specific guidance injection
+        - Context budget warnings (70%/85% thresholds)
+        - Better tool alternative suggestions
+        - Git operation hints
+        Registered in settings.json as PreToolUse hook.
+      files_modified:
+        - .claude/hooks/context-injector.js (new)
+        - .claude/settings.json
+
+    - id: evo-2026-01-024
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Configure auto:N MCP tool search threshold"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T18:50:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Added "mcpToolSearch": "auto:15" to settings.json.
+        MCP tools exceeding 15% of context will be deferred.
+      files_modified:
+        - .claude/settings.json
+
+    - id: evo-2026-01-025
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Set plansDirectory to .claude/plans/"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T00:30:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Added plansDirectory to settings.json.
+        Created .claude/plans/ directory.
+      files_modified:
+        - .claude/settings.json
+        - .claude/plans/ (new directory)
+
+    - id: evo-2026-01-026
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Integrate /rename with checkpoint workflow"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-18T19:10:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Updated checkpoint.md with:
+        - /rename usage for session naming
+        - Session naming best practices table
+        - --resume examples
+      files_modified:
+        - .claude/commands/checkpoint.md
+
+    - id: evo-2026-01-028
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Evaluate Local RAG MCP for codebase search"
+      risk_level: medium
+      status: completed
+      completed_at: "2026-01-18T19:18:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Installed Local RAG MCP via: claude mcp add local-rag
+        Configuration: BASE_DIR=/Users/aircannon/Claude/Jarvis
+        Uses Transformers.js for local embeddings (no API needed).
+        Updated MCP installation documentation.
+      files_modified:
+        - .mcp.json
+        - .claude/context/integrations/mcp-installation.md
 
   # Rejected proposals (for record)
   rejected: []
 
-# Proposal schema:
-# - id: string (unique identifier, e.g., "evo-2026-01-001")
-# - source: string (AC-05, AC-07, manual)
-# - created: ISO8601 timestamp
-# - title: string (brief description)
-# - description: string (detailed explanation)
-# - risk_level: low | medium | high
-# - files_affected: list of file paths
-# - rationale: string (why this change)
-# - related_problem: string (link to problem entry)
-# - status: pending | approved | in_progress | completed | rejected
-# - approved_at: ISO8601 timestamp (when approved)
-# - completed_at: ISO8601 timestamp (when completed)
-# - rejection_reason: string (if rejected)
-
-# Example pending proposal:
-# - id: evo-2026-01-001
-#   source: AC-05
-#   created: "2026-01-16T18:00:00.000Z"
-#   title: "Add stdin wrapper to all JS hooks"
-#   description: >
-#     All JavaScript hooks need stdin/stdout JSON wrapper
-#     to work with Claude Code's hook system.
-#   risk_level: low
-#   files_affected:
-#     - .claude/hooks/*.js
-#   rationale: >
-#     JS hooks were not executing because they used module.exports
-#     instead of stdin/stdout JSON communication.
-#   related_problem: lessons/problems/2026-01-problem-hook-format.md
-#   status: pending
-
 metadata:
-  last_updated: "2026-01-17T23:00:00.000Z"
-  total_proposals: 5
-  pending_count: 5
-  completed_count: 0
+  last_updated: "2026-01-18T19:25:00.000Z"
+  total_proposals: 12
+  pending_count: 2
+  completed_count: 10
+  implementation_sprint: "2026-01-18"

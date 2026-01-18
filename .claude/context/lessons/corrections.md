@@ -43,6 +43,7 @@
 | 2026-01-09 | PreCompact cannot prevent autocompact | PreCompact is notification-only; implement proactive context management instead |
 | 2026-01-09 | AIfred baseline is READ-ONLY | Never edit, commit, branch, or configure AIfred repo - only git fetch/pull |
 | 2026-01-09 | JS hooks require stdin/stdout | Claude Code hooks use JSON stdin/stdout, not `module.exports = {handler}`. Add `if (require.main === module)` wrapper to read stdin and output JSON. |
+| 2026-01-18 | wttr.in JSON requires curl headers | External APIs may require specific User-Agent headers; test with curl first, then mirror headers in code |
 
 ### Communication Style
 

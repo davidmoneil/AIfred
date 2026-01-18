@@ -50,3 +50,11 @@
 2026-01-17T01:45:39Z | Watcher already running (PID: 82111)
 2026-01-17T03:06:52Z | Watcher already running (PID: 82111)
 2026-01-17T03:42:00Z | Watcher already running (PID: 82111)
+2026-01-17T23:43:10Z | Stale PID file found, removing
+2026-01-17T23:43:10Z | Launching watcher in new Terminal window (macOS)
+2026-01-17T23:43:10Z | Watcher launched (PID: 95824)
+2026-01-17T23:43:10Z | Launcher complete
+2026-01-18T15:39:28Z | Stale PID file found, removing
+2026-01-18T15:39:28Z | Launching watcher in new Terminal window (macOS)
+2026-01-18T15:39:28Z | Watcher launched (PID: 55144)
+2026-01-18T15:39:28Z | Launcher complete

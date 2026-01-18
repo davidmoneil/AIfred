@@ -74,7 +74,25 @@ claude mcp add [mcp-name]
 # After restart, the session-state.md will have continuation context
 ```
 
-### 4. Output to User
+### 4. Name Session for Easy Recovery (evo-2026-01-026)
+
+Before checkpointing, use `/rename` to give the session a meaningful name:
+
+```bash
+# Name the current session
+/rename "feature-auth-implementation"
+
+# Or with context
+/rename "pr-123-code-review"
+```
+
+Session names enable easy recovery:
+```bash
+# Resume by name later
+claude --resume "feature-auth-implementation"
+```
+
+### 5. Output to User
 
 Provide a clear summary:
 
@@ -83,11 +101,13 @@ Provide a clear summary:
 
 **Reason**: [why MCP is needed]
 **MCP Required**: [mcp-name]
+**Session Name**: [name from /rename if used]
 
 ### To Continue:
 1. Run: `claude mcp add [mcp-name]`
 2. Restart Claude Code
-3. Session will resume from checkpoint
+3. Resume by name: `claude --resume "[session-name]"` OR
+   Session will auto-resume from checkpoint file
 
 ### Current State Saved:
 - [summary of work in progress]
@@ -127,8 +147,33 @@ Provide a clear summary:
 - **Tier 3 MCPs**: Blacklisted from agent selection; only invoked by specific triggers
 - Run `/context-budget` to check current context usage before checkpoint
 
+## Session Naming Best Practices (evo-2026-01-026)
+
+Use `/rename` to name sessions for easy recovery:
+
+| Pattern | Example | Use Case |
+|---------|---------|----------|
+| feature-* | `feature-auth-flow` | Feature development |
+| pr-* | `pr-123-review` | Pull request work |
+| bug-* | `bug-memory-leak` | Bug investigation |
+| research-* | `research-mcp-options` | Research tasks |
+| session-* | `session-2026-01-18-am` | General work sessions |
+
+**Resume a named session**:
+```bash
+# List recent sessions
+claude --resume
+
+# Resume by name
+claude --resume "feature-auth-flow"
+
+# Continue most recent
+claude -c
+```
+
 ## Related
 
 - @.claude/context/patterns/context-budget-management.md - MCP tier definitions
 - @.claude/context/patterns/mcp-loading-strategy.md - Full loading strategy
 - @.claude/context/session-state.md - Session state file
+- @.claude/context/patterns/session-completion-pattern.md - Session workflow

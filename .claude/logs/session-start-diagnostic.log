@@ -290,3 +290,17 @@
 2026-01-18T00:12:22Z | SessionStart | time_of_day=evening
 2026-01-18T00:12:22Z | SessionStart | current_work='' next_step=''
 2026-01-18T06:40:59Z | SessionEnd | /end-session invoked
+2026-01-18T15:39:28Z | SessionStart | source=startup | session=312ebf85-25ab-4217-9325-e7351e378957 | local_time=08:39
+2026-01-18T15:39:28Z | SessionStart | time_of_day=night
+2026-01-18T15:39:28Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-18T15:39:28Z | SessionStart | Launched watcher
+2026-01-18T15:39:28Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-18T15:39:28Z | SessionStart | current_work='' next_step=''
+2026-01-18T19:21:54Z | PreCompact | Auto-checkpoint triggered
+2026-01-18T19:21:54Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-18T19:21:54Z | PreCompact | Signal file created for auto-clear
+2026-01-18T19:22:58Z | SessionStart | source=compact | session=312ebf85-25ab-4217-9325-e7351e378957 | local_time=12:22
+2026-01-18T19:22:58Z | SessionStart | time_of_day=afternoon
+2026-01-18T19:22:58Z | SessionStart | EnvValidation complete
+2026-01-18T19:22:58Z | SessionStart | current_work='' next_step=''
+2026-01-18T19:45:44Z | SessionEnd | /end-session invoked | v2.1.1

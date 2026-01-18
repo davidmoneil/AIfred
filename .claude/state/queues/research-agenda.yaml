@@ -1,7 +1,7 @@
 # Research Agenda
 # Topics for AC-07 R&D Cycles to investigate
-# Version: 1.0.0
-# Updated: 2026-01-17
+# Version: 1.1.0
+# Updated: 2026-01-18
 
 agenda:
   # External research topics (new MCPs, plugins, patterns)
@@ -12,18 +12,24 @@ agenda:
         category: external
         focus: pattern
         rationale: "Claude Code v2.1.10 adds Setup hook via --init/--maintenance flags. Could enable automated repository setup/maintenance workflows for Jarvis."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.1.10"
+        result: ADOPT
+        proposal_id: evo-2026-01-022
 
       - id: rd-2026-01-022
         topic: "Evaluate PreToolUse additionalContext for context injection"
         category: external
         focus: pattern
         rationale: "PreToolUse hooks can now return additionalContext to model. Could enhance JICM or selection intelligence by injecting relevant context dynamically."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.1.9"
+        result: ADOPT
+        proposal_id: evo-2026-01-023
 
     medium_priority:
       - id: rd-2026-01-023
@@ -31,36 +37,60 @@ agenda:
         category: external
         focus: efficiency
         rationale: "auto:N syntax allows configuring MCP tool search threshold (context %). Could optimize context budget when many MCPs are installed."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.1.9"
+        result: ADOPT
+        proposal_id: evo-2026-01-024
 
       - id: rd-2026-01-024
         topic: "Evaluate plansDirectory setting for centralized plans"
         category: external
         focus: organization
         rationale: "New setting allows customizing where plan files are stored. Could centralize Jarvis plan files for better tracking and session continuity."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.1.9"
+        result: ADOPT
+        proposal_id: evo-2026-01-025
 
       - id: rd-2026-01-025
         topic: "Evaluate /rename and /resume for session continuity"
         category: external
         focus: pattern
         rationale: "Sessions can be named and resumed by name. Could improve Jarvis session management and enable named checkpoint recovery."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.0.64"
+        result: ADAPT
+        proposal_id: evo-2026-01-026
 
       - id: rd-2026-01-026
         topic: "Evaluate ${CLAUDE_SESSION_ID} substitution in skills"
         category: external
         focus: pattern
         rationale: "Skills can now access session ID. Could enable session-aware skill execution and better telemetry correlation."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "Claude Code release notes v2.1.9"
+        result: ADOPT
+        proposal_id: evo-2026-01-027
+
+      - id: rd-2026-01-029
+        topic: "Evaluate Local RAG MCP for private semantic search"
+        category: external
+        focus: mcp
+        rationale: "shinpr/mcp-local-rag provides semantic + keyword search locally. No API keys, fully offline. Could enhance codebase search."
+        status: completed
+        created: "2026-01-18T00:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
+        source: "R&D Cycle 2026-01-18"
+        result: ADOPT
+        proposal_id: evo-2026-01-028
 
     low_priority:
       - id: rd-2026-01-027
@@ -68,9 +98,12 @@ agenda:
         category: external
         focus: pattern
         rationale: "Features evolving rapidly. Should include release notes review as standard part of R&D self-evaluation cycles."
-        status: pending
+        status: completed
         created: "2026-01-17T14:00:00.000Z"
+        completed: "2026-01-18T00:00:00.000Z"
         source: "User request"
+        result: ADOPT
+        notes: "Integrated into standard R&D cycle workflow"
 
   # Internal efficiency research (token usage, organization)
   internal:
@@ -78,40 +111,43 @@ agenda:
     medium_priority: []
     low_priority: []
 
-# Research topic schema:
-# - id: string (unique identifier, e.g., "rd-2026-01-001")
-# - topic: string (brief description)
-# - category: external | internal
-# - focus: mcp | plugin | pattern | efficiency | organization
-# - rationale: string (why this research is valuable)
-# - status: pending | in_progress | completed | deferred
-# - created: ISO8601 timestamp
-# - assigned_session: string (session that will research)
-# - result: adopt | adapt | defer | reject (after research)
-# - proposal_id: string (link to evolution proposal if ADOPT/ADAPT)
-
-# Example external topic:
-# - id: rd-2026-01-001
-#   topic: "Evaluate Claude MCP Context7 for library docs"
-#   category: external
-#   focus: mcp
-#   rationale: "Could provide better context for third-party libraries"
-#   status: pending
-#   created: "2026-01-16T12:00:00.000Z"
-
-# Example internal topic:
-# - id: rd-2026-01-002
-#   topic: "Analyze context usage patterns for optimization"
-#   category: internal
-#   focus: efficiency
-#   rationale: "Identify high-context operations for optimization"
-#   status: pending
-#   created: "2026-01-16T12:00:00.000Z"
-
-completed: []
+# Completed topics moved to completed section
+completed:
+  - id: rd-2026-01-021
+    topic: "Evaluate Setup hook event for repository maintenance"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-022
+    topic: "Evaluate PreToolUse additionalContext for context injection"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-023
+    topic: "Evaluate MCP tool search auto mode threshold"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-024
+    topic: "Evaluate plansDirectory setting for centralized plans"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-025
+    topic: "Evaluate /rename and /resume for session continuity"
+    result: ADAPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-026
+    topic: "Evaluate ${CLAUDE_SESSION_ID} substitution in skills"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-027
+    topic: "Review Claude Code documentation as R&D resource"
+    result: ADOPT
+    completed: "2026-01-18"
+  - id: rd-2026-01-029
+    topic: "Evaluate Local RAG MCP for private semantic search"
+    result: ADOPT
+    completed: "2026-01-18"
 
 metadata:
-  last_updated: "2026-01-17T14:00:00.000Z"
-  total_topics: 7
-  pending_count: 7
-  completed_count: 0
+  last_updated: "2026-01-18T00:00:00.000Z"
+  total_topics: 8
+  pending_count: 0
+  completed_count: 8

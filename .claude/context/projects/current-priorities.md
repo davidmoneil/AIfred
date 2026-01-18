@@ -2,11 +2,37 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-17
+**Last Updated**: 2026-01-18
 
 ---
 
 ## Recently Completed
+
+### Implementation Sprint: Evolution Queue (2026-01-18)
+**Status**: ✅ Complete — 9/9 features implemented
+
+**Features Implemented**:
+- [x] evo-2026-01-024: auto:N MCP threshold (mcpToolSearch: auto:15)
+- [x] evo-2026-01-018: AIfred baseline sync check in session-start.sh
+- [x] evo-2026-01-019: Environment validation at startup
+- [x] evo-2026-01-022: Setup hook for /setup and /maintain
+- [x] evo-2026-01-017: Weather integration via wttr.in
+- [x] evo-2026-01-026: /rename checkpoint integration
+- [x] evo-2026-01-023: PreToolUse additionalContext injection
+- [x] evo-2026-01-028: Local RAG MCP installation
+- [x] evo-2026-01-020: startup-greeting.js helper
+
+**Self-Improvement Cycles**:
+- /reflect cycle: 1 problem, 2 patterns documented
+- /maintain cycle: System healthy (19 hooks, 13 MCPs)
+
+**Deliverables**:
+- `.claude/hooks/setup-hook.sh`, `.claude/hooks/context-injector.js`
+- `.claude/scripts/startup-greeting.js`
+- `.claude/reports/reflections/reflection-2026-01-18.md`
+- `.claude/reports/maintenance/maintenance-2026-01-18.md`
+
+---
 
 ### RLE-001: Ralph Loop Comparison Experiment (2026-01-17)
 **Status**: ✅ Complete — Research Documentation Created

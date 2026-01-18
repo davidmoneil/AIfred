@@ -1,10 +1,10 @@
 # Research Agenda — Jarvis Project Aion
 # Purpose: Track R&D priorities for AC-07 cycles
 # Created: 2026-01-17
-# Source: projects/project-aion/reports/ralph-loop-experiment/FURTHER-PLANS.md
+# Updated: 2026-01-18 (R&D Cycle Complete)
 
-version: "1.0"
-last_updated: "2026-01-17"
+version: "1.1"
+last_updated: "2026-01-18"
 
 # =============================================================================
 # ACTIVE RESEARCH
@@ -120,6 +120,22 @@ backlog:
     dependencies:
       - AC-02 instrumentation gap (identified 2026-01-17)
 
+  - id: EXT-001
+    title: "Local RAG MCP Evaluation"
+    priority: HIGH
+    status: BACKLOG
+    source: "R&D Cycle 2026-01-18"
+    objective: "Evaluate shinpr/mcp-local-rag for codebase search"
+    notes: "ADOPT recommendation from R&D cycle"
+
+  - id: EXT-002
+    title: "Zapier MCP Evaluation"
+    priority: MEDIUM
+    status: BACKLOG
+    source: "R&D Cycle 2026-01-18"
+    objective: "Evaluate Zapier MCP for workflow automation"
+    notes: "5000+ app integrations, 4.9★ rating"
+
 # =============================================================================
 # COMPLETED
 # =============================================================================
@@ -139,6 +155,22 @@ completed:
     artifacts:
       - ".claude/scripts/plugin-decompose.sh"
       - "projects/project-aion/reports/ralph-loop-experiment/"
+
+  - id: RD-CYCLE-2026-01-18
+    title: "Full-Scale R&D Discovery Cycle"
+    priority: HIGH
+    status: COMPLETE
+    completed_date: "2026-01-18"
+    summary: "Comprehensive R&D cycle reviewing Claude Code 2026 features, MCP ecosystem, agent patterns"
+    key_findings:
+      - "8 items ADOPT, 6 ADAPT, 7 DEFER, 2 REJECT"
+      - "Claude Code: Setup hook, PreToolUse additionalContext, auto:N, plansDirectory"
+      - "MCP ecosystem: 1200+ servers, Local RAG, Zapier high-value"
+      - "Agent patterns: Single-agent ReAct preferred over multi-agent swarms"
+    artifacts:
+      - "projects/project-aion/reports/rd-cycle-2026-01-18.md"
+    evolution_proposals_generated: 7
+    implemented: 1 (evo-2026-01-025: plansDirectory)
 
 # =============================================================================
 # CONFIGURATION
@@ -160,6 +192,7 @@ config:
     - claude-plugins-official
     - anthropic-agent-skills
     - github-trending
+    - claude-code-release-notes  # Added 2026-01-18
 
   # Scheduled research frequency
   schedule:

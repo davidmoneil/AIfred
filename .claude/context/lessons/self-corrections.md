@@ -10,6 +10,26 @@
 
 ### January
 
+### 2026-01-18 — Weather API Header Requirements
+
+**What I Did Wrong**: Initial wttr.in weather integration used HTTP without User-Agent header, causing JSON endpoint to return null.
+
+**How I Noticed**: Weather fetch test returned null; curl debugging revealed the JSON endpoint requires HTTPS and curl-like User-Agent.
+
+**Correction Applied**: Updated startup-greeting.js to use HTTPS with proper headers:
+```javascript
+headers: {
+  'User-Agent': 'curl/7.79.1',
+  'Accept': 'application/json'
+}
+```
+
+**Prevention**: When integrating external APIs, always test with curl first to establish baseline behavior, then mirror those headers in programmatic requests.
+
+**Related**: `evo-2026-01-017`, `.claude/scripts/startup-greeting.js`
+
+---
+
 ### 2026-01-17 — Empty Array Iteration Bug in plugin-decompose.sh
 
 **What I Did Wrong**: In the --scan-redundancy feature of plugin-decompose.sh, iterated over `${plugin_functions[@]}` without checking if the array was empty first, causing "unbound variable" errors.

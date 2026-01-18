@@ -361,4 +361,61 @@ If context exceeds 100% and autocompaction triggers:
 
 ---
 
-*Context Budget Management Pattern v1.0 — PR-8 Extended Scope*
+---
+
+## Claude Code 2026 Features (R&D Cycle 2026-01-18)
+
+### MCP Tool Search Auto Mode
+
+Claude Code now supports automatic MCP tool deferral via the `auto:N` syntax:
+
+```
+auto:N   — Enable tool search when MCP tools exceed N% of context window (default: 10)
+```
+
+**How It Works**:
+- When MCP tool descriptions exceed the configured threshold (% of context), they are automatically deferred
+- Deferred tools don't consume upfront context
+- MCPSearch tool discovers and loads deferred tools on-demand
+- Example: `auto:15` defers tools when they exceed 15% of context
+
+**Configuration**: Set in Claude Code config or enable via `ENABLE_TOOL_SEARCH=true`.
+
+**Impact for Jarvis**:
+- Jarvis has many MCPs installed
+- Configuring auto:N could significantly reduce upfront context usage
+- Tier 2/3 MCPs could be automatically deferred rather than manually disabled
+
+### PreToolUse additionalContext
+
+PreToolUse hooks can now return `additionalContext` to inject context dynamically:
+
+```javascript
+{
+  "continue": true,
+  "additionalContext": "Relevant context for this tool use..."
+}
+```
+
+**Impact for Jarvis**:
+- JICM hooks could inject context budget warnings before tool use
+- Selection intelligence could inject tool selection guidance
+- Dynamic context enrichment based on current work
+
+### Other Relevant Features
+
+| Feature | Description | Jarvis Impact |
+|---------|-------------|---------------|
+| **plansDirectory** | Customize plan file location | Plans now in `.claude/plans/` |
+| **${CLAUDE_SESSION_ID}** | Session ID in skills | Telemetry correlation |
+| **/rename** | Name sessions | Named checkpoint recovery |
+| **/resume** | Resume by name | Session continuity |
+| **Setup hook** | --init/--maintenance | Automated setup/maintenance |
+
+### R&D Report Reference
+
+Full findings: `projects/project-aion/reports/rd-cycle-2026-01-18.md`
+
+---
+
+*Context Budget Management Pattern v1.1 — Updated 2026-01-18 (R&D Cycle findings)*

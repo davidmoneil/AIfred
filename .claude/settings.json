@@ -1,9 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "description": "Jarvis default permissions - safe operations without prompting",
-  "version": "1.0",
+  "version": "1.2",
+
+  "plansDirectory": ".claude/plans",
+  "mcpToolSearch": "auto:15",
 
   "hooks": {
+    "Setup": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/setup-hook.sh"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
@@ -56,6 +70,10 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/secret-scanner.js"
+          },
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/context-injector.js"
           }
         ]
       }
