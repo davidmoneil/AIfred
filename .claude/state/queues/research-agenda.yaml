@@ -6,9 +6,71 @@
 agenda:
   # External research topics (new MCPs, plugins, patterns)
   external:
-    high_priority: []
-    medium_priority: []
-    low_priority: []
+    high_priority:
+      - id: rd-2026-01-021
+        topic: "Evaluate Setup hook event for repository maintenance"
+        category: external
+        focus: pattern
+        rationale: "Claude Code v2.1.10 adds Setup hook via --init/--maintenance flags. Could enable automated repository setup/maintenance workflows for Jarvis."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.1.10"
+
+      - id: rd-2026-01-022
+        topic: "Evaluate PreToolUse additionalContext for context injection"
+        category: external
+        focus: pattern
+        rationale: "PreToolUse hooks can now return additionalContext to model. Could enhance JICM or selection intelligence by injecting relevant context dynamically."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.1.9"
+
+    medium_priority:
+      - id: rd-2026-01-023
+        topic: "Evaluate MCP tool search auto mode threshold"
+        category: external
+        focus: efficiency
+        rationale: "auto:N syntax allows configuring MCP tool search threshold (context %). Could optimize context budget when many MCPs are installed."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.1.9"
+
+      - id: rd-2026-01-024
+        topic: "Evaluate plansDirectory setting for centralized plans"
+        category: external
+        focus: organization
+        rationale: "New setting allows customizing where plan files are stored. Could centralize Jarvis plan files for better tracking and session continuity."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.1.9"
+
+      - id: rd-2026-01-025
+        topic: "Evaluate /rename and /resume for session continuity"
+        category: external
+        focus: pattern
+        rationale: "Sessions can be named and resumed by name. Could improve Jarvis session management and enable named checkpoint recovery."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.0.64"
+
+      - id: rd-2026-01-026
+        topic: "Evaluate ${CLAUDE_SESSION_ID} substitution in skills"
+        category: external
+        focus: pattern
+        rationale: "Skills can now access session ID. Could enable session-aware skill execution and better telemetry correlation."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "Claude Code release notes v2.1.9"
+
+    low_priority:
+      - id: rd-2026-01-027
+        topic: "Review Claude Code documentation as R&D resource"
+        category: external
+        focus: pattern
+        rationale: "Features evolving rapidly. Should include release notes review as standard part of R&D self-evaluation cycles."
+        status: pending
+        created: "2026-01-17T14:00:00.000Z"
+        source: "User request"
 
   # Internal efficiency research (token usage, organization)
   internal:
@@ -49,7 +111,7 @@ agenda:
 completed: []
 
 metadata:
-  last_updated: "2026-01-17T00:00:00.000Z"
-  total_topics: 0
-  pending_count: 0
+  last_updated: "2026-01-17T14:00:00.000Z"
+  total_topics: 7
+  pending_count: 7
   completed_count: 0

@@ -81,6 +81,31 @@ queue:
       related_problem: null
       status: pending
 
+    - id: evo-2026-01-021
+      source: AC-05
+      created: "2026-01-17T23:00:00.000Z"
+      title: "Integrate Claude Code v2.1.10+ features"
+      description: >
+        R&D research identified 7 new Claude Code features for potential
+        Jarvis integration: (1) Setup hook event via --init/--maintenance
+        flags for automated repository setup, (2) auto:N MCP tool search
+        threshold for context budget optimization, (3) plansDirectory setting
+        for centralized plan tracking, (4) PreToolUse additionalContext
+        injection for hook-based context enrichment, (5) /rename and /resume
+        for session naming/resumption, (6) ${CLAUDE_SESSION_ID} substitution
+        for session-aware skills, (7) MCP tool search auto mode.
+      risk_level: medium
+      files_affected:
+        - .claude/settings.json
+        - .claude/hooks/session-start.sh
+        - .claude/context/patterns/context-budget-management.md
+      rationale: >
+        Claude Code is evolving rapidly. Jarvis should track and adopt
+        beneficial features to improve autonomy and context management.
+        Features were documented in Memory MCP entity "Jarvis Self-Evolution".
+      related_problem: null
+      status: pending
+
   # Proposals approved by user, ready for implementation
   approved: []
 
@@ -126,7 +151,7 @@ queue:
 #   status: pending
 
 metadata:
-  last_updated: "2026-01-17T02:00:00.000Z"
-  total_proposals: 4
-  pending_count: 4
+  last_updated: "2026-01-17T23:00:00.000Z"
+  total_proposals: 5
+  pending_count: 5
   completed_count: 0
