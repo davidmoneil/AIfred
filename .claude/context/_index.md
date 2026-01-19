@@ -77,8 +77,10 @@ patterns/
 ├── mcp-validation-harness.md          # 5-phase MCP validation (PR-8.4)
 ├── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
 ├── tool-selection-intelligence.md     # Research-backed tool modality selection (PR-9)
-├── selection-intelligence-guide.md    # Quick selection reference (PR-9.1) ← NEW
-└── selection-validation-tests.md      # 10 selection test cases (PR-9.4) ← NEW
+├── selection-intelligence-guide.md    # Quick selection reference (PR-9.1)
+├── selection-validation-tests.md      # 10 selection test cases (PR-9.4)
+├── project-reporting-pattern.md       # Run reports + performance analysis (Demo A)
+└── service-lifecycle-pattern.md       # Ephemeral service management (Demo A) ← NEW
 ```
 
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
@@ -97,8 +99,9 @@ patterns/
 - ✅ **MCP Validation Harness**: 5-phase validation for new MCPs (PR-8.4)
 - ✅ **Batch MCP Validation**: Test MCPs in groups within token limits (PR-8.5)
 - ✅ **Tool Selection Intelligence**: Research-backed precedence theory (PR-9)
-- ✅ **Selection Intelligence Guide**: Quick reference for tool/agent/skill selection (PR-9.1) ← NEW
-- ✅ **Selection Validation Tests**: 10 standardized test cases, 90% accuracy (PR-9.4) ← NEW
+- ✅ **Selection Intelligence Guide**: Quick reference for tool/agent/skill selection (PR-9.1)
+- ✅ **Selection Validation Tests**: 10 standardized test cases, 90% accuracy (PR-9.4)
+- ✅ **Project Reporting Pattern**: Run reports + performance analysis (Demo A) ← NEW
 
 ### Templates (Repeatable Workflow Templates)
 ```

@@ -1,0 +1,262 @@
+# Demo A Orchestration Plan: Aion Hello Console
+# Autonomic System Validation Exercise
+# Created: 2026-01-18
+
+metadata:
+  name: "Demo A - Aion Hello Console"
+  purpose: "Validate Phase 6 autonomic systems through end-to-end product delivery"
+  prd_source: "projects/project-aion/plans/one-shot-prd.md"
+  created: "2026-01-18"
+  status: "in_progress"
+
+# ============================================================================
+# AUTONOMIC SYSTEM INTEGRATION
+# ============================================================================
+# This orchestration validates these Phase 6 autonomic systems:
+#
+# AC-01 Self-Launch: ✅ Session started with context awareness
+# AC-02 Wiggum Loop: 🎯 Multi-pass verification on all phases (DEFAULT behavior)
+# AC-03 Milestone Review: 🎯 Two-level review at Phase 8
+# AC-04 JICM: 🎯 Context management throughout
+# AC-05 Self-Reflection: 🎯 Capture learnings during execution
+# AC-06 Self-Evolution: ⏳ Generate proposals if patterns emerge
+# AC-07 R&D Cycles: ⏳ Not applicable (project work, not research)
+# AC-08 Maintenance: 🎯 Code organization checks
+# AC-09 Session Completion: 🎯 Clean handoff with run report
+
+# ============================================================================
+# TECHNOLOGY DECISION
+# ============================================================================
+technology_stack:
+  choice: "Option A - Node.js Stack"
+  rationale: |
+    - Node.js LTS already installed (v24)
+    - Express.js is minimal and well-understood
+    - Vite provides fast dev experience
+    - Vitest for testing (fast, modern)
+    - Playwright MCP available for E2E if needed
+  runtime: "Node.js 24 LTS"
+  backend: "Express.js"
+  frontend: "Vite + vanilla HTML/JS"
+  testing: "Vitest (unit) + supertest (API)"
+
+# ============================================================================
+# PHASES
+# ============================================================================
+phases:
+  # --------------------------------------------------------------------------
+  # Phase 1: Pre-flight Validation
+  # --------------------------------------------------------------------------
+  - id: "phase-1-preflight"
+    name: "Pre-flight Validation"
+    autonomic_systems:
+      - "AC-01 Self-Launch: Context check"
+      - "AC-02 Wiggum Loop: Verify prerequisites"
+    tasks:
+      - "Confirm GitHub access to CannonCoPilot org"
+      - "Verify Node.js and npm available"
+      - "Confirm project root path exists"
+      - "Verify git is configured with credentials"
+    validation:
+      - "Can create repos in CannonCoPilot"
+      - "Node.js version >= 20"
+      - "Git credentials working"
+    done_criteria: "All preflight checks pass"
+
+  # --------------------------------------------------------------------------
+  # Phase 2: TDD - Tests First
+  # --------------------------------------------------------------------------
+  - id: "phase-2-tdd"
+    name: "Test-Driven Development - Tests First"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Write tests, verify they fail initially"
+    tasks:
+      - "Create project directory structure"
+      - "Initialize package.json with test dependencies"
+      - "Write unit tests for transform functions"
+      - "Write API integration tests"
+      - "Verify tests fail (no implementation yet)"
+    validation:
+      - "Tests exist and are runnable"
+      - "Tests fail with 'not implemented' or similar"
+    done_criteria: "Test suite exists and fails as expected"
+
+  # --------------------------------------------------------------------------
+  # Phase 3: Backend Implementation
+  # --------------------------------------------------------------------------
+  - id: "phase-3-backend"
+    name: "Backend API Implementation"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Implement → Test → Review → Iterate"
+    tasks:
+      - "Implement transform utility functions"
+      - "Run unit tests - verify they pass"
+      - "Implement Express API endpoint"
+      - "Run integration tests - verify they pass"
+      - "Self-review code quality"
+    validation:
+      - "All transform functions work correctly"
+      - "API endpoint responds with correct format"
+      - "Unit tests pass"
+      - "Integration tests pass"
+    done_criteria: "Backend complete, all tests green"
+
+  # --------------------------------------------------------------------------
+  # Phase 4: Frontend Implementation
+  # --------------------------------------------------------------------------
+  - id: "phase-4-frontend"
+    name: "Frontend UI Implementation"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Build → Test → Refine"
+    tasks:
+      - "Create HTML structure with input/button/output"
+      - "Add JavaScript to call API"
+      - "Style with minimal CSS"
+      - "Test UI manually or with Playwright"
+      - "Self-review for accessibility/usability"
+    validation:
+      - "UI renders correctly"
+      - "Input accepts text"
+      - "Button triggers API call"
+      - "Output displays result"
+    done_criteria: "Frontend complete, functional end-to-end"
+
+  # --------------------------------------------------------------------------
+  # Phase 5: Full Validation
+  # --------------------------------------------------------------------------
+  - id: "phase-5-validation"
+    name: "Full Test Suite Validation"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Final verification pass"
+      - "AC-04 JICM: Context check before continuing"
+    tasks:
+      - "Run complete test suite"
+      - "Fix any failing tests"
+      - "Run linter if configured"
+      - "Test E2E manually"
+    validation:
+      - "All unit tests pass"
+      - "All integration tests pass"
+      - "No linting errors"
+      - "E2E workflow works"
+    done_criteria: "All tests green, no errors"
+
+  # --------------------------------------------------------------------------
+  # Phase 6: Code Review
+  # --------------------------------------------------------------------------
+  - id: "phase-6-code-review"
+    name: "Self Code Review"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Review pass"
+      - "AC-03 Milestone Review (partial): Technical quality check"
+    tasks:
+      - "Review code structure and organization"
+      - "Check for code smells"
+      - "Verify error handling"
+      - "Check for security issues"
+      - "Document any issues found"
+      - "Fix issues if found"
+    validation:
+      - "Code follows best practices"
+      - "No obvious bugs"
+      - "Error handling in place"
+      - "No security vulnerabilities"
+    done_criteria: "Code review complete, issues addressed"
+
+  # --------------------------------------------------------------------------
+  # Phase 7: Documentation & Delivery
+  # --------------------------------------------------------------------------
+  - id: "phase-7-delivery"
+    name: "Documentation and GitHub Delivery"
+    autonomic_systems:
+      - "AC-02 Wiggum Loop: Complete delivery checklist"
+    tasks:
+      - "Create comprehensive README.md"
+      - "Create ARCHITECTURE.md"
+      - "Create proper .gitignore"
+      - "Create GitHub repository"
+      - "Push all code to main branch"
+      - "Create release tag v1.0.0"
+    validation:
+      - "README is complete and accurate"
+      - "Architecture doc exists"
+      - "Repo exists on GitHub"
+      - "Release tag exists"
+    done_criteria: "Code on GitHub with release tag"
+
+  # --------------------------------------------------------------------------
+  # Phase 8: Product Review
+  # --------------------------------------------------------------------------
+  - id: "phase-8-product-review"
+    name: "Product Review (Milestone Review)"
+    autonomic_systems:
+      - "AC-03 Milestone Review: Full two-level review"
+    tasks:
+      - "Level 1 Technical Review: Verify all deliverables"
+      - "Level 2 Progress Review: Check against PRD requirements"
+      - "Document any gaps"
+      - "Generate review report"
+    validation:
+      - "All PRD requirements met"
+      - "All success criteria checked"
+      - "No critical gaps"
+    done_criteria: "Product review passed"
+
+  # --------------------------------------------------------------------------
+  # Phase 9: Run Report & Analysis
+  # --------------------------------------------------------------------------
+  - id: "phase-9-reporting"
+    name: "Run Report and Autonomic Analysis"
+    autonomic_systems:
+      - "AC-05 Self-Reflection: Capture learnings"
+      - "AC-09 Session Completion: Generate reports"
+    tasks:
+      - "Generate run report (per PRD requirements)"
+      - "Generate autonomic systems analysis report"
+      - "Document lessons learned"
+      - "Update session state"
+    validation:
+      - "Run report exists in projects directory"
+      - "Analysis report complete"
+      - "Lessons documented"
+    done_criteria: "All reports generated"
+
+# ============================================================================
+# SUCCESS CRITERIA (from PRD)
+# ============================================================================
+success_criteria:
+  functional:
+    - "Web UI renders correctly"
+    - "Text input accepts user input"
+    - "Button triggers transformation"
+    - "Output displays transformed text"
+    - "API endpoint responds correctly"
+    - "Timestamp included in response"
+  quality:
+    - "All unit tests pass"
+    - "All integration tests pass"
+    - "No linting errors"
+    - "README complete and accurate"
+  delivery:
+    - "Repository exists under CannonCoPilot"
+    - "Main branch contains all code"
+    - "Release tag exists"
+    - "Run report generated"
+  safety:
+    - "No operations outside allowlisted paths"
+    - "Full audit log available"
+    - "No secrets committed"
+
+# ============================================================================
+# AUTONOMIC BEHAVIOR TRACKING
+# ============================================================================
+# This section tracks autonomic behavior during execution for the analysis report
+autonomic_tracking:
+  wiggum_loop_iterations: 0
+  self_reviews_performed: 0
+  corrections_made: 0
+  context_checkpoints: 0
+  milestone_reviews: 0
+  lessons_captured: []
+  start_time: null
+  end_time: null
