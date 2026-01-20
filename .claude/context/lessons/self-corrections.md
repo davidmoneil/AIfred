@@ -10,6 +10,70 @@
 
 ### January
 
+### 2026-01-20 — PRD-V5 Self-Improvement Validation (4 Corrections)
+
+**Context**: PRD-V5 AC-05/06 stress test with intentional mistakes planted for validation.
+
+#### Correction 1: Missing Edge Case Test
+
+**What I Did Wrong**: Did not include empty string test for slugify function in unit tests.
+
+**How I Noticed**: Self-review of test file revealed comment indicating missing edge case.
+
+**Correction Applied**: Added test case:
+```javascript
+it('handles empty string', () => {
+  expect(slugify('')).toBe('');
+});
+```
+
+**Prevention**: Systematically test all edge cases: empty string, null, undefined, single char, special chars.
+
+#### Correction 2: Inefficient Algorithm
+
+**What I Did Wrong**: Implemented O(n) space complexity wordCount with unnecessary double-split.
+
+**How I Noticed**: Code review during self-reflection identified redundant operations.
+
+**Correction Applied**: Simplified to single-pass implementation:
+```javascript
+export function wordCount(text) {
+  if (!text || !text.trim()) return 0;
+  return text.trim().split(/\s+/).length;
+}
+```
+
+**Prevention**: Review algorithmic complexity during implementation. Avoid chained operations that create intermediate structures.
+
+#### Correction 3: Wrong Error Message
+
+**What I Did Wrong**: API returned "Invalid input" instead of "Unknown operation" for invalid operation parameter.
+
+**How I Noticed**: Integration test failure - expected error message to contain "operation".
+
+**Correction Applied**: Fixed error message:
+```javascript
+return res.status(400).json({
+  error: `Unknown operation: ${operation}. Valid: ${Object.keys(transformFunctions).join(', ')}`
+});
+```
+
+**Prevention**: Error messages should be specific about what failed, not generic.
+
+#### Correction 4: Incomplete Documentation
+
+**What I Did Wrong**: README missing response format examples and error codes.
+
+**How I Noticed**: Documentation review revealed incomplete API documentation.
+
+**Correction Applied**: Added complete API documentation with request/response examples and error codes.
+
+**Prevention**: Documentation checklist: endpoints, parameters, response formats, error codes, examples.
+
+**Related**: PRD-V5, AC-05 Self-Reflection, AC-06 Self-Evolution
+
+---
+
 ### 2026-01-18 — Weather API Header Requirements
 
 **What I Did Wrong**: Initial wttr.in weather integration used HTTP without User-Agent header, causing JSON endpoint to return null.
