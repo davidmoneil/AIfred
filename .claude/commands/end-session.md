@@ -65,7 +65,24 @@ Check what was done this session:
 
 Execute these steps:
 
-### 1. Update Session State
+### 1. Session State Archival Check
+
+**Check if session-state.md needs archiving** (if over ~200 lines):
+
+```bash
+wc -l .claude/context/session-state.md
+```
+
+If over threshold, offer:
+```
+The session-state.md has grown large ([N] lines). Would you like to:
+1. Archive and compress (recommended) — keeps recent summary, archives full history
+2. Keep as-is — session state remains unchanged
+```
+
+**If archiving**: Run `.claude/scripts/archive-session-state.sh`
+
+### 2. Update Session State
 
 Update `.claude/context/session-state.md`:
 
@@ -212,6 +229,23 @@ Next Time:
 - [next steps from session-state.md]
 ```
 
+## Closing Salutation
+
+**After the summary**, generate a personalized closing based on context:
+
+1. Get current datetime by running: `date "+%A, %B %d at %H:%M"`
+2. Optionally check weather via startup-greeting.js: `node .claude/scripts/startup-greeting.js --weather-only`
+
+**Generate a brief, natural closing** that:
+- Acknowledges the time (e.g., "Have a good evening" / "Enjoy your lunch" / "Get some rest")
+- Optionally mentions weather if notable (e.g., "Stay warm out there")
+- Signs off appropriately (e.g., "Until next time, sir.")
+
+**Examples** (DO NOT use verbatim - generate naturally):
+- "It's getting late, sir. Have a good evening, and I'll be here when you're ready to continue."
+- "Enjoy your afternoon. The session state is saved and ready for pickup."
+- "All set, sir. Cold one out there - stay warm."
+
 ---
 
-*Jarvis v2.1.0 — Project Aion Master Archon (AC-09 pre-completion offer added)*
+*Jarvis v2.1.0 — Project Aion Master Archon (AC-09 pre-completion offer + personalized closing added)*

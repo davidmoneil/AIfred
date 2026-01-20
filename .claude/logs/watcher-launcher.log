@@ -63,3 +63,6 @@
 2026-01-20T03:17:40Z | Launching watcher in new Terminal window (macOS)
 2026-01-20T03:17:40Z | Watcher launched (PID: 11322)
 2026-01-20T03:17:40Z | Launcher complete
+2026-01-20T17:01:24Z | Watcher already running (PID: 11322)
+2026-01-20T17:45:44Z | Watcher already running (PID: 11322)
+2026-01-20T17:56:39Z | Watcher already running (PID: 11322)

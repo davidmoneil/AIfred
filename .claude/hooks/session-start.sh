@@ -21,7 +21,9 @@ SOURCE=$(echo "$INPUT" | jq -r '.source // "unknown"')
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "unknown"')
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 LOCAL_TIME=$(date +"%H:%M")
-HOUR=$(date +"%H")
+LOCAL_DATE=$(date +"%A, %B %d, %Y")
+# Use %k to avoid leading zero (octal interpretation bug with %H)
+HOUR=$(date +"%k" | tr -d ' ')
 
 # Log to diagnostic file
 LOG_DIR="$CLAUDE_PROJECT_DIR/.claude/logs"
@@ -254,7 +256,7 @@ echo "$TIMESTAMP | SessionStart | current_work='$CURRENT_WORK' next_step='$NEXT_
 
 # ============== BUILD SELF-LAUNCH PROTOCOL INSTRUCTIONS ==============
 build_protocol_instructions() {
-    local greeting_text="$1"
+    local source_type="$1"
     local has_checkpoint="$2"
 
     if [[ "$SKIP_GREETING" == "true" ]]; then
@@ -262,11 +264,28 @@ build_protocol_instructions() {
         return
     fi
 
-    # Include weather in greeting if available
-    local weather_note=""
+    # Build datetime context for model-generated greeting
+    local datetime_context="Current datetime: $LOCAL_DATE at $LOCAL_TIME (${TIME_OF_DAY})"
+
+    # Build weather context if available
+    local weather_context=""
     if [[ -n "$WEATHER_INFO" ]]; then
-        weather_note="
+        weather_context="
 Weather: $WEATHER_INFO"
+    fi
+
+    # Build AIfred baseline action if behind
+    local aifred_action=""
+    if [[ -n "$AIFRED_SYNC_STATUS" ]]; then
+        aifred_action="
+
+AIFRED BASELINE ACTION REQUIRED:
+$AIFRED_SYNC_STATUS
+
+After greeting, you MUST:
+1. Inform the user about the AIfred baseline status
+2. Ask: \"Would you like me to run /sync-aifred-baseline to review the changes? (adopt/adapt/defer)\"
+3. Wait for user response before proceeding with other work"
     fi
 
     cat << PROTOCOL
@@ -280,7 +299,14 @@ You are Jarvis. Adopt the identity from .claude/persona/jarvis-identity.md:
 - Never: Store secrets, modify AIfred baseline, over-engineer
 
 PHASE A - GREETING:
-$greeting_text, sir.$weather_note
+Generate a personalized greeting using this context (DO NOT use canned phrases):
+$datetime_context$weather_context
+
+Guidelines for greeting:
+- Be natural and context-aware (mention weather if notable, time of day)
+- Keep it brief (1-2 sentences max)
+- Address as "sir" for formal start of session
+- Example variations: comment on early/late hour, mention weather, note day of week$aifred_action
 
 PHASE B - SYSTEM REVIEW:
 Review these files silently:
@@ -302,21 +328,26 @@ PROTOCOL
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
 if [[ -f "$CHECKPOINT_FILE" ]]; then
-    # Checkpoint exists - load and AUTO-RESUME
+    # Checkpoint exists - load and AUTO-RESUME after context compression/clear
     CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE")
 
-    # Build greeting with checkpoint
-    if [[ "$SKIP_GREETING" != "true" ]]; then
-        GREETING_SECTION="$GREETING, sir. Resuming from checkpoint.\n\n"
-    else
-        GREETING_SECTION=""
-    fi
+    MESSAGE="CONTEXT RESTORED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION$ENV_STATUS"
+    CONTEXT="CONTEXT RESTART PROTOCOL:
+You are Jarvis. The context has been compressed or cleared and is now being restored.
 
-    MESSAGE="${GREETING_SECTION}CHECKPOINT LOADED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION$ENV_STATUS"
-    CONTEXT="AUTO-RESUME: A context checkpoint was just loaded. You are Jarvis (see .claude/persona/jarvis-identity.md). First, acknowledge with a brief greeting appropriate for $TIME_OF_DAY using Jarvis persona. Then continue working on the tasks listed in 'Next Steps After Restart' above. Do NOT wait for user input - proceed immediately with the work."
+Current datetime: $LOCAL_DATE at $LOCAL_TIME
+
+Your response should:
+1. Briefly acknowledge the context restoration (e.g., \"Context restored, sir.\")
+2. State the current date and time
+3. Say: \"One moment while I review the previous session work...\"
+4. Then silently read the checkpoint content above
+5. After review, summarize what was in progress and continue the work
+
+DO NOT generate a full greeting. This is a continuation, not a fresh start."
 
     # Write state file
-    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"auto_continue\": true}" > "$STATE_DIR/AC-01-launch.json"
+    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"auto_continue\": true, \"restart_type\": \"checkpoint\"}" > "$STATE_DIR/AC-01-launch.json"
 
     jq -n \
       --arg msg "$MESSAGE" \
@@ -330,17 +361,38 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
       }'
 
 elif [[ "$SOURCE" == "clear" ]]; then
-    # No checkpoint, source is clear
-    MESSAGE="CONVERSATION CLEARED\n\nNo checkpoint found - starting fresh.\nUse /context-checkpoint before /clear to preserve context.$MCP_SUGGESTION$ENV_STATUS"
+    # Clear without checkpoint - warn and offer fresh start
+    MESSAGE="CONTEXT CLEARED\n\nNo checkpoint found.$MCP_SUGGESTION$ENV_STATUS"
+    CONTEXT="CONTEXT CLEARED PROTOCOL:
+You are Jarvis. The context was cleared but no checkpoint was found.
+
+Current datetime: $LOCAL_DATE at $LOCAL_TIME
+
+Your response should:
+1. Acknowledge: \"Context cleared, sir. It's $LOCAL_TIME on $LOCAL_DATE.\"
+2. Note that no checkpoint was found to restore
+3. Check session-state.md to understand what was being worked on
+4. Offer to continue previous work OR start fresh
+
+Tip: Suggest using /checkpoint before /clear next time to preserve context."
 
     # Write state file
-    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": false}" > "$STATE_DIR/AC-01-launch.json"
+    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": false, \"restart_type\": \"clear_no_checkpoint\"}" > "$STATE_DIR/AC-01-launch.json"
 
-    echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
+    jq -n \
+      --arg msg "$MESSAGE" \
+      --arg ctx "$CONTEXT" \
+      '{
+        "systemMessage": $msg,
+        "hookSpecificOutput": {
+          "hookEventName": "SessionStart",
+          "additionalContext": $ctx
+        }
+      }'
 
 elif [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     # Normal startup - Full Self-Launch Protocol
-    PROTOCOL_INSTRUCTIONS=$(build_protocol_instructions "$GREETING" "false")
+    PROTOCOL_INSTRUCTIONS=$(build_protocol_instructions "$SOURCE" "false")
 
     if [[ "$AUTO_CONTINUE" == "true" ]] && [[ -n "$NEXT_STEP" ]]; then
         # Autonomous initiation
