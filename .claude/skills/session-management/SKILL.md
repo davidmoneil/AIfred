@@ -113,6 +113,26 @@ These files persist across sessions.
 | `current-priorities.md` | Active priorities and completed work | When work completes |
 | `.claude/logs/audit.jsonl` | Tool execution history | Automatic |
 
+### Session Identification
+
+Claude Code provides `${CLAUDE_SESSION_ID}` — a unique identifier for each session.
+
+**Uses**:
+- Correlate telemetry events across a session
+- Track work attribution in logs
+- Enable session-aware skill execution
+- Support `/resume` for session continuation
+
+**Access in hooks/scripts**:
+```javascript
+const sessionId = process.env.CLAUDE_SESSION_ID;
+```
+
+**In skill YAML frontmatter**, use substitution:
+```yaml
+session: ${CLAUDE_SESSION_ID}
+```
+
 ---
 
 ## Detailed Workflows

@@ -5,53 +5,7 @@
 
 queue:
   # Proposals waiting for processing
-  pending:
-    - id: evo-2026-01-021
-      source: AC-05
-      created: "2026-01-17T23:00:00.000Z"
-      title: "Integrate Claude Code v2.1.10+ features"
-      description: >
-        R&D research identified 7 new Claude Code features for potential
-        Jarvis integration: (1) Setup hook event via --init/--maintenance
-        flags for automated repository setup, (2) auto:N MCP tool search
-        threshold for context budget optimization, (3) plansDirectory setting
-        for centralized plan tracking, (4) PreToolUse additionalContext
-        injection for hook-based context enrichment, (5) /rename and /resume
-        for session naming/resumption, (6) ${CLAUDE_SESSION_ID} substitution
-        for session-aware skills, (7) MCP tool search auto mode.
-      risk_level: medium
-      files_affected:
-        - .claude/settings.json
-        - .claude/hooks/session-start.sh
-        - .claude/context/patterns/context-budget-management.md
-      rationale: >
-        Claude Code is evolving rapidly. Jarvis should track and adopt
-        beneficial features to improve autonomy and context management.
-        Features were documented in Memory MCP entity "Jarvis Self-Evolution".
-      related_problem: null
-      status: mostly_complete
-      implementation_notes: >
-        Most features implemented via individual proposals. Remaining:
-        ${CLAUDE_SESSION_ID} in telemetry (evo-2026-01-027).
-
-    - id: evo-2026-01-027
-      source: AC-07
-      created: "2026-01-18T00:00:00.000Z"
-      title: "Add ${CLAUDE_SESSION_ID} to telemetry skills"
-      description: >
-        Skills can now access ${CLAUDE_SESSION_ID} for session-aware
-        execution. Jarvis telemetry and logging should use this for
-        correlation across session events.
-      risk_level: low
-      files_affected:
-        - .claude/skills/session-management/SKILL.md
-        - .claude/context/infrastructure/telemetry-system.md
-      rationale: >
-        R&D cycle identified as ADOPT item. Enables better session
-        tracking and telemetry correlation.
-      related_problem: null
-      status: pending
-      rd_source: rd-cycle-2026-01-18
+  pending: []
 
   # Proposals approved by user, ready for implementation
   approved: []
@@ -223,12 +177,53 @@ queue:
         - .mcp.json
         - .claude/context/integrations/mcp-installation.md
 
+    - id: evo-2026-01-021
+      source: AC-05
+      created: "2026-01-17T23:00:00.000Z"
+      title: "Integrate Claude Code v2.1.10+ features"
+      risk_level: medium
+      status: completed
+      completed_at: "2026-01-20T03:20:00.000Z"
+      implementation_notes: >
+        All 7 features now implemented across multiple proposals:
+        (1) Setup hook - evo-2026-01-022
+        (2) auto:N MCP threshold - evo-2026-01-024
+        (3) plansDirectory - evo-2026-01-025
+        (4) PreToolUse additionalContext - evo-2026-01-023
+        (5) /rename integration - evo-2026-01-026
+        (6) ${CLAUDE_SESSION_ID} - evo-2026-01-027
+        (7) MCP tool search auto mode - evo-2026-01-024
+      files_modified:
+        - .claude/settings.json
+        - .claude/hooks/session-start.sh
+        - .claude/hooks/context-injector.js
+        - .claude/commands/checkpoint.md
+        - .claude/skills/session-management/SKILL.md
+        - .claude/context/infrastructure/telemetry-system.md
+
+    - id: evo-2026-01-027
+      source: AC-07
+      created: "2026-01-18T00:00:00.000Z"
+      title: "Add ${CLAUDE_SESSION_ID} to telemetry skills"
+      risk_level: low
+      status: completed
+      completed_at: "2026-01-20T03:20:00.000Z"
+      rd_source: rd-cycle-2026-01-18
+      implementation_notes: >
+        Added ${CLAUDE_SESSION_ID} documentation and usage examples to:
+        - telemetry-system.md: Event schema, getSessionId() function
+        - session-management SKILL.md: Session Identification section
+        Enables session-aware telemetry correlation.
+      files_modified:
+        - .claude/skills/session-management/SKILL.md
+        - .claude/context/infrastructure/telemetry-system.md
+
   # Rejected proposals (for record)
   rejected: []
 
 metadata:
-  last_updated: "2026-01-18T19:25:00.000Z"
+  last_updated: "2026-01-20T03:20:00.000Z"
   total_proposals: 12
-  pending_count: 2
-  completed_count: 10
+  pending_count: 0
+  completed_count: 12
   implementation_sprint: "2026-01-18"

@@ -10,13 +10,26 @@
  * - Detects PR milestone patterns in task descriptions
  * - Prompts user for review when milestone appears complete
  * - Updates AC-03-review.json state file
+ * - Emits telemetry events for monitoring
  *
  * Created: 2026-01-17
- * PR Reference: PR-12.3
+ * Updated: 2026-01-19 (telemetry integration)
+ * PR Reference: PR-12.3, PR-13.1
  */
 
 const fs = require('fs').promises;
 const path = require('path');
+
+// Telemetry integration
+let telemetry;
+try {
+  telemetry = require('./telemetry-emitter');
+} catch {
+  telemetry = {
+    emit: () => ({ success: false }),
+    lifecycle: { start: () => {}, end: () => {}, error: () => {} }
+  };
+}
 
 // Configuration
 const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
@@ -134,6 +147,14 @@ async function handler(context) {
       };
 
       await saveState(state);
+
+      // Emit telemetry event
+      telemetry.emit('AC-03', 'milestone_detected', {
+        task_id: state.pending_review.task_id,
+        task_description: taskDescription.slice(0, 100),
+        todos_completed: completed,
+        milestone_indicators: state.pending_review.milestone_indicators
+      });
 
       // Log
       await fs.appendFile(

@@ -323,7 +323,7 @@ Before marking this component as "active":
 - [x] Inputs/outputs validated
 - [x] Dependencies verified available (DateTime MCP optional, shell fallback works)
 - [x] Gates implemented (none required)
-- [ ] Metrics emission working (placeholder - metrics system not yet implemented)
+- [x] Metrics emission working (telemetry-emitter.js integrated)
 - [x] Failure modes tested (MCP unavailable, network timeout - graceful degradation confirmed)
 - [x] Integration with consumers verified (AC-02 state file, AC-04 context estimate)
 - [x] Documentation updated (startup-protocol.md complete)

@@ -1,5 +1,5 @@
 /**
- * Self-Correction Capture Hook
+ * Self-Correction Capture Hook (AC-05)
  *
  * Detects when user corrects Claude and captures these as potential lessons.
  * Logs corrections to .claude/logs/corrections.jsonl for later review.
@@ -13,11 +13,21 @@
  *
  * Priority: MEDIUM (Learning)
  * Created: 2026-01-06
+ * Updated: 2026-01-19 (telemetry integration)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
+ * PR Reference: PR-13.1
  */
 
 const fs = require('fs').promises;
 const path = require('path');
+
+// Telemetry integration
+let telemetry;
+try {
+  telemetry = require('./telemetry-emitter');
+} catch {
+  telemetry = { emit: () => ({ success: false }) };
+}
 
 // Configuration
 const CORRECTIONS_LOG = path.join(__dirname, '..', 'logs', 'corrections.jsonl');
@@ -127,6 +137,13 @@ async function handler(context) {
 
     // Log to file
     await logCorrection(correction);
+
+    // Emit telemetry event for AC-05
+    telemetry.emit('AC-05', 'correction_logged', {
+      severity: correction.severity,
+      pattern: correction.pattern,
+      context_length: user_prompt.length
+    });
 
     // Show suggestion for HIGH/MEDIUM severity (stderr to not interfere with JSON)
     if (detection.severity === 'HIGH' || detection.severity === 'MEDIUM') {

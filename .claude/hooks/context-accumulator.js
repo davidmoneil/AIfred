@@ -1,5 +1,5 @@
 /**
- * Context Accumulator Hook
+ * Context Accumulator Hook (AC-04 JICM)
  *
  * Part of Jarvis Intelligent Context Management (JICM)
  * Tracks cumulative context consumption to enable proactive management.
@@ -13,12 +13,24 @@
  * - SessionStart resets estimate + clears flag
  *
  * Created: 2026-01-09
- * PR Reference: PR-9 / AIfred Sync ADAPT #7
+ * Updated: 2026-01-19 (telemetry integration)
+ * PR Reference: PR-9 / AIfred Sync ADAPT #7, PR-13.1
  */
 
 const fs = require('fs').promises;
 const path = require('path');
 const { execSync } = require('child_process');
+
+// Telemetry integration
+let telemetry;
+try {
+  telemetry = require('./telemetry-emitter');
+} catch {
+  telemetry = {
+    emit: () => ({ success: false }),
+    metrics: { gauge: () => {}, counter: () => {} }
+  };
+}
 
 // Configuration
 const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
@@ -366,6 +378,13 @@ async function handler(context) {
       // Only warn occasionally (every 10 tool calls after threshold)
       if (estimate.toolCalls % 10 === 0) {
         console.error(formatWarning(percentage, 'caution'));
+        // Emit telemetry
+        telemetry.emit('AC-04', 'context_warning', {
+          percentage: percentage.toFixed(1),
+          threshold: WARNING_THRESHOLD,
+          tool_calls: estimate.toolCalls,
+          estimated_tokens: estimate.totalTokens
+        });
       }
       return { proceed: true };
     }
@@ -382,6 +401,15 @@ async function handler(context) {
 
       // Show warning (to stderr so it doesn't interfere with JSON output)
       console.error(formatWarning(percentage, 'warning'));
+
+      // Emit telemetry for checkpoint trigger
+      telemetry.emit('AC-04', 'context_checkpoint', {
+        percentage: percentage.toFixed(1),
+        threshold: VERIFY_THRESHOLD,
+        tool_calls: estimate.toolCalls,
+        estimated_tokens: estimate.totalTokens,
+        auto_triggered: true
+      });
 
       // Create checkpoint
       await createAutoCheckpoint(estimate);

@@ -11,14 +11,24 @@
  * - Detects active Ralph loops
  * - Injects loop status into hook output
  * - Reads current iteration from state file
+ * - Emits telemetry events for monitoring
  *
  * Created: 2026-01-17
+ * Updated: 2026-01-19 (telemetry integration)
  * Component: AC-02 Wiggum Loop
- * PR Reference: PR-12.2 Implementation
+ * PR Reference: PR-12.2, PR-13.1
  */
 
 const fs = require('fs').promises;
 const path = require('path');
+
+// Telemetry integration
+let telemetry;
+try {
+  telemetry = require('./telemetry-emitter');
+} catch {
+  telemetry = { emit: () => ({ success: false }) };
+}
 
 // Configuration
 const WORKSPACE_ROOT = process.env.CLAUDE_PROJECT_DIR || '/Users/aircannon/Claude/Jarvis';
@@ -98,6 +108,14 @@ async function handleUserPrompt(context) {
   const promiseInfo = loopStatus.completionPromise
     ? ` | Complete with: <promise>${loopStatus.completionPromise}</promise>`
     : '';
+
+  // Emit telemetry for iteration
+  telemetry.emit('AC-02', 'iteration_start', {
+    iteration: loopStatus.iteration,
+    max_iterations: loopStatus.maxIterations,
+    task_id: loopStatus.taskId,
+    has_promise: !!loopStatus.completionPromise
+  });
 
   return {
     proceed: true,

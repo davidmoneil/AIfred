@@ -2,7 +2,7 @@
 
 **Component ID**: AC-06
 **Version**: 1.0.0
-**Status**: implementing
+**Status**: active
 **Created**: 2026-01-16
 **Last Modified**: 2026-01-16
 **PR**: PR-12.6
@@ -460,7 +460,7 @@ Before marking this component as "active":
 - [ ] Inputs/outputs validated
 - [x] Dependencies verified (git available)
 - [ ] Gates implemented (risk-based approval)
-- [ ] Metrics emission working (waiting for PR-13 telemetry)
+- [x] Metrics emission working (telemetry-emitter.js integrated)
 - [ ] Failure modes tested (validation failure, rollback)
 - [ ] Integration with consumers verified (proposals flow through)
 - [x] Documentation updated

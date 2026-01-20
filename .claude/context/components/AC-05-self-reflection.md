@@ -2,7 +2,7 @@
 
 **Component ID**: AC-05
 **Version**: 1.0.0
-**Status**: implementing
+**Status**: active
 **Created**: 2026-01-16
 **Last Modified**: 2026-01-16
 **PR**: PR-12.5
@@ -429,7 +429,7 @@ Before marking this component as "active":
 - [ ] Inputs/outputs validated
 - [x] Dependencies verified (lessons directory exists)
 - [ ] Gates implemented (all low-risk, auto-approve)
-- [ ] Metrics emission working (waiting for PR-13 telemetry)
+- [x] Metrics emission working (telemetry-emitter.js integrated)
 - [ ] Failure modes tested (no data, no Memory MCP)
 - [ ] Integration with consumers verified (AC-06 reads proposals)
 - [x] Documentation updated

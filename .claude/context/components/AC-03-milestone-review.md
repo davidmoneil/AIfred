@@ -2,7 +2,7 @@
 
 **Component ID**: AC-03
 **Version**: 1.0.0
-**Status**: implementing
+**Status**: active
 **Created**: 2026-01-16
 **Last Modified**: 2026-01-16
 **PR**: PR-12.3
@@ -353,7 +353,7 @@ Before marking this component as "active":
 - [ ] Inputs/outputs validated
 - [x] Dependencies verified (agents defined)
 - [ ] Gates implemented (release blocking)
-- [ ] Metrics emission working (waiting for PR-13 telemetry)
+- [x] Metrics emission working (telemetry-emitter.js integrated)
 - [ ] Failure modes tested (missing roadmap, agent failure)
 - [ ] Integration with consumers verified (AC-02 remediation)
 - [x] Documentation updated

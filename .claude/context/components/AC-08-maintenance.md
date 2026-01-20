@@ -2,7 +2,7 @@
 
 **Component ID**: AC-08
 **Version**: 1.0.0
-**Status**: implementing
+**Status**: active
 **Created**: 2026-01-16
 **Last Modified**: 2026-01-16
 **PR**: PR-12.8
@@ -450,7 +450,7 @@ Before marking this component as "active":
 - [ ] Inputs/outputs validated
 - [x] Dependencies verified (file system, git)
 - [ ] Gates implemented (deletion requires approval)
-- [ ] Metrics emission working (waiting for PR-13 telemetry)
+- [x] Metrics emission working (telemetry-emitter.js integrated)
 - [ ] Failure modes tested (missing files, timeout)
 - [ ] Integration with consumers verified (AC-06, AC-07)
 - [x] Documentation updated

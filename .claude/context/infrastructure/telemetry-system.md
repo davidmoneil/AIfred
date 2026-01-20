@@ -95,7 +95,11 @@ All events follow this schema:
 | `timestamp` | ISO 8601 | Event time (UTC) |
 | `component` | string | Component ID (AC-01 through AC-09, orchestrator) |
 | `event_type` | string | Event type (see Event Types) |
-| `session_id` | string | Current session identifier |
+| `session_id` | string | Claude session ID from `${CLAUDE_SESSION_ID}` environment variable |
+
+> **Note**: The `session_id` field uses Claude Code's built-in `${CLAUDE_SESSION_ID}` substitution,
+> which provides a unique identifier for each session. This enables correlation across all events
+> within a single session and supports session-aware skills.
 
 ### Optional Fields
 
@@ -282,12 +286,17 @@ Components emit events using a standard interface:
 ```javascript
 // telemetry-emitter.js
 
+// Get session ID from Claude Code environment
+function getSessionId() {
+  return process.env.CLAUDE_SESSION_ID || `local-${Date.now()}`;
+}
+
 function emit(component, eventType, data = {}, metadata = {}) {
   const event = {
     timestamp: new Date().toISOString(),
     component,
     event_type: eventType,
-    session_id: getSessionId(),
+    session_id: getSessionId(),  // Uses ${CLAUDE_SESSION_ID}
     data,
     metadata: {
       ...metadata,
