@@ -188,6 +188,60 @@ gh api repos/davidmoneil/AIfred/collaborators/CannonCoPilot
 
 ---
 
+## GitHub API Access (No gh CLI Required)
+
+**Jarvis does NOT need the `gh` CLI**. All GitHub API operations can be performed using `curl` with credentials from the macOS keychain.
+
+### Retrieving PAT from Keychain
+
+```bash
+# Get PAT for GitHub operations
+GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w 2>/dev/null)
+```
+
+### Common API Operations
+
+**Create repository**:
+```bash
+GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w)
+curl -s -H "Authorization: token $GH_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/user/repos \
+  -d '{"name":"repo-name","description":"Description","private":false}'
+```
+
+**Check authentication**:
+```bash
+GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w)
+curl -s -H "Authorization: token $GH_TOKEN" \
+  https://api.github.com/user | jq -r '.login'
+```
+
+**Verify PAT scopes**:
+```bash
+GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w)
+curl -sI -H "Authorization: token $GH_TOKEN" \
+  https://api.github.com | grep x-oauth-scopes
+```
+
+**Create PR**:
+```bash
+GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w)
+curl -s -H "Authorization: token $GH_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/OWNER/REPO/pulls \
+  -d '{"title":"PR Title","body":"Description","head":"feature-branch","base":"main"}'
+```
+
+### Why No gh CLI?
+
+1. **Portability**: Keychain credentials work without additional tool installation
+2. **Consistency**: Same authentication method for git operations and API calls
+3. **Simplicity**: No need to manage separate gh CLI auth state
+4. **Already Available**: Credentials are already stored for git push/pull operations
+
+---
+
 ## Troubleshooting
 
 ### Error: "Write access to repository not granted"

@@ -396,3 +396,15 @@
 2026-01-20T17:58:28Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
 2026-01-20T17:58:40Z | Stop | Clear already pending, allowing stop
 2026-01-20T18:00:10Z | SessionEnd | /end-session invoked
+2026-01-20T18:05:50Z | SessionStart | source=startup | session=39c0eb9b-fd06-41b5-9203-ba122f69bf49 | local_time=11:05
+2026-01-20T18:05:50Z | SessionStart | time_of_day=morning
+2026-01-20T18:05:50Z | SessionStart | Weather: fetch failed or invalid response
+2026-01-20T18:05:50Z | SessionStart | Cleaned up .clear-pending marker
+2026-01-20T18:05:50Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-20T18:05:50Z | SessionStart | Launched watcher
+2026-01-20T18:05:50Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-20T18:05:50Z | SessionStart | AIfred behind by 3 commits
+2026-01-20T18:05:50Z | SessionStart | EnvCheck: 6 uncommitted changes
+2026-01-20T18:05:50Z | SessionStart | EnvValidation complete
+2026-01-20T18:05:50Z | SessionStart | current_work='' next_step=''
+2026-01-20T18:45:04Z | SessionEnd | /end-session invoked
