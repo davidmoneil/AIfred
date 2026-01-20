@@ -1,0 +1,67 @@
+Weather_Location
+
+There are a few weather-focused MCP servers and skills you can hook into Claude Code so it can answer weather questions on demand. [github](https://github.com/SaintDoresh/Weather-MCP-ClaudeDesktop)
+
+## Ready-made weather MCPs
+
+- Weather MCP Tool for Claude Desktop (GitHub project using OpenWeatherMap; works with the same MCP setup used by Claude Code)  
+  - Provides current conditions, multi‑day forecast, and some historical data.  
+  - You configure it as an MCP server in your Claude config, then Claude Code can call it when you ask weather questions. [github](https://github.com/SaintDoresh/Weather-MCP-ClaudeDesktop)
+
+- Get Weather (Claude Code skill on a community marketplace)  
+  - Uses the wttr.in service via simple shell commands to return current weather and a short forecast for cities, airport codes, or coordinates.  
+  - Installed as a “skill” so Claude Code can run a command like `curl wttr.in/<location>?format=j1` behind the scenes. [mcpmarket](https://mcpmarket.com/tools/skills/get-weather)
+
+- Weather MCP (NOAA/Open‑Meteo based MCP server)  
+  - Focuses on US NOAA plus global Open‑Meteo data, with forecasts and alerts.  
+  - Integrated by adding it as an MCP server in your Claude config (similar JSON block under `mcpServers`), then importing or enabling it in Claude Code. [weather-mcp](https://www.weather-mcp.dev)
+
+## How to wire it into Claude Code
+
+- Add the MCP server or skill to your Claude configuration  
+  - For MCP servers, you usually add a block under something like `mcpServers` with `command` and `args` pointing at the weather server script or `npx` package. [code.claude](https://code.claude.com/docs/en/mcp)
+  - For skills, you typically install/enable them via the Claude Code CLI or plugin/skill manager UI. [github](https://github.com/emdashcodes/claude-code-plugins)
+
+- Import existing MCP config from Claude Desktop (if you already set it up there)  
+  - Claude Code supports importing MCP servers that are already configured in your desktop client via a CLI command like “import from desktop,” after which the tools show up in Claude Code. [code.claude](https://code.claude.com/docs/en/mcp)
+
+- Test from a Claude Code session  
+  - Open a Claude Code workspace and ask something like “What’s the weather in Salt Lake City today?” and Claude Code should automatically call the weather tool if it’s enabled and running. [github](https://github.com/SaintDoresh/Weather-MCP-ClaudeDesktop)
+
+If you tell which one you’d prefer (OpenWeather vs NOAA/Open‑Meteo vs wttr.in), a concrete config snippet for Claude Code can be sketched out next.
+
+
+Yes, but today it is limited and OS‑specific, and you will likely need to stitch pieces together for a fully automatic greeting flow. [mcp.aibase](https://mcp.aibase.com/server/1916355718952230914)
+
+## Existing location MCPs
+
+- location-mcp-server (macOS native location MCP)  
+  - Exposes a `getCurrentLocation` tool by talking to a small macOS helper app (`location-getter-agent.app`) that uses system location services. [mcp.aibase](https://mcp.aibase.com/server/1916355718952230914)
+  - Designed for Claude Desktop, but because it is a standard MCP server, you can register the same server with Claude Code so it can call `getCurrentLocation` at session start. [code.claude](https://code.claude.com/docs/en/mcp)
+
+- Location API / Context MCP (remote location-context service)  
+  - Community MCP that exposes a location API, typically by IP/geolocation data rather than OS‑level GPS. [reddit](https://www.reddit.com/r/ClaudeAI/comments/1m21g6b/we_just_launched_a_location_api_context_mcp_for/)
+  - Works across platforms but is less precise than native OS location services and depends on an external API instead of local system services. [modelcontextprotocol](https://modelcontextprotocol.io/docs/develop/connect-local-servers)
+
+## How this works with Claude Code
+
+- Register the MCP server in Claude Code  
+  - Use `claude mcp add` (or edit your MCP JSON) to add the location MCP (e.g., `npx @sokyran/location-mcp-server` or the hosted Location API MCP) so it shows up as a tool in Claude Code. [code.claude](https://code.claude.com/docs/en/mcp)
+  - Claude Code then has a callable tool such as `getCurrentLocation` that returns coordinates, city, region, etc. [mcp.aibase](https://mcp.aibase.com/server/1916355718952230914)
+
+- Combine location with weather/time/news tools  
+  - Once `getCurrentLocation` works, you can have a greeting “skill” or startup hook that:  
+    - Calls `getCurrentLocation`  
+    - Passes lat/long or city into your weather MCP, time‑zone helper, and a news MCP or HTTP skill. [code.claude](https://code.claude.com/docs/en/skills)
+  - The result can be a single synthesized greeting message for new sessions using date, time, weather, and local news.
+
+## Limitations and gaps
+
+- OS integration coverage  
+  - The known native MCP today is macOS‑only; it uses a helper app and macOS location permissions rather than generic “system services” that also work on Windows/Linux. [mcp.aibase](https://mcp.aibase.com/server/1916355718952230914)
+  - Cross‑platform options tend to be IP‑based location MCPs or skills, which are fine for rough city‑level context but not precise GPS. [reddit](https://www.reddit.com/r/ClaudeAI/comments/1m21g6b/we_just_launched_a_location_api_context_mcp_for/)
+
+- “Automatic on new session” behavior  
+  - Claude Code does not yet ship a built‑in “on session start” event, so the usual pattern is:  
+    - A small custom skill or script that Claude can run when you type a command like “/greet” or when you open your starter file. [leehanchung.github](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
+    - That skill orchestrates location → time → weather → news in one shot and prints a greeting.

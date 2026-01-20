@@ -11,6 +11,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.2.0] - 2026-01-20
+
+**Phase 6 Implementation Complete: PR-13 Monitoring & Benchmarking**
+
+Full implementation of Phase 6 autonomic infrastructure with telemetry, benchmarks, scoring, and regression detection.
+
+### Added
+
+#### PR-13.1: Telemetry Foundation
+- **telemetry-emitter.js** — Event emission with CLAUDE_SESSION_ID support, lifecycle and metrics helpers
+- **telemetry-query.js** — Query interface for events by time, component, type
+- **telemetry-aggregator.js** — Daily/weekly/monthly aggregation logic
+- JSONL storage infrastructure in `.claude/logs/telemetry/`
+
+#### PR-13.2: Benchmark Suite
+- **benchmark-runner.js** — Component + E2E benchmarks with 16 tests across 9 components
+- Baseline measurement and storage
+
+#### PR-13.3: Scoring Framework
+- **scoring-engine.js** — Weighted component scoring with letter grades (A+ through F)
+- Session composite scores
+
+#### PR-13.4: Dashboard and Reporting
+- **status-report.js** — ASCII dashboard generation with component grades
+- **/status command** for system health display
+
+#### PR-13.5: Regression Detection
+- **regression-detector.js** — Baseline comparison and trend analysis
+- Automatic regression identification
+
+### Changed
+
+- All 9 AC component specs (AC-01 through AC-09) updated to Status: **active**
+- Telemetry integration added to 4 hooks (milestone-detector, context-accumulator, self-correction-capture, wiggum-loop-tracker)
+- Validation checklists marked complete in all component specs
+
+### Verified
+
+- **All benchmarks pass**: 16/16 tests (100%)
+- **All components operational**: 9/9 passing
+- **Session score**: 100% (A+)
+- **E2E benchmark**: PASS
+- **Baseline**: Established for regression detection
+
+### Files Created (11)
+
+- `.claude/hooks/telemetry-emitter.js`
+- `.claude/scripts/telemetry-query.js`
+- `.claude/scripts/telemetry-aggregator.js`
+- `.claude/scripts/benchmark-runner.js`
+- `.claude/scripts/scoring-engine.js`
+- `.claude/scripts/status-report.js`
+- `.claude/scripts/regression-detector.js`
+- `.claude/commands/status.md`
+- `.claude/orchestration/phase-6-implementation.yaml`
+- `.claude/metrics/benchmarks/all-components-2026-01-20.json`
+- `.claude/metrics/baselines/current-baseline.json`
+
+---
+
 ## [2.1.1] - 2026-01-18
 
 **Implementation Sprint: Evolution Queue**
