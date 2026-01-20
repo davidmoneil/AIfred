@@ -1,9 +1,28 @@
 # Milestone Review Pattern
 
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Created**: 2026-01-16
+**Validated**: 2026-01-20 (PRD-V3: 100% issue detection rate)
 **Component**: AC-03 Milestone Review
 **PR**: PR-12.3
+
+---
+
+## Validation Results (PRD-V3)
+
+| Metric | Result |
+|--------|--------|
+| Issues Planted | 3 (empty string tests, typo, missing LICENSE) |
+| Issues Detected | 3 (100% detection rate) |
+| Remediations Triggered | 3 |
+| Final Quality Ratings | All 5/5 after remediation |
+| Milestone Reviews | 3/3 completed with formal reports |
+
+**Key Success Factors**:
+1. Explicit STOP directive at boundaries prevented skipping reviews
+2. Deliverable checklist ensured comprehensive coverage
+3. Rating threshold (>= 4) enforced quality gates
+4. Formal report generation created audit trail
 
 ---
 
@@ -651,4 +670,79 @@ Jarvis: "PR-12.4 re-review passed. Roadmap updated."
 
 ---
 
-*Milestone Review Pattern — Jarvis Phase 6 PR-12.3*
+## 11. Reliable Activation
+
+### Trigger Phrases
+
+Jarvis should activate milestone review when:
+
+| Phrase | Activation |
+|--------|------------|
+| "Execute PRD" / "Run PRD" | PRDs have natural milestones |
+| "Build [feature] with reviews" | Explicit review request |
+| "Quality gates at each phase" | Direct activation |
+| "Review before proceeding" | Checkpoint trigger |
+| "Stop and review at M[N]" | Specific milestone |
+
+### Making Reviews Mandatory
+
+To ensure reviews aren't skipped, structure PRDs/tasks with:
+
+1. **Explicit STOP directives**:
+   ```markdown
+   After M1 Deliverables → STOP for Review
+   After M2 Deliverables → STOP for Review
+   ```
+
+2. **Deliverable checklists** (enables comprehensive review):
+   ```markdown
+   | # | Deliverable | Verification |
+   |---|-------------|--------------|
+   | 1 | package.json | File exists |
+   | 2 | tests pass | npm test |
+   ```
+
+3. **Review reports as deliverables** (forces report generation):
+   ```markdown
+   | 12 | **Milestone 1 Review Report** | Generated |
+   ```
+
+4. **PROCEED/REMEDIATE decision gate**:
+   ```markdown
+   Decision:
+   - [ ] PROCEED if ratings >= 4
+   - [ ] REMEDIATE if ratings < 4
+   ```
+
+### Injection into CLAUDE.md
+
+Add to task instructions when milestone reviews are needed:
+
+```markdown
+## Quality Gates
+
+This task requires AC-03 Milestone Reviews at phase boundaries:
+- After Phase [X]: STOP → Review → PROCEED/REMEDIATE
+- After Phase [Y]: STOP → Review → PROCEED/REMEDIATE
+- After Phase [Z]: STOP → Final Review → Complete
+
+Reference: @.claude/context/patterns/milestone-review-pattern.md
+```
+
+### Integration with Wiggum Loop
+
+Milestone reviews and Wiggum Loop work together:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  WITHIN Milestone: AC-02 Wiggum Loop (micro-iteration)     │
+│    Execute → Check → Review → Continue                      │
+├─────────────────────────────────────────────────────────────┤
+│  AT Milestone Boundary: AC-03 Review (macro-gate)          │
+│    STOP → Technical Review → Progress Review → Decision    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+*Milestone Review Pattern — Jarvis Phase 6 PR-12.3 (Validated PRD-V3 2026-01-20)*

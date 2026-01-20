@@ -86,4 +86,16 @@ Key discoveries from full-scale R&D cycle:
 
 ---
 
-*Index maintained by AC-05 Self-Reflection — Updated 2026-01-18*
+---
+
+## Evolution Proposals (from Reflection)
+
+| Date | ID | Summary | Priority | Status |
+|------|----|---------|----------|--------|
+| 2026-01-20 | EVO-2026-01-020 | Session State Auto-Update | Low | Queued |
+
+See `.claude/evolution/evolution-queue.yaml` for full proposal details.
+
+---
+
+*Index maintained by AC-05 Self-Reflection — Updated 2026-01-20*

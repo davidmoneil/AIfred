@@ -419,3 +419,28 @@
 2026-01-20T18:49:00Z | SessionStart | EnvValidation complete
 2026-01-20T18:49:00Z | SessionStart | current_work='' next_step=''
 2026-01-20T19:11:17Z | SessionEnd | /end-session invoked
+2026-01-20T19:24:55Z | SessionStart | source=startup | session=fd3e4110-40d9-42b1-84ee-8c84060f09ed | local_time=12:24
+2026-01-20T19:24:55Z | SessionStart | time_of_day=afternoon
+2026-01-20T19:24:55Z | SessionStart | Weather: fetch failed or invalid response
+2026-01-20T19:24:55Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-20T19:24:55Z | SessionStart | Launched watcher
+2026-01-20T19:24:55Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-20T19:24:55Z | SessionStart | AIfred behind by 3 commits
+2026-01-20T19:24:55Z | SessionStart | EnvCheck: 6 uncommitted changes
+2026-01-20T19:24:55Z | SessionStart | EnvValidation complete
+2026-01-20T19:24:55Z | SessionStart | current_work='' next_step=''
+2026-01-20T20:08:01Z | PreCompact | Auto-checkpoint triggered
+2026-01-20T20:08:01Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-20T20:08:01Z | PreCompact | Signal file created for auto-clear
+2026-01-20T20:09:25Z | SessionStart | source=compact | session=1c48defe-a756-4ac7-8b32-685c5b655ef7 | local_time=13:09
+2026-01-20T20:09:25Z | SessionStart | time_of_day=afternoon
+2026-01-20T20:09:25Z | SessionStart | EnvValidation complete
+2026-01-20T20:09:25Z | SessionStart | current_work='' next_step=''
+2026-01-20T20:15:40Z | PreCompact | Auto-checkpoint triggered
+2026-01-20T20:15:40Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-20T20:15:40Z | PreCompact | Signal file created for auto-clear
+2026-01-20T20:16:25Z | SessionStart | source=compact | session=1c48defe-a756-4ac7-8b32-685c5b655ef7 | local_time=13:16
+2026-01-20T20:16:25Z | SessionStart | time_of_day=afternoon
+2026-01-20T20:16:25Z | SessionStart | EnvValidation complete
+2026-01-20T20:16:25Z | SessionStart | current_work='' next_step=''
+2026-01-20T20:23:07Z | SessionEnd | /end-session invoked

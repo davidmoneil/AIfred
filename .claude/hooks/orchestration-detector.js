@@ -103,6 +103,79 @@ const SKIP_PATTERNS = [
 ];
 
 // ============================================================
+// JARVIS ENHANCEMENTS: Milestone Review Detection (AC-03)
+// ============================================================
+
+// Code/Testing work patterns that should trigger milestone reviews
+const CODE_WORK_PATTERNS = [
+  /\b(build|implement|develop|code|write)\s+(a|an|the)?\s*(app|application|feature|system|api)/i,
+  /\b(with|including|add)\s+(testing|tests|unit\s*tests|e2e|integration)/i,
+  /\b(tdd|test-driven|bdd)\b/i,
+  /\b(frontend|backend|fullstack|full-stack)\s+(development|work|project)/i,
+  /\b(prd|product\s+requirement|spec)\s*(execution|implementation)/i
+];
+
+// Multi-phase work patterns
+const MULTI_PHASE_PATTERNS = [
+  /\b(phases?|milestones?|stages?)\s*[:\-]?\s*\d/i,
+  /\bphase\s*[1-9]/i,
+  /\b(3|4|5|6|7)\s*phases?\b/i,
+  /\b(multi-phase|phased|staged)\b/i
+];
+
+// Quality gate patterns
+const QUALITY_GATE_PATTERNS = [
+  /\b(quality|code\s*review|review\s*before|check\s*before)\b/i,
+  /\b(milestone\s*review|gate|checkpoint)\b/i,
+  /\b(before\s+proceeding|proceed\s+after\s+review)\b/i
+];
+
+/**
+ * Detect if task requires milestone reviews (AC-03)
+ */
+function detectMilestoneReviewNeed(prompt) {
+  let codeWorkDetected = false;
+  let multiPhaseDetected = false;
+  let qualityGateDetected = false;
+  const signals = [];
+
+  for (const pattern of CODE_WORK_PATTERNS) {
+    if (pattern.test(prompt)) {
+      codeWorkDetected = true;
+      signals.push('code_work');
+      break;
+    }
+  }
+
+  for (const pattern of MULTI_PHASE_PATTERNS) {
+    if (pattern.test(prompt)) {
+      multiPhaseDetected = true;
+      signals.push('multi_phase');
+      break;
+    }
+  }
+
+  for (const pattern of QUALITY_GATE_PATTERNS) {
+    if (pattern.test(prompt)) {
+      qualityGateDetected = true;
+      signals.push('quality_gate');
+      break;
+    }
+  }
+
+  // Recommend milestone reviews if code work + multi-phase OR explicit quality gate
+  const shouldUseMilestoneReview = (codeWorkDetected && multiPhaseDetected) || qualityGateDetected;
+
+  return {
+    shouldUseMilestoneReview,
+    codeWorkDetected,
+    multiPhaseDetected,
+    qualityGateDetected,
+    signals
+  };
+}
+
+// ============================================================
 // JARVIS ENHANCEMENTS: MCP Tier Detection
 // ============================================================
 
@@ -387,6 +460,25 @@ function formatMcpWarnings(mcpTiers) {
 }
 
 /**
+ * Format milestone review recommendation
+ */
+function formatMilestoneReviewRecommendation(milestoneReview) {
+  if (!milestoneReview.shouldUseMilestoneReview) return '';
+
+  let context = '\n\n🎯 **AC-03 Milestone Reviews Recommended**\n';
+  context += 'This task involves code/testing work across multiple phases.\n\n';
+  context += 'The orchestration should include:\n';
+  context += '- Organize work into 2-4 milestones\n';
+  context += '- STOP and REVIEW at each milestone boundary\n';
+  context += '- Technical Review (code quality, 1-5 rating)\n';
+  context += '- Progress Review (PRD alignment, 1-5 rating)\n';
+  context += '- PROCEED only if ratings >= 4, else REMEDIATE\n\n';
+  context += 'Reference: @.claude/context/patterns/milestone-review-pattern.md';
+
+  return context;
+}
+
+/**
  * Handler function (can be called via require or stdin)
  */
 async function handler(context) {
@@ -427,6 +519,13 @@ async function handler(context) {
       // JARVIS: Detect skills and MCP tiers
       const skills = detectSkills(prompt);
       const mcpTiers = detectMcpTiers(prompt);
+      const milestoneReview = detectMilestoneReviewNeed(prompt);
+
+      // Boost score if milestone review detected
+      if (milestoneReview.shouldUseMilestoneReview) {
+        result.score += 2;
+        result.signals.push('milestone_review_recommended');
+      }
 
       let action = 'none';
       let additionalContext = null;
@@ -446,6 +545,7 @@ async function handler(context) {
           'Signals detected: ' + result.signals.slice(0, 3).join(', ') +
           formatSkillSuggestions(skills) +
           formatMcpWarnings(mcpTiers) +
+          formatMilestoneReviewRecommendation(milestoneReview) +
           '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
 
         console.log('[orchestration-detector] AUTO-INVOKE: score=' + result.score);
@@ -463,6 +563,7 @@ async function handler(context) {
           '- Enable progress tracking across sessions\n' +
           formatSkillSuggestions(skills) +
           formatMcpWarnings(mcpTiers) +
+          formatMilestoneReviewRecommendation(milestoneReview) +
           '\nProceed directly if you prefer, or orchestrate first.\n---';
 
         console.log('[orchestration-detector] SUGGEST: score=' + result.score);
@@ -478,7 +579,7 @@ async function handler(context) {
       }
 
       // Log the detection
-      await logDetection(prompt, { ...result, action, skills, mcpTiers });
+      await logDetection(prompt, { ...result, action, skills, mcpTiers, milestoneReview });
 
       if (additionalContext && additionalContext.trim()) {
         return {
@@ -490,6 +591,7 @@ async function handler(context) {
             action,
             suggestedSkills: skills,
             mcpTiers,
+            milestoneReviewRecommended: milestoneReview.shouldUseMilestoneReview,
             additionalContext
           }
         };

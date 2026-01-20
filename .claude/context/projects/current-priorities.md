@@ -6,6 +6,24 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ---
 
+## In Progress
+
+### PRD-V4 Context Exhaustion Test — IN PROGRESS (2026-01-20)
+**Status**: 🟡 Phase 2 Partial — TDD tests created
+
+**Project**: `aion-hello-console-v4-context` (AC-04 validation artifact)
+**Location**: `/Users/aircannon/Claude/Projects/aion-hello-console-v4-context/`
+
+**Accomplished**:
+- [x] Phase 1: Pre-flight complete
+- [x] Phase 2: TDD tests written (53+ tests)
+- [ ] Phase 2: Run tests (should FAIL)
+- [ ] Phase 3-7: Implementation and delivery
+
+**Next**: Continue execution, run tests, implement, deliver to GitHub
+
+---
+
 ## Recently Completed
 
 ### PRD-V1 Session Continuity Test — COMPLETE (2026-01-20)
