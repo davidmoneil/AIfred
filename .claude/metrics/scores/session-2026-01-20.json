@@ -1,0 +1,120 @@
+{
+  "calculated_at": "2026-01-20T05:00:26.594Z",
+  "period_days": 7,
+  "components": [
+    {
+      "component": "AC-01",
+      "calculated_at": "2026-01-20T05:00:26.595Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-02",
+      "calculated_at": "2026-01-20T05:00:26.601Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-03",
+      "calculated_at": "2026-01-20T05:00:26.601Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-04",
+      "calculated_at": "2026-01-20T05:00:26.601Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-05",
+      "calculated_at": "2026-01-20T05:00:26.601Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-06",
+      "calculated_at": "2026-01-20T05:00:26.601Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-07",
+      "calculated_at": "2026-01-20T05:00:26.602Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-08",
+      "calculated_at": "2026-01-20T05:00:26.602Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    },
+    {
+      "component": "AC-09",
+      "calculated_at": "2026-01-20T05:00:26.602Z",
+      "dimensions": {
+        "reliability": 100
+      },
+      "weighted_score": 100,
+      "grade": "A+",
+      "data_sources": [
+        "benchmark"
+      ]
+    }
+  ],
+  "summary": {
+    "total_score": 900,
+    "average_score": 100,
+    "grade": "A+",
+    "components_scored": 9
+  }
+}

@@ -1,0 +1,169 @@
+# Autonomic Component Configuration
+# Version: 1.0.0
+# Created: 2026-01-16
+# PR: PR-11.5, PR-12.1
+#
+# This file configures the behavior of all autonomic components.
+# Components can be enabled/disabled and their behavior customized.
+#
+# Precedence (highest to lowest):
+#   1. Emergency stop (JARVIS_EMERGENCY_STOP=true)
+#   2. Environment variables (JARVIS_DISABLE_AC01=true)
+#   3. This config file
+#   4. Component defaults
+
+version: "1.0"
+
+# Global settings
+global:
+  # Master switch for all autonomy
+  autonomy_enabled: true
+
+  # Quick mode: minimal output, skip non-essential
+  quick_mode: false
+
+  # Manual mode: no autonomous initiation
+  manual_mode: false
+
+  # Logging level: debug, info, warn, error
+  log_level: info
+
+# Per-component configuration
+components:
+  # AC-01: Self-Launch Protocol
+  AC-01-launch:
+    enabled: true
+    settings:
+      # Include weather in greeting
+      include_weather: true
+      # Weather fetch timeout (ms)
+      weather_timeout: 3000
+      # Skip greeting entirely
+      skip_greeting: false
+      # Time-based greeting style
+      greeting_style: formal  # formal, casual
+      # Auto-continue with pending work
+      auto_continue: true
+
+  # AC-02: Wiggum Loop
+  AC-02-wiggum:
+    enabled: true
+    settings:
+      # Default to enabled (disable with "quick/rough/simple")
+      default_active: true
+      # Maximum verification passes
+      max_passes: 5
+      # Timeout per pass (ms)
+      pass_timeout: 300000
+      # Stop on first clean pass
+      early_termination: true
+
+  # AC-03: Milestone Review
+  AC-03-review:
+    enabled: true
+    settings:
+      # Auto-escalate to project-manager agent
+      auto_escalate: true
+      # Review depth: quick, standard, thorough
+      default_depth: standard
+      # Generate report file
+      generate_report: true
+
+  # AC-04: Context Management (JICM)
+  AC-04-jicm:
+    enabled: true
+    settings:
+      # Token threshold for compression trigger
+      threshold_tokens: 150000
+      # Target compression ratio
+      compression_target: 0.6
+      # Auto-create checkpoint before compression
+      auto_checkpoint: true
+      # Trigger continuation after compression
+      trigger_continuation: true
+
+  # AC-05: Self-Reflection
+  AC-05-reflect:
+    enabled: true
+    settings:
+      # Minimum idle time before triggering (minutes)
+      min_idle_minutes: 30
+      # Maximum sessions to analyze
+      max_sessions_analyzed: 10
+      # Store patterns to Memory MCP
+      use_memory_mcp: true
+
+  # AC-06: Self-Evolution
+  AC-06-evolve:
+    enabled: true
+    settings:
+      # Always require approval for changes (cannot be disabled)
+      require_approval: true
+      # Maximum evolutions per session
+      max_per_session: 5
+      # Create git branch for changes
+      use_branch: true
+      # Run validation after changes
+      validate_changes: true
+
+  # AC-07: R&D Cycles
+  AC-07-rnd:
+    enabled: true
+    settings:
+      # External sources to query
+      sources:
+        - github
+        - arxiv
+        - web
+      # Maximum discoveries per cycle
+      max_discoveries: 10
+      # All R&D proposals require approval
+      require_approval: true
+
+  # AC-08: Maintenance Workflows
+  AC-08-maintain:
+    enabled: true
+    settings:
+      # Scope: jarvis, project, both
+      scope: both
+      # Stale file threshold (days)
+      stale_days: 30
+      # Auto-fix organization issues
+      auto_fix_org: false
+
+  # AC-09: Session Completion
+  AC-09-session:
+    enabled: true
+    settings:
+      # Offer self-improvement before ending
+      offer_self_improve: true
+      # Preserve chat history
+      preserve_history: true
+      # Generate session summary
+      generate_summary: true
+
+# Safety settings
+safety:
+  # Cannot be disabled (hardcoded invariants)
+  cannot_disable:
+    - audit_logging
+    - emergency_stop
+    - critical_gates
+    - baseline_readonly
+
+  # Maximum time component can be disabled
+  max_disable_duration:
+    AC-02-wiggum: 24h
+    AC-06-evolve: 168h  # 1 week
+
+  # Warn after this duration
+  warn_after:
+    AC-02-wiggum: 4h
+    AC-06-evolve: 24h
+
+# Audit settings
+audit:
+  # Log all configuration changes
+  log_changes: true
+  # Retention period
+  retention_days: 90

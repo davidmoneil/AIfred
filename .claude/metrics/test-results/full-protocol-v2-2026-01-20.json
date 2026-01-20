@@ -1,0 +1,674 @@
+{
+  "protocol": "Comprehensive Autonomic Systems Testing v2",
+  "timestamp": "2026-01-20T14:52:43.821Z",
+  "tier0": {
+    "tier": 0,
+    "name": "Infrastructure Tests",
+    "timestamp": "2026-01-20T14:52:43.822Z",
+    "components": [
+      {
+        "component": "AC-01",
+        "tests": [
+          {
+            "id": "T0-AC01-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC01-02",
+            "name": "Session start hook exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC01-03",
+            "name": "Greeting script exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-02",
+        "tests": [
+          {
+            "id": "T0-AC02-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC02-02",
+            "name": "Wiggum tracker hook exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC02-03",
+            "name": "Wiggum tracker loads",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-03",
+        "tests": [
+          {
+            "id": "T0-AC03-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC03-02",
+            "name": "Milestone detector exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC03-03",
+            "name": "Code-review agent defined",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-04",
+        "tests": [
+          {
+            "id": "T0-AC04-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC04-02",
+            "name": "Context accumulator exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC04-03",
+            "name": "Context accumulator loads",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC04-04",
+            "name": "Disable MCPs script exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC04-05",
+            "name": "Config file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 5,
+        "failed": 0
+      },
+      {
+        "component": "AC-05",
+        "tests": [
+          {
+            "id": "T0-AC05-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC05-02",
+            "name": "Self-correction hook exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC05-03",
+            "name": "Corrections file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-06",
+        "tests": [
+          {
+            "id": "T0-AC06-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC06-02",
+            "name": "Evolution queue exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC06-03",
+            "name": "Evolve command exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-07",
+        "tests": [
+          {
+            "id": "T0-AC07-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC07-02",
+            "name": "Research agenda exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC07-03",
+            "name": "Research command exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-08",
+        "tests": [
+          {
+            "id": "T0-AC08-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC08-02",
+            "name": "Maintain command exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "component": "AC-09",
+        "tests": [
+          {
+            "id": "T0-AC09-01",
+            "name": "State file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC09-02",
+            "name": "End-session command exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          },
+          {
+            "id": "T0-AC09-03",
+            "name": "Session state file exists",
+            "status": "passed",
+            "details": {
+              "check_result": true
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      }
+    ],
+    "summary": {
+      "total": 28,
+      "passed": 28,
+      "failed": 0
+    }
+  },
+  "tier1": {
+    "tier": 1,
+    "name": "Behavioral Tests",
+    "timestamp": "2026-01-20T14:52:43.823Z",
+    "components": [
+      {
+        "component": "AC-01",
+        "tests": [
+          {
+            "id": "T1-AC01-01",
+            "name": "Greeting generation produces output",
+            "status": "failed",
+            "details": {
+              "passed": false,
+              "error": "spawnSync /bin/sh ETIMEDOUT"
+            }
+          },
+          {
+            "id": "T1-AC01-02",
+            "name": "State file has valid JSON schema",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "fields": [
+                "last_run",
+                "greeting_type",
+                "checkpoint_loaded",
+                "auto_continue"
+              ]
+            }
+          }
+        ],
+        "passed": 1,
+        "failed": 1
+      },
+      {
+        "component": "AC-02",
+        "tests": [
+          {
+            "id": "T1-AC02-01",
+            "name": "Wiggum tracker handles loop start event",
+            "status": "failed",
+            "details": {
+              "passed": false,
+              "result": {}
+            }
+          },
+          {
+            "id": "T1-AC02-02",
+            "name": "State tracks max_passes correctly",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "max_passes": 5
+            }
+          },
+          {
+            "id": "T1-AC02-03",
+            "name": "Suppression keywords detected correctly",
+            "status": "failed",
+            "details": {
+              "passed": false,
+              "results": [
+                {
+                  "input": "Do this quickly",
+                  "expected": true,
+                  "actual": true,
+                  "correct": true
+                },
+                {
+                  "input": "Give me a rough estimate",
+                  "expected": true,
+                  "actual": true,
+                  "correct": true
+                },
+                {
+                  "input": "Thoroughly review this code",
+                  "expected": false,
+                  "actual": true,
+                  "correct": false
+                }
+              ]
+            }
+          }
+        ],
+        "passed": 1,
+        "failed": 2
+      },
+      {
+        "component": "AC-03",
+        "tests": [
+          {
+            "id": "T1-AC03-01",
+            "name": "Milestone detector hook loads and has handler",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "exports": [
+                "name",
+                "description",
+                "event",
+                "handler"
+              ]
+            }
+          },
+          {
+            "id": "T1-AC03-02",
+            "name": "State tracks review metrics",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "metrics": {
+                "total_reviews": 0,
+                "pass_rate": null,
+                "avg_review_time_seconds": null
+              }
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "component": "AC-04",
+        "tests": [
+          {
+            "id": "T1-AC04-01",
+            "name": "Context accumulator tracks tool calls",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "estimate": {
+                "sessionStart": "2026-01-20T14:49:54.884Z",
+                "totalTokens": 30600,
+                "toolCalls": 6,
+                "lastUpdate": "2026-01-20T14:52:38.007Z",
+                "percentage": 15.299999999999999
+              }
+            }
+          },
+          {
+            "id": "T1-AC04-02",
+            "name": "Threshold configuration is readable",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "threshold_tokens": 150000,
+              "percentage": "75.0%"
+            }
+          },
+          {
+            "id": "T1-AC04-03",
+            "name": "Threshold calculation is correct",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "results": [
+                {
+                  "threshold_tokens": 150000,
+                  "expected_pct": 75,
+                  "actual_pct": 75,
+                  "correct": true
+                },
+                {
+                  "threshold_tokens": 100000,
+                  "expected_pct": 50,
+                  "actual_pct": 50,
+                  "correct": true
+                },
+                {
+                  "threshold_tokens": 20000,
+                  "expected_pct": 10,
+                  "actual_pct": 10,
+                  "correct": true
+                }
+              ]
+            }
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "component": "AC-05",
+        "tests": [
+          {
+            "id": "T1-AC05-01",
+            "name": "Corrections file is valid markdown",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "is_markdown": true,
+              "length": 2792
+            }
+          },
+          {
+            "id": "T1-AC05-02",
+            "name": "Self-correction hook has handler",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "exports": [
+                "name",
+                "description",
+                "event",
+                "handler",
+                "detectCorrection"
+              ]
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "component": "AC-06",
+        "tests": [
+          {
+            "id": "T1-AC06-01",
+            "name": "Evolution queue is valid YAML",
+            "status": "failed",
+            "details": {
+              "passed": false,
+              "length": 8003
+            }
+          },
+          {
+            "id": "T1-AC06-02",
+            "name": "State tracks evolution metrics",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "metrics": {
+                "total_evolutions": 0,
+                "successful_evolutions": 0,
+                "failed_evolutions": 0,
+                "rollbacks": 0
+              }
+            }
+          }
+        ],
+        "passed": 1,
+        "failed": 1
+      },
+      {
+        "component": "AC-07",
+        "tests": [
+          {
+            "id": "T1-AC07-01",
+            "name": "Research agenda is valid YAML",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "length": 7023
+            }
+          }
+        ],
+        "passed": 1,
+        "failed": 0
+      },
+      {
+        "component": "AC-08",
+        "tests": [
+          {
+            "id": "T1-AC08-01",
+            "name": "State tracks maintenance metrics",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "metrics": {
+                "total_maintenance_cycles": 0,
+                "files_cleaned": 0,
+                "stale_files_flagged": 0,
+                "health_issues_found": 0,
+                "optimization_proposals": 0
+              }
+            }
+          }
+        ],
+        "passed": 1,
+        "failed": 0
+      },
+      {
+        "component": "AC-09",
+        "tests": [
+          {
+            "id": "T1-AC09-01",
+            "name": "Session state file is valid markdown",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "has_content": 83538
+            }
+          },
+          {
+            "id": "T1-AC09-02",
+            "name": "State tracks session metrics",
+            "status": "passed",
+            "details": {
+              "passed": true,
+              "metrics": {
+                "total_sessions": 0,
+                "avg_session_duration_minutes": null,
+                "clean_exits": 0,
+                "forced_exits": 0
+              }
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      }
+    ],
+    "summary": {
+      "total": 18,
+      "passed": 14,
+      "failed": 4
+    }
+  },
+  "tier2": {
+    "tier": 2,
+    "name": "Integration Tests",
+    "timestamp": "2026-01-20T14:52:48.829Z",
+    "tests": [
+      {
+        "id": "T2-INT-01",
+        "name": "AC-02 + AC-04: Wiggum responds to context threshold",
+        "components": [
+          "AC-02",
+          "AC-04"
+        ],
+        "status": "requires_user_approval",
+        "description": "Requires simulating high context load"
+      },
+      {
+        "id": "T2-INT-02",
+        "name": "AC-03 + AC-02: Review triggers remediation loop",
+        "components": [
+          "AC-03",
+          "AC-02"
+        ],
+        "status": "requires_user_approval",
+        "description": "Requires completing a milestone with issues"
+      },
+      {
+        "id": "T2-INT-03",
+        "name": "AC-05 + AC-06: Reflection creates evolution proposal",
+        "components": [
+          "AC-05",
+          "AC-06"
+        ],
+        "status": "requires_user_approval",
+        "description": "Requires user correction to trigger reflection"
+      },
+      {
+        "id": "T2-INT-04",
+        "name": "AC-01 + AC-09: Session checkpoint and restore",
+        "components": [
+          "AC-01",
+          "AC-09"
+        ],
+        "status": "requires_user_approval",
+        "description": "Requires /checkpoint and session restart"
+      }
+    ],
+    "summary": {
+      "total": 4,
+      "requires_approval": 4,
+      "note": "Tier 2 tests require active session participation"
+    }
+  }
+}

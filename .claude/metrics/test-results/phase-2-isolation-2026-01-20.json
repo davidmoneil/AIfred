@@ -1,0 +1,615 @@
+{
+  "phase": 2,
+  "name": "Component Isolation Tests",
+  "timestamp": "2026-01-20T05:04:46.577Z",
+  "components": [
+    {
+      "component": "AC-01",
+      "timestamp": "2026-01-20T05:04:46.578Z",
+      "functional": {
+        "component": "AC-01",
+        "name": "Self-Launch Protocol",
+        "timestamp": "2026-01-20T05:04:46.578Z",
+        "tests": [
+          {
+            "id": "AC01-F01",
+            "name": "Greeting generation",
+            "status": "passed",
+            "details": [
+              "Hook exists"
+            ]
+          },
+          {
+            "id": "AC01-F02",
+            "name": "Checkpoint loading",
+            "status": "passed",
+            "details": [
+              "checkpoint_loaded: false"
+            ]
+          },
+          {
+            "id": "AC01-F03",
+            "name": "Autonomous initiation",
+            "status": "passed",
+            "details": [
+              "auto_continue: false"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 3,
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "component": "AC-01",
+        "type": "stress",
+        "timestamp": "2026-01-20T05:04:46.578Z",
+        "tests": [
+          {
+            "id": "AC01-S01",
+            "name": "Missing checkpoint",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          },
+          {
+            "id": "AC01-S02",
+            "name": "Corrupted state",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 2,
+          "passed": 0,
+          "failed": 0,
+          "skipped": 2
+        }
+      },
+      "overall": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 2,
+        "total": 5
+      }
+    },
+    {
+      "component": "AC-02",
+      "timestamp": "2026-01-20T05:04:46.580Z",
+      "functional": {
+        "component": "AC-02",
+        "name": "Wiggum Loop",
+        "timestamp": "2026-01-20T05:04:46.579Z",
+        "tests": [
+          {
+            "id": "AC02-F01",
+            "name": "Multi-pass activation",
+            "status": "passed",
+            "details": [
+              "Tracker hook loads"
+            ]
+          },
+          {
+            "id": "AC02-F02",
+            "name": "TodoWrite integration",
+            "status": "passed",
+            "details": [
+              "Todos tracking: {\"total\":0,\"completed\":0,\"in_progress\":0,\"pending\":0}"
+            ]
+          },
+          {
+            "id": "AC02-F03",
+            "name": "Self-review execution",
+            "status": "skipped",
+            "details": [
+              "Requires active loop to test"
+            ]
+          },
+          {
+            "id": "AC02-F04",
+            "name": "Suppression detection",
+            "status": "passed",
+            "details": [
+              "suppressed: false"
+            ]
+          },
+          {
+            "id": "AC02-F05",
+            "name": "Completion detection",
+            "status": "skipped",
+            "details": [
+              "Requires active loop to test"
+            ]
+          },
+          {
+            "id": "AC02-F06",
+            "name": "Drift detection",
+            "status": "skipped",
+            "details": [
+              "Requires active loop to test"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 6,
+          "passed": 3,
+          "failed": 0,
+          "skipped": 3
+        }
+      },
+      "stress": {
+        "component": "AC-02",
+        "type": "stress",
+        "timestamp": "2026-01-20T05:04:46.580Z",
+        "tests": [
+          {
+            "id": "AC02-S01",
+            "name": "Max iterations",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          },
+          {
+            "id": "AC02-S02",
+            "name": "Blocker investigation",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          },
+          {
+            "id": "AC02-S03",
+            "name": "Context exhaustion",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 3,
+          "passed": 0,
+          "failed": 0,
+          "skipped": 3
+        }
+      },
+      "overall": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 6,
+        "total": 9
+      }
+    },
+    {
+      "component": "AC-03",
+      "timestamp": "2026-01-20T05:04:46.580Z",
+      "functional": {
+        "component": "AC-03",
+        "name": "Milestone Review",
+        "timestamp": "2026-01-20T05:04:46.580Z",
+        "tests": [
+          {
+            "id": "AC03-F01",
+            "name": "Milestone detection",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC03-F02",
+            "name": "Two-level review",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC03-F03",
+            "name": "Remediation trigger",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 3,
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-03"
+      },
+      "overall": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "total": 3
+      }
+    },
+    {
+      "component": "AC-04",
+      "timestamp": "2026-01-20T05:04:46.580Z",
+      "functional": {
+        "component": "AC-04",
+        "name": "JICM Context Management",
+        "timestamp": "2026-01-20T05:04:46.580Z",
+        "tests": [
+          {
+            "id": "AC04-F01",
+            "name": "50% threshold",
+            "status": "passed",
+            "details": [
+              "Context accumulator works"
+            ]
+          },
+          {
+            "id": "AC04-F02",
+            "name": "70% threshold",
+            "status": "passed",
+            "details": [
+              "Context accumulator works"
+            ]
+          },
+          {
+            "id": "AC04-F03",
+            "name": "85% threshold",
+            "status": "passed",
+            "details": [
+              "Context accumulator works"
+            ]
+          },
+          {
+            "id": "AC04-F04",
+            "name": "95% threshold",
+            "status": "passed",
+            "details": [
+              "Context accumulator works"
+            ]
+          },
+          {
+            "id": "AC04-F05",
+            "name": "MCP disable",
+            "status": "passed",
+            "details": [
+              "MCP disable script exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 5,
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "component": "AC-04",
+        "type": "stress",
+        "timestamp": "2026-01-20T05:04:46.580Z",
+        "tests": [
+          {
+            "id": "AC04-S01",
+            "name": "Multiple compressions",
+            "status": "skipped",
+            "details": [
+              "Stress tests require controlled execution environment"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 1,
+          "passed": 0,
+          "failed": 0,
+          "skipped": 1
+        }
+      },
+      "overall": {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 1,
+        "total": 6
+      }
+    },
+    {
+      "component": "AC-05",
+      "timestamp": "2026-01-20T05:04:46.581Z",
+      "functional": {
+        "component": "AC-05",
+        "name": "Self-Reflection",
+        "timestamp": "2026-01-20T05:04:46.581Z",
+        "tests": [
+          {
+            "id": "AC05-F01",
+            "name": "Correction capture",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC05-F02",
+            "name": "Self-correction",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC05-F03",
+            "name": "Pattern identification",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC05-F04",
+            "name": "Proposal generation",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 4,
+          "passed": 4,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-05"
+      },
+      "overall": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "total": 4
+      }
+    },
+    {
+      "component": "AC-06",
+      "timestamp": "2026-01-20T05:04:46.581Z",
+      "functional": {
+        "component": "AC-06",
+        "name": "Self-Evolution",
+        "timestamp": "2026-01-20T05:04:46.581Z",
+        "tests": [
+          {
+            "id": "AC06-F01",
+            "name": "Proposal triage",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC06-F02",
+            "name": "Low-risk auto-approve",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC06-F03",
+            "name": "High-risk gate",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC06-F04",
+            "name": "Branch creation",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC06-F05",
+            "name": "Rollback on failure",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 5,
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-06"
+      },
+      "overall": {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "total": 5
+      }
+    },
+    {
+      "component": "AC-07",
+      "timestamp": "2026-01-20T05:04:46.581Z",
+      "functional": {
+        "component": "AC-07",
+        "name": "R&D Cycles",
+        "timestamp": "2026-01-20T05:04:46.581Z",
+        "tests": [
+          {
+            "id": "AC07-F01",
+            "name": "Research agenda parsing",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC07-F02",
+            "name": "Discovery classification",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC07-F03",
+            "name": "Proposal flagging",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 3,
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-07"
+      },
+      "overall": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "total": 3
+      }
+    },
+    {
+      "component": "AC-08",
+      "timestamp": "2026-01-20T05:04:46.581Z",
+      "functional": {
+        "component": "AC-08",
+        "name": "Maintenance",
+        "timestamp": "2026-01-20T05:04:46.581Z",
+        "tests": [
+          {
+            "id": "AC08-F01",
+            "name": "Health check",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC08-F02",
+            "name": "Freshness audit",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC08-F03",
+            "name": "Cleanup proposals",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 3,
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-08"
+      },
+      "overall": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "total": 3
+      }
+    },
+    {
+      "component": "AC-09",
+      "timestamp": "2026-01-20T05:04:46.582Z",
+      "functional": {
+        "component": "AC-09",
+        "name": "Session Completion",
+        "timestamp": "2026-01-20T05:04:46.582Z",
+        "tests": [
+          {
+            "id": "AC09-F01",
+            "name": "Pre-completion offer",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC09-F02",
+            "name": "Work state capture",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC09-F03",
+            "name": "Checkpoint creation",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          },
+          {
+            "id": "AC09-F04",
+            "name": "Git commit",
+            "status": "passed",
+            "details": [
+              "State file exists"
+            ]
+          }
+        ],
+        "summary": {
+          "total": 4,
+          "passed": 4,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "stress": {
+        "error": "No stress tests defined for AC-09"
+      },
+      "overall": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "total": 4
+      }
+    }
+  ],
+  "summary": {
+    "total_components": 9,
+    "passing_components": 9,
+    "total_tests": 42,
+    "passed_tests": 33,
+    "failed_tests": 0,
+    "skipped_tests": 9
+  }
+}

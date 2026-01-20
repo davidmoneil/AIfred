@@ -338,3 +338,23 @@
 2026-01-20T04:22:21Z | SessionStart | EnvValidation complete
 2026-01-20T04:22:21Z | SessionStart | current_work='' next_step=''
 2026-01-20T04:26:47Z | SessionEnd | /end-session invoked
+2026-01-20T04:59:38Z | SessionStart | source=clear | session=680b9388-d627-4728-81f5-14194a47ae0d | local_time=21:59
+2026-01-20T04:59:38Z | SessionStart | time_of_day=night
+2026-01-20T04:59:38Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-20T04:59:38Z | SessionStart | EnvValidation complete
+2026-01-20T04:59:38Z | SessionStart | current_work='' next_step=''
+2026-01-20T15:08:38Z | PreCompact | Auto-checkpoint triggered
+2026-01-20T15:08:38Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-20T15:08:38Z | PreCompact | Signal file created for auto-clear
+2026-01-20T15:09:36Z | SessionStart | source=compact | session=680b9388-d627-4728-81f5-14194a47ae0d | local_time=08:09
+2026-01-20T15:09:36Z | SessionStart | time_of_day=night
+2026-01-20T15:09:36Z | SessionStart | EnvValidation complete
+2026-01-20T15:09:36Z | SessionStart | current_work='' next_step=''
+2026-01-20T16:23:31Z | PreCompact | Auto-checkpoint triggered
+2026-01-20T16:23:31Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-20T16:23:31Z | PreCompact | Signal file created for auto-clear
+2026-01-20T16:24:34Z | SessionStart | source=compact | session=680b9388-d627-4728-81f5-14194a47ae0d | local_time=09:24
+2026-01-20T16:24:34Z | SessionStart | time_of_day=night
+2026-01-20T16:24:34Z | SessionStart | EnvValidation complete
+2026-01-20T16:24:34Z | SessionStart | current_work='' next_step=''
+2026-01-20T16:47:59Z | SessionEnd | /end-session invoked
