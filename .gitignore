@@ -44,5 +44,7 @@ venv/
 scripts/config.sh
 # Sensitive credentials - never commit
 .claude/config/credentials.local.yaml
+.claude/secrets/
 *.credentials
+*.secret
 .claude/ralph-loop.local.md
