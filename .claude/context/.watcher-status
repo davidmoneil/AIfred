@@ -1,0 +1,7 @@
+# Jarvis Watcher Status
+timestamp: 2026-01-21T04:51:47Z
+tokens: 93205
+percentage: 46.6%
+threshold: 80%
+state: monitoring
+max_context: 200000

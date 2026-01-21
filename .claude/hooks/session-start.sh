@@ -324,7 +324,69 @@ Reference: .claude/context/patterns/startup-protocol.md
 PROTOCOL
 }
 
-# ============== CHECKPOINT HANDLING ==============
+# ============== INTELLIGENT COMPRESSION HANDLING (JICM v2) ==============
+COMPRESSED_CONTEXT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.compressed-context.md"
+COMPRESSION_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.compression-in-progress"
+
+# Clean up compression flag if exists
+if [[ -f "$COMPRESSION_FLAG" ]]; then
+    rm -f "$COMPRESSION_FLAG"
+    echo "$TIMESTAMP | SessionStart | JICM v2: Cleared compression-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
+fi
+
+# Check for intelligently compressed context (takes priority over simple checkpoint)
+if [[ -f "$COMPRESSED_CONTEXT_FILE" ]]; then
+    # Load compressed context from AI compression
+    COMPRESSED_CONTENT=$(cat "$COMPRESSED_CONTEXT_FILE")
+
+    echo "$TIMESTAMP | SessionStart | JICM v2: Loading compressed context" >> "$LOG_DIR/session-start-diagnostic.log"
+
+    # Delete the compressed context file after reading (one-time use)
+    rm -f "$COMPRESSED_CONTEXT_FILE"
+    echo "$TIMESTAMP | SessionStart | JICM v2: Deleted compressed context file" >> "$LOG_DIR/session-start-diagnostic.log"
+
+    # Also remove any old checkpoint file to avoid confusion
+    rm -f "$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
+
+    MESSAGE="CONTEXT RESTORED (Intelligent Compression)\n\nThe context was intelligently compressed using AI analysis.$MCP_SUGGESTION$ENV_STATUS"
+    CONTEXT="COMPRESSED CONTEXT RESTORATION (JICM v2):
+You are Jarvis. The context was intelligently compressed before /clear.
+
+Current datetime: $LOCAL_DATE at $LOCAL_TIME
+
+The following is the compressed context prepared by the context-compressor agent.
+It contains the essential information from the previous session.
+
+=== COMPRESSED CONTEXT ===
+$COMPRESSED_CONTENT
+=== END COMPRESSED CONTEXT ===
+
+Your response should:
+1. Briefly acknowledge: \"Context restored, sir.\"
+2. Review the compressed context above
+3. Summarize the key work state (1-2 sentences)
+4. Continue with the work described in the compressed context
+
+This is a continuation - proceed efficiently without excessive preamble."
+
+    # Write state file
+    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"intelligent\", \"restart_type\": \"compressed_context\"}" > "$STATE_DIR/AC-01-launch.json"
+
+    jq -n \
+      --arg msg "$MESSAGE" \
+      --arg ctx "$CONTEXT" \
+      '{
+        "systemMessage": $msg,
+        "hookSpecificOutput": {
+          "hookEventName": "SessionStart",
+          "additionalContext": $ctx
+        }
+      }'
+
+    exit 0
+fi
+
+# ============== CHECKPOINT HANDLING (Legacy/Fallback) ==============
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
 if [[ -f "$CHECKPOINT_FILE" ]]; then

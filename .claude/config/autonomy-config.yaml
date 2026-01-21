@@ -76,12 +76,25 @@ components:
       # Token threshold for compression trigger
       # Lowered from 150000 (75%) to 130000 (65%) per JICM Investigation
       threshold_tokens: 130000
-      # Target compression ratio
+      # Target compression ratio (legacy - see compression_target_percent)
       compression_target: 0.6
       # Auto-create checkpoint before compression
       auto_checkpoint: true
       # Trigger continuation after compression
       trigger_continuation: true
+
+      # Intelligent Compression Settings (context-compressor agent)
+      compression:
+        # Model for compression: haiku (fast/cheap), sonnet (balanced), opus (quality)
+        model: haiku
+        # Compression mode: aggressive (10%), default (15-20%), conservative (30%)
+        mode: default
+        # Specific target percentage (overrides mode if set)
+        target_percent: null
+        # Write compressed context to this file
+        output_file: .claude/context/.compressed-context.md
+        # Inject compressed context post-clear via additionalContext
+        auto_inject: true
 
   # AC-05: Self-Reflection
   AC-05-reflect:

@@ -10,97 +10,72 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: Autonomous Command Wrapper System (Complete)
+**Last Completed**: Intelligent Context Compression System (JICM v2)
 
 **Current Blocker**: None
 
 **Current Work**: None
 
-### Autonomous Command Wrapper System — COMPLETE (2026-01-20)
+---
 
-**Orchestration**: `.claude/orchestration/2026-01-20-autonomous-command-wrappers.yaml`
+## Session Summary (2026-01-20 — JICM v2 Implementation)
 
-**Deliverables Created**:
-- 4 scripts: auto-command-watcher.sh, signal-helper.sh, debug-signals.sh, launch-jarvis-tmux.sh (updated)
-- 17 command wrappers: auto-{compact,rename,resume,export,status,usage,cost,stats,context,todos,hooks,bashes,doctor,review,plan,security-review,release-notes}.md
-- 1 skill: autonomous-commands/SKILL.md
-- 2 guides: autonomous-commands-guide.md, autonomous-commands-quickstart.md
-- 1 pattern: command-signal-protocol.md
+### What Was Accomplished
 
-**All 6 Phases Complete**: Architecture, Pilots, Info Commands, Action Commands, Docs, Integration
+Implemented **Intelligent Context Compression System** — AI-powered context compression before /clear:
 
-**All 3 Milestones Passed**: Foundation (5/5), Core Commands (5/5), Final (5/5)
+1. **context-compressor agent** (`.claude/agents/context-compressor.md`)
+   - Uses haiku model by default (configurable)
+   - Analyzes full conversation context
+   - Preserves: decisions, tasks, todos, file paths, blockers
+   - Summarizes: tool outputs
+   - Drops: verbose content, resolved issues
+   - Writes compressed context to temp file
+
+2. **`/intelligent-compress` command** (`.claude/commands/intelligent-compress.md`)
+   - Orchestrates compression flow
+   - Spawns agent, waits for completion, signals watcher
+
+3. **Configuration** (`.claude/config/autonomy-config.yaml`)
+   - Added compression settings under AC-04-jicm
+   - Model selection (haiku/sonnet/opus)
+   - Mode (aggressive/default/conservative)
+
+4. **Watcher integration** (`jarvis-watcher.sh`)
+   - Changed JICM trigger to send `/intelligent-compress`
+   - Waits for `.clear-ready-signal` (max 60s)
+   - Falls back to simple checkpoint on timeout
+
+5. **Session-start hook** (`session-start.sh`)
+   - Detects `.compressed-context.md` post-/clear
+   - Injects compressed context via additionalContext
+   - Takes priority over legacy checkpoint
+
+Also cleaned up stale session state and priorities from old PRD-V4 testing work.
+
+### Key Files Modified/Created
+
+**Created:**
+- `.claude/agents/context-compressor.md`
+- `.claude/commands/intelligent-compress.md`
+
+**Modified:**
+- `.claude/config/autonomy-config.yaml` — compression settings
+- `.claude/scripts/jarvis-watcher.sh` — JICM trigger flow
+- `.claude/hooks/session-start.sh` — compressed context injection
+- `.claude/context/session-state.md` — cleanup
+- `.claude/context/projects/current-priorities.md` — cleanup
 
 ---
 
-## Archived History
+## Next Session Pickup
 
-Previous session histories have been archived. For full details, see:
-
-- session-state-2026-01-20.md
-
-### Most Recent Session (Compressed)
-
-### Session Summary (2026-01-20 — Comprehensive Autonomic Testing)
-
-**TESTING PROTOCOL: COMPLETE** ✅
-
-Executed 7-phase Comprehensive Autonomic Systems Testing Protocol (plan ID: humming-purring-adleman).
-
-#### PRD Stress Variants (6/6 Validated)
-| PRD | Target | Status |
-|-----|--------|--------|
-| PRD-V1 | AC-01 Session Continuity | ✅ VALIDATED |
-| PRD-V2 | AC-02 Wiggum Depth | ✅ VALIDATED |
-| PRD-V3 | AC-03 Review Depth | ✅ VALIDATED |
-| PRD-V4 | AC-04 Context Exhaustion | ✅ VALIDATED |
-| PRD-V5 | AC-05/06 Self-Improvement | ✅ VALIDATED |
-| PRD-V6 | All ACs Integration | ✅ VALIDATED |
-
-#### Phase Results
-| Phase | Status |
-|-------|--------|
-| Phase 1: Baseline Capture | ✅ |
-| Phase 2: Component Isolation | ✅ |
-| Phase 3: PRD Stress Variants | ✅ |
-| Phase 4: Integration Tests (8/8) | ✅ |
-| Phase 5: Error Path Tests (6/6) | ✅ |
-| Phase 6: Regression Analysis | ✅ |
-| Phase 7: Final Report | ✅ |
-
-**Final Score**: 100% (A+) — All 9 components validated
-
-**Reports Created**: 8 comprehensive reports in `projects/project-aion/reports/`
-
-**Defects Found**: DEF-001 (state metrics not updating), DEF-002 (cosmetic status strings)
-
----
-
----
-
-## Current Session
-
-### Session Summary (2026-01-20 — Watcher Layout Fix)
-
-**Status**: 🟢 Idle
-
-**Work Completed This Session**:
-
-1. **Moved Watcher to Separate Terminal Window** (`launch-jarvis-tmux.sh`):
-   - Previous: Watcher ran in 12-line tmux pane, stealing Claude Code space
-   - Now: Claude Code gets full tmux window, watcher runs in separate Terminal.app
-   - Uses osascript to launch watcher in its own window with title "Jarvis Watcher"
-   - Watcher can still send commands to tmux session via send-keys
-
-**Key Files Modified**:
-- `.claude/scripts/launch-jarvis-tmux.sh` - Watcher now launches in separate Terminal.app
-
-### Next Session Pickup
-
-1. **Restart tmux session** to test new layout:
-   - `.claude/scripts/launch-jarvis-tmux.sh`
-2. Verify Claude Code gets full window
-3. Verify watcher opens in separate Terminal.app window
+1. **Test JICM v2** — Restart session, let context build, trigger compression
+2. Verify:
+   - Watcher sends `/intelligent-compress` at threshold
+   - Agent compresses context correctly
+   - /clear triggers, compressed context injects
+3. **Deferred**: Add CSV logging to watcher for analytics
 
 ---
 
@@ -111,4 +86,4 @@ Executed 7-phase Comprehensive Autonomic Systems Testing Protocol (plan ID: humm
 
 ---
 
-*Session state initialized. Detailed history archived.*
+*Session state updated 2026-01-20.*

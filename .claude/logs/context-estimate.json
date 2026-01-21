@@ -1,9 +1,9 @@
 {
-  "sessionStart": "2026-01-21T03:27:57Z",
-  "totalTokens": 33500,
-  "toolCalls": 35,
-  "lastUpdate": "2026-01-21T03:35:15.088Z",
-  "percentage": 31.747500000000002,
-  "estimatedPercentage": 16.75,
-  "actualTokens": 63495
+  "sessionStart": "2026-01-21T03:43:39Z",
+  "totalTokens": 35100,
+  "toolCalls": 51,
+  "lastUpdate": "2026-01-21T04:52:09.009Z",
+  "percentage": 43.81,
+  "estimatedPercentage": 17.549999999999997,
+  "actualTokens": 87620
 }

@@ -246,25 +246,36 @@ EOF
     "$TMUX_BIN" send-keys -t "$TMUX_SESSION" Escape
     sleep 1
 
-    # Step 1: Send /context to show breakdown
-    log JICM "Step 1: /context (show breakdown)"
-    send_command "/context"
-    JICM_STATE="awaiting_context"
+    # Step 1: Send /intelligent-compress for AI-powered context compression
+    log JICM "Step 1: /intelligent-compress (AI compression)"
+    send_command "/intelligent-compress"
+    JICM_STATE="compressing"
 
-    # Step 2: Wait for /context to complete (give Claude time to see it)
-    log JICM "Step 2: Waiting 8s for /context display..."
-    sleep 8
+    # Step 2: Wait for intelligent compression to complete
+    # The command will create .clear-ready-signal when done
+    log JICM "Step 2: Waiting for compression (max 60s)..."
+    local wait_count=0
+    local max_wait=60
+    while [[ ! -f "$PROJECT_DIR/.claude/context/.clear-ready-signal" ]] && [[ $wait_count -lt $max_wait ]]; do
+        sleep 1
+        ((wait_count++))
+        if [[ $((wait_count % 10)) -eq 0 ]]; then
+            log JICM "  Still waiting for compression... (${wait_count}s)"
+        fi
+    done
 
-    # Step 3: Create checkpoint (watcher-managed)
-    log JICM "Step 3: Creating checkpoint..."
-    create_watcher_checkpoint "$tokens" "$pct"
-
-    # Step 4: Signal for /clear
-    log JICM "Step 4: Signaling /clear..."
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$PROJECT_DIR/.claude/context/.auto-clear-signal"
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$PROJECT_DIR/.claude/context/.clear-pending"
-
-    JICM_STATE="signaled"
+    if [[ -f "$PROJECT_DIR/.claude/context/.clear-ready-signal" ]]; then
+        log JICM "Step 3: Compression complete, sending /clear"
+        rm -f "$PROJECT_DIR/.claude/context/.clear-ready-signal"
+        send_command "/clear"
+        JICM_STATE="cleared"
+    else
+        # Timeout - fall back to simple checkpoint
+        log JICM "Step 3: Compression timeout, falling back to simple checkpoint"
+        create_watcher_checkpoint "$tokens" "$pct"
+        echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$PROJECT_DIR/.claude/context/.auto-clear-signal"
+        JICM_STATE="signaled_fallback"
+    fi
 }
 
 create_watcher_checkpoint() {
