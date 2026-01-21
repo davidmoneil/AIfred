@@ -5,14 +5,12 @@
 # Layout:
 # ┌─────────────────────────────────────────┐
 # │                                         │
-# │            Claude Code (main)           │
+# │            Claude Code (full window)    │
 # │                                         │
 # │                                         │
-# ├─────────────────────────────────────────┤
-# │    Unified Jarvis Watcher (12 lines)    │
 # └─────────────────────────────────────────┘
 #
-# The watcher handles:
+# The watcher runs in a separate Terminal.app window and handles:
 #   - Context monitoring (polls status line for token count)
 #   - Command signal execution (watches for signal files)
 #   - JICM workflow coordination (/context → /clear sequence)
@@ -21,7 +19,6 @@ TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
 SESSION_NAME="${TMUX_SESSION:-jarvis}"
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
 WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jarvis-watcher.sh"
-WATCHER_PANE_HEIGHT=12  # lines for watcher pane
 
 # Colors
 RED='\033[0;31m'
@@ -92,17 +89,20 @@ export TERM=xterm-256color
 # Give Claude a moment to start
 sleep 2
 
-# Split window and start watcher in bottom pane (if enabled)
+# Launch watcher in a separate Terminal.app window (if enabled)
 if [[ "$WATCHER_ENABLED" = true ]]; then
-    echo "Starting unified Jarvis watcher..."
+    echo "Launching Jarvis watcher in separate terminal..."
 
-    # Split horizontally, create bottom pane for watcher
-    # Pass environment variables and threshold setting
-    "$TMUX_BIN" split-window -t "$SESSION_NAME" -v -l $WATCHER_PANE_HEIGHT -c "$PROJECT_DIR" \
-        "export TMUX_BIN='$TMUX_BIN'; export TMUX_SESSION='$SESSION_NAME'; export CLAUDE_PROJECT_DIR='$PROJECT_DIR'; $WATCHER_SCRIPT --threshold 80 --interval 30"
+    # Create a small wrapper script that the terminal will run
+    WATCHER_CMD="export TMUX_BIN='$TMUX_BIN'; export TMUX_SESSION='$SESSION_NAME'; export CLAUDE_PROJECT_DIR='$PROJECT_DIR'; cd '$PROJECT_DIR'; '$WATCHER_SCRIPT' --threshold 80 --interval 30"
 
-    # Select the main pane (Claude) so it's focused when we attach
-    "$TMUX_BIN" select-pane -t "$SESSION_NAME":0.0
+    # Launch watcher in a separate Terminal.app window
+    osascript <<EOF
+tell application "Terminal"
+    do script "$WATCHER_CMD"
+    set custom title of front window to "Jarvis Watcher"
+end tell
+EOF
 fi
 
 # Set tmux options for better experience
@@ -114,9 +114,9 @@ echo -e "${GREEN}Jarvis is ready!${NC}"
 echo ""
 echo "Keyboard shortcuts:"
 echo "  Ctrl+b then d     - Detach (leave running)"
-echo "  Ctrl+b then ↑/↓   - Switch between panes"
-echo "  Ctrl+b then z     - Zoom current pane"
-echo "  Ctrl+b then x     - Close current pane"
+echo "  Ctrl+b then x     - Close session"
+echo ""
+echo "Watcher running in separate Terminal window."
 echo ""
 echo "Attaching to session..."
 

@@ -80,36 +80,27 @@ Executed 7-phase Comprehensive Autonomic Systems Testing Protocol (plan ID: humm
 
 ## Current Session
 
-### Session Summary (2026-01-20 — Watcher Fixes)
+### Session Summary (2026-01-20 — Watcher Layout Fix)
 
-**Status**: 🟢 Idle — Ready for restart
+**Status**: 🟢 Idle
 
 **Work Completed This Session**:
 
-1. **Fixed Watcher Banner** (`jarvis-watcher.sh`):
-   - Reduced from ~20 lines to compact 3-line version
-   - Now fits properly in 12-line watcher pane
-   - Format: `━━━ JARVIS WATCHER v2.0 ━━━ threshold:80% interval:30s`
-
-2. **Fixed JICM Workflow** (`jarvis-watcher.sh`):
-   - Previous: Sent /context then waited forever for `.auto-clear-signal` (never came)
-   - Now: Self-contained workflow:
-     - Sends Escape (cancel partial input)
-     - Sends /context (show breakdown)
-     - Waits 8s for display
-     - Creates checkpoint itself (`create_watcher_checkpoint()`)
-     - Creates `.auto-clear-signal` + `.clear-pending`
-     - Watcher loop detects signal and sends /clear
+1. **Moved Watcher to Separate Terminal Window** (`launch-jarvis-tmux.sh`):
+   - Previous: Watcher ran in 12-line tmux pane, stealing Claude Code space
+   - Now: Claude Code gets full tmux window, watcher runs in separate Terminal.app
+   - Uses osascript to launch watcher in its own window with title "Jarvis Watcher"
+   - Watcher can still send commands to tmux session via send-keys
 
 **Key Files Modified**:
-- `.claude/scripts/jarvis-watcher.sh` - Banner + JICM workflow fixes
+- `.claude/scripts/launch-jarvis-tmux.sh` - Watcher now launches in separate Terminal.app
 
 ### Next Session Pickup
 
-1. **Restart tmux session** to test fixed watcher:
+1. **Restart tmux session** to test new layout:
    - `.claude/scripts/launch-jarvis-tmux.sh`
-2. Verify compact banner displays correctly
-3. Test JICM flow when approaching 80% threshold
+2. Verify Claude Code gets full window
+3. Verify watcher opens in separate Terminal.app window
 
 ---
 
