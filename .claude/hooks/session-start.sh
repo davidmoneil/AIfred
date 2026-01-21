@@ -331,6 +331,19 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
     # Checkpoint exists - load and AUTO-RESUME after context compression/clear
     CHECKPOINT_CONTENT=$(cat "$CHECKPOINT_FILE")
 
+    # JICM Investigation Q10: Include actual session-state content for robust liftover
+    SESSION_WORK=""
+    if [[ -f "$SESSION_STATE_FILE" ]]; then
+        # Extract current work section
+        SESSION_WORK=$(sed -n '/## Current Work/,/^## /p' "$SESSION_STATE_FILE" 2>/dev/null | head -20)
+    fi
+
+    NEXT_PRIORITY=""
+    if [[ -f "$PRIORITIES_FILE" ]]; then
+        # Extract first priority
+        NEXT_PRIORITY=$(grep -A 2 "^\s*-\s*\[" "$PRIORITIES_FILE" 2>/dev/null | head -3)
+    fi
+
     MESSAGE="CONTEXT RESTORED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION$ENV_STATUS"
     CONTEXT="CONTEXT RESTART PROTOCOL:
 You are Jarvis. The context has been compressed or cleared and is now being restored.
@@ -344,7 +357,16 @@ Your response should:
 4. Then silently read the checkpoint content above
 5. After review, summarize what was in progress and continue the work
 
-DO NOT generate a full greeting. This is a continuation, not a fresh start."
+DO NOT generate a full greeting. This is a continuation, not a fresh start.
+
+=== ACTUAL SESSION STATE (for robust liftover) ===
+${SESSION_WORK:-No session work found}
+
+=== NEXT PRIORITY ===
+${NEXT_PRIORITY:-Check current-priorities.md}
+
+=== MANDATORY ACTION ===
+You MUST immediately resume the work described above. Do NOT just summarize - actually continue the task."
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"auto_continue\": true, \"restart_type\": \"checkpoint\"}" > "$STATE_DIR/AC-01-launch.json"

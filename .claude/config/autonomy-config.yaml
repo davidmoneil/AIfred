@@ -74,7 +74,8 @@ components:
     enabled: true
     settings:
       # Token threshold for compression trigger
-      threshold_tokens: 150000
+      # Lowered from 150000 (75%) to 130000 (65%) per JICM Investigation
+      threshold_tokens: 130000
       # Target compression ratio
       compression_target: 0.6
       # Auto-create checkpoint before compression

@@ -58,39 +58,55 @@ while true; do
             # Play a subtle sound to indicate action (optional)
             # afplay /System/Library/Sounds/Pop.aiff &
 
+            # METHOD 1: tmux send-keys (fully autonomous - requires Claude running in tmux)
+            TMUX_BIN="$HOME/bin/tmux"
+            TMUX_SESSION="jarvis"
+
+            if [[ -x "$TMUX_BIN" ]] && "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
+                echo "           Using tmux send-keys (fully autonomous)..."
+                "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "/clear" Enter
+                echo "           ✅ /clear sent via tmux!"
+                echo ""
+                echo "           Session will restart and auto-resume."
+                echo ""
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                continue
+            fi
+
+            # METHOD 2: Fallback - type /clear and alert user (semi-autonomous)
+            echo "           tmux session not found - using fallback method..."
             osascript <<'APPLESCRIPT'
--- Find the Terminal window that ISN'T this watcher window
 tell application "Terminal"
     activate
     delay 0.3
-
-    -- Try to find a window that looks like a Claude session
-    -- (doesn't have "Watcher" in the title)
-    set targetWindow to missing value
     repeat with w in windows
-        if custom title of w does not contain "Watcher" then
-            set targetWindow to w
+        if name of w contains "claude" then
+            set frontmost of w to true
             exit repeat
         end if
     end repeat
-
-    -- If found, focus that window
-    if targetWindow is not missing value then
-        set frontmost of targetWindow to true
-        delay 0.2
-    end if
-
-    -- Send keystrokes
-    tell application "System Events"
+end tell
+tell application "System Events"
+    tell process "Terminal"
         keystroke "/clear"
-        delay 0.1
-        keystroke return
     end tell
 end tell
 APPLESCRIPT
 
+            # Play alert sound
+            afplay /System/Library/Sounds/Glass.aiff &
+
+            echo ""
+            echo "           ╔══════════════════════════════════════════════════════╗"
+            echo "           ║  ⚠️  /clear TYPED - PRESS ENTER TO EXECUTE  ⚠️       ║"
+            echo "           ╚══════════════════════════════════════════════════════╝"
+            echo ""
+            echo "           For FULLY AUTONOMOUS clearing, restart Claude with:"
+            echo "           .claude/scripts/launch-jarvis-tmux.sh"
+            echo ""
+
             if [[ $? -eq 0 ]]; then
-                echo "           ✅ /clear sent successfully!"
+                echo "           ✅ /clear typed into Claude input (press Enter)"
                 echo ""
                 echo "           Session will restart and auto-resume."
                 echo ""

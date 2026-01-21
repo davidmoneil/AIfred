@@ -67,30 +67,43 @@ Same PAT can be used, or a separate one with:
 
 ## Configuration Methods
 
-### Method 1: File-Based Credentials (Recommended for Jarvis)
+### Method 1: File-Based Credentials (Recommended for Jarvis) — IMPLEMENTED
 
 Store credentials in `.claude/secrets/credentials.yaml` (gitignored):
 
 ```yaml
 # .claude/secrets/credentials.yaml
 github:
-  cannoncopilot_pat: "github_pat_..."  # For CannonCoPilot repos
+  pat: "github_pat_..."                 # Primary PAT
+  cannoncopilot_pat: "github_pat_..."   # For CannonCoPilot repos
   aifred_pat: "ghp_..."                 # For davidmoneil/AIfred
 ```
 
-**Configure git remote with embedded PAT**:
+**Use the helper script** (implements priority fallback):
 ```bash
-# Read PAT from credentials file
-PAT=$(yq '.github.aifred_pat' .claude/secrets/credentials.yaml)
+# Get PAT with automatic fallback (file → keychain)
+PAT=$(.claude/scripts/get-github-pat.sh)
 
-# Set remote URL with embedded credentials
-git remote set-url origin "https://CannonCoPilot:${PAT}@github.com/davidmoneil/AIfred.git"
+# Or source it to set GH_PAT variable
+source .claude/scripts/get-github-pat.sh
+
+# Check which source is being used
+.claude/scripts/get-github-pat.sh --source  # Outputs: file, keychain, or environment
+
+# Validate PAT works
+.claude/scripts/get-github-pat.sh --validate
 ```
 
+**Priority Order**:
+1. `GITHUB_PAT` environment variable (if set)
+2. `.claude/secrets/credentials.yaml` file
+3. macOS Keychain (osxkeychain) — fallback only
+
 **Advantages**:
-- No OS-level keychain dependency
+- No OS-level keychain dependency for primary auth
 - Credentials tracked in one location
 - Easy to switch between repos
+- Keychain as automatic fallback
 
 ### Method 2: Single PAT with Multi-Repo Access (Alternative)
 
@@ -192,10 +205,21 @@ gh api repos/davidmoneil/AIfred/collaborators/CannonCoPilot
 
 **Jarvis does NOT need the `gh` CLI**. All GitHub API operations can be performed using `curl` with credentials from the macOS keychain.
 
-### Retrieving PAT from Keychain
+### Retrieving PAT (Preferred Method)
 
 ```bash
-# Get PAT for GitHub operations
+# Use the helper script (file-based with keychain fallback)
+GH_TOKEN=$(.claude/scripts/get-github-pat.sh)
+
+# Or source to set GH_PAT and GH_PAT_SOURCE variables
+source .claude/scripts/get-github-pat.sh
+echo "Using PAT from: $GH_PAT_SOURCE"
+```
+
+### Retrieving PAT from Keychain (Fallback Only)
+
+```bash
+# Direct keychain access (not recommended - use helper script instead)
 GH_TOKEN=$(security find-internet-password -s github.com -a CannonCoPilot -w 2>/dev/null)
 ```
 
@@ -283,7 +307,8 @@ When Jarvis needs to switch between repos:
 
 | Secret Type | Storage | Access Method |
 |-------------|---------|---------------|
-| GitHub PAT (primary) | macOS Keychain | osxkeychain helper |
+| GitHub PAT (primary) | `.claude/secrets/credentials.yaml` | `get-github-pat.sh` |
+| GitHub PAT (fallback) | macOS Keychain | osxkeychain (auto-fallback) |
 | Repo-specific PAT | Git remote URL | Embedded (ephemeral only) |
 | SSH keys | ~/.ssh/ | ssh-agent |
 

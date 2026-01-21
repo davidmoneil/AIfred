@@ -65,32 +65,36 @@ Executed 7-phase Comprehensive Autonomic Systems Testing Protocol (plan ID: humm
 
 ## Current Session
 
-### Session Summary (2026-01-20 — PRD-V4 Partial + Reflection)
+### Session Summary (2026-01-20 — JICM + Auto-Clear Fix)
 
-**Status**: 🟡 In Progress — PRD-V4 Phase 2 partial
+**Status**: 🟢 Idle
 
 **Work Completed This Session**:
-- Context restored from JICM checkpoint
-- Created TDD test files for PRD-V4 (53+ tests):
-  - `tests/unit/transform.test.js` (23 tests)
-  - `tests/integration/api.test.js` (9 tests)
-  - `tests/e2e/app.spec.js` (21 tests)
-- Ran `/reflect` — generated reflection report
-- Created evolution queue with EVO-2026-01-020
+- JICM Investigation implementation (Q10 fixes):
+  - Removed signal file creation from pre-compact.sh
+  - Removed JICM logic from subagent-stop.js
+  - Lowered threshold to 65% (130k tokens)
+  - Strengthened checkpoint liftover in session-start.sh
+- **Fixed /trigger-clear auto-execution issue**:
+  - Root cause: Claude Code's ink-based UI ignores simulated Enter keystrokes
+  - Solution: Run Claude in tmux, use `tmux send-keys`
+  - Built tmux 3.4 from source (with libevent dependency)
+  - Created `launch-jarvis-tmux.sh` launcher script
+  - Updated `auto-clear-watcher.sh` with tmux support
+- Installed cliclick to ~/bin (useful but not for this issue)
 
-**Project**: `/Users/aircannon/Claude/Projects/aion-hello-console-v4-context`
-
-**Files Created**:
-- Test files (unit, integration, E2E)
-- `.claude/reports/reflections/reflection-2026-01-20.md`
-- `.claude/evolution/evolution-queue.yaml`
+**Key Files Created/Modified**:
+- `~/bin/tmux` - tmux 3.4 binary (built from source)
+- `.claude/scripts/launch-jarvis-tmux.sh` - NEW: tmux launcher
+- `.claude/scripts/auto-clear-watcher.sh` - tmux send-keys support
+- `.claude/scripts/test-keystroke.sh` - NEW: diagnostic script
+- JICM hooks updated (pre-compact.sh, subagent-stop.js, session-start.sh)
 
 ### Next Session Pickup
 
-Continue PRD-V4:
-1. Phase 2: Run tests (should FAIL - TDD)
-2. Phase 3-7: Implementation and delivery
-3. Then PRD-V5 and PRD-V6
+1. PRD-V4 continuation (TDD tests created, Phase 2 pending)
+2. Test full JICM cycle in tmux environment
+3. Medium-term JICM improvements (calibration, MCP agent isolation)
 
 ---
 

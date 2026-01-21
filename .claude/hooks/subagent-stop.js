@@ -1,15 +1,18 @@
 /**
- * Subagent Stop Hook (JICM Enhanced)
+ * Subagent Stop Hook
  *
  * Handles spawned agent completion:
  * - Logs agent activity to .claude/logs/agent-activity.jsonl
  * - Detects HIGH/CRITICAL issues in output
  * - Suggests next actions based on agent type
- * - JICM: Triggers context checkpoint after agent work if threshold exceeded
+ *
+ * NOTE: JICM logic REMOVED per JICM Investigation Q10 (2026-01-20)
+ * Subagent context is ISOLATED from main session - JICM triggers here
+ * are incorrect because subagent tool calls don't affect main context.
  *
  * Priority: MEDIUM (Agent Coordination)
  * Created: 2026-01-06
- * Updated: 2026-01-09 (JICM integration)
+ * Updated: 2026-01-20 (JICM removed - incorrect context assumption)
  * Source: AIfred baseline af66364 (implemented for Jarvis)
  */
 
@@ -17,18 +20,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Configuration
-const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
 const AGENT_ACTIVITY_LOG = path.join(__dirname, '..', 'logs', 'agent-activity.jsonl');
-const CONTEXT_ESTIMATE_FILE = path.join(WORKSPACE_ROOT, '.claude/logs/context-estimate.json');
-const CONTEXT_DIR = path.join(WORKSPACE_ROOT, '.claude/context');
-const COMPACTION_FLAG = path.join(CONTEXT_DIR, '.compaction-in-progress');
-const CHECKPOINT_FILE = path.join(CONTEXT_DIR, '.soft-restart-checkpoint.md');
-const SIGNAL_FILE = path.join(CONTEXT_DIR, '.auto-clear-signal');
-
-// JICM Thresholds
-const JICM_WARNING_THRESHOLD = 50;
-const JICM_TRIGGER_THRESHOLD = 75;
-const MAX_CONTEXT_TOKENS = 200000;
 
 // Issue detection patterns
 const ISSUE_PATTERNS = [
@@ -140,113 +132,6 @@ function formatFollowup(agentName, issues, followups) {
   return lines.join('\n');
 }
 
-// ============================================================
-// JICM (Jarvis Intelligent Context Management) Functions
-// ============================================================
-
-/**
- * Load context estimate from accumulator
- */
-async function loadContextEstimate() {
-  try {
-    const content = await fs.readFile(CONTEXT_ESTIMATE_FILE, 'utf8');
-    const estimate = JSON.parse(content);
-    estimate.percentage = (estimate.totalTokens / MAX_CONTEXT_TOKENS) * 100;
-    return estimate;
-  } catch {
-    return { totalTokens: 30000, percentage: 15, toolCalls: 0 };
-  }
-}
-
-/**
- * Check if compaction already in progress
- */
-async function isCompactionInProgress() {
-  try {
-    await fs.access(COMPACTION_FLAG);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Set compaction in progress flag
- */
-async function setCompactionFlag() {
-  await fs.mkdir(CONTEXT_DIR, { recursive: true });
-  await fs.writeFile(COMPACTION_FLAG, new Date().toISOString());
-}
-
-/**
- * Create checkpoint after agent work
- */
-async function createAgentCheckpoint(agentName, estimate) {
-  const content = `# Post-Agent Context Checkpoint
-
-**Created**: ${new Date().toISOString()}
-**Reason**: SubagentStop JICM trigger after ${agentName}
-**Estimated Context**: ${estimate.percentage.toFixed(0)}%
-
-## Agent Work Completed
-
-Agent \`${agentName}\` has completed. Context threshold (${JICM_TRIGGER_THRESHOLD}%) exceeded.
-Auto-checkpoint created to preserve state before context reduction.
-
-## Next Steps After Restart
-
-1. Review session-state.md for current work status
-2. Check current-priorities.md for next tasks
-3. Continue from where you left off
-
-## JICM Info
-
-- Estimated tokens: ${estimate.totalTokens}
-- Tool calls in session: ${estimate.toolCalls}
-- Trigger: SubagentStop (post-agent)
-
-`;
-
-  await fs.mkdir(CONTEXT_DIR, { recursive: true });
-  await fs.writeFile(CHECKPOINT_FILE, content);
-}
-
-/**
- * Signal auto-clear watcher
- */
-async function signalClear() {
-  await fs.writeFile(SIGNAL_FILE, new Date().toISOString());
-}
-
-/**
- * Format JICM message for agent completion
- */
-function formatJicmMessage(agentName, estimate, willTrigger) {
-  const percentage = estimate.percentage.toFixed(0);
-
-  if (willTrigger) {
-    return `
-╔══════════════════════════════════════════════════════════════╗
-║  🔄 JICM: Post-Agent Context Checkpoint                      ║
-╚══════════════════════════════════════════════════════════════╝
-
-Agent: ${agentName}
-Estimated Context: ${percentage}% (threshold: ${JICM_TRIGGER_THRESHOLD}%)
-
-Creating checkpoint and triggering /smart-compact --full...
-`;
-  }
-
-  if (estimate.percentage >= JICM_WARNING_THRESHOLD) {
-    return `
-[subagent-stop] 💡 Context at ~${percentage}% after ${agentName}
-Consider running /smart-compact if planning more agent work.
-`;
-  }
-
-  return '';
-}
-
 /**
  * Handler function (can be called via require or stdin)
  */
@@ -277,49 +162,8 @@ async function handler(context) {
       console.log(formatFollowup(agent_name, issues, followups));
     }
 
-    // ============================================================
-    // JICM: Context checkpoint trigger after agent work
-    // ============================================================
-    try {
-      // Load context estimate
-      const estimate = await loadContextEstimate();
-
-      // Check if compaction already in progress
-      if (await isCompactionInProgress()) {
-        return { proceed: true }; // Already handling
-      }
-
-      // Check if we need to trigger JICM
-      const shouldTrigger = estimate.percentage >= JICM_TRIGGER_THRESHOLD;
-      const shouldWarn = estimate.percentage >= JICM_WARNING_THRESHOLD;
-
-      if (shouldTrigger) {
-        // Set flag to prevent loops
-        await setCompactionFlag();
-
-        // Show JICM message
-        console.log(formatJicmMessage(agent_name, estimate, true));
-
-        // Create checkpoint
-        await createAgentCheckpoint(agent_name, estimate);
-
-        // Signal watcher for /clear
-        await signalClear();
-
-        // Log action
-        const logEntry = `${new Date().toISOString()} | JICM-SubagentStop | ${agent_name} | ${estimate.percentage.toFixed(0)}%\n`;
-        const logDir = path.dirname(AGENT_ACTIVITY_LOG);
-        await fs.appendFile(path.join(logDir, 'jicm-triggers.log'), logEntry);
-
-      } else if (shouldWarn) {
-        // Show warning only
-        console.log(formatJicmMessage(agent_name, estimate, false));
-      }
-
-  } catch (jicmErr) {
-    // Silent JICM failure - don't break agent completion
-    console.error(`[subagent-stop] JICM error: ${jicmErr.message}`);
-  }
+    // NOTE: JICM logic removed - subagent context is isolated from main session
+    // Context accumulator in main session handles JICM, not subagent hooks
 
   return { proceed: true };
 }
