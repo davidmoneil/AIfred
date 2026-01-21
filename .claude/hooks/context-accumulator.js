@@ -43,11 +43,15 @@ const MCP_USAGE_FILE = path.join(LOG_DIR, 'mcp-usage.json');  // PR-9.3: Track M
 const COMPACTION_FLAG = path.join(CONTEXT_DIR, '.compaction-in-progress');
 const CHECKPOINT_FILE = path.join(CONTEXT_DIR, '.soft-restart-checkpoint.md');
 const SIGNAL_FILE = path.join(CONTEXT_DIR, '.auto-clear-signal');
+const TOKEN_CAPTURE_SCRIPT = path.join(WORKSPACE_ROOT, '.claude/scripts/capture-token-count.sh');
 
 // Default thresholds (can be overridden by config)
 const MAX_CONTEXT_TOKENS = 200000;
 let WARNING_THRESHOLD = 50;       // Show warning (default)
-let VERIFY_THRESHOLD = 75;        // Trigger checkpoint (default)
+let VERIFY_THRESHOLD = 65;        // Trigger checkpoint (lowered from 75 to 65)
+
+// How often to capture actual token count (expensive operation)
+const ACTUAL_CAPTURE_INTERVAL = 20; // Every N tool calls
 
 /**
  * Load thresholds from autonomy-config.yaml
@@ -88,6 +92,23 @@ const EXCLUDED_PATH_PATTERNS = [
   'compaction-history',
   'session-start-diagnostic'
 ];
+
+/**
+ * Capture actual token count from status line (via tmux)
+ * Returns null if capture fails or is unavailable
+ */
+function captureActualTokens() {
+  try {
+    const result = execSync(`"${TOKEN_CAPTURE_SCRIPT}" 2>/dev/null`, {
+      encoding: 'utf8',
+      timeout: 2000
+    }).trim();
+    const tokens = parseInt(result, 10);
+    return isNaN(tokens) ? null : tokens;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Check if tool/path should be excluded
@@ -168,6 +189,7 @@ async function loadEstimate() {
     return {
       sessionStart: new Date().toISOString(),
       totalTokens: 30000, // Base MCP load (~30K)
+      actualTokens: null, // Will be populated by capture
       toolCalls: 0,
       lastUpdate: new Date().toISOString()
     };
@@ -175,11 +197,20 @@ async function loadEstimate() {
 }
 
 /**
- * Save estimate
+ * Save estimate with both estimated and actual token counts
  */
 async function saveEstimate(estimate) {
   await fs.mkdir(LOG_DIR, { recursive: true });
   estimate.lastUpdate = new Date().toISOString();
+
+  // Calculate percentages for both estimated and actual
+  estimate.estimatedPercentage = (estimate.totalTokens / MAX_CONTEXT_TOKENS) * 100;
+  if (estimate.actualTokens) {
+    estimate.percentage = (estimate.actualTokens / MAX_CONTEXT_TOKENS) * 100;
+  } else {
+    estimate.percentage = estimate.estimatedPercentage;
+  }
+
   await fs.writeFile(ESTIMATE_FILE, JSON.stringify(estimate, null, 2));
 }
 
@@ -221,10 +252,19 @@ function getActualContextPercentage() {
  * Create checkpoint for /smart-compact
  */
 async function createAutoCheckpoint(estimate) {
+  const tokenInfo = estimate.actualTokens
+    ? `- Actual tokens: ${estimate.actualTokens.toLocaleString()}
+- Estimated tokens: ${estimate.totalTokens.toLocaleString()}`
+    : `- Estimated tokens: ${estimate.totalTokens.toLocaleString()}`;
+
+  const percentageStr = estimate.actualTokens
+    ? `${((estimate.actualTokens / MAX_CONTEXT_TOKENS) * 100).toFixed(0)}% (actual)`
+    : `${estimate.percentage.toFixed(0)}% (estimated)`;
+
   const checkpointContent = `# Auto-Generated Context Checkpoint
 
 **Created**: ${new Date().toISOString()}
-**Reason**: JICM auto-trigger at estimated ${estimate.percentage.toFixed(0)}% context
+**Reason**: JICM auto-trigger at ${percentageStr} context
 **Tool Calls**: ${estimate.toolCalls}
 
 ## Work State
@@ -240,7 +280,7 @@ The context accumulator detected threshold exceeded and triggered this checkpoin
 
 ## JICM Info
 
-- Estimated tokens: ${estimate.totalTokens}
+${tokenInfo}
 - Threshold: ${VERIFY_THRESHOLD}%
 - Auto-triggered: true
 
@@ -309,10 +349,14 @@ async function trackMcpUsage(tool) {
 /**
  * Format warning message
  */
-function formatWarning(percentage, level) {
+function formatWarning(percentage, level, estimate = {}) {
+  const actualInfo = estimate.actualTokens
+    ? ` (actual: ${estimate.actualTokens.toLocaleString()} tokens)`
+    : ' (estimated)';
+
   if (level === 'caution') {
     return `
-[context-accumulator] ⚠️ Context at ~${percentage.toFixed(0)}%
+[context-accumulator] ⚠️ Context at ~${percentage.toFixed(0)}%${actualInfo}
 Consider running /smart-compact if you want to checkpoint now.
 `;
   }
@@ -320,11 +364,10 @@ Consider running /smart-compact if you want to checkpoint now.
   if (level === 'warning') {
     return `
 ╔══════════════════════════════════════════════════════════════╗
-║  ⚠️  JICM: Context threshold reached (~${percentage.toFixed(0)}%)               ║
+║  ⚠️  JICM: Context threshold reached (~${percentage.toFixed(0)}%)${actualInfo.padEnd(15)}║
 ╚══════════════════════════════════════════════════════════════╝
 
-Auto-triggering /smart-compact --full in 5 seconds...
-To cancel: Ctrl+C
+Auto-triggering checkpoint and preparing for /clear...
 `;
   }
 
@@ -357,39 +400,50 @@ async function handler(context) {
     const tokens = estimateTokens(tool, parameters, result);
     estimate.totalTokens += tokens;
     estimate.toolCalls += 1;
-    estimate.percentage = (estimate.totalTokens / MAX_CONTEXT_TOKENS) * 100;
 
-    // Save updated estimate
+    // Periodically capture actual token count from status line
+    // This is expensive so we only do it every N tool calls
+    if (estimate.toolCalls % ACTUAL_CAPTURE_INTERVAL === 0) {
+      const actualTokens = captureActualTokens();
+      if (actualTokens && actualTokens > 0) {
+        estimate.actualTokens = actualTokens;
+      }
+    }
+
+    // Save updated estimate (this calculates percentages)
     await saveEstimate(estimate);
 
     // PR-9.3: Track MCP tool usage for smarter deselection
     await trackMcpUsage(tool);
 
-    // Check thresholds
-    const percentage = estimate.percentage;
+    // Check thresholds - prefer actual tokens if available
+    const percentage = estimate.actualTokens
+      ? (estimate.actualTokens / MAX_CONTEXT_TOKENS) * 100
+      : (estimate.totalTokens / MAX_CONTEXT_TOKENS) * 100;
 
     // Below warning threshold - continue silently
     if (percentage < WARNING_THRESHOLD) {
       return { proceed: true };
     }
 
-    // Warning threshold (50-74%) - show caution
+    // Warning threshold (50-64%) - show caution
     if (percentage >= WARNING_THRESHOLD && percentage < VERIFY_THRESHOLD) {
       // Only warn occasionally (every 10 tool calls after threshold)
       if (estimate.toolCalls % 10 === 0) {
-        console.error(formatWarning(percentage, 'caution'));
+        console.error(formatWarning(percentage, 'caution', estimate));
         // Emit telemetry
         telemetry.emit('AC-04', 'context_warning', {
           percentage: percentage.toFixed(1),
           threshold: WARNING_THRESHOLD,
           tool_calls: estimate.toolCalls,
-          estimated_tokens: estimate.totalTokens
+          estimated_tokens: estimate.totalTokens,
+          actual_tokens: estimate.actualTokens || null
         });
       }
       return { proceed: true };
     }
 
-    // Verify threshold (75%+) - check for compaction
+    // Verify threshold (65%+) - check for compaction
     if (percentage >= VERIFY_THRESHOLD) {
       // Check if already handling compaction
       if (await isCompactionInProgress()) {
@@ -400,7 +454,7 @@ async function handler(context) {
       await setCompactionInProgress();
 
       // Show warning (to stderr so it doesn't interfere with JSON output)
-      console.error(formatWarning(percentage, 'warning'));
+      console.error(formatWarning(percentage, 'warning', estimate));
 
       // Emit telemetry for checkpoint trigger
       telemetry.emit('AC-04', 'context_checkpoint', {
@@ -408,6 +462,7 @@ async function handler(context) {
         threshold: VERIFY_THRESHOLD,
         tool_calls: estimate.toolCalls,
         estimated_tokens: estimate.totalTokens,
+        actual_tokens: estimate.actualTokens || null,
         auto_triggered: true
       });
 

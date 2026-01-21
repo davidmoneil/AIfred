@@ -5,6 +5,7 @@
 
   "plansDirectory": ".claude/plans",
   "mcpToolSearch": "auto:15",
+  "claudeCode.autoCompact.threshold": 95,
 
   "hooks": {
     "Setup": [

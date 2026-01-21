@@ -1,0 +1,5 @@
+timestamp: 2026-01-21T03:21:54Z
+tokens: 160000
+percentage: 80.0
+threshold: 80
+reason: automatic_threshold

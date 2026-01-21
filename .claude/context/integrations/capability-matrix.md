@@ -131,6 +131,30 @@ This document maps task types to preferred tools, providing clear selection guid
 | Store decision | Memory MCP | Context files | MCP for relationships |
 | Cross-session recall | Memory MCP | Context files | MCP is persistent |
 
+### Autonomous Command Execution (2026-01-20)
+
+| Task | Primary Tool | Fallback | Notes |
+|------|--------------|----------|-------|
+| Compact context | `autonomous-commands` skill | Manual `/compact` | Auto via signal watcher |
+| Rename session | `autonomous-commands` skill | Manual `/rename` | Auto via signal watcher |
+| Show token usage | `autonomous-commands` skill | Manual `/usage` | Auto via signal watcher |
+| Show session status | `autonomous-commands` skill | Manual `/status` | Auto via signal watcher |
+| Show costs | `autonomous-commands` skill | Manual `/cost` | Auto via signal watcher |
+| Show statistics | `autonomous-commands` skill | Manual `/stats` | Auto via signal watcher |
+| Show context info | `autonomous-commands` skill | Manual `/context` | Auto via signal watcher |
+| Show todo list | `autonomous-commands` skill | Manual `/todos` | Auto via signal watcher |
+| List hooks | `autonomous-commands` skill | Manual `/hooks` | Auto via signal watcher |
+| List bash processes | `autonomous-commands` skill | Manual `/bashes` | Auto via signal watcher |
+| Run health check | `autonomous-commands` skill | Manual `/doctor` | Auto via signal watcher |
+| Review code | `autonomous-commands` skill | Manual `/review` | Auto via signal watcher |
+| Enter plan mode | `autonomous-commands` skill | Manual `/plan` | Auto via signal watcher |
+| Security review | `autonomous-commands` skill | Manual `/security-review` | Auto via signal watcher |
+| Export conversation | `autonomous-commands` skill | Manual `/export` | Auto via signal watcher |
+| Resume session | `autonomous-commands` skill | Manual `/resume` | Auto via signal watcher |
+| Show release notes | `autonomous-commands` skill | Manual `/release-notes` | Auto via signal watcher |
+
+**Prerequisite**: Jarvis must be running in tmux via `launch-jarvis-tmux.sh` for autonomous execution.
+
 ---
 
 ## Tool Category Reference

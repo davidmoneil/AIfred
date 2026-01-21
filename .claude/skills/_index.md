@@ -14,6 +14,16 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | Skill | Description | Related Commands |
 |-------|-------------|------------------|
 | [session-management](session-management/SKILL.md) | Session lifecycle management | /checkpoint, /end-session |
+| [autonomous-commands](autonomous-commands/SKILL.md) | Execute built-in commands autonomously | /auto-compact, /auto-status, etc. (17 commands) |
+| [mcp-validation](mcp-validation/SKILL.md) | Validate MCP installation and configuration | /validate-mcp |
+| [plugin-decompose](plugin-decompose/SKILL.md) | Decompose plugins for analysis | /plugin-decompose |
+| [docx](docx/SKILL.md) | Word document creation and editing | N/A |
+| [xlsx](xlsx/SKILL.md) | Excel spreadsheet operations | N/A |
+| [pdf](pdf/SKILL.md) | PDF manipulation and forms | N/A |
+| [pptx](pptx/SKILL.md) | PowerPoint presentation creation | N/A |
+| [mcp-builder](mcp-builder/SKILL.md) | Create MCP servers | N/A |
+| [skill-creator](skill-creator/SKILL.md) | Create new skills | N/A |
+| [example-skill](example-skill/SKILL.md) | Skill template reference | N/A |
 
 ---
 

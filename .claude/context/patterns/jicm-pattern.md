@@ -107,9 +107,26 @@ This is distinct from Claude Code's auto-compression, which can lose important c
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Token Estimation
+### Token Tracking: Actual vs Estimated
 
-Since exact token counts aren't available, JICM uses estimation:
+JICM uses two sources of token information:
+
+**1. Actual Token Count (Reliable)**
+
+The actual token count is captured from Claude Code's status line via tmux:
+
+```bash
+# .claude/scripts/capture-token-count.sh
+# Output: "120916" (total tokens from status line)
+
+# The status line shows: "120,916 tokens" at bottom of UI
+```
+
+This is accurate but only provides TOTAL tokens, not breakdown by category.
+
+**2. Estimated Token Count (Approximate)**
+
+The context-accumulator hook estimates tokens based on tool usage:
 
 ```javascript
 // Estimation heuristics
@@ -125,6 +142,31 @@ const MCP_TOOL_SCHEMA_COST = 500;   // Per tool definition
 const CONVERSATION_OVERHEAD = 100;  // Per message
 const FILE_READ_OVERHEAD = 50;      // Per file read
 ```
+
+**IMPORTANT LIMITATION: Detailed Breakdown Not Programmatically Available**
+
+The `/context` command in Claude Code shows a detailed breakdown by category:
+- System prompt %
+- Files %
+- Conversation %
+- Tools %
+
+However, this breakdown is **ephemeral** - it renders as a UI overlay and does not persist in:
+- Session history files
+- Stats cache files
+- Scrollback buffer (disappears immediately)
+
+**What JICM CAN track:**
+- Total token count (from status line)
+- Estimated token accumulation per tool call
+- Threshold crossings
+
+**What JICM CANNOT track programmatically:**
+- Breakdown by category (files vs conversation vs system)
+- Which files contribute most to context
+- MCP tool schema costs individually
+
+**Workaround**: For detailed breakdown, users must run `/context` manually in the Claude Code UI and visually inspect the output.
 
 ---
 

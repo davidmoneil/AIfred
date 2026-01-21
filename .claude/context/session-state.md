@@ -10,11 +10,26 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: PRD-V2 Wiggum Depth Stress Test (Complete)
+**Last Completed**: Autonomous Command Wrapper System (Complete)
 
 **Current Blocker**: None
 
-**Current Work**: None — PRD-V2 fully validated
+**Current Work**: None
+
+### Autonomous Command Wrapper System — COMPLETE (2026-01-20)
+
+**Orchestration**: `.claude/orchestration/2026-01-20-autonomous-command-wrappers.yaml`
+
+**Deliverables Created**:
+- 4 scripts: auto-command-watcher.sh, signal-helper.sh, debug-signals.sh, launch-jarvis-tmux.sh (updated)
+- 17 command wrappers: auto-{compact,rename,resume,export,status,usage,cost,stats,context,todos,hooks,bashes,doctor,review,plan,security-review,release-notes}.md
+- 1 skill: autonomous-commands/SKILL.md
+- 2 guides: autonomous-commands-guide.md, autonomous-commands-quickstart.md
+- 1 pattern: command-signal-protocol.md
+
+**All 6 Phases Complete**: Architecture, Pilots, Info Commands, Action Commands, Docs, Integration
+
+**All 3 Milestones Passed**: Foundation (5/5), Core Commands (5/5), Final (5/5)
 
 ---
 
@@ -65,36 +80,36 @@ Executed 7-phase Comprehensive Autonomic Systems Testing Protocol (plan ID: humm
 
 ## Current Session
 
-### Session Summary (2026-01-20 — JICM + Auto-Clear Fix)
+### Session Summary (2026-01-20 — Watcher Fixes)
 
-**Status**: 🟢 Idle
+**Status**: 🟢 Idle — Ready for restart
 
 **Work Completed This Session**:
-- JICM Investigation implementation (Q10 fixes):
-  - Removed signal file creation from pre-compact.sh
-  - Removed JICM logic from subagent-stop.js
-  - Lowered threshold to 65% (130k tokens)
-  - Strengthened checkpoint liftover in session-start.sh
-- **Fixed /trigger-clear auto-execution issue**:
-  - Root cause: Claude Code's ink-based UI ignores simulated Enter keystrokes
-  - Solution: Run Claude in tmux, use `tmux send-keys`
-  - Built tmux 3.4 from source (with libevent dependency)
-  - Created `launch-jarvis-tmux.sh` launcher script
-  - Updated `auto-clear-watcher.sh` with tmux support
-- Installed cliclick to ~/bin (useful but not for this issue)
 
-**Key Files Created/Modified**:
-- `~/bin/tmux` - tmux 3.4 binary (built from source)
-- `.claude/scripts/launch-jarvis-tmux.sh` - NEW: tmux launcher
-- `.claude/scripts/auto-clear-watcher.sh` - tmux send-keys support
-- `.claude/scripts/test-keystroke.sh` - NEW: diagnostic script
-- JICM hooks updated (pre-compact.sh, subagent-stop.js, session-start.sh)
+1. **Fixed Watcher Banner** (`jarvis-watcher.sh`):
+   - Reduced from ~20 lines to compact 3-line version
+   - Now fits properly in 12-line watcher pane
+   - Format: `━━━ JARVIS WATCHER v2.0 ━━━ threshold:80% interval:30s`
+
+2. **Fixed JICM Workflow** (`jarvis-watcher.sh`):
+   - Previous: Sent /context then waited forever for `.auto-clear-signal` (never came)
+   - Now: Self-contained workflow:
+     - Sends Escape (cancel partial input)
+     - Sends /context (show breakdown)
+     - Waits 8s for display
+     - Creates checkpoint itself (`create_watcher_checkpoint()`)
+     - Creates `.auto-clear-signal` + `.clear-pending`
+     - Watcher loop detects signal and sends /clear
+
+**Key Files Modified**:
+- `.claude/scripts/jarvis-watcher.sh` - Banner + JICM workflow fixes
 
 ### Next Session Pickup
 
-1. PRD-V4 continuation (TDD tests created, Phase 2 pending)
-2. Test full JICM cycle in tmux environment
-3. Medium-term JICM improvements (calibration, MCP agent isolation)
+1. **Restart tmux session** to test fixed watcher:
+   - `.claude/scripts/launch-jarvis-tmux.sh`
+2. Verify compact banner displays correctly
+3. Test JICM flow when approaching 80% threshold
 
 ---
 

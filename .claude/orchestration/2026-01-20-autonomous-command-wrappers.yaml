@@ -1,0 +1,413 @@
+name: "Autonomous Command Wrapper System"
+created: "2026-01-20"
+completed: "2026-01-20"
+priority_link: "current-priorities.md#autonomous-command-wrappers"
+status: completed
+complexity_score: 4
+trigger_mode: suggested
+milestone_reviews: true
+
+summary: |
+  Create autonomous skill/signal wrappers for 17 built-in Claude Code commands
+  enabling both autonomous invocation (via skills) and external automation
+  (via signal-based watcher). Commands are called via keystroke injection
+  rather than re-implemented.
+
+  Approach:
+  - Skills (SKILL.md) for autonomous Claude invocation
+  - Signal files for watcher-based external triggering
+  - Enhanced auto-clear-watcher to support multiple command signals
+  - Documentation and testing for each wrapper
+
+milestones:
+  - name: "Milestone 1: Foundation"
+    phases: [1, 2]
+    review_gate: true
+    deliverables:
+      - "Enhanced watcher script supporting multi-command signals"
+      - "Signal protocol documented"
+      - "3 pilot wrappers (compact, rename, resume) tested"
+      - "Milestone 1 Review Report"
+
+  - name: "Milestone 2: Core Command Set"
+    phases: [3, 4]
+    review_gate: true
+    deliverables:
+      - "14 remaining command wrappers implemented"
+      - "All skills tested for autonomous invocation"
+      - "Integration tests passing"
+      - "Milestone 2 Review Report"
+
+  - name: "Milestone 3: Documentation & Integration"
+    phases: [5, 6]
+    review_gate: true  # Final review
+    deliverables:
+      - "User guide and quickstart created"
+      - "Pattern documentation updated"
+      - "Integration with existing Jarvis workflows"
+      - "Final Review Report"
+
+phases:
+  - name: "Phase 1: Architecture & Watcher Enhancement"
+    milestone: 1
+    status: pending
+    blocked_by: null
+    tasks:
+      - id: "T1.1"
+        description: "Design multi-command signal protocol"
+        done_criteria: "Protocol spec documented with signal file format, command encoding, and error handling"
+        estimated_hours: 1
+        status: pending
+        depends_on: []
+        commits: []
+        notes: "Extend .auto-clear-signal pattern to support {command, args, timestamp}"
+
+      - id: "T1.2"
+        description: "Enhance auto-clear-watcher.sh for multi-command support"
+        done_criteria: "Watcher script reads signal files, dispatches commands via keystroke injection, supports all 17 commands"
+        estimated_hours: 2
+        status: pending
+        depends_on: ["T1.1"]
+        commits: []
+        notes: "Parse JSON signal, validate command whitelist, inject keystrokes"
+
+      - id: "T1.3"
+        description: "Create signal helper library (.claude/scripts/signal-helper.sh)"
+        done_criteria: "Helper script with send_signal() function, validation, error handling"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T1.1"]
+        commits: []
+        notes: "Reusable script for creating signal files from skills/hooks"
+
+      - id: "T1.4"
+        description: "Update launch-jarvis-tmux.sh to auto-start enhanced watcher"
+        done_criteria: "Watcher auto-launches in tmux pane, startup verified"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T1.2"]
+        commits: []
+        notes: "Split tmux window, run watcher in bottom pane"
+
+  - name: "Phase 2: Pilot Command Wrappers (3 commands)"
+    milestone: 1
+    status: pending
+    blocked_by: null
+    tasks:
+      - id: "T2.1"
+        description: "Create /compact skill + signal wrapper"
+        done_criteria: "SKILL.md with trigger conditions, signal emission logic, tested with sample invocation"
+        estimated_hours: 1.5
+        status: pending
+        depends_on: ["T1.3"]
+        commits: []
+        notes: "Skill triggers on: 'compact context', 'reduce tokens', etc."
+
+      - id: "T2.2"
+        description: "Create /rename skill + signal wrapper"
+        done_criteria: "SKILL.md with trigger conditions, signal emission with name arg, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T1.3"]
+        commits: []
+        notes: "Skill triggers on: 'rename session to X', 'call this session Y'"
+
+      - id: "T2.3"
+        description: "Create /resume skill + signal wrapper"
+        done_criteria: "SKILL.md with trigger conditions, signal emission with optional session arg, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T1.3"]
+        commits: []
+        notes: "Skill triggers on: 'resume previous session', 'continue from checkpoint'"
+
+      - id: "T2.4"
+        description: "Test pilot wrappers end-to-end"
+        done_criteria: "All 3 pilots work: autonomous (via skill) and manual (via signal), documented test results"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T2.1", "T2.2", "T2.3"]
+        commits: []
+        notes: "Test both autonomous invocation and external signal triggering"
+
+      - id: "T2.5"
+        description: "Milestone 1 Review"
+        done_criteria: "Technical review (architecture, code quality) + Progress review (on track?) completed, report generated"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.4"]
+        commits: []
+        notes: "Reference: .claude/context/patterns/milestone-review-pattern.md"
+
+  - name: "Phase 3: Core Command Wrappers - Batch 1 (Information Commands)"
+    milestone: 2
+    status: pending
+    blocked_by: [2]  # Blocked by Phase 2 (Milestone 1)
+    tasks:
+      - id: "T3.1"
+        description: "Create /export skill + signal wrapper"
+        done_criteria: "SKILL.md, signal with filename arg, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'export conversation', 'save chat history'"
+
+      - id: "T3.2"
+        description: "Create /status skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for status display, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show status', 'what's my session status'"
+
+      - id: "T3.3"
+        description: "Create /usage skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for usage stats, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show usage', 'how much have I used'"
+
+      - id: "T3.4"
+        description: "Create /cost skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for cost display, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show cost', 'how much did this cost'"
+
+      - id: "T3.5"
+        description: "Create /stats skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for stats display, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show statistics', 'session stats'"
+
+      - id: "T3.6"
+        description: "Create /context skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for context info, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show context', 'context status'"
+
+  - name: "Phase 4: Core Command Wrappers - Batch 2 (Action Commands)"
+    milestone: 2
+    status: pending
+    blocked_by: null
+    tasks:
+      - id: "T4.1"
+        description: "Create /doctor skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for health check, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'run health check', 'diagnose issues'"
+
+      - id: "T4.2"
+        description: "Create /bashes skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for bash history, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show bash history', 'what commands did I run'"
+
+      - id: "T4.3"
+        description: "Create /review skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for code review, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'review changes', 'review my code'"
+
+      - id: "T4.4"
+        description: "Create /plan skill + signal wrapper"
+        done_criteria: "SKILL.md, signal to enter plan mode, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'plan this feature', 'create implementation plan'"
+
+      - id: "T4.5"
+        description: "Create /security-review skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for security scan, tested"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'security review', 'check for vulnerabilities'"
+
+      - id: "T4.6"
+        description: "Create /todos skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for todo display, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show todos', 'what's on my todo list'"
+
+      - id: "T4.7"
+        description: "Create /hooks skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for hooks listing, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show hooks', 'list my hooks'"
+
+      - id: "T4.8"
+        description: "Create /release-notes skill + signal wrapper"
+        done_criteria: "SKILL.md, signal for release notes display, tested"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T2.5"]
+        commits: []
+        notes: "Triggers on: 'show release notes', 'what's new'"
+
+      - id: "T4.9"
+        description: "Integration test all 17 command wrappers"
+        done_criteria: "Test suite covering autonomous invocation + signal triggering for all commands, all passing"
+        estimated_hours: 2
+        status: pending
+        depends_on: ["T3.1", "T3.2", "T3.3", "T3.4", "T3.5", "T3.6", "T4.1", "T4.2", "T4.3", "T4.4", "T4.5", "T4.6", "T4.7", "T4.8"]
+        commits: []
+        notes: "Comprehensive test matrix, edge cases, error handling"
+
+      - id: "T4.10"
+        description: "Milestone 2 Review"
+        done_criteria: "Technical review (code quality, test coverage) + Progress review completed, report generated"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T4.9"]
+        commits: []
+        notes: "Reference: .claude/context/patterns/milestone-review-pattern.md"
+
+  - name: "Phase 5: Documentation & Patterns"
+    milestone: 3
+    status: pending
+    blocked_by: [4]  # Blocked by Phase 4 (Milestone 2)
+    tasks:
+      - id: "T5.1"
+        description: "Create user guide for autonomous command wrappers"
+        done_criteria: "User-facing guide in .claude/context/guides/ with examples, troubleshooting, FAQ"
+        estimated_hours: 2
+        status: pending
+        depends_on: ["T4.10"]
+        commits: []
+        notes: "How to use skills, how to trigger manually, how to customize"
+
+      - id: "T5.2"
+        description: "Create pattern documentation for signal protocol"
+        done_criteria: "Pattern doc in .claude/context/patterns/ describing signal-based automation pattern"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T4.10"]
+        commits: []
+        notes: "Reusable pattern for future signal-based automations"
+
+      - id: "T5.3"
+        description: "Update skills index and capability matrix"
+        done_criteria: ".claude/skills/_index.md and capability-matrix.md updated with new skills"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T4.10"]
+        commits: []
+        notes: "Add 17 new skills to inventory, update selection guide"
+
+      - id: "T5.4"
+        description: "Create quickstart guide"
+        done_criteria: "5-minute quickstart in .claude/context/guides/ for new users"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T5.1"]
+        commits: []
+        notes: "Getting started with autonomous commands in 3 steps"
+
+  - name: "Phase 6: Integration & Polish"
+    milestone: 3
+    status: pending
+    blocked_by: null
+    tasks:
+      - id: "T6.1"
+        description: "Integrate with existing Jarvis workflows"
+        done_criteria: "Skills referenced in CLAUDE.md, startup-protocol.md, session-management skill updated"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T5.3"]
+        commits: []
+        notes: "Make wrappers discoverable and integrated with existing patterns"
+
+      - id: "T6.2"
+        description: "Add to /setup installation flow"
+        done_criteria: "/setup skill updated to configure watcher auto-start, validates installation"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T6.1"]
+        commits: []
+        notes: "Ensure new users get watcher configured automatically"
+
+      - id: "T6.3"
+        description: "Create monitoring/debugging utilities"
+        done_criteria: "Debug script to test signal delivery, logs for troubleshooting"
+        estimated_hours: 1
+        status: pending
+        depends_on: ["T5.2"]
+        commits: []
+        notes: "Help users debug when signals don't work"
+
+      - id: "T6.4"
+        description: "Final integration tests"
+        done_criteria: "End-to-end tests covering full workflows (startup → autonomous invocation → manual triggering → shutdown)"
+        estimated_hours: 1.5
+        status: pending
+        depends_on: ["T6.1", "T6.2", "T6.3"]
+        commits: []
+        notes: "Realistic usage scenarios, edge cases"
+
+      - id: "T6.5"
+        description: "Final Review & Sign-off"
+        done_criteria: "Technical review (production readiness) + Progress review (all requirements met) completed, final report generated"
+        estimated_hours: 0.5
+        status: pending
+        depends_on: ["T6.4"]
+        commits: []
+        notes: "Reference: .claude/context/patterns/milestone-review-pattern.md"
+
+metadata:
+  total_estimated_hours: 30.5
+  total_tasks: 35
+  target_commands: [
+    "/compact",
+    "/rename",
+    "/resume",
+    "/export",
+    "/doctor",
+    "/status",
+    "/usage",
+    "/cost",
+    "/bashes",
+    "/review",
+    "/plan",
+    "/security-review",
+    "/stats",
+    "/todos",
+    "/context",
+    "/hooks",
+    "/release-notes"
+  ]
+  architecture:
+    skills: "Autonomous invocation via SKILL.md trigger conditions"
+    signals: "Manual/programmatic triggering via signal files"
+    watcher: "Enhanced auto-clear-watcher.sh for multi-command dispatch"
+    execution: "Keystroke injection via tmux send-keys (macOS/Linux)"

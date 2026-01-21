@@ -1,0 +1,38 @@
+2026-01-21T02:20:54Z | === Background Context Capture Started ===
+2026-01-21T02:20:54Z | Session: jarvis
+2026-01-21T02:20:54Z | Output: /Users/aircannon/Claude/Jarvis/.claude/context/.context-captured.txt
+2026-01-21T02:20:54Z | Waiting 2 seconds for session to settle...
+2026-01-21T02:20:56Z | Clearing input state (Escape, Ctrl-C)...
+2026-01-21T02:20:57Z | Clearing screen...
+2026-01-21T02:20:57Z | Baseline:     1966 lines
+2026-01-21T02:20:57Z | Sending /context command...
+2026-01-21T02:20:58Z | Starting rapid capture (12 seconds)...
+2026-01-21T02:20:58Z |   Capture 1:     1969 lines
+2026-01-21T02:20:58Z |   -> New best:     1969 lines
+2026-01-21T02:20:59Z |   Capture 2:     1898 lines
+2026-01-21T02:21:00Z |   Capture 3:     1907 lines
+2026-01-21T02:21:00Z |   Capture 4:     1907 lines
+2026-01-21T02:21:01Z |   Capture 5:     1907 lines
+2026-01-21T02:21:01Z |   Capture 6:     1907 lines
+2026-01-21T02:21:02Z |   Capture 7:     1907 lines
+2026-01-21T02:21:02Z |   Capture 8:     1907 lines
+2026-01-21T02:21:03Z |   Capture 9:     1907 lines
+2026-01-21T02:21:03Z |   Capture 10:     1907 lines
+2026-01-21T02:21:04Z |   Capture 11:     1907 lines
+2026-01-21T02:21:04Z |   Capture 12:     1907 lines
+2026-01-21T02:21:05Z |   Capture 13:     1907 lines
+2026-01-21T02:21:05Z |   Capture 14:     1907 lines
+2026-01-21T02:21:06Z |   Capture 15:     1907 lines
+2026-01-21T02:21:06Z |   Capture 16:     1907 lines
+2026-01-21T02:21:07Z |   Capture 17:     1907 lines
+2026-01-21T02:21:08Z |   Capture 18:     1907 lines
+2026-01-21T02:21:08Z |   Capture 19:     1907 lines
+2026-01-21T02:21:09Z |   Capture 20:     1907 lines
+2026-01-21T02:21:09Z |   Capture 21:     1907 lines
+2026-01-21T02:21:10Z |   Capture 22:     1907 lines
+2026-01-21T02:21:10Z |   Capture 23:     1907 lines
+2026-01-21T02:21:11Z |   Capture 24:     1907 lines
+2026-01-21T02:21:11Z | Saving best capture (    1969 lines) to /Users/aircannon/Claude/Jarvis/.claude/context/.context-captured.txt
+2026-01-21T02:21:11Z | === Capture Complete ===
+2026-01-21T02:21:11Z | Output file: /Users/aircannon/Claude/Jarvis/.claude/context/.context-captured.txt
+2026-01-21T02:21:11Z | Lines captured:     1969

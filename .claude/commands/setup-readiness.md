@@ -42,6 +42,11 @@ This command produces a **deterministic pass/fail readiness report** that valida
 | Tools | Git available | Yes | Critical |
 | Tools | Docker available | Recommended | Low |
 | Tools | Node.js available | Recommended | Low |
+| Autonomous | auto-command-watcher.sh exists | Recommended | Medium |
+| Autonomous | signal-helper.sh exists | Recommended | Medium |
+| Autonomous | launch-jarvis-tmux.sh exists | Recommended | Medium |
+| Autonomous | jq available | Recommended | Medium |
+| Autonomous | tmux available | Recommended | Medium |
 
 ## Execution
 
