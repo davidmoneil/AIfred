@@ -82,29 +82,49 @@ The session-state.md has grown large ([N] lines). Would you like to:
 
 **If archiving**: Run `.claude/scripts/archive-session-state.sh`
 
-### 2. Update Session State
+### 2. Update Session State & Context Docs
 
-Update `.claude/context/session-state.md`:
+**Primary State Files** (ALWAYS update):
 
+| File | Update |
+|------|--------|
+| `.claude/context/session-state.md` | Status, accomplishments, next steps, key files |
+| `.claude/context/projects/current-priorities.md` | Move completed to "Recently Completed", add new items |
+
+**JICM Context Preservation Files** (update if relevant):
+
+| File | When to Update |
+|------|----------------|
+| `.claude/context/upstream/integration-chronicle.md` | After AIfred integration milestones |
+| `.claude/context/session-chronicle.md` | After significant multi-session work |
+| `.claude/context/projects/pr-chronicle.md` | After PR completions |
+
+**Update session-state.md**:
 - Set status to 🟢 Idle (or 🟡 Active if continuing later)
 - Update "What Was Accomplished" with today's work
 - Update "Next Session Pickup" with next steps (if any)
 - List key files modified
 
-### 2. Review Todos
+### 3. Review Todos
 
 Check if any todos remain:
 - Mark completed items
 - Move incomplete items to current-priorities.md
 - Clear session todo list
 
-### 3. Update Priorities
+### 4. Verify Report Files (if /reflect or /maintain was run)
 
-Update `.claude/context/projects/current-priorities.md`:
-- Add completed items to "Completed" section with date
-- Add any new items discovered during session
+If self-improvement cycles were run this session, verify reports exist:
 
-### 4. Version Bump Check (Milestone-Based)
+```bash
+# Check for today's reports
+ls -la .claude/reports/reflections/reflection-$(date +%Y-%m-%d)*.md 2>/dev/null
+ls -la .claude/reports/maintenance/maintenance-$(date +%Y-%m-%d)*.md 2>/dev/null
+```
+
+**If reports are missing**, create them before proceeding.
+
+### 5. Version Bump Check (Milestone-Based)
 
 **Evaluate if a version bump is needed** based on session accomplishments:
 
@@ -142,7 +162,7 @@ Update `.claude/context/projects/current-priorities.md`:
 | PR-10 | 2.0.0 (Phase 5) |
 | PR-14 | 3.0.0 (Phase 6) |
 
-### 5. Git Commit
+### 6. Git Commit
 
 If there are uncommitted changes:
 
@@ -165,7 +185,7 @@ git commit -m "Release vX.X.X - [PR description]
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 ```
 
-### 6. GitHub Push
+### 7. GitHub Push
 
 Push to Project_Aion branch (NOT main — main is read-only baseline):
 
@@ -173,7 +193,7 @@ Push to Project_Aion branch (NOT main — main is read-only baseline):
 git push origin Project_Aion
 ```
 
-### 7. Tag Release (Optional)
+### 8. Tag Release (Optional)
 
 For MINOR and MAJOR bumps, create a git tag:
 
@@ -182,11 +202,11 @@ git tag vX.X.X
 git push origin vX.X.X
 ```
 
-### 8. Clear Session Activity
+### 9. Clear Session Activity
 
 Reset the session activity tracker for next session.
 
-### 9. Cross-Project Commit Check (If Multi-Repo)
+### 10. Cross-Project Commit Check (If Multi-Repo)
 
 If commits were made to multiple repositories this session:
 
@@ -198,7 +218,7 @@ If commits were made to multiple repositories this session:
 3. If yes, push each project's branch
 4. Report results per project
 
-### 10. Disable On-Demand MCPs
+### 11. Disable On-Demand MCPs
 
 Check session-state.md for any On-Demand MCPs enabled this session.
 List them for user to disable (they must be OFF by default per MCP Loading Strategy).

@@ -2,14 +2,21 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-20
+**Last Updated**: 2026-01-22
 
 ---
 
 ## In Progress
 
+### AIfred Integration: Milestone 2 — Analytics & Tracking
+**Status**: 🔜 Next Session
+**Reference**: `.claude/context/upstream/integration-roadmap-2026-01-21.md`
+
+- [ ] Session 2.1: Port file-access-tracker.js, session-tracker.js, memory-maintenance.js
+- [ ] Session 2.2: Design unified logging architecture
+
 ### PR-12.3: Independent Milestone Review (2026-01-21)
-**Status**: 🔜 Ready to Start
+**Status**: ⏸️ Paused (AIfred Integration priority)
 
 Implement two-level review system for PR milestones:
 - [ ] Create `code-review` agent (detailed code analysis)
@@ -42,6 +49,12 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### AIfred Integration: Milestone 1 — Security Foundation (2026-01-22)
+- 6 hooks ported: credential-guard, branch-protection, amend-validator, docker-health-monitor, docker-restart-loop-detector, docker-post-op-health
+- Integration Chronicle created for reasoning capture
+- Milestone Review Pattern v1.2.0 (Completion Documentation step)
+- Hook porting template validated
 
 ### PR-12.11 & PR-12.12: Auto-Resume & Agent Fixes (2026-01-21)
 - 17 auto-* commands updated with Mode 2 (auto-resume)

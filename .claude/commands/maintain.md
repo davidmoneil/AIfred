@@ -91,6 +91,20 @@ Automatically runs:
 
 ## Output
 
+### MANDATORY: Create Report File
+
+**ALWAYS create a report file at completion.** This is not optional.
+
+```bash
+# Ensure directory exists
+mkdir -p .claude/reports/maintenance
+
+# Create report file
+# Write to: .claude/reports/maintenance/maintenance-YYYY-MM-DD.md
+```
+
+**If multiple maintenance runs same day**: Use suffix `-N` (e.g., `maintenance-2026-01-22-2.md`)
+
 ### Report Location
 `.claude/reports/maintenance/maintenance-YYYY-MM-DD.md`
 

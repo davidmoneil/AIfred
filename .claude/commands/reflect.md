@@ -81,6 +81,20 @@ The `/reflect` command triggers Jarvis' self-reflection process, analyzing corre
 
 ## Output
 
+### MANDATORY: Create Report File
+
+**ALWAYS create a report file at completion.** This is not optional.
+
+```bash
+# Ensure directory exists
+mkdir -p .claude/reports/reflections
+
+# Create report file
+# Write to: .claude/reports/reflections/reflection-YYYY-MM-DD.md
+```
+
+**If multiple reflections same day**: Use suffix `-N` (e.g., `reflection-2026-01-22-2.md`)
+
 ### Report Location
 `.claude/reports/reflections/reflection-YYYY-MM-DD.md`
 
