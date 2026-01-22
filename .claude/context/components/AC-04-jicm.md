@@ -1,11 +1,11 @@
 # AC-04 JICM — Autonomic Component Specification
 
 **Component ID**: AC-04
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Status**: active
 **Created**: 2026-01-16
-**Last Modified**: 2026-01-16
-**PR**: PR-12.4
+**Last Modified**: 2026-01-21
+**PR**: PR-12.4, JICM v2 Refactoring
 
 ---
 
@@ -50,19 +50,19 @@ Jarvis Intelligent Context Management (JICM) monitors and manages the context wi
 | **Event-Based** | Wiggum Loop step 5 (Context Check) | medium |
 | **Scheduled** | Every N tool calls (~10-20) | low |
 
-### Trigger Implementation
+### Trigger Implementation (JICM v2)
 ```
 Monitoring strategy:
-  - context-accumulator.js hook tracks tool call costs
-  - Periodic checks during Wiggum Loop iterations
-  - Pre-emptive warnings at CAUTION level
-  - Automatic action at WARNING/CRITICAL levels
+  - jarvis-watcher.sh polls tmux status line every 30s
+  - Writes token count to context-estimate.json
+  - Idle detection before triggering (wait_for_idle)
+  - Single threshold at 80% triggers intelligent compression
 
-Threshold actions:
-  50%  CAUTION   → Log warning, suggest offloading
-  70%  WARNING   → Auto-offload, reduce MCPs, create checkpoint
-  85%  CRITICAL  → Checkpoint, prepare for compression
-  95%  EMERGENCY → Force checkpoint, preserve essentials only
+Threshold actions (v2 simplified):
+  80%  TRIGGER   → Wait for idle → /intelligent-compress → /clear → resume
+  99%  OVERRIDE  → Native auto-compact (delayed via CLAUDE_AUTOCOMPACT_PCT_OVERRIDE)
+
+Note: context-accumulator.js REMOVED in v2. Watcher handles all monitoring.
 ```
 
 ### Suppression Conditions
@@ -307,18 +307,28 @@ that essential state is preserved.
 
 ## Implementation Notes
 
-### Current Implementation
+### Current Implementation (JICM v2)
 | Artifact | Path | Status |
 |----------|------|--------|
 | Component spec | `.claude/context/components/AC-04-jicm.md` | exists |
-| Pattern document | `.claude/context/patterns/jicm-pattern.md` | exists |
-| Context accumulator | `.claude/hooks/context-accumulator.js` | exists |
-| MCP disable script | `.claude/scripts/disable-mcps.sh` | exists |
-| MCP enable script | `.claude/scripts/enable-mcps.sh` | exists |
-| Context budget command | `.claude/commands/context-budget.md` | exists |
-| MCP status script | `.claude/scripts/list-mcp-status.sh` | exists |
-| State file | `.claude/state/components/AC-04-jicm.json` | exists |
-| JICM Agent | `.claude/agents/jicm-agent.md` | optional |
+| Jarvis watcher | `.claude/scripts/jarvis-watcher.sh` | **primary monitor** |
+| Intelligent compress | `.claude/commands/intelligent-compress.md` | exists |
+| Context compressor agent | `.claude/agents/context-compressor.md` | exists (opus) |
+| JICM compact command | `.claude/commands/jicm-compact.md` | exists |
+| Context estimate log | `.claude/logs/context-estimate.json` | written by watcher |
+| Launch script | `.claude/scripts/launch-jarvis-tmux.sh` | env vars set |
+| Session-start hook | `.claude/hooks/session-start.sh` | restores context |
+| Autonomy config | `.claude/config/autonomy-config.yaml` | 80% threshold |
+
+**REMOVED in v2:**
+| Artifact | Path | Reason |
+|----------|------|--------|
+| ~~Context accumulator~~ | `.claude/hooks/context-accumulator.js` | Watcher handles monitoring |
+
+**Environment Variables (set by launch script):**
+- `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=99` — Delay native auto-compact
+- `CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000` — Reserve output tokens
+- `ENABLE_TOOL_SEARCH=true` — Reduce MCP context usage
 
 ### Preservation vs Cutting
 
@@ -370,6 +380,13 @@ that essential state is preserved.
 | 2026-01-16 | Continuation, not exit | Work should persist across compression |
 | 2026-01-16 | No MCP dependencies | JICM may need to disable MCPs |
 | 2026-01-16 | Tiered thresholds | Progressive response to context growth |
+| 2026-01-21 | Remove context-accumulator.js | Watcher handles monitoring; accumulator was redundant |
+| 2026-01-21 | Single 80% threshold | Simplify: one trigger point, graceful completion before |
+| 2026-01-21 | Idle detection before trigger | Don't interrupt Claude mid-response |
+| 2026-01-21 | Opus model for compression | Higher quality context preservation |
+| 2026-01-21 | /auto-context baseline | Informed decisions on what to drop |
+| 2026-01-21 | Learnings always preserved | Resolved issues contain valuable lessons |
+| 2026-01-21 | Rename /auto-compact → /jicm-compact | Avoid conflict with native /compact |
 
 ---
 

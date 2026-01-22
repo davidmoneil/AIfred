@@ -42,39 +42,30 @@ Review:
 
 ### 2. Check AIfred Baseline Updates
 
-**This step is mandatory per PR-1.D.**
+**This step is mandatory per PR-1.D and is automated by AC-01 hook.**
 
-> ⚠️ **Implementation Status**: This step is designed but NOT automated in AC-01 hook.
-> It must be performed manually or will be added in a future PR-12.1 enhancement.
+> ✅ **Implementation Status**: Fully automated in `session-start.sh` as of PR-12.1.
+> The hook runs `git fetch` and checks if AIfred is behind origin on every startup.
 
-```bash
-cd /Users/aircannon/Claude/AIfred && git fetch origin && git status
-```
+**Automated Flow:**
+1. Hook runs `git fetch origin` on AIfred baseline (silent)
+2. Hook counts commits behind: `git rev-list --count HEAD..origin/main`
+3. If behind, hook injects AIfred sync status into additionalContext
+4. Jarvis is instructed to run `/sync-aifred-baseline` automatically
 
-If the baseline is behind origin:
+**What /sync-aifred-baseline Does:**
+1. Pulls the latest changes: `git pull origin main`
+2. Analyzes each change and classifies as ADOPT/ADAPT/REJECT/DEFER
+3. Generates sync-report and ad-hoc assessment files
+4. Presents summary to user for review
 
-```bash
-cd /Users/aircannon/Claude/AIfred && git pull origin main
-```
+**Important**: The adopt/adapt/defer classification happens PER-CHANGE during the
+sync analysis. Never ask "adopt/adapt/defer?" before the user has seen what changed.
 
 **Constraints:**
 - This is the ONLY allowed modification to the AIfred baseline repository
 - No edits, commits, branches, hooks, or config changes are permitted
 - Only `git fetch` and `git pull` operations are allowed
-
-#### Quick Check: Any New Changes?
-
-After pulling updates, check if any changes exist since Jarvis's last sync:
-
-```bash
-# Get last synced commit from paths-registry.yaml (aifred_baseline.last_synced_commit)
-# Compare to current HEAD
-cd /Users/aircannon/Claude/AIfred && git log --oneline <last_synced_commit>..HEAD
-```
-
-**If changes exist**, consider:
-1. **Quick review**: Note significant changes for later
-2. **Full sync**: Run `/sync-aifred-baseline` to generate a detailed adopt/adapt/reject report
 
 **Reference**:
 - Port log: `.claude/context/upstream/port-log.md`
@@ -88,11 +79,14 @@ Review key context files as needed:
 - `@paths-registry.yaml` — Path configuration
 - `@.claude/context/configuration-summary.md` — Current setup
 
-### 4. Continue Previous Work or Start New
+### 4. Continue Previous Work or Suggest Next Action
 
 Based on session-state.md:
 - If there's pending work, continue from where you left off
-- If starting fresh, await user direction
+- If starting fresh, **suggest next actions** (maintenance, R&D, self-improvement)
+
+**NEVER simply "await instructions"** — autonomy is default. Always offer
+suggestions or begin work. The user can interrupt if they have other plans.
 
 ---
 
@@ -103,12 +97,14 @@ Based on session-state.md:
 │                    SESSION START CHECKLIST                       │
 ├─────────────────────────────────────────────────────────────────┤
 │ 0. [✓] Adopt Jarvis persona (automatic via CLAUDE.md)           │
-│ 1. [ ] Read session-state.md                                    │
-│ 2. [ ] Check AIfred baseline for updates (git fetch + pull)     │
+│ 1. [✓] Read session-state.md (automatic via hook)               │
+│ 2. [✓] Check AIfred baseline (automatic via hook → /sync-...)   │
 │ 3. [ ] Load relevant context files                              │
-│ 4. [ ] Continue pending work or await new direction             │
+│ 4. [ ] Continue pending work OR suggest next actions            │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+**Autonomy Rule**: Never simply "await instructions" — always suggest or begin work.
 
 ---
 

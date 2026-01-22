@@ -7,28 +7,66 @@ allowed-tools: Bash(.claude/scripts/*)
 
 Trigger the built-in `/hooks` command autonomously via the signal-based watcher.
 
-## Usage
+**Note**: `/hooks` lists registered hooks in Claude Code.
 
-When the user asks to "list hooks", "show hooks", "registered hooks", or similar:
+## Usage Modes
 
-### Create Signal
+### Mode 1: Fire-and-Forget (Default)
+
+When the user asks to "list hooks", "show hooks", "registered hooks":
 
 ```bash
-source .claude/scripts/signal-helper.sh && signal_hooks
+.claude/scripts/signal-helper.sh hooks
 ```
 
-### Inform User
+### Mode 2: With Auto-Resume
 
+When Jarvis needs to check hooks AND continue working automatically:
+
+```bash
+.claude/scripts/signal-helper.sh with-resume /hooks "" "continue" 3
 ```
-Signal sent for /hooks. The watcher will execute it in ~2 seconds.
 
-Registered hooks will be listed.
-```
+Parameters:
+- Command: `/hooks`
+- Args: `""` (none)
+- Resume message: `"continue"` (sent after hooks display)
+- Resume delay: `3` (seconds)
 
-## Example
+## CRITICAL: Fire-and-Forget Pattern
+
+**DO NOT:**
+- Verify the signal was created
+- Check watcher status
+- Wait for the command to execute
+- Block on any follow-up checks
+
+**DO:**
+- Send the signal
+- Inform the user briefly
+- **CONTINUE with other work immediately**
+
+The signal system is asynchronous. Trust the watcher.
+
+## Examples
+
+### Example 1: Simple hooks check
 
 User: "What hooks are registered?"
 
 Response:
-1. Run: `source .claude/scripts/signal-helper.sh && signal_hooks`
-2. Say: "Signal sent for /hooks. Hook list will be displayed momentarily."
+1. Run: `.claude/scripts/signal-helper.sh hooks`
+2. Say: "Signal sent for /hooks. Hook list will appear shortly."
+3. Continue with any other pending work
+
+### Example 2: Hooks check with auto-resume
+
+When Jarvis audits hook configuration:
+1. Run: `.claude/scripts/signal-helper.sh with-resume /hooks "" "continue" 3`
+2. Say: "Signal sent for /hooks with auto-resume."
+3. Watcher sends /hooks, waits 3s, then sends "continue"
+
+## Related
+
+- `/tooling-health` — Comprehensive health check
+- `self-monitoring-commands.md` — Full pattern documentation

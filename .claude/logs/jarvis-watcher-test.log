@@ -1,0 +1,7 @@
+[0;36m━━━ JARVIS WATCHER v2.0 ━━━[0m threshold:15% interval:10s
+[0;32m●[0m Context [0;32m●[0m Commands [0;32m●[0m JICM │ Ctrl+C to stop
+
+[0;32m[INFO][0m Watcher started
+22:02:27 [0;31m⚠[0m Tokens: 70963 (35.4%) [monitoring]
+[0;35m[JICM][0m ═══ JICM TRIGGERED: 35.4% (70963 tokens) ═══
+[0;35m[JICM][0m Step 0: Escape (cancel partial input)

@@ -52,11 +52,11 @@ components:
       # Default to enabled (disable with "quick/rough/simple")
       default_active: true
       # Maximum verification passes
-      max_passes: 5
+      max_passes: 15
       # Timeout per pass (ms)
       pass_timeout: 300000
       # Stop on first clean pass
-      early_termination: true
+      early_termination: false
 
   # AC-03: Milestone Review
   AC-03-review:
@@ -65,17 +65,23 @@ components:
       # Auto-escalate to project-manager agent
       auto_escalate: true
       # Review depth: quick, standard, thorough
-      default_depth: standard
+      default_depth: thorough
       # Generate report file
       generate_report: true
 
-  # AC-04: Context Management (JICM)
+  # AC-04: Context Management (JICM v2)
+  # Updated 2026-01-21: Major refactoring
+  # - Removed context-accumulator.js (watcher handles monitoring)
+  # - Added idle detection before triggering compression
+  # - Single threshold at 80% (simplified from tiered)
   AC-04-jicm:
     enabled: true
     settings:
       # Token threshold for compression trigger
-      # Lowered from 150000 (75%) to 130000 (65%) per JICM Investigation
-      threshold_tokens: 130000
+      # Formula: 0.80 * (MAX_CONTEXT - OUTPUT_TOKENS) = 0.80 * (200000 - 20000) = 144000
+      # jarvis-watcher.sh polls status line and triggers at this threshold
+      threshold_tokens: 144000
+      threshold_percentage: 80
       # Target compression ratio (legacy - see compression_target_percent)
       compression_target: 0.6
       # Auto-create checkpoint before compression
@@ -84,13 +90,15 @@ components:
       trigger_continuation: true
 
       # Intelligent Compression Settings (context-compressor agent)
+      # Invoked via /intelligent-compress command
       compression:
         # Model for compression: haiku (fast/cheap), sonnet (balanced), opus (quality)
-        model: haiku
+        # Using opus for highest quality context preservation and learning capture
+        model: opus
         # Compression mode: aggressive (10%), default (15-20%), conservative (30%)
         mode: default
         # Specific target percentage (overrides mode if set)
-        target_percent: null
+        target_percent: 20
         # Write compressed context to this file
         output_file: .claude/context/.compressed-context.md
         # Inject compressed context post-clear via additionalContext

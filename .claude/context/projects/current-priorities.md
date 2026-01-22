@@ -8,15 +8,19 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### JICM v2 Testing (2026-01-20)
-**Status**: Pending validation
+### PR-12.3: Independent Milestone Review (2026-01-21)
+**Status**: 🔜 Ready to Start
 
-Test the new Intelligent Context Compression system:
-- [ ] Restart session to load new agent
-- [ ] Let context build toward threshold (or lower threshold for testing)
-- [ ] Verify watcher sends `/intelligent-compress`
-- [ ] Verify agent compresses context correctly
-- [ ] Verify /clear triggers and compressed context injects
+Implement two-level review system for PR milestones:
+- [ ] Create `code-review` agent (detailed code analysis)
+- [ ] Create `project-manager` agent (high-level progress review)
+- [ ] Design review criteria files (`review-criteria/` directory)
+- [ ] Implement large review segmentation
+- [ ] Create report generation templates
+- [ ] Integrate remediation workflow with Wiggum Loop
+
+**Blocking**: None
+**Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md` → PR-12.3
 
 ---
 
@@ -38,6 +42,13 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### PR-12.11 & PR-12.12: Auto-Resume & Agent Fixes (2026-01-21)
+- 17 auto-* commands updated with Mode 2 (auto-resume)
+- 6 agents fixed (YAML frontmatter), _archive renamed
+- Self-monitoring workflow validated (chained auto-resume)
+- self-monitoring-commands.md pattern created
+- auto-settings.md created (namespace resolution)
 
 ### JICM v2: Intelligent Context Compression (2026-01-20)
 - context-compressor agent (haiku model, configurable)

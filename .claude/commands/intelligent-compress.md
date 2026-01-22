@@ -17,34 +17,58 @@ fi
 
 If file exists, STOP and say "Compression already in progress."
 
-## Step 2: Create In-Progress Flag
+## Step 2: Create In-Progress Flag and Update Session Files
 
+First, create the flag:
 ```bash
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 ```
 
-## Step 3: Spawn Context-Compressor Agent
+**CRITICAL**: Before spawning the agent, update these files with current work state:
 
-Use the Task tool with these EXACT parameters:
+1. **session-state.md** - Update with current task status:
+   - Read `.claude/context/session-state.md`
+   - Update "Current Work" section with what you're working on RIGHT NOW
+   - Update "Status" to reflect current state
+   - Write back the file
+
+2. **current-priorities.md** - Mark completed items:
+   - Read `.claude/context/projects/current-priorities.md`
+   - Check off any completed priorities
+   - Update "Next Step" if applicable
+   - Write back the file
+
+3. **Check todos** - If any todos are in_progress, note them in session-state
+
+These updates ensure the context-compressor agent has accurate information to preserve.
+
+## Step 3: Run /auto-context and Spawn Context-Compressor Agent
+
+First, capture the context baseline by running `/auto-context` (or reading the current context state). This provides the categorical breakdown of what's in the context window.
+
+Then use the Task tool with these EXACT parameters:
 
 ```
 subagent_type: context-compressor
-model: haiku
+model: opus
 prompt: |
   Compress the current conversation context for session continuity.
 
   **Mode**: default (target 15-20% of original)
 
-  You have access to the full conversation history. Analyze it and:
+  **Context Baseline** (from /auto-context):
+  [Include the /auto-context output here showing token usage by category]
+
+  You have access to the full conversation history. Using the context baseline as your guide:
 
   1. PRESERVE: Current task, decisions made, file paths, todos, blockers
-  2. SUMMARIZE: Tool outputs → brief results only
-  3. DROP: Verbose file contents, resolved issues, redundant info
+  2. SUMMARIZE: Tool outputs, resolved issues with learnings, multi-step workflow progress
+  3. DROP: Tier 3 MCP schemas, verbose file contents, redundant info, disabled plugin context
 
   Write the compressed context to: .claude/context/.compressed-context.md
 
   Use the format specified in your agent instructions.
-  Return a brief summary of what was preserved.
+  Return a brief summary of what was preserved and what was dropped.
 ```
 
 Wait for the agent to complete and return.
@@ -114,27 +138,29 @@ Read settings from `.claude/config/autonomy-config.yaml` under `components.AC-04
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 ```
 
-### Step 3: Spawn Context-Compressor Agent
+### Step 3: Run /auto-context and Spawn Context-Compressor Agent
 
-Use the Task tool to spawn the agent:
+First capture context baseline, then spawn the agent:
 
 ```
 Task tool:
   subagent_type: context-compressor
-  model: [from config, default haiku]
+  model: opus
   prompt: |
     Compress the current conversation context.
 
     **Compression Mode**: [mode from config or args]
     **Target**: [percentage based on mode]
+    **Context Baseline**: [/auto-context output]
 
     Instructions:
-    1. Analyze the full conversation context (you have access to it)
-    2. Identify: critical decisions, active work, pending todos, blockers
-    3. Summarize: tool outputs, file contents, verbose explanations
-    4. Drop: redundant info, resolved issues, superseded decisions
-    5. Write compressed context to: .claude/context/.compressed-context.md
-    6. Return a brief summary of what was preserved
+    1. Review the /auto-context baseline to understand what's consuming tokens
+    2. Analyze the full conversation context (you have access to it)
+    3. Identify: critical decisions, active work, pending todos, blockers
+    4. Summarize: tool outputs, resolved issues (with learnings), multi-step workflow skeletons
+    5. Drop: Tier 3 MCP schemas, verbose file contents, disabled plugin context, redundant info
+    6. Write compressed context to: .claude/context/.compressed-context.md
+    7. Return a brief summary of what was preserved and what was dropped
 
     The compressed context must be self-contained - the next session
     should be able to continue work without additional context.

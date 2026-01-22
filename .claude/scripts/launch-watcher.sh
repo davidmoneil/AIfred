@@ -1,85 +1,97 @@
 #!/bin/bash
-# Launch Auto-Clear Watcher in a new terminal window
+# Launch Jarvis Watcher
 # Called by SessionStart hook to ensure watcher is always running
 #
 # Features:
 # - Checks if watcher is already running (avoids duplicates)
-# - Opens new Terminal window on macOS
-# - Falls back to background process on Linux
+# - Prefers tmux window (terminal-agnostic, works in iTerm2/Terminal/any)
+# - Falls back to background process if not in tmux
 # - Self-terminates when main session ends
+#
+# Updated: 2026-01-20 — Terminal-agnostic approach using tmux
 
-WATCHER_SCRIPT="$CLAUDE_PROJECT_DIR/.claude/scripts/auto-clear-watcher.sh"
-PID_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.watcher-pid"
-LOG_FILE="$CLAUDE_PROJECT_DIR/.claude/logs/watcher-launcher.log"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
+TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
+TMUX_SESSION="${TMUX_SESSION:-jarvis}"
+
+WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jarvis-watcher.sh"
+PID_FILE="$PROJECT_DIR/.claude/context/.watcher-pid"
+LOG_FILE="$PROJECT_DIR/.claude/logs/watcher-launcher.log"
+
+# Watcher configuration
+WATCHER_THRESHOLD="${JARVIS_WATCHER_THRESHOLD:-80}"
+WATCHER_INTERVAL="${JARVIS_WATCHER_INTERVAL:-30}"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+log() {
+    echo "$TIMESTAMP | $1" >> "$LOG_FILE"
+}
 
 # Check if watcher is already running
 if [[ -f "$PID_FILE" ]]; then
     OLD_PID=$(cat "$PID_FILE")
     if ps -p "$OLD_PID" > /dev/null 2>&1; then
-        echo "$TIMESTAMP | Watcher already running (PID: $OLD_PID)" >> "$LOG_FILE"
+        log "Watcher already running (PID: $OLD_PID)"
         exit 0
     else
-        echo "$TIMESTAMP | Stale PID file found, removing" >> "$LOG_FILE"
+        log "Stale PID file found, removing"
         rm -f "$PID_FILE"
     fi
 fi
 
-# Launch based on OS
-if [[ "$(uname)" == "Darwin" ]]; then
-    # macOS: Open new Terminal window with watcher
-    echo "$TIMESTAMP | Launching watcher in new Terminal window (macOS)" >> "$LOG_FILE"
-
-    osascript <<EOF
-tell application "Terminal"
-    -- Create new window with watcher
-    do script "cd '$CLAUDE_PROJECT_DIR' && echo '🔄 Auto-Clear Watcher' && echo 'Monitoring for checkpoint signals...' && echo '' && '$WATCHER_SCRIPT'; echo 'Watcher stopped. You can close this window.'"
-
-    -- Optional: Make the window smaller and position it
-    set bounds of front window to {50, 50, 500, 300}
-    set custom title of front window to "Jarvis Watcher"
-end tell
-EOF
-
-    # Give it a moment to start
-    sleep 1
-
-    # Find and record the PID (best effort)
-    WATCHER_PID=$(pgrep -f "auto-clear-watcher.sh" | head -1)
-    if [[ -n "$WATCHER_PID" ]]; then
-        echo "$WATCHER_PID" > "$PID_FILE"
-        echo "$TIMESTAMP | Watcher launched (PID: $WATCHER_PID)" >> "$LOG_FILE"
-    else
-        echo "$TIMESTAMP | Watcher launched but PID not found" >> "$LOG_FILE"
-    fi
-
-elif [[ "$(uname)" == "Linux" ]]; then
-    # Linux: Try various terminal emulators
-    echo "$TIMESTAMP | Launching watcher (Linux)" >> "$LOG_FILE"
-
-    if command -v gnome-terminal &> /dev/null; then
-        gnome-terminal --title="Jarvis Watcher" -- bash -c "cd '$CLAUDE_PROJECT_DIR' && '$WATCHER_SCRIPT'; read -p 'Watcher stopped. Press Enter to close.'"
-    elif command -v xterm &> /dev/null; then
-        xterm -title "Jarvis Watcher" -e "cd '$CLAUDE_PROJECT_DIR' && '$WATCHER_SCRIPT'; read -p 'Watcher stopped. Press Enter to close.'" &
-    elif command -v konsole &> /dev/null; then
-        konsole --new-tab -e bash -c "cd '$CLAUDE_PROJECT_DIR' && '$WATCHER_SCRIPT'; read -p 'Watcher stopped. Press Enter to close.'" &
-    else
-        # Fallback: background process (no separate terminal)
-        echo "$TIMESTAMP | No GUI terminal found, running in background" >> "$LOG_FILE"
-        nohup "$WATCHER_SCRIPT" > "$CLAUDE_PROJECT_DIR/.claude/logs/watcher-output.log" 2>&1 &
-        echo $! > "$PID_FILE"
-    fi
-
-    sleep 1
-    WATCHER_PID=$(pgrep -f "auto-clear-watcher.sh" | head -1)
-    [[ -n "$WATCHER_PID" ]] && echo "$WATCHER_PID" > "$PID_FILE"
-
-else
-    echo "$TIMESTAMP | Unknown OS: $(uname)" >> "$LOG_FILE"
-    exit 1
+# Also check by process name
+EXISTING_PID=$(pgrep -f "jarvis-watcher.sh" | head -1)
+if [[ -n "$EXISTING_PID" ]]; then
+    log "Watcher already running (found PID: $EXISTING_PID)"
+    echo "$EXISTING_PID" > "$PID_FILE"
+    exit 0
 fi
 
-echo "$TIMESTAMP | Launcher complete" >> "$LOG_FILE"
+# ============================================================================
+# PREFERRED: Launch in tmux window (terminal-agnostic)
+# ============================================================================
+# If tmux is available and we have a session, create a new window for watcher
+# This works regardless of which terminal app (iTerm2, Terminal, etc.)
+
+if [[ -x "$TMUX_BIN" ]] && "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
+    log "Launching watcher in tmux window (session: $TMUX_SESSION)"
+
+    # Check if watcher window already exists
+    if "$TMUX_BIN" list-windows -t "$TMUX_SESSION" -F "#{window_name}" 2>/dev/null | grep -q "^watcher$"; then
+        log "Watcher window already exists in tmux"
+        exit 0
+    fi
+
+    # Create new window for watcher (don't switch to it)
+    "$TMUX_BIN" new-window -t "$TMUX_SESSION" -n "watcher" -d \
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold $WATCHER_THRESHOLD --interval $WATCHER_INTERVAL; echo 'Watcher stopped. Press Enter to close.'; read"
+
+    sleep 1
+
+    # Find and record the PID
+    WATCHER_PID=$(pgrep -f "jarvis-watcher.sh" | head -1)
+    if [[ -n "$WATCHER_PID" ]]; then
+        echo "$WATCHER_PID" > "$PID_FILE"
+        log "Watcher launched in tmux (PID: $WATCHER_PID)"
+    else
+        log "Watcher window created but PID not found"
+    fi
+
+    exit 0
+fi
+
+# ============================================================================
+# FALLBACK: Background process (no tmux available)
+# ============================================================================
+log "No tmux session found, running watcher in background"
+
+nohup "$WATCHER_SCRIPT" --threshold "$WATCHER_THRESHOLD" --interval "$WATCHER_INTERVAL" \
+    > "$PROJECT_DIR/.claude/logs/watcher-output.log" 2>&1 &
+WATCHER_PID=$!
+
+echo "$WATCHER_PID" > "$PID_FILE"
+log "Watcher launched in background (PID: $WATCHER_PID)"
+
 exit 0

@@ -279,13 +279,18 @@ Weather: $WEATHER_INFO"
     if [[ -n "$AIFRED_SYNC_STATUS" ]]; then
         aifred_action="
 
-AIFRED BASELINE ACTION REQUIRED:
+AIFRED BASELINE UPDATE AVAILABLE:
 $AIFRED_SYNC_STATUS
 
 After greeting, you MUST:
-1. Inform the user about the AIfred baseline status
-2. Ask: \"Would you like me to run /sync-aifred-baseline to review the changes? (adopt/adapt/defer)\"
-3. Wait for user response before proceeding with other work"
+1. Briefly inform the user: \"AIfred baseline has [N] new commits.\"
+2. Automatically run /sync-aifred-baseline to analyze the changes
+3. The sync will classify each change as ADOPT/ADAPT/REJECT/DEFER
+4. Present the analysis summary and ask which items to proceed with
+
+NOTE: adopt/adapt/defer is determined PER-CHANGE during analysis, not upfront.
+Do NOT ask \"adopt/adapt/defer?\" before running the sync - that question
+only makes sense after seeing what the changes are."
     fi
 
     cat << PROTOCOL

@@ -16,11 +16,12 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
 SIGNAL_FILE="$PROJECT_DIR/.claude/context/.command-signal"
 
 # Supported commands (for validation)
+# Updated 2026-01-21: Added /statusline
 SUPPORTED_COMMANDS=(
     "/compact" "/rename" "/resume" "/export" "/doctor"
     "/status" "/usage" "/cost" "/bashes" "/review"
     "/plan" "/security-review" "/stats" "/todos" "/context"
-    "/hooks" "/release-notes" "/clear"
+    "/hooks" "/release-notes" "/clear" "/statusline"
 )
 
 # Validate command against whitelist
@@ -35,12 +36,15 @@ validate_command() {
 }
 
 # Create and write a command signal
-# Args: command, args (optional), source, priority (optional)
+# Args: command, args (optional), source, priority (optional), auto_resume (optional), resume_delay (optional), resume_message (optional)
 send_command_signal() {
     local command="${1:-}"
     local args="${2:-}"
     local source="${3:-manual}"
     local priority="${4:-normal}"
+    local auto_resume="${5:-false}"
+    local resume_delay="${6:-3}"
+    local resume_message="${7:-continue}"
 
     # Validate inputs
     if [[ -z "$command" ]]; then
@@ -78,7 +82,10 @@ send_command_signal() {
     "args": "$args",
     "timestamp": "$timestamp",
     "source": "$source",
-    "priority": "$priority"
+    "priority": "$priority",
+    "auto_resume": $auto_resume,
+    "resume_delay": $resume_delay,
+    "resume_message": "$resume_message"
 }
 EOF
 )
@@ -86,7 +93,11 @@ EOF
     # Write signal file
     echo "$signal_json" > "$SIGNAL_FILE"
 
-    echo "Signal created: $command ${args:+"\"$args\" "}(source: $source)"
+    local resume_info=""
+    if [[ "$auto_resume" == "true" ]]; then
+        resume_info=" [auto-resume in ${resume_delay}s]"
+    fi
+    echo "Signal created: $command ${args:+"\"$args\" "}(source: $source)$resume_info"
     return 0
 }
 
@@ -189,6 +200,30 @@ signal_clear() {
     send_command_signal "/clear" "" "$source" "immediate"
 }
 
+# Send any command with auto-resume enabled
+# Args: command, args (optional), resume_message (optional), resume_delay (optional)
+signal_with_resume() {
+    local command="${1:-}"
+    local args="${2:-}"
+    local resume_message="${3:-continue}"
+    local resume_delay="${4:-3}"
+    local source="skill:auto-resume"
+
+    if [[ -z "$command" ]]; then
+        echo "ERROR: Command is required" >&2
+        return 1
+    fi
+
+    send_command_signal "$command" "$args" "$source" "normal" "true" "$resume_delay" "$resume_message"
+}
+
+# Shorthand for context with auto-resume
+signal_context_resume() {
+    local resume_message="${1:-continue}"
+    local resume_delay="${2:-3}"
+    signal_with_resume "/context" "" "$resume_message" "$resume_delay"
+}
+
 # Check if watcher is running
 is_watcher_running() {
     local pid_file="$PROJECT_DIR/.claude/context/.watcher-pid"
@@ -264,6 +299,14 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         context)
             signal_context "cli:signal-helper"
             ;;
+        context-resume)
+            shift
+            signal_context_resume "$@"
+            ;;
+        with-resume)
+            shift
+            signal_with_resume "$@"
+            ;;
         todos)
             signal_todos "cli:signal-helper"
             ;;
@@ -326,11 +369,18 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
             echo "  release-notes            - Signal /release-notes"
             echo "  clear                    - Signal /clear"
             echo ""
+            echo "Auto-Resume Commands:"
+            echo "  context-resume [msg] [delay]  - /context with auto-resume"
+            echo "  with-resume <cmd> [args] [msg] [delay] - Any command with auto-resume"
+            echo ""
             echo "Examples:"
             echo "  $0 send /compact \"Focus on code\" skill:test"
             echo "  $0 compact \"Summarize recent work\""
             echo "  $0 rename \"Feature Implementation\""
             echo "  $0 status"
+            echo "  $0 context-resume                    # /context then 'continue' after 3s"
+            echo "  $0 context-resume \"proceed\" 5       # /context then 'proceed' after 5s"
+            echo "  $0 with-resume /stats \"\" \"resume\"   # /stats then 'resume'"
             ;;
     esac
 fi

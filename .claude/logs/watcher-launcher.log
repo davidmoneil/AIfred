@@ -95,3 +95,20 @@
 2026-01-21T03:43:40Z | Launching watcher in new Terminal window (macOS)
 2026-01-21T03:43:40Z | Watcher launched (PID: 73302)
 2026-01-21T03:43:40Z | Launcher complete
+2026-01-21T04:54:51Z | Stale PID file found, removing
+2026-01-21T04:54:51Z | Launching watcher in new Terminal window (macOS)
+2026-01-21T04:54:51Z | Watcher launched (PID: 88184)
+2026-01-21T04:54:51Z | Launcher complete
+2026-01-21T04:56:24Z | Watcher already running (PID: 88184)
+2026-01-21T05:09:02Z | Stale PID file found, removing
+2026-01-21T05:09:02Z | Launching watcher in tmux window (session: jarvis)
+2026-01-21T05:09:02Z | Watcher launched in tmux (PID: 92371)
+2026-01-21T05:25:32Z | Watcher already running (found PID: 95213)
+2026-01-21T05:31:46Z | Launching watcher in tmux window (session: jarvis)
+2026-01-21T05:31:46Z | Watcher launched in tmux (PID: 96864)
+2026-01-21T18:05:33Z | Watcher already running (PID: 90452)
+2026-01-21T19:05:00Z | Watcher already running (PID: 90452)
+2026-01-21T23:40:05Z | Stale PID file found, removing
+2026-01-21T23:40:05Z | No tmux session found, running watcher in background
+2026-01-21T23:40:05Z | Watcher launched in background (PID: 21017)
+2026-01-22T01:00:10Z | Watcher already running (PID: 32007)

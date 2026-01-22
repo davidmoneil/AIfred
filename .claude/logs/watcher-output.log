@@ -1,0 +1,5 @@
+[0;36m━━━ JARVIS WATCHER v2.0 ━━━[0m threshold:80% interval:30s
+[0;32m●[0m Context [0;32m●[0m Commands [0;32m●[0m JICM │ Ctrl+C to stop
+
+[0;31m[ERROR][0m tmux session 'jarvis' not found
+Start Jarvis with: .claude/scripts/launch-jarvis-tmux.sh

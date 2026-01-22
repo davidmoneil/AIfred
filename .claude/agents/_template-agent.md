@@ -1,3 +1,8 @@
+---
+name: _template
+description: Template for creating new agents - not an active agent
+---
+
 # Agent: [Agent Name]
 
 ## Metadata

@@ -27,6 +27,10 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
 TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
 TMUX_SESSION="${TMUX_SESSION:-jarvis}"
 
+# Target the main Claude Code window (window 0), not the whole session
+# This ensures commands go to Claude Code even if watcher runs in window 1
+TMUX_TARGET="${TMUX_SESSION}:0"
+
 # Paths
 SIGNAL_FILE="$PROJECT_DIR/.claude/context/.command-signal"
 JICM_TRIGGER_FILE="$PROJECT_DIR/.claude/context/.jicm-trigger"
@@ -35,9 +39,17 @@ LOG_FILE="$PROJECT_DIR/.claude/logs/jarvis-watcher.log"
 STATUS_FILE="$PROJECT_DIR/.claude/context/.watcher-status"
 
 # Thresholds
+# DEFAULT_THRESHOLD: 80% = 144000/180000 effective context (aligned with autonomy-config.yaml)
+# JICM triggers at 80% to allow graceful compression before native auto-compact (99%)
 DEFAULT_THRESHOLD=80
 DEFAULT_INTERVAL=30
 MAX_CONTEXT_TOKENS=200000
+MAX_OUTPUT_TOKENS=20000  # Matches CLAUDE_CODE_MAX_OUTPUT_TOKENS
+
+# Idle detection settings
+IDLE_CHECK_INTERVAL=2     # Seconds between idle checks
+IDLE_REQUIRED_CYCLES=3    # Number of stable cycles to confirm idle
+IDLE_TIMEOUT=120          # Maximum seconds to wait for idle state
 
 # Parse arguments
 THRESHOLD=$DEFAULT_THRESHOLD
@@ -57,11 +69,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Supported commands whitelist
+# Updated 2026-01-21: Added /statusline
 SUPPORTED_COMMANDS=(
     "/compact" "/rename" "/resume" "/export" "/doctor"
     "/status" "/usage" "/cost" "/bashes" "/review"
     "/plan" "/security-review" "/stats" "/todos" "/context"
-    "/hooks" "/release-notes" "/clear"
+    "/hooks" "/release-notes" "/clear" "/statusline"
 )
 
 # Colors
@@ -78,6 +91,10 @@ NC='\033[0m'
 # =============================================================================
 
 mkdir -p "$(dirname "$LOG_FILE")"
+
+# Write PID file for watcher detection
+PID_FILE="$PROJECT_DIR/.claude/context/.watcher-pid"
+echo $$ > "$PID_FILE"
 mkdir -p "$(dirname "$STATUS_FILE")"
 mkdir -p "$(dirname "$SIGNAL_FILE")"
 
@@ -108,7 +125,7 @@ log() {
 
 get_token_count() {
     local pane_content
-    pane_content=$("$TMUX_BIN" capture-pane -t "$TMUX_SESSION" -p 2>/dev/null || echo "")
+    pane_content=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
 
     # Extract token count from status line (format: "120916 tokens" or "120,916 tokens")
     local token_line
@@ -146,6 +163,80 @@ max_context: $MAX_CONTEXT_TOKENS
 EOF
 }
 
+# Write poll data to context-estimate.json (replaces context-accumulator.js)
+update_context_estimate() {
+    local tokens="$1"
+    local pct="$2"
+    local estimate_file="$PROJECT_DIR/.claude/logs/context-estimate.json"
+
+    mkdir -p "$(dirname "$estimate_file")"
+
+    cat > "$estimate_file" <<EOF
+{
+  "sessionStart": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "totalTokens": $tokens,
+  "actualTokens": $tokens,
+  "toolCalls": 0,
+  "lastUpdate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "percentage": $pct,
+  "source": "jarvis-watcher"
+}
+EOF
+}
+
+# =============================================================================
+# IDLE DETECTION
+# =============================================================================
+
+# Check if Claude is currently processing (has spinner or is mid-response)
+is_claude_busy() {
+    local pane_content
+    pane_content=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
+
+    # Look for spinner characters or "Thinking" indicators
+    # Common spinner chars: ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏ ◐◓◑◒ ▁▂▃▄▅▆▇█
+    if echo "$pane_content" | grep -qE '[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏◐◓◑◒▁▂▃▄▅▆▇]|Thinking|thinking|Processing|⣾⣽⣻⢿⡿⣟⣯⣷'; then
+        return 0  # Busy
+    fi
+
+    # Check for "Cooked for" or duration indicator (Claude finished a turn)
+    if echo "$pane_content" | tail -5 | grep -qE 'Cooked for|tokens|>'; then
+        return 1  # Not busy (showing prompt or completion message)
+    fi
+
+    # Default: assume not busy
+    return 1
+}
+
+# Wait for Claude to become idle before triggering JICM
+wait_for_idle() {
+    local stable_count=0
+    local wait_count=0
+
+    log INFO "Waiting for idle state before JICM trigger..."
+
+    while [[ $wait_count -lt $IDLE_TIMEOUT ]]; do
+        if is_claude_busy; then
+            stable_count=0
+            if [[ $((wait_count % 10)) -eq 0 ]]; then
+                log INFO "  Claude is busy, waiting... (${wait_count}s)"
+            fi
+        else
+            ((stable_count++))
+            if [[ $stable_count -ge $IDLE_REQUIRED_CYCLES ]]; then
+                log INFO "  Idle state confirmed after ${wait_count}s"
+                return 0
+            fi
+        fi
+
+        sleep "$IDLE_CHECK_INTERVAL"
+        ((wait_count += IDLE_CHECK_INTERVAL))
+    done
+
+    log WARN "Idle timeout after ${IDLE_TIMEOUT}s - proceeding anyway"
+    return 1
+}
+
 # =============================================================================
 # COMMAND EXECUTION
 # =============================================================================
@@ -175,7 +266,11 @@ send_command() {
     fi
 
     log CMD "Sending: $full_command"
-    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$full_command" Enter
+    # Send command text as literal (no key parsing), then Enter separately
+    # Using C-m (Ctrl+M = carriage return) instead of Enter keyword for reliability
+    "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$full_command"
+    sleep 0.1  # Brief delay to ensure text is rendered
+    "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
     return 0
 }
 
@@ -188,10 +283,13 @@ process_signal_file() {
     local signal_content
     signal_content=$(cat "$SIGNAL_FILE")
 
-    local command args source
+    local command args source auto_resume resume_delay resume_message
     command=$(echo "$signal_content" | jq -r '.command // empty' 2>/dev/null || echo "")
     args=$(echo "$signal_content" | jq -r '.args // empty' 2>/dev/null || echo "")
     source=$(echo "$signal_content" | jq -r '.source // "unknown"' 2>/dev/null || echo "unknown")
+    auto_resume=$(echo "$signal_content" | jq -r '.auto_resume // false' 2>/dev/null || echo "false")
+    resume_delay=$(echo "$signal_content" | jq -r '.resume_delay // 3' 2>/dev/null || echo "3")
+    resume_message=$(echo "$signal_content" | jq -r '.resume_message // "continue"' 2>/dev/null || echo "continue")
 
     if [[ -z "$command" ]]; then
         log WARN "Invalid signal file (no command)"
@@ -206,13 +304,20 @@ process_signal_file() {
         return 1
     fi
 
-    log INFO "Processing signal: $command from $source"
+    log INFO "Processing signal: $command from $source (auto_resume=$auto_resume)"
 
     # Remove signal file before executing
     rm -f "$SIGNAL_FILE"
 
     # Execute command
     send_command "$command" "$args"
+
+    # Handle auto-resume if requested
+    if [[ "$auto_resume" == "true" ]]; then
+        log INFO "Auto-resume enabled, waiting ${resume_delay}s then sending: $resume_message"
+        sleep "$resume_delay"
+        send_command "$resume_message" ""
+    fi
 
     return 0
 }
@@ -241,12 +346,14 @@ threshold: $THRESHOLD
 reason: automatic_threshold
 EOF
 
-    # Step 0: Graceful pause - send Escape to cancel any partial input
-    log JICM "Step 0: Escape (cancel partial input)"
-    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" Escape
-    sleep 1
+    # Step 0: Wait for Claude to become idle (graceful completion)
+    # This ensures current task completes before compression starts
+    log JICM "Step 0: Waiting for idle state (graceful completion)"
+    JICM_STATE="waiting_idle"
+    wait_for_idle
 
     # Step 1: Send /intelligent-compress for AI-powered context compression
+    # This invokes the skill which updates session-state, priorities, and compressed-context
     log JICM "Step 1: /intelligent-compress (AI compression)"
     send_command "/intelligent-compress"
     JICM_STATE="compressing"
@@ -269,12 +376,26 @@ EOF
         rm -f "$PROJECT_DIR/.claude/context/.clear-ready-signal"
         send_command "/clear"
         JICM_STATE="cleared"
+
+        # Step 4: Wait for SessionStart hook to process, then trigger resume
+        # The SessionStart hook will inject compressed context via additionalContext
+        sleep 3  # Wait for /clear and hook processing
+        log JICM "Step 4: Triggering work continuation"
+        # This message triggers Jarvis to read session files and continue
+        send_command "Resume work from the compressed context. Read session-state.md and current-priorities.md, then continue the task that was in progress."
+        JICM_STATE="resumed"
     else
         # Timeout - fall back to simple checkpoint
         log JICM "Step 3: Compression timeout, falling back to simple checkpoint"
         create_watcher_checkpoint "$tokens" "$pct"
-        echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$PROJECT_DIR/.claude/context/.auto-clear-signal"
-        JICM_STATE="signaled_fallback"
+        send_command "/clear"
+        JICM_STATE="cleared_fallback"
+
+        # Step 4: Send continuation prompt to trigger context restoration
+        sleep 3
+        log JICM "Step 4: Triggering work continuation (fallback)"
+        send_command "Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress."
+        JICM_STATE="resumed"
     fi
 }
 
@@ -312,13 +433,24 @@ EOF
 
 check_for_clear_signal() {
     # Check if Claude has signaled that it's ready for /clear
-    if [[ -f "$PROJECT_DIR/.claude/context/.auto-clear-signal" ]]; then
-        log JICM "Clear signal detected - sending /clear"
-        rm -f "$PROJECT_DIR/.claude/context/.auto-clear-signal"
+    # Supports both signal file names:
+    #   .auto-clear-signal - legacy/fallback flows
+    #   .clear-ready-signal - /intelligent-compress manual invocation
+    local signal_found=false
 
+    if [[ -f "$PROJECT_DIR/.claude/context/.auto-clear-signal" ]]; then
+        log JICM "Clear signal detected (.auto-clear-signal) - sending /clear"
+        rm -f "$PROJECT_DIR/.claude/context/.auto-clear-signal"
+        signal_found=true
+    elif [[ -f "$PROJECT_DIR/.claude/context/.clear-ready-signal" ]]; then
+        log JICM "Clear signal detected (.clear-ready-signal) - sending /clear"
+        rm -f "$PROJECT_DIR/.claude/context/.clear-ready-signal"
+        signal_found=true
+    fi
+
+    if [[ "$signal_found" == "true" ]]; then
         sleep 1  # Brief pause
         send_command "/clear"
-
         JICM_STATE="clearing"
         return 0
     fi
@@ -400,8 +532,9 @@ main() {
         local pct_int
         pct_int=$(echo "$pct" | cut -d'.' -f1)
 
-        # Update status file
+        # Update status file and context estimate (replaces context-accumulator.js)
         update_status "$tokens" "$pct" "$JICM_STATE"
+        update_context_estimate "$tokens" "$pct"
 
         # Display status (only if changed significantly)
         if [[ "$tokens" != "$last_tokens" ]]; then
@@ -428,8 +561,12 @@ main() {
             jicm_triggered=true
         fi
 
-        # Reset trigger if we drop well below threshold
-        if [[ $pct_int -lt $((THRESHOLD - 20)) ]]; then
+        # Reset trigger after JICM completes and context drops below 50%
+        # (Old logic: pct < threshold-20 was impossible with low thresholds like 20%)
+        # New logic: After successful JICM (state=resumed), reset when context < 50%
+        # This allows JICM to re-trigger when context builds up again
+        if [[ "$jicm_triggered" == "true" ]] && [[ "$JICM_STATE" == "resumed" ]] && [[ $pct_int -lt 50 ]]; then
+            log INFO "Resetting JICM trigger (context at ${pct_int}% after successful completion)"
             jicm_triggered=false
             JICM_STATE="monitoring"
         fi

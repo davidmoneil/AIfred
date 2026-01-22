@@ -1,3 +1,8 @@
+---
+name: project-manager
+description: Progress and alignment review for milestone/PR validation
+---
+
 # Agent: Project Manager
 
 ## Metadata

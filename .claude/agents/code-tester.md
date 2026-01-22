@@ -1,3 +1,8 @@
+---
+name: code-tester
+description: Validate code changes through automated tests, Playwright user flows, and screenshot capture
+---
+
 # Agent: Code Tester
 
 ## Metadata

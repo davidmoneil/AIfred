@@ -100,12 +100,18 @@ When weather unavailable:
    └── Check for checkpoint file (auto-resume)
    ```
 
-2. **Baseline Synchronization** (if configured)
+2. **Baseline Synchronization** (automatic)
    ```
-   ├── git fetch on AIfred baseline
+   ├── git fetch on AIfred baseline (always runs)
    ├── Compare with local version
-   └── Note any upstream changes
+   ├── If behind: inform user and run /sync-aifred-baseline
+   │   └── Sync analyzes each change → ADOPT/ADAPT/REJECT/DEFER
+   └── If up-to-date: log and continue silently
    ```
+
+   **Important**: The adopt/adapt/defer classification happens PER-CHANGE
+   during the sync analysis, not as an upfront question. Never ask
+   "adopt/adapt/defer?" before the user has seen what the changes are.
 
 3. **Project Context**
    ```

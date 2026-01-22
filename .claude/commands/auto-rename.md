@@ -7,44 +7,69 @@ allowed-tools: Bash(.claude/scripts/*)
 
 Trigger the built-in `/rename` command autonomously via the signal-based watcher.
 
-## Usage
+**Note**: `/rename` renames the current session. A name is REQUIRED.
 
-When the user asks to "rename session", "call this session X", "name this chat", or similar:
+## Usage Modes
 
-### Step 1: Extract Session Name (required)
+### Mode 1: Fire-and-Forget (Default)
 
-The name argument is required. Extract from user request.
+When the user asks to "rename session", "call this session X", "name this chat":
 
-Examples:
+**Step 1**: Extract session name (REQUIRED)
 - "rename this to Feature Implementation" → name: "Feature Implementation"
-- "call this session Bug Fix Sprint" → name: "Bug Fix Sprint"
-- "just rename it" → ASK: "What would you like to name this session?"
+- "just rename it" → ASK USER for a name
 
-### Step 2: Create Signal
+**Step 2**: Send signal with name
+```bash
+.claude/scripts/signal-helper.sh rename "SESSION_NAME_HERE"
+```
+
+### Mode 2: With Auto-Resume
+
+When Jarvis needs to rename AND continue working automatically:
 
 ```bash
-source .claude/scripts/signal-helper.sh && signal_rename "SESSION_NAME_HERE"
+.claude/scripts/signal-helper.sh with-resume /rename "PR-12.11 Auto-Resume Implementation" "continue" 3
 ```
 
-Replace `SESSION_NAME_HERE` with the extracted name.
+Parameters:
+- Command: `/rename`
+- Args: Session name (REQUIRED)
+- Resume message: `"continue"` (sent after rename completes)
+- Resume delay: `3` (seconds)
 
-### Step 3: Inform User
+## CRITICAL: Name is Required
 
-```
-Signal sent for /rename "SESSION_NAME". The watcher will execute it in ~2 seconds.
+**DO NOT** send `/rename` without a name - always ask user if not provided.
 
-The session will be renamed to: SESSION_NAME
-```
+## Examples
 
-## Prerequisites
-
-- Watcher must be running (check with `watcher_status`)
-- Name argument is REQUIRED - ask user if not provided
-
-## Example
+### Example 1: User-specified name
 
 User: "Rename this session to Autonomous Commands Implementation"
 
 Response:
-1. Run: `source .claude/scripts/signal-helper.sh && signal_rename "Autonomous Commands Implementation"`
-2. Say: "Signal sent for /rename. Session will be renamed to 'Autonomous Commands Implementation'."
+1. Run: `.claude/scripts/signal-helper.sh rename "Autonomous Commands Implementation"`
+2. Say: "Signal sent for /rename. Session will be renamed."
+3. Continue with any other pending work
+
+### Example 2: Name not provided
+
+User: "Rename this session"
+
+Response:
+1. ASK: "What would you like to name this session?"
+2. Wait for user response
+3. Then send: `.claude/scripts/signal-helper.sh rename "USER_PROVIDED_NAME"`
+
+### Example 3: Rename with auto-resume
+
+When Jarvis renames as part of session setup:
+1. Run: `.claude/scripts/signal-helper.sh with-resume /rename "Phase 6 Implementation" "continue" 3`
+2. Say: "Signal sent for /rename with auto-resume."
+3. Watcher renames, waits 3s, then sends "continue"
+
+## Related
+
+- `/end-session` — Clean session exit
+- `self-monitoring-commands.md` — Full pattern documentation

@@ -2,9 +2,12 @@
 
 Automatic behaviors that run before/after tool executions.
 
-**Last Updated**: 2026-01-09
-**Registered Hooks**: 10 (see settings.json)
-**Unregistered Files**: 16 (flagged for PR-10.5 review)
+**Last Updated**: 2026-01-21
+**Registered Hooks**: 9 (see settings.json)
+**Unregistered Files**: 17 (flagged for PR-10.5 review)
+
+> **JICM v2 Note**: `context-accumulator.js` removed from PostToolUse hooks.
+> Context monitoring now handled by `jarvis-watcher.sh` (polls status line).
 
 ---
 
@@ -33,9 +36,11 @@ These hooks are registered in `settings.json` and actively execute:
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `context-accumulator.js` | PostToolUse | Track context token usage |
 | `cross-project-commit-tracker.js` | PostToolUse | Track commits across projects |
 | `selection-audit.js` | PostToolUse | Audit tool selection decisions |
+| `milestone-detector.js` | PostToolUse | Detect milestone completions |
+
+> **Removed**: `context-accumulator.js` — Context monitoring moved to jarvis-watcher.sh (JICM v2)
 
 ---
 

@@ -1457,9 +1457,310 @@ Autonomous operation must not compromise:
 
 ---
 
+## Part VII: Auto-Resume Signal Integration for Autonomous Workflows
+
+**Added**: 2026-01-21
+**Status**: PR-12.11 Proposed
+
+### Background
+
+Jarvis has 17 auto-command wrappers (`.claude/commands/auto-*.md`) that enable autonomous execution of Claude Code built-in `/slash-commands` via the signal-based watcher system. These commands use a **fire-and-forget** pattern where Jarvis sends a signal and the watcher executes the command via tmux keystrokes.
+
+However, fire-and-forget alone doesn't support **autonomous workflows** where Jarvis needs to:
+1. Execute a command
+2. Wait for it to complete
+3. Receive the output/results
+4. Continue working based on those results
+
+The **auto-resume** feature addresses this by allowing the watcher to send a continuation message after command execution, automatically resuming Jarvis's work.
+
+### Key Distinction: /usage vs /context
+
+| Command | Shows | Use Case |
+|---------|-------|----------|
+| `/usage` | Token **BUDGET** usage (session/daily/weekly quotas) | "How much of my quota have I used?" |
+| `/context` | Context **WINDOW** usage (tokens in current conversation) | "How much context space is left?" |
+
+**For self-monitoring**, Jarvis needs BOTH:
+- `/context` — To decide when JICM compression is needed
+- `/usage` — To track session budget consumption
+
+### Current Infrastructure
+
+**Signal Helper** (`.claude/scripts/signal-helper.sh`):
+```bash
+# Fire-and-forget (existing)
+.claude/scripts/signal-helper.sh usage
+
+# With auto-resume (new)
+.claude/scripts/signal-helper.sh with-resume /usage "" "continue" 3
+```
+
+Parameters for `with-resume`:
+1. Command (e.g., `/usage`, `/context`)
+2. Args (empty string if none)
+3. Resume message (sent after command completes)
+4. Resume delay (seconds to wait)
+
+**Watcher Support** (`jarvis-watcher.sh`):
+- Reads `auto_resume`, `resume_delay`, `resume_message` from signal JSON
+- Executes command, waits delay, sends resume message
+
+### PR-12.11: Auto-Resume Enhancement for All Auto-Commands
+
+**Purpose**: Upgrade auto-commands to support both fire-and-forget AND auto-resume modes, enabling fully autonomous self-monitoring workflows.
+
+**Revised**: 2026-01-21 (Expanded command list, added issues discovered)
+
+#### Complete Native Claude Code Command List
+
+| Command | Description | Auto-Resume Compatible | Notes |
+|---------|-------------|------------------------|-------|
+| `/clear` | Clears conversation history | ✅ YES | Already integrated with JICM |
+| `/compact` | Compresses conversation | ✅ YES | Accepts focus parameter |
+| `/context` | Visualizes context usage | ✅ YES | Core self-monitoring |
+| `/cost` | Shows token/cost statistics | ✅ YES | Budget tracking |
+| `/doctor` | Checks installation | ✅ YES | Diagnostics |
+| `/export` | Exports conversation | ⚠️ PARTIAL | **Must pass filename** (see issues) |
+| `/model` | Switches AI models | ❌ NO | Interactive menu |
+| `/pr-comments` | Shows PR comments | ⚠️ PARTIAL | **GitHub access issues** (see issues) |
+| `/release-notes` | Shows release notes | ✅ YES | Information |
+| `/resume` | Continues previous conversation | ⚠️ PARTIAL | May need session ID |
+| `/review` | Requests code review | ✅ YES | Code quality |
+| `/rewind` | Returns to earlier state | ❌ NO | Interactive point selection |
+| `/security-review` | Performs security review | ✅ YES | Security checks |
+| `/status` | Opens settings panel | ⚠️ CONFLICT | **Conflicts with Jarvis /status** |
+| `/statusline` | Sets up statusline UI | ✅ YES | One-time setup |
+| `/terminal-setup` | Installs key binding | ❌ NO | One-time manual setup |
+| `/todos` | Lists TODO entries | ✅ YES | Task tracking |
+| `/usage` | Shows plan usage limits | ✅ YES | Budget monitoring |
+
+**Legend**:
+- ✅ YES = Fully compatible with auto-resume
+- ⚠️ PARTIAL = Works but needs special handling
+- ❌ NO = Interactive/manual, not suitable for auto-resume
+
+#### PR-12.11.1: Issues Discovered (2026-01-21)
+
+**Issue 1: /export Requires Filename**
+```
+Problem: /export without filename opens interactive menu
+Solution: Always pass filename parameter
+Pattern: .claude/scripts/signal-helper.sh with-resume /export "session-$(date +%Y%m%d-%H%M).md" "continue" 3
+```
+
+**Issue 2: /pr-comments GitHub Access**
+```
+Problem: Repository davidmoneil/AIfred cannot be resolved
+Cause: Remote URL points to upstream baseline, not Jarvis fork
+Error: GraphQL: Could not resolve to a Repository with the name 'davidmoneil/AIfred'
+
+Solutions:
+1. Update git remote to point to CannonCoPilot fork for PR operations
+2. Or skip /pr-comments for Jarvis repo (no PRs against upstream)
+3. Document limitation: /pr-comments only works for repos user has access to
+```
+
+**Issue 3: /status Namespace Conflict**
+```
+Problem: Native /status conflicts with Jarvis custom /status command
+Current behavior: Jarvis /status shows autonomic system status, not settings panel
+
+Solutions:
+1. Create /auto-settings for native settings panel
+2. Or rename Jarvis status to /jarvis-status
+3. Document: /status shows Jarvis autonomic status, not native settings
+```
+
+**Issue 4: Interactive Commands**
+```
+Commands that open interactive menus are NOT compatible with auto-resume:
+- /model - Model picker menu
+- /rewind - Interactive point selection
+- /terminal-setup - Manual iTerm2/VS Code setup
+
+These should NOT have auto-* wrappers created.
+```
+
+#### PR-12.11.2: Commands to Implement
+
+**Tier 1 - Core Self-Monitoring** (HIGH priority):
+| Command | Auto-Command | Status | Notes |
+|---------|--------------|--------|-------|
+| /context | auto-context | ✅ DONE | Updated with auto-resume |
+| /usage | auto-usage | ✅ DONE | Updated with auto-resume |
+| /cost | auto-cost | 🔲 TODO | Budget tracking |
+| /compact | auto-compact | 🔲 TODO | Context management |
+
+**Tier 2 - Session Management** (MEDIUM priority):
+| Command | Auto-Command | Status | Notes |
+|---------|--------------|--------|-------|
+| /doctor | auto-doctor | 🔲 TODO | Diagnostics |
+| /export | auto-export | 🔲 TODO | Must pass filename |
+| /todos | auto-todos | 🔲 TODO | Task tracking |
+| /review | auto-review | 🔲 TODO | Code quality |
+| /security-review | auto-security-review | 🔲 TODO | Security |
+
+**Tier 3 - Information** (LOW priority):
+| Command | Auto-Command | Status | Notes |
+|---------|--------------|--------|-------|
+| /release-notes | auto-release-notes | 🔲 TODO | Information |
+| /statusline | auto-statusline | 🔲 TODO | One-time setup |
+
+**Not Implementing** (interactive/conflicts):
+| Command | Reason |
+|---------|--------|
+| /model | Interactive menu |
+| /rewind | Interactive selection |
+| /terminal-setup | Manual one-time setup |
+| /status | Conflicts with Jarvis /status |
+| /pr-comments | GitHub access issues |
+
+#### PR-12.11.3: Update signal-helper.sh Whitelist
+
+Add new commands to `SUPPORTED_COMMANDS` array:
+```bash
+SUPPORTED_COMMANDS=(
+    # Existing
+    "/compact" "/rename" "/resume" "/export" "/doctor"
+    "/status" "/usage" "/cost" "/bashes" "/review"
+    "/plan" "/security-review" "/stats" "/todos" "/context"
+    "/hooks" "/release-notes" "/clear"
+    # New additions
+    "/statusline"
+)
+```
+
+#### PR-12.11.4: Self-Monitoring Workflow Patterns
+
+**Pattern A: Context Health Check**
+```
+1. Send /context with auto-resume
+2. Watcher executes, waits 3s, sends "continue"
+3. Jarvis receives context breakdown in system-reminder
+4. Jarvis decides if JICM compression needed
+5. Loop continues autonomously
+```
+
+**Pattern B: Budget Monitoring**
+```
+1. Send /usage with auto-resume
+2. Watcher executes, waits 3s, sends "continue"
+3. Jarvis receives budget info (session/daily/weekly quotas)
+4. Jarvis logs/tracks session budget
+5. Can trigger alerts if budget low
+```
+
+**Pattern C: Combined Health Dashboard**
+```
+1. Send /context with auto-resume
+2. After resume, send /usage with auto-resume
+3. After resume, aggregate both into health report
+4. Store in .claude/logs/health-dashboard.json
+5. Continue with work
+```
+
+**Pattern D: Export on Checkpoint**
+```
+1. Before JICM compression, send /export with auto-resume
+2. Filename: session-YYYYMMDD-HHMM.md
+3. After resume, continue with compression
+4. Conversation preserved for reference
+```
+
+#### PR-12.11.5: Validation Test Suite
+
+| Test ID | Command | Resume Message | Expected Behavior |
+|---------|---------|----------------|-------------------|
+| AR-01 | /context | "continue" | Context shown, Jarvis resumes |
+| AR-02 | /usage | "proceed" | Budget shown, Jarvis resumes |
+| AR-03 | /cost | "next" | Cost shown, Jarvis resumes |
+| AR-04 | /compact | "done" | Compaction complete, Jarvis resumes |
+| AR-05 | /doctor | "continue" | Diagnostics shown, Jarvis resumes |
+| AR-06 | /export "test.md" | "continue" | File exported, Jarvis resumes |
+| AR-07 | /todos | "continue" | Todos shown, Jarvis resumes |
+| AR-08 | /review | "continue" | Review started, Jarvis resumes |
+| AR-09 | Chained | Multiple | Sequential commands work |
+
+**Acceptance Criteria**:
+- [ ] All Tier 1 auto-commands document auto-resume mode
+- [ ] All Tier 2 auto-commands document auto-resume mode
+- [ ] signal-helper.sh whitelist updated
+- [ ] Issues documented and workarounds implemented
+- [ ] Self-monitoring workflows validated end-to-end
+- [ ] No race conditions or missed signals
+
+---
+
+### PR-12.12: Agent Parse Error Fixes
+
+**Purpose**: Fix the 11 agent files with missing required frontmatter fields.
+
+**Discovered**: 2026-01-21 via `/doctor`
+
+#### Agent Files to Fix
+
+| File | Error | Fix Required |
+|------|-------|--------------|
+| `agents/archive/memory-bank-synchronizer.md` | Missing "description" | Add description field |
+| `agents/archive/_template-agent.md` | Missing "name" | Add name field |
+| `agents/archive/deep-research.md` | Missing "name" | Add name field |
+| `agents/archive/docker-deployer.md` | Missing "name" | Add name field |
+| `agents/archive/service-troubleshooter.md` | Missing "name" | Add name field |
+| `agents/_template-agent.md` | Missing "name" | Add name field |
+| `agents/project-manager.md` | Missing "name" | Add name field |
+| `agents/code-review.md` | Missing "name" | Add name field |
+| `agents/code-tester.md` | Missing "name" | Add name field |
+| `agents/code-implementer.md` | Missing "name" | Add name field |
+| `agents/code-analyzer.md` | Missing "name" | Add name field |
+
+#### Required Frontmatter Format
+
+```yaml
+---
+name: agent-name
+description: Brief description of what the agent does
+model: haiku  # or sonnet, opus
+---
+```
+
+#### Implementation
+
+1. Add `name` field to all 10 agents missing it
+2. Add `description` field to memory-bank-synchronizer.md
+3. Run `/doctor` to verify fixes
+4. Consider moving archive agents to a non-parsed location
+
+**Acceptance Criteria**:
+- [ ] `/doctor` shows 0 agent parse errors
+- [ ] All active agents have valid frontmatter
+- [ ] Archive agents either fixed or moved to non-parsed location
+
+---
+
+### Use Cases Enabled by PR-12.11
+
+1. **Autonomous Context Management**: Jarvis monitors own context, triggers JICM when needed
+2. **Budget-Aware Operation**: Jarvis tracks session budget, warns user proactively
+3. **Health Dashboards**: Periodic self-assessment without user intervention
+4. **Workflow Checkpoints**: Check status mid-workflow, continue based on results
+5. **Diagnostic Workflows**: Run /doctor autonomously during maintenance cycles
+6. **Automatic Export**: Save conversation before major operations
+
+### Implementation Notes
+
+- Auto-resume delay should be configurable (default 3s)
+- Resume messages should be contextual ("continue", "proceed", "next step", etc.)
+- Failed commands should still trigger resume (with error context)
+- Watcher logs should capture auto-resume events for debugging
+- /export MUST always include filename parameter
+- /status conflict requires namespace resolution
+
+---
+
 ## Conclusion
 
-This design document defines a comprehensive architecture for transforming Jarvis into a self-directed, self-improving system while maintaining operational discipline. The eight autonomic systems work together to create a continuous improvement loop that:
+This design document defines a comprehensive architecture for transforming Jarvis into a self-directed, self-improving system while maintaining operational discipline. The nine autonomic systems work together to create a continuous improvement loop that:
 
 1. **Launches** with full context awareness
 2. **Drives** work to completion autonomously
@@ -1471,10 +1772,11 @@ This design document defines a comprehensive architecture for transforming Jarvi
 8. **Maintains** codebase health
 9. **Completes** sessions cleanly
 
-The restructured PR-11 through PR-14 provides an incremental implementation path with clear dependencies and validation criteria.
+The restructured PR-11 through PR-14 provides an incremental implementation path with clear dependencies and validation criteria. **PR-12.11** (Auto-Resume Enhancement) adds the critical capability for fully autonomous self-monitoring workflows.
 
 ---
 
-*Phase 6 Autonomy Design Document v1.0*
+*Phase 6 Autonomy Design Document v2.0*
 *Created: 2026-01-13*
-*Status: Awaiting Review*
+*Revised: 2026-01-21 (Added PR-12.11 Auto-Resume Enhancement)*
+*Status: Active Development*

@@ -7,46 +7,80 @@ allowed-tools: Bash(.claude/scripts/*)
 
 Trigger the built-in `/resume` command autonomously via the signal-based watcher.
 
-## Usage
+**Note**: `/resume` restores a previous conversation. Without a session ID, opens picker.
 
-When the user asks to "resume session", "continue from checkpoint", "restore previous session", or similar:
+## Usage Modes
 
-### Step 1: Extract Session ID (optional)
+### Mode 1: Fire-and-Forget (Default)
 
-If user specifies a session, extract the identifier.
+When the user asks to "resume session", "continue from checkpoint", "restore previous":
 
-Examples:
-- "resume the previous session" → session: "" (most recent)
-- "resume session abc123" → session: "abc123"
-- "continue from yesterday's checkpoint" → session: "" (let user pick)
+**Without session ID** (opens picker):
+```bash
+.claude/scripts/signal-helper.sh resume
+```
 
-### Step 2: Create Signal
+**With session ID**:
+```bash
+.claude/scripts/signal-helper.sh resume "SESSION_ID"
+```
+
+### Mode 2: With Auto-Resume
+
+When Jarvis needs to resume a session AND continue working automatically:
 
 ```bash
-# Resume most recent
-source .claude/scripts/signal-helper.sh && signal_resume
-
-# Resume specific session
-source .claude/scripts/signal-helper.sh && signal_resume "SESSION_ID"
+.claude/scripts/signal-helper.sh with-resume /resume "SESSION_ID" "continue" 5
 ```
 
-### Step 3: Inform User
+Parameters:
+- Command: `/resume`
+- Args: Session ID (optional - empty opens picker)
+- Resume message: `"continue"` (sent after resume completes)
+- Resume delay: `5` (seconds - resume can take longer)
 
-```
-Signal sent for /resume. The watcher will execute it in ~2 seconds.
+## CRITICAL: Fire-and-Forget Pattern
 
-Claude Code will show available sessions to resume.
-```
+**DO NOT:**
+- Verify the signal was created
+- Check watcher status
+- Wait for the command to execute
+- Block on any follow-up checks
 
-## Prerequisites
+**DO:**
+- Send the signal
+- Inform the user briefly
+- **CONTINUE with other work immediately**
 
-- Watcher must be running (check with `watcher_status`)
-- Session ID is optional - if not provided, shows session picker
+The signal system is asynchronous. Trust the watcher.
 
-## Example
+## Examples
+
+### Example 1: Resume most recent (picker)
 
 User: "Resume the previous session"
 
 Response:
-1. Run: `source .claude/scripts/signal-helper.sh && signal_resume`
-2. Say: "Signal sent for /resume. Available sessions will be displayed for selection."
+1. Run: `.claude/scripts/signal-helper.sh resume`
+2. Say: "Signal sent for /resume. Session picker will appear shortly."
+3. Continue with any other pending work
+
+### Example 2: Resume specific session
+
+User: "Resume session abc123"
+
+Response:
+1. Run: `.claude/scripts/signal-helper.sh resume "abc123"`
+2. Say: "Signal sent for /resume session abc123."
+3. Continue with any other pending work
+
+### Example 3: Resume with auto-resume (automated workflow)
+
+When Jarvis auto-resumes after a checkpoint:
+1. Run: `.claude/scripts/signal-helper.sh with-resume /resume "" "continue" 5`
+2. Watcher sends /resume (opens picker), user selects, waits 5s, then sends "continue"
+
+## Related
+
+- `/checkpoint` — Save session state
+- `self-monitoring-commands.md` — Full pattern documentation
