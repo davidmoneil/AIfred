@@ -1,7 +1,8 @@
 # Milestone Review Pattern
 
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Created**: 2026-01-16
+**Updated**: 2026-01-22 (Added Completion Documentation step)
 **Validated**: 2026-01-20 (PRD-V3: 100% issue detection rate)
 **Component**: AC-03 Milestone Review
 **PR**: PR-12.3
@@ -546,7 +547,94 @@ acceptance:
 
 ---
 
-## 8. Integration Points
+## 8. Completion Documentation
+
+After a milestone passes review, document the work in a **Chronicle** to preserve reasoning and approach for future reference.
+
+### Purpose
+
+The Chronicle captures institutional knowledge that review reports miss:
+- **Why** decisions were made (not just what was done)
+- **How** problems were approached (methodology)
+- **What** was learned (patterns, surprises, insights)
+- **What to watch** (risks, technical debt, follow-ups)
+
+### Chronicle Structure
+
+Each milestone entry should include:
+
+```markdown
+## Milestone N: [Name]
+
+**Sessions**: X.1, X.2, ...
+**Date**: YYYY-MM-DD
+**Duration**: ~X hours
+**Commits**: `abc1234`, `def5678`
+
+### N.1 What Was Done
+[Deliverables table, outcomes summary]
+
+### N.2 How It Was Approached
+[Sequence of steps, methodology, format decisions]
+
+### N.3 Why Decisions Were Made
+[Decision table with reasoning]
+
+### N.4 What Was Learned
+[Technical insights, patterns discovered, surprises]
+
+### N.5 What to Watch
+[Risks, technical debt, follow-ups with priority]
+
+### N.6 Metrics
+[Files created, lines added, tests run, issues found/resolved]
+```
+
+### Chronicle Locations
+
+| Context | Chronicle Path |
+|---------|----------------|
+| AIfred Integration | `.claude/context/upstream/integration-chronicle.md` |
+| Project Aion PRs | `.claude/context/projects/pr-chronicle.md` |
+| General Work | `.claude/context/session-chronicle.md` |
+
+### Workflow Integration
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  MILESTONE COMPLETE                                          │
+│         │                                                    │
+│         ▼                                                    │
+│  AC-03 Review (Technical + Progress)                        │
+│         │                                                    │
+│    ┌────┴────┐                                              │
+│    │         │                                              │
+│   Pass      Fail                                            │
+│    │         │                                              │
+│    ▼         ▼                                              │
+│  DOCUMENT   Remediation                                      │
+│  in Chronicle  │                                            │
+│    │           │                                            │
+│    ▼           └─────────────┐                              │
+│  Update decision log         │                              │
+│    │                         │                              │
+│    ▼                         ▼                              │
+│  PROCEED to              Re-Review after fix                │
+│  next milestone                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Principle
+
+**Write for your future self.** In 3 months, you won't remember why you chose approach X over Y. The Chronicle preserves that reasoning so you can:
+- Repeat successful patterns
+- Avoid repeated mistakes
+- Understand historical context when maintaining code
+- Onboard new contributors effectively
+
+---
+
+## 9. Integration Points
 
 ### With AC-02 Wiggum Loop
 
@@ -587,7 +675,7 @@ Store in Memory:
 
 ---
 
-## 9. Examples
+## 10. Examples
 
 ### Successful Review
 
@@ -659,7 +747,7 @@ Jarvis: "PR-12.4 re-review passed. Roadmap updated."
 
 ---
 
-## 10. Metrics
+## 11. Metrics
 
 | Metric | Target | Alert Threshold |
 |--------|--------|-----------------|
@@ -670,7 +758,7 @@ Jarvis: "PR-12.4 re-review passed. Roadmap updated."
 
 ---
 
-## 11. Reliable Activation
+## 12. Reliable Activation
 
 ### Trigger Phrases
 
@@ -745,4 +833,4 @@ Milestone reviews and Wiggum Loop work together:
 
 ---
 
-*Milestone Review Pattern — Jarvis Phase 6 PR-12.3 (Validated PRD-V3 2026-01-20)*
+*Milestone Review Pattern v1.2.0 — Jarvis Phase 6 PR-12.3 (Validated PRD-V3 2026-01-20, Completion Documentation added 2026-01-22)*
