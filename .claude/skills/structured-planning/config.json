@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+
+  "paths": {
+    "specsPath": ".claude/planning/specs",
+    "reviewsPath": ".claude/planning/reviews",
+    "archivePath": ".claude/planning/archive",
+    "questionBankPath": ".claude/skills/structured-planning/templates/question-bank.yaml",
+    "orchestrationPath": ".claude/orchestration"
+  },
+
+  "depthSettings": {
+    "default": "auto",
+    "options": ["minimal", "auto", "comprehensive"],
+    "autoEscalationThreshold": 3,
+    "maxQuestionsPerCategory": 6
+  },
+
+  "modeDetection": {
+    "alwaysConfirm": true,
+    "skipConfirmationThreshold": 0.95,
+    "hookEnabled": true
+  },
+
+  "orchestrationIntegration": {
+    "autoGenerate": true,
+    "requireSpecApproval": true,
+    "linkBackToSpec": true
+  },
+
+  "models": {
+    "planning": "opus",
+    "summary": "sonnet",
+    "modeDetection": "haiku"
+  },
+
+  "naming": {
+    "specPrefix": "",
+    "dateFormat": "YYYY-MM-DD",
+    "slugify": true
+  }
+}

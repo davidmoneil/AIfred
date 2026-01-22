@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Orchestration Detector Hook
  *
@@ -10,6 +11,7 @@
  *   Score >= 9: Auto-invoke orchestration
  *
  * Created: 2026-01-03
+ * Fixed: 2026-01-21 - Converted to stdin/stdout executable hook
  * Source: Design Pattern Integration Plan - Phase 2
  */
 
@@ -258,104 +260,127 @@ async function logDetection(prompt, result) {
 }
 
 /**
- * UserPromptSubmit Hook - Detect complexity and trigger orchestration
+ * Main handler logic
  */
-module.exports = {
-  name: 'orchestration-detector',
-  description: 'Detect complex tasks and trigger orchestration system',
-  event: 'UserPromptSubmit',
+async function handleHook(context) {
+  const { prompt } = context;
 
-  async handler(context) {
-    const { prompt } = context;
+  if (!prompt || prompt.length < 10) {
+    return { proceed: true };
+  }
 
-    if (!prompt || prompt.length < 10) {
-      return { proceed: true };
-    }
+  try {
+    // Check for resume intent first
+    if (detectResumeIntent(prompt)) {
+      const { hasActive, fileName } = await hasActiveOrchestration();
+      if (hasActive) {
+        console.error('[orchestration-detector] Resume intent detected, active: ' + fileName);
 
-    try {
-      // Check for resume intent first
-      if (detectResumeIntent(prompt)) {
-        const { hasActive, fileName } = await hasActiveOrchestration();
-        if (hasActive) {
-          console.log('[orchestration-detector] Resume intent detected, active: ' + fileName);
-
-          return {
-            proceed: true,
-            hookSpecificOutput: {
-              hookEventName: 'UserPromptSubmit',
-              orchestrationResume: true,
-              additionalContext: '\n--- Orchestration Resume Detected ---\n' +
-                'Active orchestration found: ' + fileName + '\n\n' +
-                'Consider running: /orchestration:resume\n' +
-                'This will restore full context from where you left off.\n---'
-            }
-          };
-        }
-      }
-
-      // Calculate complexity score
-      const result = calculateComplexityScore(prompt);
-
-      if (result.shouldSkip) {
-        return { proceed: true };
-      }
-
-      let action = 'none';
-      let additionalContext = null;
-
-      // Tiered response based on score
-      if (result.score >= AUTO_THRESHOLD) {
-        // Score >= 9: Auto-invoke
-        action = 'auto-invoke';
-        additionalContext = '\n' +
-          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-          '🎯 HIGH COMPLEXITY DETECTED (Score: ' + result.score + ')\n' +
-          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-          'This appears to be a complex, multi-phase task.\n\n' +
-          '**AUTO-ORCHESTRATING**: Run /orchestration:plan for this task.\n\n' +
-          'Break it down into phases before starting implementation.\n' +
-          'This ensures nothing is missed and progress is trackable.\n\n' +
-          'Signals detected: ' + result.signals.slice(0, 3).join(', ') + '\n' +
-          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-
-        console.log('[orchestration-detector] AUTO-INVOKE: score=' + result.score);
-
-      } else if (result.score >= SUGGEST_THRESHOLD) {
-        // Score 4-8: Suggest
-        action = 'suggest';
-        additionalContext = '\n--- Orchestration Suggestion ---\n' +
-          'Complexity Score: ' + result.score + '/20\n\n' +
-          'This task may benefit from orchestration.\n' +
-          'Consider: /orchestration:plan "' + prompt.substring(0, 50) + '..."\n\n' +
-          'This will:\n' +
-          '- Break it into trackable phases\n' +
-          '- Define clear done criteria\n' +
-          '- Enable progress tracking across sessions\n\n' +
-          'Proceed directly if you prefer, or orchestrate first.\n---';
-
-        console.log('[orchestration-detector] SUGGEST: score=' + result.score);
-      }
-
-      // Log the detection
-      await logDetection(prompt, { ...result, action });
-
-      if (additionalContext) {
         return {
           proceed: true,
           hookSpecificOutput: {
             hookEventName: 'UserPromptSubmit',
-            orchestrationDetected: true,
-            complexityScore: result.score,
-            action,
-            additionalContext
+            orchestrationResume: true,
+            additionalContext: '\n--- Orchestration Resume Detected ---\n' +
+              'Active orchestration found: ' + fileName + '\n\n' +
+              'Consider running: /orchestration:resume\n' +
+              'This will restore full context from where you left off.\n---'
           }
         };
       }
-
-    } catch (err) {
-      console.error('[orchestration-detector] Error: ' + err.message);
     }
 
-    return { proceed: true };
+    // Calculate complexity score
+    const result = calculateComplexityScore(prompt);
+
+    if (result.shouldSkip) {
+      return { proceed: true };
+    }
+
+    let action = 'none';
+    let additionalContext = null;
+
+    // Tiered response based on score
+    if (result.score >= AUTO_THRESHOLD) {
+      // Score >= 9: Auto-invoke
+      action = 'auto-invoke';
+      additionalContext = '\n' +
+        '='.repeat(50) + '\n' +
+        'HIGH COMPLEXITY DETECTED (Score: ' + result.score + ')\n' +
+        '='.repeat(50) + '\n\n' +
+        'This appears to be a complex, multi-phase task.\n\n' +
+        '**AUTO-ORCHESTRATING**: Run /orchestration:plan for this task.\n\n' +
+        'Break it down into phases before starting implementation.\n' +
+        'This ensures nothing is missed and progress is trackable.\n\n' +
+        'Signals detected: ' + result.signals.slice(0, 3).join(', ') + '\n' +
+        '='.repeat(50);
+
+      console.error('[orchestration-detector] AUTO-INVOKE: score=' + result.score);
+
+    } else if (result.score >= SUGGEST_THRESHOLD) {
+      // Score 4-8: Suggest
+      action = 'suggest';
+      additionalContext = '\n--- Orchestration Suggestion ---\n' +
+        'Complexity Score: ' + result.score + '/20\n\n' +
+        'This task may benefit from orchestration.\n' +
+        'Consider: /orchestration:plan "' + prompt.substring(0, 50) + '..."\n\n' +
+        'This will:\n' +
+        '- Break it into trackable phases\n' +
+        '- Define clear done criteria\n' +
+        '- Enable progress tracking across sessions\n\n' +
+        'Proceed directly if you prefer, or orchestrate first.\n---';
+
+      console.error('[orchestration-detector] SUGGEST: score=' + result.score);
+    }
+
+    // Log the detection
+    await logDetection(prompt, { ...result, action });
+
+    if (additionalContext) {
+      return {
+        proceed: true,
+        hookSpecificOutput: {
+          hookEventName: 'UserPromptSubmit',
+          orchestrationDetected: true,
+          complexityScore: result.score,
+          action,
+          additionalContext
+        }
+      };
+    }
+
+  } catch (err) {
+    console.error('[orchestration-detector] Error: ' + err.message);
   }
-};
+
+  return { proceed: true };
+}
+
+/**
+ * Main function - reads from stdin, processes, outputs to stdout
+ */
+async function main() {
+  // Read JSON from stdin
+  const chunks = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
+  }
+  const input = Buffer.concat(chunks).toString('utf8');
+
+  let context;
+  try {
+    context = JSON.parse(input);
+  } catch (err) {
+    // If we can't parse input, just allow to proceed
+    console.log(JSON.stringify({ proceed: true }));
+    return;
+  }
+
+  const result = await handleHook(context);
+  console.log(JSON.stringify(result));
+}
+
+main().catch(err => {
+  console.error(`[orchestration-detector] Fatal error: ${err.message}`);
+  console.log(JSON.stringify({ proceed: true }));
+});

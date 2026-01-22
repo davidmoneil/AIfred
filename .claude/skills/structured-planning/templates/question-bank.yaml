@@ -1,0 +1,357 @@
+# Question Bank for Structured Planning
+# Questions organized by mode, category, and depth level
+# Depth: base (always asked), extended (complexity detected), deep (high complexity)
+
+version: "1.0"
+updated: "2026-01-19"
+
+# Complexity signals that trigger deeper questions
+depth_signals:
+  escalate_to_extended:
+    - pattern: "not sure|maybe|depends|it depends|possibly"
+      weight: 2
+      category: uncertainty
+    - pattern: "multiple (users|teams|stakeholders|departments)"
+      weight: 2
+      category: stakeholders
+    - pattern: "(security|compliance|audit|privacy|gdpr|hipaa)"
+      weight: 3
+      category: security
+    - pattern: "(scale|performance|load|thousands|millions)"
+      weight: 2
+      category: scale
+    - pattern: "(integrate|integration|external|api|third-party)"
+      weight: 2
+      category: integration
+    - pattern: "(complex|complicated|tricky|challenging)"
+      weight: 2
+      category: explicit_complexity
+
+  escalate_to_deep:
+    threshold: 5
+    patterns:
+      - pattern: "(enterprise|production|mission-critical|business-critical)"
+        weight: 3
+      - pattern: "(years|long-term|roadmap|strategic)"
+        weight: 2
+      - pattern: "(regulatory|legal|contractual|sla)"
+        weight: 4
+      - pattern: "(distributed|microservices|multi-region)"
+        weight: 3
+
+modes:
+  new_design:
+    description: "Full specification for building from scratch"
+    categories:
+
+      vision:
+        description: "Understanding the problem and goals"
+        questions:
+          base:
+            - question: "What specific problem are you trying to solve?"
+              follow_up: "Who experiences this problem most acutely?"
+              purpose: "Establish core value proposition"
+
+            - question: "Who is the primary user of this?"
+              follow_up: "Are there secondary user types?"
+              purpose: "Define target audience"
+
+            - question: "What does success look like?"
+              follow_up: "How will you measure it?"
+              purpose: "Define success criteria"
+
+          extended:
+            - question: "What happens if this doesn't get built?"
+              purpose: "Validate necessity"
+
+            - question: "What alternatives were considered?"
+              follow_up: "Why were they rejected?"
+              purpose: "Validate approach"
+
+            - question: "Who are the stakeholders beyond end users?"
+              purpose: "Identify approval/feedback needs"
+
+          deep:
+            - question: "What are the second-order effects of solving this?"
+              purpose: "Anticipate broader impact"
+
+            - question: "How does this align with long-term goals?"
+              purpose: "Strategic alignment"
+
+            - question: "What would make this a breakthrough vs incremental improvement?"
+              purpose: "Ambition calibration"
+
+      scope:
+        description: "Defining what's in and out"
+        questions:
+          base:
+            - question: "What are the absolute must-have features for launch?"
+              follow_up: "What makes each one essential?"
+              purpose: "Define MVP"
+
+            - question: "What's explicitly out of scope?"
+              follow_up: "Any pressure to include these anyway?"
+              purpose: "Set boundaries"
+
+          extended:
+            - question: "What are the nice-to-have features?"
+              follow_up: "How would you prioritize them?"
+              purpose: "Define phase 2"
+
+            - question: "What dependencies exist?"
+              follow_up: "What's the risk if dependencies aren't ready?"
+              purpose: "Identify blockers"
+
+            - question: "Are there features users expect but you want to exclude?"
+              purpose: "Anticipate feedback"
+
+          deep:
+            - question: "What's the MVP vs the full vision?"
+              follow_up: "What's the path from one to the other?"
+              purpose: "Roadmap clarity"
+
+            - question: "What can be deferred to phase 2 without compromising phase 1?"
+              purpose: "Prioritization"
+
+            - question: "What would you cut if you had half the time?"
+              purpose: "Ruthless prioritization"
+
+      technical:
+        description: "Architecture and implementation"
+        questions:
+          base:
+            - question: "Any technology preferences or constraints?"
+              follow_up: "Why those specifically?"
+              purpose: "Stack alignment"
+
+            - question: "What existing systems does this need to work with?"
+              purpose: "Integration requirements"
+
+          extended:
+            - question: "What are the performance requirements?"
+              follow_up: "Expected load, response times, data volumes?"
+              purpose: "Non-functional requirements"
+
+            - question: "How will data be stored and accessed?"
+              purpose: "Data architecture"
+
+            - question: "What's the deployment environment?"
+              purpose: "Infrastructure planning"
+
+          deep:
+            - question: "What's the scaling strategy?"
+              follow_up: "At what point does architecture need to change?"
+              purpose: "Future-proofing"
+
+            - question: "What's the security model?"
+              follow_up: "Authentication, authorization, data protection?"
+              purpose: "Security architecture"
+
+            - question: "How will you handle failure scenarios?"
+              purpose: "Resilience planning"
+
+      constraints:
+        description: "Limitations and requirements"
+        questions:
+          base:
+            - question: "What's the timeline expectation?"
+              follow_up: "Is this fixed or flexible?"
+              purpose: "Schedule constraints"
+
+          extended:
+            - question: "Are there budget constraints?"
+              purpose: "Resource planning"
+
+            - question: "Any compliance or regulatory requirements?"
+              purpose: "Legal/compliance"
+
+            - question: "Who needs to approve before launch?"
+              purpose: "Approval workflow"
+
+          deep:
+            - question: "What are the non-negotiable quality standards?"
+              purpose: "Quality gates"
+
+            - question: "Are there contractual obligations affecting this?"
+              purpose: "Legal constraints"
+
+      risks:
+        description: "What could go wrong"
+        questions:
+          base:
+            - question: "What's the biggest risk to this project?"
+              follow_up: "How would you mitigate it?"
+              purpose: "Risk awareness"
+
+          extended:
+            - question: "What technical risks are you worried about?"
+              purpose: "Technical risk"
+
+            - question: "What happens if this fails?"
+              purpose: "Failure impact"
+
+          deep:
+            - question: "What's your contingency if the primary approach doesn't work?"
+              purpose: "Plan B"
+
+            - question: "What external factors could derail this?"
+              purpose: "External risks"
+
+  system_review:
+    description: "Assessment of existing system with improvement plan"
+    categories:
+
+      current_state:
+        description: "Understanding what exists"
+        questions:
+          base:
+            - question: "What system are we reviewing?"
+              follow_up: "What's its primary purpose?"
+              purpose: "Context setting"
+
+            - question: "What's working well currently?"
+              follow_up: "Why does that work?"
+              purpose: "Identify strengths"
+
+            - question: "How long has this been in place?"
+              purpose: "Historical context"
+
+          extended:
+            - question: "Who maintains this currently?"
+              purpose: "Ownership clarity"
+
+            - question: "What documentation exists?"
+              purpose: "Knowledge state"
+
+            - question: "How has it evolved over time?"
+              purpose: "Evolution understanding"
+
+          deep:
+            - question: "What decisions led to the current architecture?"
+              purpose: "Historical decisions"
+
+            - question: "What would the original builders change knowing what you know now?"
+              purpose: "Hindsight insights"
+
+      pain_points:
+        description: "Identifying issues"
+        questions:
+          base:
+            - question: "What are the biggest pain points?"
+              follow_up: "Who experiences these most?"
+              purpose: "Problem identification"
+
+            - question: "What's the most common complaint?"
+              purpose: "User feedback"
+
+          extended:
+            - question: "What's the technical debt situation?"
+              follow_up: "What's causing the most friction?"
+              purpose: "Technical debt"
+
+            - question: "What workarounds exist?"
+              purpose: "Hidden complexity"
+
+            - question: "What breaks most often?"
+              purpose: "Reliability issues"
+
+          deep:
+            - question: "What's the root cause of the main issues?"
+              purpose: "Root cause analysis"
+
+            - question: "What would break if you changed X?"
+              purpose: "Coupling analysis"
+
+      desired_state:
+        description: "Where we want to be"
+        questions:
+          base:
+            - question: "What would 'fixed' look like?"
+              purpose: "Vision clarity"
+
+            - question: "What capabilities are missing?"
+              purpose: "Gap identification"
+
+          extended:
+            - question: "What's the target architecture?"
+              purpose: "Architecture vision"
+
+            - question: "What constraints exist on changes?"
+              purpose: "Change constraints"
+
+          deep:
+            - question: "How does the ideal state align with broader goals?"
+              purpose: "Strategic alignment"
+
+      prioritization:
+        description: "What to do first"
+        questions:
+          base:
+            - question: "What would have the biggest impact if fixed first?"
+              purpose: "Impact prioritization"
+
+            - question: "What's the quickest win?"
+              purpose: "Quick wins"
+
+          extended:
+            - question: "What's the order of dependencies?"
+              purpose: "Sequencing"
+
+            - question: "What can be done in parallel?"
+              purpose: "Parallelization"
+
+  feature_planning:
+    description: "Lighter workflow for adding to existing projects"
+    categories:
+
+      feature_scope:
+        description: "What we're building"
+        questions:
+          base:
+            - question: "What capability are you adding?"
+              follow_up: "For whom?"
+              purpose: "Feature definition"
+
+            - question: "What problem does this solve for users?"
+              purpose: "Value clarity"
+
+            - question: "What's explicitly NOT part of this feature?"
+              purpose: "Scope boundaries"
+
+          extended:
+            - question: "How does this relate to existing features?"
+              purpose: "Feature relationships"
+
+            - question: "What's the fallback if full implementation isn't feasible?"
+              purpose: "Contingency"
+
+      integration:
+        description: "How it fits"
+        questions:
+          base:
+            - question: "What existing code does this touch?"
+              purpose: "Impact assessment"
+
+            - question: "Any breaking changes expected?"
+              purpose: "Migration needs"
+
+          extended:
+            - question: "What tests need to be added/updated?"
+              purpose: "Test coverage"
+
+            - question: "How will you roll this out?"
+              purpose: "Deployment strategy"
+
+      acceptance:
+        description: "How we know it's done"
+        questions:
+          base:
+            - question: "How will you know this feature is complete?"
+              purpose: "Done criteria"
+
+            - question: "How will users discover this feature?"
+              purpose: "Discoverability"
+
+          extended:
+            - question: "What metrics will you track?"
+              purpose: "Success measurement"

@@ -1,0 +1,157 @@
+# Upgrade Skill Configuration
+# Sources to monitor for AIProjects improvements
+
+version: "1.0"
+last_updated: "2026-01-21"
+
+# Check frequencies
+schedules:
+  daily:
+    - claude-code-releases
+    - security-advisories
+    - claude-docs
+  weekly:
+    - engineering-blog
+    - discussions
+    - mcp-registry
+  biweekly:
+    - youtube
+    - api-changelog
+
+# Source definitions
+sources:
+  claude-code-releases:
+    name: "Claude Code Releases"
+    url: "https://api.github.com/repos/anthropics/claude-code/releases"
+    type: "github_releases"
+    priority: "critical"
+    extract:
+      - tag_name
+      - name
+      - body
+      - published_at
+      - prerelease
+    notes: "Use GitHub API for structured data"
+
+  security-advisories:
+    name: "Security Advisories"
+    url: "https://github.com/anthropics/claude-code/security/advisories"
+    type: "github_security"
+    priority: "critical"
+    notes: "Check for CVEs and security patches"
+
+  claude-docs:
+    name: "Claude Code Documentation"
+    url: "https://code.claude.com/docs"
+    type: "documentation"
+    priority: "critical"
+    sections:
+      - overview
+      - hooks
+      - mcp-servers
+      - slash-commands
+      - tutorials
+    notes: "Documentation moved to code.claude.com (Jan 2026)"
+
+  engineering-blog:
+    name: "Anthropic Engineering Blog"
+    url: "https://www.anthropic.com/engineering"
+    type: "blog"
+    priority: "important"
+    keywords:
+      - "claude code"
+      - "MCP"
+      - "hooks"
+      - "agent"
+      - "tool use"
+    notes: "Filter posts by keywords for relevance"
+
+  discussions:
+    name: "Claude Code Discussions"
+    url: "https://github.com/anthropics/claude-code/discussions"
+    type: "github_discussions"
+    priority: "important"
+    categories:
+      - announcements
+      - show-and-tell
+      - tips-tricks
+    notes: "Community solutions and workarounds"
+
+  mcp-registry:
+    name: "MCP Servers Registry"
+    url: "https://github.com/modelcontextprotocol/servers"
+    type: "github_repo"
+    priority: "important"
+    watch:
+      - README.md
+      - src/
+    notes: "New MCP servers and updates to existing ones"
+
+  youtube:
+    name: "Anthropic YouTube"
+    url: "https://www.youtube.com/@anthropic-ai"
+    type: "youtube"
+    priority: "supplementary"
+    keywords:
+      - "claude code"
+      - "tutorial"
+      - "demo"
+    notes: "Video tutorials and feature demonstrations"
+
+  api-changelog:
+    name: "Claude API Changelog"
+    url: "https://docs.anthropic.com/en/docs/changelog"
+    type: "documentation"
+    priority: "supplementary"
+    notes: "API changes that may affect MCP tools"
+
+# Categories for classifying discoveries
+categories:
+  - hooks
+  - skills
+  - commands
+  - mcp_servers
+  - security
+  - performance
+  - patterns
+  - best_practices
+  - documentation
+
+# Scoring thresholds
+thresholds:
+  critical_score: 8    # Auto-notify user immediately
+  high_score: 6        # Include in session summary
+  medium_score: 4      # Include in weekly summary
+  low_score: 2         # Log but don't notify
+
+# Relevance scoring weights
+scoring:
+  category_match: 3    # Affects hooks/skills/commands/MCP we use
+  recency_max: 2       # Newer = higher (decay over 30 days)
+  security: 3          # Security-related update
+  breaking_change: -2  # Has breaking changes (penalty)
+  dependencies: 1      # Updates our dependencies
+
+# Rate limiting (be a good citizen)
+rate_limits:
+  github_api: 60       # requests per hour (unauthenticated)
+  web_fetch: 10        # requests per minute
+  retry_delay: 300     # seconds to wait on rate limit
+
+# Notification settings
+notifications:
+  critical_immediate: true
+  daily_summary: false    # Enable when n8n workflow ready
+  weekly_digest: false    # Enable when n8n workflow ready
+
+# Scheduled execution settings
+# See: .claude/context/patterns/autonomous-execution-pattern.md
+scheduled:
+  enabled: true
+  job_name: "upgrade-discover"
+  wrapper_script: ".claude/jobs/claude-scheduled.sh"
+  cron_schedule: "0 6 * * 0"  # Sunday 6:00 AM
+  permission_tier: "analyze"   # discovery | analyze | implement
+  max_turns: 15
+  max_budget_usd: 3.00
+  log_directory: ".claude/logs/scheduled/"

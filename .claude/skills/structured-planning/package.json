@@ -1,0 +1,20 @@
+{
+  "name": "structured-planning-tools",
+  "version": "1.0.0",
+  "description": "Deterministic tools for structured planning skill",
+  "type": "module",
+  "scripts": {
+    "tool": "npx tsx tools/index.ts",
+    "create": "npx tsx tools/index.ts create",
+    "list": "npx tsx tools/index.ts list",
+    "validate": "npx tsx tools/index.ts validate",
+    "archive": "npx tsx tools/index.ts archive",
+    "status": "npx tsx tools/index.ts status"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

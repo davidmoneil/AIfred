@@ -1,0 +1,23 @@
+{
+  "name": "Skill Template",
+  "version": "1.0.0",
+  "description": "Template for creating skills with Code Before Prompts pattern",
+  "templates": [
+    {
+      "id": "default",
+      "name": "Default Template",
+      "description": "Standard document template with sections",
+      "outputPath": ".claude/output/{{NAME}}.md"
+    },
+    {
+      "id": "spec",
+      "name": "Specification Template",
+      "description": "Technical specification with requirements",
+      "outputPath": ".claude/planning/specs/{{DATE}}-{{NAME}}.md"
+    }
+  ],
+  "validation": {
+    "requiredSections": ["## Overview", "## Success Criteria"],
+    "maxSizeBytes": 50000
+  }
+}

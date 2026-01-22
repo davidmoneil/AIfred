@@ -2,8 +2,8 @@
 
 Automatic behaviors that run before/after tool executions.
 
-**Last Updated**: 2026-01-05
-**Total Hooks**: 15
+**Last Updated**: 2026-01-21
+**Total Hooks**: 26 (17 existing + 9 new from sync)
 
 ---
 
@@ -18,22 +18,62 @@ Automatic behaviors that run before/after tool executions.
 | `pre-compact.js` | PreCompact | Preserve context before compaction |
 | `self-correction-capture.js` | UserPromptSubmit | Detect corrections, save lessons |
 | `worktree-manager.js` | PostToolUse | Track worktrees, warn cross-access |
+| `orchestration-detector.js` | UserPromptSubmit | Score task complexity, trigger orchestration |
+| `cross-project-commit-tracker.js` | PostToolUse | Track commits across multiple projects |
 
 ### Core Hooks
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `audit-logger.js` | PreToolUse | Log all tool executions |
+| `audit-logger.js` | PreToolUse | Log all tool executions + pattern detection |
 | `session-tracker.js` | Notification | Track session lifecycle |
 | `session-exit-enforcer.js` | PostToolUse | Track activity for exit |
-| `secret-scanner.js` | PreToolUse | Block commits with secrets |
 | `context-reminder.js` | PostToolUse | Prompt for documentation |
 | `docker-health-check.js` | PostToolUse | Verify container health |
-| `memory-maintenance.js` | PostToolUse | Track Memory MCP entity access for pruning |
+| `memory-maintenance.js` | PostToolUse | Track Memory MCP entity access |
+| `file-access-tracker.js` | PostToolUse | Track context file usage patterns |
+| `health-monitor.js` | PostToolUse | Track service health changes |
+| `restart-loop-detector.js` | PostToolUse | Detect container restart loops |
 
-### Documentation Hooks
+### Security Hooks
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `doc-sync-trigger.js` | PostToolUse | Track code changes, suggest sync after 5+ |
+| `secret-scanner.js` | PreToolUse | Block commits with secrets |
+| `branch-protection.js` | PreToolUse | Protect main/master branches |
+| `credential-guard.js` | PreToolUse | Block reading sensitive files |
+| `amend-validator.js` | PreToolUse | Block amending others' commits |
+
+### Workflow Hooks
+| Hook | Event | Purpose |
+|------|-------|---------|
+| `prompt-enhancer.js` | UserPromptSubmit | Inject LSP/MCP guidance |
+| `lsp-redirector.js` | PreToolUse | Redirect Grep to LSP tool |
+| `doc-sync-trigger.js` | PostToolUse | Track code changes, suggest sync |
+
+---
+
+## Pattern Detection (audit-logger.js)
+
+The audit-logger now detects 15+ design patterns automatically:
+
+| Pattern | Detected When |
+|---------|--------------|
+| memory-storage | Using Memory MCP create/add operations |
+| agent-selection | Invoking Task tool (subagents) |
+| codebase-exploration | Using Explore subagent |
+| implementation-planning | Using Plan subagent |
+| capability-layering | Executing Scripts/ or .claude/jobs/ |
+| worktree-workflow | Git worktree operations |
+| autonomous-execution | Running claude-scheduled |
+| skill-invocation | Using Skill tool |
+| parc-design-review | Using design-review skill |
+| task-orchestration | Using orchestration commands |
+| mcp-integration | Using MCP tools |
+| git-mcp-usage | Using Git MCP |
+| filesystem-mcp-usage | Using Filesystem MCP |
+| cross-project-work | Cross-project-commit-tracker active |
+| web-research | Using WebFetch/WebSearch |
+
+**View detected patterns**: Check `.claude/logs/audit.jsonl` `patterns` field
 
 ---
 
@@ -42,7 +82,7 @@ Automatic behaviors that run before/after tool executions.
 | Type | When | Use For |
 |------|------|---------|
 | `SessionStart` | When Claude starts | Auto-load context, initialize state |
-| `UserPromptSubmit` | User submits prompt | Correction detection, validation |
+| `UserPromptSubmit` | User submits prompt | Correction detection, validation, enhancement |
 | `PreToolUse` | Before tool runs | Validation, logging, blocking |
 | `PostToolUse` | After tool completes | Verification, cleanup, notifications |
 | `Notification` | Session events | Lifecycle tracking |
@@ -52,64 +92,32 @@ Automatic behaviors that run before/after tool executions.
 
 ---
 
-## Lifecycle Hooks Details
+## Configuration
 
-### session-start.js
-Auto-loads context when Claude Code starts:
-- Current git branch and uncommitted changes count
-- Session state (truncated to 2000 chars)
-- Current priorities (truncated to 1500 chars)
+### Audit Verbosity
+```bash
+export CLAUDE_AUDIT_VERBOSITY=standard  # minimal | standard | full
+```
 
-**Result**: No more "read session-state.md" at session start.
+### Health Monitor Critical Containers
+```bash
+export CRITICAL_CONTAINERS="caddy,n8n,loki,grafana,prometheus"
+```
 
-### session-stop.js
-Sends desktop notification when session ends:
-- ✅ "Claude Code Complete" - Normal completion
-- ⚠️ "Claude Code Stopped" - Error occurred
-- 🛑 "Claude Code Cancelled" - User cancelled
-
-**Linux requirement**: `sudo apt install libnotify-bin`
-
-### subagent-stop.js
-Handles spawned agent completion:
-- Logs to `.claude/logs/agent-activity.jsonl`
-- Detects HIGH/CRITICAL issues in output
-- Suggests next actions based on agent type
-
-### pre-compact.js
-Preserves critical context before compaction:
-- Key sections from session-state.md
-- Recent blockers
-- Compaction timestamp
-
-### self-correction-capture.js
-Detects when user corrects Claude:
-- Patterns: "No, actually...", "That's wrong", "You should have..."
-- Severity levels: HIGH, MEDIUM, LOW
-- Logs to `.claude/logs/corrections.jsonl`
-- Prompts to save lessons to `.claude/context/lessons/corrections.md`
-
-### worktree-manager.js
-Tracks git worktree context:
-- Detects worktree vs main repo
-- Warns about cross-worktree file access
-- Logs state to `.claude/logs/.worktree-state.json`
+### Session Name
+```bash
+echo "My Session" > .claude/logs/.current-session
+```
 
 ---
 
-## Memory Maintenance Hook
+## Logs
 
-The `memory-maintenance.js` hook automatically tracks when Memory MCP entities are accessed:
-
-**Tracked Data** (in `.claude/agents/memory/entity-metadata.json`):
-- `firstAccessed`: Date entity was first retrieved
-- `lastAccessed`: Most recent access date
-- `accessCount`: Total number of times accessed
-
-**Use Cases**:
-- Identify stale entities (not accessed in 90+ days)
-- Prioritize frequently-used entities
-- Enable intelligent pruning via `memory-prune.sh`
+- Audit log: `.claude/logs/audit.jsonl`
+- Session activity: `.claude/logs/.session-activity`
+- Entity metadata: `.claude/agents/memory/entity-metadata.json`
+- Corrections: `.claude/logs/corrections.jsonl`
+- Agent activity: `.claude/logs/agent-activity.jsonl`
 
 ---
 
@@ -127,49 +135,4 @@ module.exports = async (context) => {
 
 ---
 
-## Configuration
-
-### Audit Verbosity
-
-```bash
-export CLAUDE_AUDIT_VERBOSITY=standard  # minimal | standard | full
-```
-
-### Session Name
-
-```bash
-echo "My Session" > .claude/logs/.current-session
-```
-
----
-
-## Logs
-
-- Audit log: `.claude/logs/audit.jsonl`
-- Session activity: `.claude/logs/.session-activity`
-- Entity metadata: `.claude/agents/memory/entity-metadata.json`
-
----
-
----
-
-## Documentation Sync Trigger
-
-The `doc-sync-trigger.js` hook automatically tracks code changes:
-
-**How It Works**:
-1. Monitors Write/Edit operations on significant files
-2. Tracks changes in `.claude/logs/.doc-sync-state.json`
-3. After 5+ changes in 24 hours, suggests `/agent memory-bank-synchronizer`
-4. 4-hour cooldown between suggestions
-
-**Significant Files**:
-- `.claude/commands/`, `.claude/agents/`, `.claude/hooks/`, `.claude/skills/`
-- `src/`, `lib/`, `scripts/`
-- `docker-compose*.yaml`, `external-sources/`
-
-**Related**: @.claude/agents/memory-bank-synchronizer.md
-
----
-
-*AIfred Hooks v1.2 - Added doc-sync-trigger for documentation synchronization*
+*AIfred Hooks v2.0 - Major sync from AIProjects (2026-01-21)*

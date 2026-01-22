@@ -1,40 +1,75 @@
-# Patterns Index
+# Design Patterns Index
 
-Reusable implementation patterns extracted from recurring practices.
+This directory contains reusable design patterns for AI infrastructure.
+
+## Core Patterns (Foundation)
+
+### Agent & Skill Architecture
+- **agent-selection-pattern.md** - Choose between custom agents, built-in subagents, skills, or direct tools
+- **agent-invocation-pattern.md** - Agent definition and invocation guidelines
+- **skill-architecture-pattern.md** - Required vs optional skill components
+- **command-invocation-pattern.md** - When/how commands invoke skills/CLI
+
+### Capability & Execution
+- **capability-layering-pattern.md** - Scripts over LLM - 5-layer architecture (IDEA → CODE → CLI → PROMPT → USER)
+- **code-before-prompts-pattern.md** - Deterministic code, AI for intelligence
+- **autonomous-execution-pattern.md** - Scheduled Claude jobs with permission tiers
+
+### Memory & Context
+- **memory-storage-pattern.md** - When to store in Memory MCP (decisions, relationships, events, lessons)
+- **mcp-loading-strategy.md** - Always-On vs On-Demand vs Isolated MCPs
+- **prompt-design-review.md** (PARC) - Prompt → Assess → Relate → Create
+- **prompt-enhancement-pattern.md** - Hook-based guidance injection (LSP, MCP)
+
+## Infrastructure Patterns
+
+### Service Architecture
+- **service-architecture-pattern.md** - TypeScript service patterns (pg-boss, MCP exposure, n8n integration)
+- **health-endpoint-pattern.md** - Service health check standards
+
+### Collaboration & Integration
+- **obsidian-collaboration-pattern.md** - Session artifacts in Obsidian, dual output
+- **cross-project-commit-tracking.md** - Track commits across multiple projects
+- **worktree-shell-functions.md** - Git worktree workflow shortcuts
+
+### Security & Authentication
+- **authentik-automation-pattern.md** - Token-based automation access
+
+## Testing & Validation
+- **sync-validation-test.md** - Test pattern for synchronization
 
 ---
 
-## Active Patterns
+## Pattern Usage
 
-| Pattern | Purpose | Quick Reference |
-|---------|---------|-----------------|
-| [Agent Selection](agent-selection-pattern.md) | Choose between custom agents, built-in subagents, skills, direct tools | Simple → Direct tools; Repeating → Custom agent |
-| [MCP Loading Strategy](mcp-loading-strategy.md) | Three strategies for MCP server loading | Always-On / On-Demand / Isolated |
-| [Memory Storage](memory-storage-pattern.md) | When/how to store in Memory MCP | Issues/decisions → Store; Routine → Skip |
-| [PARC Design Review](prompt-design-review.md) | Pre-implementation pattern check | Prompt → Assess → Relate → Create |
+**When to create a pattern**:
+- You've solved the same problem 3+ times
+- The solution involves multiple steps or decisions
+- The solution could benefit others in similar situations
 
----
+**Pattern structure**:
+```markdown
+# Pattern Name
 
-## Usage
+**Status**: Active | Draft | Deprecated
+**Created**: YYYY-MM-DD
+**Purpose**: One-line description
 
-Before implementing significant tasks:
+## Overview
+...
 
-1. Check if a pattern exists for the task type
-2. Apply the pattern explicitly
-3. Document any new patterns discovered
-4. Update pattern docs if pattern evolves
+## When to Use
+...
 
----
+## Implementation
+...
 
-## Creating New Patterns
+## Examples
+...
+```
 
-Create a pattern when:
-- Same approach is used 3+ times
-- Multiple commands share similar logic
-- A decision framework would help consistency
-
-Use the existing patterns as templates.
-
----
-
-**Last Updated**: 2026-01-02
+**Pattern categories**:
+- **Core**: Fundamental architectural decisions
+- **Infrastructure**: Service deployment and management
+- **Collaboration**: Team workflows and integration
+- **Security**: Authentication and authorization

@@ -3,6 +3,49 @@
   "description": "AIfred default permissions - safe operations without prompting",
   "version": "1.0",
 
+  "hooks": {
+    "pre-tool-use": [
+      "audit-logger",
+      "secret-scanner",
+      "branch-protection",
+      "credential-guard",
+      "amend-validator",
+      "lsp-redirector"
+    ],
+    "post-tool-use": [
+      "file-access-tracker",
+      "cross-project-commit-tracker",
+      "docker-health-check",
+      "memory-maintenance",
+      "health-monitor",
+      "restart-loop-detector",
+      "session-exit-enforcer",
+      "context-reminder",
+      "doc-sync-trigger",
+      "worktree-manager"
+    ],
+    "user-prompt-submit": [
+      "orchestration-detector",
+      "self-correction-capture",
+      "prompt-enhancer"
+    ],
+    "session-start": [
+      "session-start"
+    ],
+    "stop": [
+      "session-stop"
+    ],
+    "subagent-stop": [
+      "subagent-stop"
+    ],
+    "pre-compact": [
+      "pre-compact"
+    ],
+    "notification": [
+      "session-tracker"
+    ]
+  },
+
   "permissions": {
     "allow": [
       "Bash(git status:*)",
