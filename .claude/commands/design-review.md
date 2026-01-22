@@ -1,86 +1,167 @@
-# /design-review Command
+---
+argument-hint: "<task description>"
+description: Apply PARC pattern to review task design before implementation
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - mcp__mcp-gateway__search_nodes
+  - mcp__mcp-gateway__open_nodes
+---
 
-Run a PARC (Prompt → Assess → Relate → Create) design review before implementing a task.
+Apply the **PARC Design Review Pattern** to the following task before implementation:
 
-## Usage
+**Task**: $ARGUMENTS
 
-```
-/design-review "<task description>"
-```
+---
 
-## Examples
+## Phase 1: PROMPT (Parse the Request)
 
-```
-/design-review "Add a health check command for Docker services"
-/design-review "Create backup automation for config files"
-/design-review "Implement user authentication feature"
-```
+Analyze the request:
+1. **Core Objective**: What is being asked?
+2. **Task Type**: Classify as one of:
+   - [ ] New Feature / Capability
+   - [ ] Bug Fix / Issue Resolution
+   - [ ] Infrastructure Change
+   - [ ] Automation / Script
+   - [ ] Documentation
+   - [ ] Other: ___
+3. **Explicit Requirements**: What was stated directly?
+4. **Implicit Requirements**: What's needed but not stated?
 
-## What It Does
+---
 
-When invoked, Claude will walk through the PARC pattern:
+## Phase 2: ASSESS (Pattern Check)
 
-### Phase 1: Prompt
-- Parse and clarify the request
-- Identify task type (code, infrastructure, documentation, automation)
-- List explicit and implicit requirements
+Search for existing patterns and precedents:
 
-### Phase 2: Assess
-- Search `.claude/context/patterns/` for relevant patterns
-- Check `.claude/context/workflows/` for applicable workflows
-- Query Memory MCP for similar past work
-- Evaluate agent selection (custom vs built-in vs skill vs direct)
-
-### Phase 3: Relate
-- Consider scope (specific vs generalizable)
-- Identify reuse opportunities
-- Assess architectural impact
-- Check for technical debt implications
-
-### Phase 4: Create
-- Recommend implementation approach
-- Note patterns to apply
-- Identify documentation updates needed
-- Suggest follow-up actions
-
-## Output Format
-
-```markdown
-## PARC Design Review: [Task]
-
-### 1. PROMPT (Understanding)
-- **Core Objective**: [What we're trying to achieve]
-- **Task Type**: [code/infrastructure/documentation/automation]
-- **Requirements**: [List of requirements]
-
-### 2. ASSESS (Pattern Check)
-- **Existing Patterns**: [Found or not found]
-- **Similar Implementations**: [References]
-- **Agent Selection**: [Recommendation]
-
-### 3. RELATE (Architecture)
-- **Scope**: [Specific or generalizable]
-- **Reuse**: [Opportunities identified]
-- **Impact**: [Systems affected]
-
-### 4. CREATE (Recommendation)
-- **Approach**: [How to implement]
-- **Patterns to Apply**: [List]
-- **Documentation**: [Updates needed]
-
-### Proceed?
-Ready to implement with the above approach.
+### 2.1 Check Pattern Files
+```bash
+# Search for relevant patterns
+ls -la .claude/context/patterns/
 ```
 
-## When to Use
+Review relevant pattern files for applicable patterns.
 
-- Before implementing new features
-- Before creating new slash commands
-- Before infrastructure changes
-- When unsure about best approach
-- When task might create technical debt
+### 2.2 Check Workflow Templates
+```bash
+# Search for relevant workflows
+ls -la .claude/context/workflows/
+```
 
-## Related
+Look for applicable workflow templates.
 
-- @.claude/context/patterns/prompt-design-review.md - Full PARC documentation
-- @.claude/context/patterns/agent-selection-pattern.md - Agent selection guidance
+### 2.3 Search Memory MCP
+
+Use Memory MCP to find similar past work:
+```
+mcp__mcp-gateway__search_nodes("$ARGUMENTS keywords")
+```
+
+Look for:
+- Similar implementations
+- Past lessons learned
+- Relevant decisions
+
+### 2.4 Search Codebase
+
+Search for similar implementations in the codebase:
+```
+Grep: [relevant keywords]
+Glob: [relevant file patterns]
+```
+
+---
+
+## Phase 3: RELATE (Connect to Architecture)
+
+Analyze how this task fits into the broader system:
+
+### 3.1 Scope Analysis
+
+| Question | Answer |
+|----------|--------|
+| Is this task-specific or generalizable? | |
+| Should this become a reusable pattern? | |
+| Will this likely be repeated? | |
+
+### 3.2 Reuse Opportunities
+
+| Existing Component | Can Reuse? | How? |
+|-------------------|------------|------|
+| | | |
+
+### 3.3 Impact Assessment
+
+| System/Component | Impact | Risk Level |
+|------------------|--------|------------|
+| | | |
+
+### 3.4 Technical Debt Check
+
+| Concern | Applies? | Mitigation |
+|---------|----------|------------|
+| Creates coupling? | | |
+| Duplicates existing code? | | |
+| Requires future refactoring? | | |
+| Missing tests/docs? | | |
+
+---
+
+## Phase 4: CREATE (Implementation Plan)
+
+Based on the analysis above, provide:
+
+### 4.1 Patterns to Apply
+
+List the patterns that should be applied:
+1.
+2.
+3.
+
+### 4.2 Implementation Approach
+
+Recommend the approach:
+- [ ] Follow existing pattern: [pattern name]
+- [ ] Extend existing implementation: [what]
+- [ ] Create new pattern (document after)
+- [ ] Simple one-off (no pattern needed)
+
+### 4.3 Documentation Plan
+
+- [ ] Update existing context file: [which]
+- [ ] Create new context file: [topic]
+- [ ] No documentation needed
+- [ ] Create slash command if used 3x
+
+### 4.4 Memory MCP Storage Plan
+
+Based on @.claude/context/patterns/memory-storage-pattern.md:
+- [ ] Store new pattern if discovered
+- [ ] Store lesson if non-obvious solution
+- [ ] Store decision if architectural choice made
+- [ ] No storage needed for routine implementation
+
+---
+
+## Summary
+
+Provide a brief summary:
+
+**Recommendation**: [One sentence recommendation]
+
+**Patterns to Follow**: [List]
+
+**Key Considerations**: [List]
+
+**Proceed?**: Ready to implement with the above approach.
+
+---
+
+## Pattern Reference
+
+**Full Pattern Documentation**: @.claude/context/patterns/prompt-design-review.md
+
+**Related Patterns**:
+- @.claude/context/patterns/memory-storage-pattern.md
+- @.claude/context/integrations/workflow-patterns.md

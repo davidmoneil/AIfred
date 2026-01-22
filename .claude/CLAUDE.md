@@ -24,6 +24,12 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 - @.claude/context/patterns/memory-storage-pattern.md - When to use Memory MCP
 - @.claude/context/patterns/mcp-loading-strategy.md - **MCP loading strategies** (Always-On/On-Demand/Isolated)
 - @.claude/context/patterns/prompt-design-review.md - PARC design review pattern
+- @.claude/context/patterns/capability-layering-pattern.md - **Scripts over LLM** (Code → CLI → Prompt)
+- @.claude/context/patterns/code-before-prompts-pattern.md - Deterministic code, AI for intelligence
+- @.claude/context/patterns/autonomous-execution-pattern.md - Scheduled Claude jobs
+- @.claude/context/telos/TELOS.md - **Strategic goal alignment**
+- @.claude/skills/upgrade/SKILL.md - Self-improvement system
+- @.claude/skills/structured-planning/SKILL.md - Guided conversational planning
 
 ---
 
@@ -37,6 +43,7 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 6. **MCP-First Tools**: Use MCP tools before bash commands when available
 7. **Hub, Not Container**: AIfred tracks code projects but doesn't contain them. Code lives in `projects_root`.
 8. **Compaction Sync**: When updating design patterns, paths, or core workflows, also update `compaction-essentials.md` so context survives compression.
+9. **Scripts Over LLM**: Push logic into deterministic scripts (CLI layer) - AI creates automation once, execution flows through scripts. See capability-layering-pattern.md.
 
 ---
 
@@ -334,5 +341,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v1.4 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-16 - Added Context Compaction Preservation (compaction-essentials.md, /context-loss)*
+*AIfred v2.0 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-01-21 - Major sync from AIProjects: Scripts over LLM, Pattern Detection, TELOS*

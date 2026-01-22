@@ -4,6 +4,17 @@
 
 AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
 
+## What's New in v2.0 (2026-01-21)
+
+Major sync from AIProjects implementing "Scripts over LLM" philosophy:
+
+- **18 Design Patterns** - Including capability-layering, code-before-prompts, autonomous-execution
+- **26 Hooks** - Pattern detection, security (branch-protection, credential-guard), LSP guidance
+- **7 Skills** - upgrade, structured-planning, parallel-dev, session-management, and more
+- **16 CLI Scripts** - Deterministic operations (checkpoint, sync-git, discover-docker, etc.)
+- **TELOS Framework** - Strategic goal alignment system
+- **Pattern Detection** - Audit logger tracks which patterns are being used
+
 ---
 
 ## Quick Start

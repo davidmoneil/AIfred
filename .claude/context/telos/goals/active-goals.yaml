@@ -1,0 +1,32 @@
+# Active Goals
+# Machine-readable format for hooks and automation
+# Updated: 2026-01-21
+
+quarter: "Q1 2026"
+status: template
+
+domains:
+  technical:
+    mission: "Define your technical mission"
+    goals: []
+    # Example:
+    # - id: G-T1
+    #   name: Infrastructure Maturity
+    #   status: on_track  # on_track | at_risk | blocked | completed
+    #   target_date: "2026-03-31"
+    #   progress: 0
+    #   done_criteria:
+    #     - "Criterion 1"
+    #     - "Criterion 2"
+
+  creative:
+    mission: "Define your creative mission"
+    goals: []
+
+  personal:
+    mission: "Define your personal mission"
+    goals: []
+
+# Summary for session-start hook injection
+summary: |
+  TELOS not yet configured. Run /telos to set up your goals.

@@ -1,0 +1,34 @@
+# Goal Entry Template for active-goals.yaml
+# Copy this structure when adding new goals
+
+# Single goal entry:
+- id: "G-[D][N]"                    # e.g., G-T1, G-C2, G-X1
+  name: "[Goal Name]"               # Brief descriptive name
+  domain: "[technical|creative|personal|cross_domain]"
+  target: "[Measurable outcome]"    # What "done" looks like
+  timeline: "[Q1 2026|By March 31]" # When it should be achieved
+  status: "on_track"                # on_track | at_risk | blocked | achieved
+  serves:
+    mission: true                   # Does this serve the domain mission?
+    problems:                       # Which problems does this address?
+      - "P-[D]1"
+      - "P-[D]2"
+  success_criteria:                 # Observable/testable criteria
+    - "[Criterion 1]"
+    - "[Criterion 2]"
+  priority_links:                   # Links to current-priorities.md
+    - "current-priorities.md#anchor-name"
+  metrics:                          # Key metrics for this goal
+    - name: "[Metric name]"
+      target: "[Target value]"
+      current: "[Current value]"
+      trend: "improving"            # improving | stable | declining
+  progress_notes:                   # Timestamped updates
+    - date: "2026-01-20"
+      note: "[Progress update]"
+
+# Status emoji mapping:
+# on_track  -> 🟢
+# at_risk   -> 🟡
+# blocked   -> 🔴
+# achieved  -> ✅
