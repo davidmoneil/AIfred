@@ -56,13 +56,16 @@ Run `/end-session` — updates state, commits work, documents session
 
 ## Architecture (Archon)
 
-| Layer | Location | Contains |
-|-------|----------|----------|
-| **Nous** (knowledge) | `.claude/context/` | patterns, state, priorities |
-| **Pneuma** (capabilities) | `.claude/` | agents, hooks, skills, commands |
-| **Soma** (infrastructure) | `/Jarvis/` | docker, scripts, projects |
+| Layer | Location | Contains | Map |
+|-------|----------|----------|-----|
+| **Nous** (knowledge) | `.claude/context/` | patterns, state, priorities | `context/psyche/nous-map.md` |
+| **Pneuma** (capabilities) | `.claude/` | agents, hooks, skills, commands | `context/psyche/pneuma-map.md` |
+| **Soma** (infrastructure) | `/Jarvis/` | docker, scripts, projects | `context/psyche/soma-map.md` |
 
-Navigation: `context/_index.md` • Glossary: `context/reference/glossary.md`
+**Self-Knowledge**:
+- Identity: `jarvis-identity.md` (persona, tone, safety posture)
+- Topology: `context/psyche/_index.md` (complete structural map)
+- Glossary: `context/reference/glossary.md` (all terminology)
 
 ## Tool Selection
 
