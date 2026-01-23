@@ -329,7 +329,7 @@ process_signal_file() {
 # State tracking for JICM
 JICM_STATE="monitoring"  # monitoring | triggered | compressing | cleared | resumed
 JICM_LAST_TRIGGER=0      # Unix timestamp of last JICM trigger
-JICM_COOLDOWN=300        # Seconds to wait after JICM completes before re-arming (5 minutes)
+JICM_COOLDOWN=120        # Seconds to wait after JICM completes before re-arming (2 minutes)
 
 trigger_jicm() {
     local tokens="$1"
