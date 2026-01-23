@@ -10,7 +10,7 @@
 
 **Status**: 🟢 Idle
 
-**Last Completed**: Status line token fix — 2026-01-23
+**Last Completed**: Statusline v6.0 Enhancement — 2026-01-23
 
 **Current Blocker**: None
 
@@ -18,35 +18,54 @@
 
 ---
 
-## Session (2026-01-23 09:50)
+## Session (2026-01-23 10:51 — Statusline Enhancement)
 
 **What Was Done**:
-- **Statusline token fix (corrected)**:
-  - Previous fix was wrong: `total_input_tokens` is CUMULATIVE across all API calls
-  - `used_percentage` is the CORRECT current context usage metric
-  - Fixed statusline to use `used_percentage` directly, calculate displayed tokens from it
-  - Removed debug logging
-- **Documented Claude Code statusline JSON schema** — full breakdown of all available fields
-- **Fixed broken path references** (Organization Architecture Phase 7):
-  - `context/upstream/` → `projects/project-aion/evolution/aifred-integration/`
-  - `.claude/persona/jarvis-identity.md` → `.claude/jarvis-identity.md`
-  - Updated 10+ files with corrected paths
+
+### Statusline v6.0 Complete Overhaul
+- **Fixed all bugs**:
+  - Message count stuck at 0 → Fixed grep pattern (`"type":"user"` not `"role": "user"`)
+  - Stray "0" on second line → Fixed grep -c exit code issue (returns 1 on 0 matches)
+  - Token count was estimate → Now uses actual `context_window.current_usage` from statusline JSON
+
+- **Added categorical stacked bar**:
+  - Blue (▓) = System Tools
+  - Cyan (▒) = Overhead (sys_prompt + agents + memory + skills + compact)
+  - Magenta (█) = Messages
+  - Gray (░) = Free space
+
+- **Automated cache updates**:
+  - Created `update-context-cache.js` hook (runs on Stop event)
+  - Reads actual token usage from statusline JSON
+  - Parses transcript for message counts
+  - No manual intervention required
+
+- **Added cost & duration tracking**:
+  - Shows `$X.XX` from `cost.total_cost_usd`
+  - Session duration from `cost.total_duration_ms`
+
+- **Discovered statusline JSON schema**:
+  - `context_window.current_usage` has actual token breakdown
+  - `cost` object has cost/duration/lines metrics
+  - `transcript_path` enables transcript parsing
+
+**Files Created**:
+- `~/.claude/scripts/jarvis-statusline.sh` (v6.0)
+- `~/.claude/scripts/update-context-cache.sh` (manual parser)
+- `.claude/hooks/update-context-cache.js` (auto-update hook)
+- `.claude/reports/maintenance/maintenance-2026-01-23.md`
+- `.claude/reports/reflections/reflection-2026-01-23.md`
 
 **Files Modified**:
-- `~/.claude/settings.json` (statusLine command — user global)
-- `.claude/commands/sync-aifred-baseline.md`
-- `.claude/commands/end-session.md`
-- `.claude/hooks/session-start.sh`
-- `.claude/hooks/setup-hook.sh`
-- `.claude/context/patterns/session-start-checklist.md`
-- `.claude/context/patterns/startup-protocol.md`
-- `.claude/context/patterns/milestone-review-pattern.md`
-- `.claude/context/components/AC-01-self-launch.md`
-- `.claude/skills/session-management/SKILL.md`
-- `.claude/agents/memory-bank-synchronizer.md`
+- `~/.claude/settings.json` (statusLine → external script)
+- `.claude/settings.json` (registered update-context-cache.js hook)
+
+**Lessons Learned**:
+1. grep -c returns exit 1 on 0 matches (triggers || fallback unexpectedly)
+2. Statusline JSON has rich data: context_window.current_usage, cost, transcript_path
+3. Hook-based cache pattern works well for derived data
 
 **Next Session**:
-- Verify statusline with --verbose --debug
 - Continue Organization Architecture Phase 7-8 (if needed)
 - Then AIfred Integration Milestone 2
 
