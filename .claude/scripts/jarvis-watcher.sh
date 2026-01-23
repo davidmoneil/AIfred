@@ -327,7 +327,9 @@ process_signal_file() {
 # =============================================================================
 
 # State tracking for JICM
-JICM_STATE="monitoring"  # monitoring | triggered | awaiting_context | compacting | clearing
+JICM_STATE="monitoring"  # monitoring | triggered | compressing | cleared | resumed
+JICM_LAST_TRIGGER=0      # Unix timestamp of last JICM trigger
+JICM_COOLDOWN=300        # Seconds to wait after JICM completes before re-arming (5 minutes)
 
 trigger_jicm() {
     local tokens="$1"
@@ -336,6 +338,7 @@ trigger_jicm() {
     log JICM "═══ JICM TRIGGERED: $pct% ($tokens tokens) ═══"
 
     JICM_STATE="triggered"
+    JICM_LAST_TRIGGER=$(date +%s)
 
     # Create trigger file for hooks to detect
     cat > "$JICM_TRIGGER_FILE" <<EOF
@@ -558,14 +561,24 @@ main() {
             jicm_triggered=true
         fi
 
-        # Reset trigger after JICM completes and context drops below 50%
-        # (Old logic: pct < threshold-20 was impossible with low thresholds like 20%)
-        # New logic: After successful JICM (state=resumed), reset when context < 50%
-        # This allows JICM to re-trigger when context builds up again
-        if [[ "$jicm_triggered" == "true" ]] && [[ "$JICM_STATE" == "resumed" ]] && [[ $pct_int -lt 50 ]]; then
-            log INFO "Resetting JICM trigger (context at ${pct_int}% after successful completion)"
-            jicm_triggered=false
-            JICM_STATE="monitoring"
+        # Reset trigger after JICM completes using cooldown timer
+        # This prevents immediate re-trigger when new session loads context files
+        # Wait for cooldown period (5 min) OR context drops below 50% (whichever first)
+        if [[ "$jicm_triggered" == "true" ]] && [[ "$JICM_STATE" == "resumed" ]]; then
+            local now
+            now=$(date +%s)
+            local elapsed=$((now - JICM_LAST_TRIGGER))
+
+            if [[ $elapsed -gt $JICM_COOLDOWN ]]; then
+                log INFO "Resetting JICM trigger (cooldown elapsed: ${elapsed}s)"
+                jicm_triggered=false
+                JICM_STATE="monitoring"
+            elif [[ $pct_int -lt 30 ]]; then
+                # Also reset if context is very low (session actually cleared successfully)
+                log INFO "Resetting JICM trigger (context at ${pct_int}% - session cleared)"
+                jicm_triggered=false
+                JICM_STATE="monitoring"
+            fi
         fi
 
         ((poll_count++))
