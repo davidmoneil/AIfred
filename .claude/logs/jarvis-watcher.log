@@ -640,3 +640,5 @@
 2026-01-23T03:38:46Z | INFO | Watcher started
 2026-01-23T03:51:46Z | JICM | Clear signal detected (.clear-ready-signal) - sending /clear
 2026-01-23T03:51:47Z | CMD | Sending: /clear
+2026-01-23T03:54:24Z | INFO | Watcher shutting down...
+2026-01-23T03:57:52Z | INFO | Watcher started
