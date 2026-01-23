@@ -2,7 +2,7 @@
 
 **Purpose**: Autonomic Component specifications — the nine systems that enable Jarvis' autonomy.
 
-**Layer**: Mind (core behavioral definitions)
+**Layer**: Nous (core behavioral definitions)
 
 ---
 
@@ -34,4 +34,4 @@ Records of **doing** it live elsewhere (reports, progress).
 
 ---
 
-*Jarvis — Mind Layer (Core Identity)*
+*Jarvis — Nous Layer (Core Identity)*

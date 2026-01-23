@@ -2,7 +2,7 @@
 
 **Purpose**: Docker infrastructure and service definitions.
 
-**Layer**: Body (infrastructure)
+**Layer**: Soma (infrastructure)
 
 ---
 
@@ -28,4 +28,4 @@ Docker services support Jarvis' operational capabilities:
 
 ---
 
-*Jarvis — Body Layer (Infrastructure)*
+*Jarvis — Soma Layer (Infrastructure)*

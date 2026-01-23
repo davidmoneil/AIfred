@@ -2,7 +2,7 @@
 
 **Purpose**: Operational state files — component states and task queues.
 
-**Layer**: Spirit (operational state)
+**Layer**: Pneuma (operational state)
 
 ---
 
@@ -40,4 +40,4 @@ Each AC component has a state file:
 
 ---
 
-*Jarvis — Spirit Layer (Operational State)*
+*Jarvis — Pneuma Layer (Operational State)*

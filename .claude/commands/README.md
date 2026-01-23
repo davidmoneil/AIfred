@@ -2,7 +2,7 @@
 
 **Purpose**: Slash command definitions — the actions Jarvis can perform.
 
-**Layer**: Spirit (capabilities)
+**Layer**: Pneuma (capabilities)
 
 ---
 
@@ -40,4 +40,4 @@
 
 ---
 
-*Jarvis — Spirit Layer (Capabilities)*
+*Jarvis — Pneuma Layer (Capabilities)*

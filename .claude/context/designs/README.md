@@ -2,7 +2,7 @@
 
 **Purpose**: Operational architecture designs — design philosophy and system architecture that guide Jarvis' behavior.
 
-**Layer**: Mind (architectural knowledge)
+**Layer**: Nous (architectural knowledge)
 
 ---
 
@@ -40,4 +40,4 @@ Plans (Session-level work)
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

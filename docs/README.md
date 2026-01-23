@@ -2,7 +2,7 @@
 
 **Purpose**: User-facing documentation for Jarvis.
 
-**Layer**: Body (interface)
+**Layer**: Soma (interface)
 
 ---
 
@@ -33,4 +33,4 @@
 
 ---
 
-*Jarvis — Body Layer (Interface)*
+*Jarvis — Soma Layer (Interface)*

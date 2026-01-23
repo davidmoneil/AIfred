@@ -2,7 +2,7 @@
 
 **Purpose**: Historical session states and archived context documents.
 
-**Layer**: Mind (historical memory)
+**Layer**: Nous (historical memory)
 
 ---
 
@@ -27,4 +27,4 @@ Files are archived here when:
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

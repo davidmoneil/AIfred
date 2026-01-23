@@ -2,7 +2,7 @@
 
 **Purpose**: R&D agenda and active research state.
 
-**Layer**: Mind (exploration state)
+**Layer**: Nous (exploration state)
 
 ---
 
@@ -30,4 +30,4 @@ The research agenda feeds into AC-07 R&D Cycles:
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

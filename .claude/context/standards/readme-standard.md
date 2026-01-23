@@ -1,7 +1,8 @@
 # README Standard
 
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Created**: 2026-01-22
+**Updated**: 2026-01-22 (Archon Architecture terminology)
 **Status**: Active
 
 ---
@@ -43,7 +44,7 @@ Every directory in Jarvis' structure MUST have a README.md that explains:
 
 **Purpose**: [One-line description of what this directory contains]
 
-**Layer**: [Mind | Spirit | Body] (if within Jarvis structure)
+**Layer**: [Nous | Pneuma | Soma] (within Archon structure)
 
 ---
 
@@ -64,7 +65,7 @@ Every directory in Jarvis' structure MUST have a README.md that explains:
 
 ---
 
-*[Context note — e.g., "Jarvis — Mind Layer"]*
+*[Context note — e.g., "Jarvis — Nous Layer"]*
 ```
 
 ---
@@ -73,7 +74,7 @@ Every directory in Jarvis' structure MUST have a README.md that explains:
 
 READMEs should reference the organizational hierarchy when relevant:
 
-### Mind Layer (`/.claude/context/`)
+### Nous Layer (`/.claude/context/`) — Knowledge & Patterns
 ```
 Standards (MUST follow)
     ↓
@@ -88,7 +89,7 @@ Plans (Session-level work)
 Lessons (Memory)
 ```
 
-### Spirit Layer (`/.claude/`)
+### Pneuma Layer (`/.claude/`) — Capabilities & Tools
 ```
 Identity (CLAUDE.md, jarvis-identity.md)
     ↓
@@ -99,7 +100,7 @@ State (state, logs, metrics, reports)
 Configuration (config, secrets)
 ```
 
-### Body Layer (`/Jarvis/`)
+### Soma Layer (`/Jarvis/`) — Infrastructure & Interfaces
 ```
 Infrastructure (docker, scripts, external-sources)
     ↓

@@ -2,7 +2,7 @@
 
 **Purpose**: Session-level work plans — generalized templates and active session plans.
 
-**Layer**: Mind (knowledge that guides work)
+**Layer**: Nous (knowledge that guides work)
 
 ---
 
@@ -44,4 +44,4 @@ Lessons (Memory)
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

@@ -2,7 +2,7 @@
 
 **Purpose**: Specifications for Jarvis' monitoring, benchmarking, and SOTA comparison infrastructure.
 
-**Layer**: Mind (capability architecture)
+**Layer**: Nous (capability architecture)
 
 ---
 
@@ -31,4 +31,4 @@ The **implementation** lives in `/.claude/scripts/`, `/.claude/metrics/`, etc.
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

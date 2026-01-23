@@ -2,7 +2,7 @@
 
 **Purpose**: Tool, MCP, and capability integration documentation.
 
-**Layer**: Mind (tool knowledge)
+**Layer**: Nous (tool knowledge)
 
 ---
 
@@ -35,4 +35,4 @@ When uncertain about tool selection:
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

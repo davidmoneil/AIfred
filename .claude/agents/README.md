@@ -2,7 +2,7 @@
 
 **Purpose**: Custom agent definitions, memory, and execution state.
 
-**Layer**: Spirit (capabilities)
+**Layer**: Pneuma (capabilities)
 
 ---
 
@@ -46,4 +46,4 @@ These persist across sessions and inform future behavior.
 
 ---
 
-*Jarvis — Spirit Layer (Capabilities)*
+*Jarvis — Pneuma Layer (Capabilities)*

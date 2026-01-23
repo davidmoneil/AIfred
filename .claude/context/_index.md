@@ -1,23 +1,30 @@
-# Context Index — Map of the Mind
+# Context Index — Map of Nous
 
-Central navigation for the Jarvis knowledge base (the "Mind" layer).
+Central navigation for the Jarvis knowledge base (the Nous layer).
 
-**Version**: 2.0.0 (Living Soul Architecture)
+**Version**: 3.0.0 (Archon Architecture)
 **Philosophy**: Minimal, curated, always-relevant context
 
 ---
 
-## The Living Soul Architecture
+## The Archon Architecture
 
-Jarvis is organized into three layers:
+Jarvis is an **Archon** — an autonomous entity within Project Aion. The Archon Architecture defines three layers:
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Mind** | `.claude/context/` | Knowledge, patterns, state (you are here) |
-| **Spirit** | `.claude/` | Capabilities, persona, tools |
-| **Body** | `/Jarvis/` | Infrastructure, interfaces |
+| Layer | Greek | Location | Purpose |
+|-------|-------|----------|---------|
+| **Nous** | νοῦς (intellect) | `.claude/context/` | Knowledge, patterns, state (you are here) |
+| **Pneuma** | πνεῦμα (vital force) | `.claude/` | Capabilities, persona, tools |
+| **Soma** | σῶμα (body) | `/Jarvis/` | Infrastructure, interfaces |
 
-This index maps the **Mind** — operational knowledge that guides behavior.
+This index maps **Nous** — operational knowledge that guides behavior.
+
+### Neuro & Psyche
+
+- **Neuro** (νεύρο) — The navigation substrate; cross-references and links connecting layers
+- **Psyche** (ψυχή) — Documented maps of the Neuro; topology documentation
+
+See `psyche/_index.md` for the complete Archon topology map.
 
 ---
 
@@ -32,7 +39,7 @@ This index maps the **Mind** — operational knowledge that guides behavior.
 
 ---
 
-## Mind Structure
+## Nous Structure
 
 ### Session State (Top Level)
 
@@ -119,9 +126,9 @@ Historical session states and completed work.
 
 ---
 
-## Spirit Layer (Parent Directory)
+## Pneuma Layer (Parent Directory)
 
-The Spirit layer (`.claude/`) contains capabilities:
+The Pneuma layer (`.claude/`) contains capabilities:
 
 | Directory | Purpose |
 |-----------|---------|
@@ -215,7 +222,13 @@ Discovery → Documentation → Context → Automation → Archive
 
 ## Recent Updates
 
-**2026-01-22**: Living Soul Architecture (v2.0.0)
+**2026-01-22**: Archon Architecture (v3.0.0)
+- Living Soul → Archon Architecture (Greek terminology)
+- Mind/Spirit/Body → Nous/Pneuma/Soma
+- Introduced Neuro (navigation substrate) and Psyche (topology maps)
+- Aion = Project, Archon = Entity distinction established
+
+**2026-01-22**: Organization Architecture (v2.0.0)
 - Organization Architecture Phases 1-6 complete
 - Path references updated (current-priorities.md elevated)
 - patterns/_index.md comprehensive rewrite (39 patterns)
@@ -229,5 +242,5 @@ Discovery → Documentation → Context → Automation → Archive
 
 ---
 
-*Context Index v2.0.0 — Map of the Mind (Living Soul Architecture)*
+*Context Index v3.0.0 — Map of Nous (Archon Architecture)*
 *Last Updated: 2026-01-22*

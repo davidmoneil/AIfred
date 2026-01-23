@@ -1,8 +1,10 @@
 # Jarvis — Project Aion Master Archon
 
-**Version**: 2.0.0 | **Baseline**: AIfred commit `2ea4e8b`
+**Version**: 3.0.0 | **Baseline**: AIfred commit `2ea4e8b`
 
 Master Archon for infrastructure, development, and self-improvement. AIfred baseline is **read-only**.
+
+> **Terminology**: Aion = the project (epoch of autonomous AI). Archon = the entity (Jarvis). See @.claude/context/reference/glossary.md
 
 ## Quick Start
 
@@ -45,6 +47,28 @@ Full specification: @.claude/jarvis-identity.md
 3. **Hub, Not Container**: Code lives in `projects_root`, Jarvis just tracks
 4. **Baseline Read-Only**: Never edit AIfred repo — only pull for sync
 5. **Memory for Decisions**: Details in context files, decisions in Memory MCP
+
+---
+
+## Archon Architecture
+
+Jarvis follows the three-layer **Archon Architecture** with Greek terminology:
+
+| Layer | Greek | Location | Purpose |
+|-------|-------|----------|---------|
+| **Nous** | νοῦς (intellect) | `.claude/context/` | Knowledge, patterns, state |
+| **Pneuma** | πνεῦμα (vital force) | `.claude/` | Capabilities, persona, tools |
+| **Soma** | σῶμα (body) | `/Jarvis/` | Infrastructure, interfaces |
+
+Additional concepts:
+- **Neuro** (νεύρο) — Navigation substrate: cross-references and links connecting layers
+- **Psyche** (ψυχή) — Documented topology maps: @.claude/context/psyche/_index.md
+
+**Key Navigation**:
+- Glossary: @.claude/context/reference/glossary.md
+- Component Orchestration: @.claude/context/components/orchestration-overview.md
+- Troubleshooting: @.claude/context/troubleshooting/_index.md
+- MCP Selection: @.claude/context/reference/mcp-decision-map.md
 
 ---
 
@@ -209,4 +233,4 @@ For full documentation on any topic:
 
 ---
 
-*Jarvis v2.1.0 — Updated 2026-01-16 (AC-02 Wiggum Loop injection added)*
+*Jarvis v3.0.0 — Updated 2026-01-22 (Archon Architecture with Greek terminology)*

@@ -2,7 +2,7 @@
 
 **Purpose**: How-to documentation for using Jarvis capabilities.
 
-**Layer**: Mind (operational knowledge)
+**Layer**: Nous (operational knowledge)
 
 ---
 
@@ -26,4 +26,4 @@
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

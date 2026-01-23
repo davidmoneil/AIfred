@@ -2,7 +2,7 @@
 
 **Purpose**: System-level utilities — setup, health checks, scheduled jobs.
 
-**Layer**: Body (infrastructure)
+**Layer**: Soma (infrastructure)
 
 ---
 
@@ -40,4 +40,4 @@
 
 ---
 
-*Jarvis — Body Layer (Infrastructure)*
+*Jarvis — Soma Layer (Infrastructure)*

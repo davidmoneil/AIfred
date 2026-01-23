@@ -2,7 +2,7 @@
 
 **Purpose**: Operational self-improvement cycle outputs — Jarvis remembering his own improvement efforts.
 
-**Layer**: Spirit (operational memory)
+**Layer**: Pneuma (operational memory)
 
 ---
 
@@ -36,4 +36,4 @@
 
 ---
 
-*Jarvis — Spirit Layer (Operational Memory)*
+*Jarvis — Pneuma Layer (Operational Memory)*

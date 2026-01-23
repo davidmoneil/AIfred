@@ -2,7 +2,7 @@
 
 **Purpose**: PR and milestone review criteria definitions.
 
-**Layer**: Spirit (standards)
+**Layer**: Pneuma (standards)
 
 ---
 
@@ -38,4 +38,4 @@ acceptance:
 
 ---
 
-*Jarvis — Spirit Layer (Standards)*
+*Jarvis — Pneuma Layer (Standards)*

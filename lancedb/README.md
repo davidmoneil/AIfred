@@ -2,7 +2,7 @@
 
 **Purpose**: Vector database for embeddings and RAG operations.
 
-**Layer**: Body (infrastructure)
+**Layer**: Soma (infrastructure)
 
 ---
 
@@ -26,4 +26,4 @@ Configuration lives in `/.claude/config/`.
 
 ---
 
-*Jarvis — Body Layer (Infrastructure)*
+*Jarvis — Soma Layer (Infrastructure)*

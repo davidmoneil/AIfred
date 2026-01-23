@@ -2,7 +2,7 @@
 
 **Purpose**: Performance metrics, baselines, and benchmark results.
 
-**Layer**: Spirit (telemetry)
+**Layer**: Pneuma (telemetry)
 
 ---
 
@@ -32,4 +32,4 @@ Metrics feed into:
 
 ---
 
-*Jarvis — Spirit Layer (Telemetry)*
+*Jarvis — Pneuma Layer (Telemetry)*

@@ -2,7 +2,7 @@
 
 **Purpose**: On-demand skill definitions — specialized capabilities loaded when needed.
 
-**Layer**: Spirit (capabilities)
+**Layer**: Pneuma (capabilities)
 
 ---
 
@@ -47,4 +47,4 @@ Each skill has its own directory:
 
 ---
 
-*Jarvis — Spirit Layer (Capabilities)*
+*Jarvis — Pneuma Layer (Capabilities)*

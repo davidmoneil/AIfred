@@ -2,7 +2,7 @@
 
 **Purpose**: Test harnesses and testing infrastructure.
 
-**Layer**: Spirit (capabilities)
+**Layer**: Pneuma (capabilities)
 
 ---
 
@@ -28,4 +28,4 @@ Tests support:
 
 ---
 
-*Jarvis — Spirit Layer (Capabilities)*
+*Jarvis — Pneuma Layer (Capabilities)*

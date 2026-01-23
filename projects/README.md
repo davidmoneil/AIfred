@@ -2,7 +2,7 @@
 
 **Purpose**: Project development workspaces — where Jarvis' creative work lives.
 
-**Layer**: Body (projects)
+**Layer**: Soma (projects)
 
 ---
 
@@ -39,4 +39,4 @@ The actual project codebase stays in `/Users/aircannon/Claude/<ProjectName>/`.
 
 ---
 
-*Jarvis — Body Layer (Projects)*
+*Jarvis — Soma Layer (Projects)*

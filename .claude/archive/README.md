@@ -2,7 +2,7 @@
 
 **Purpose**: General archives for the Spirit layer — historical files, superseded configurations.
 
-**Layer**: Spirit (historical)
+**Layer**: Pneuma (historical)
 
 ---
 
@@ -28,4 +28,4 @@ Files are archived when:
 
 ---
 
-*Jarvis — Spirit Layer*
+*Jarvis — Pneuma Layer*

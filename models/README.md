@@ -2,7 +2,7 @@
 
 **Purpose**: Local model storage and caching.
 
-**Layer**: Body (infrastructure)
+**Layer**: Soma (infrastructure)
 
 ---
 
@@ -26,4 +26,4 @@ Ensure sufficient disk space.
 
 ---
 
-*Jarvis — Body Layer (Infrastructure)*
+*Jarvis — Soma Layer (Infrastructure)*

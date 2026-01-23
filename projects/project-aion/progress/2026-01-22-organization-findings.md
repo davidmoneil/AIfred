@@ -2,7 +2,8 @@
 
 **Date**: 2026-01-22
 **Session**: Organization & Document Management Review
-**Status**: Analysis Complete — Ready for Implementation
+**Status**: Analysis Complete — Implemented
+**Note**: Terminology updated to Archon Architecture (Greek naming) per Phase 7
 
 ---
 
@@ -10,16 +11,18 @@
 
 This document captures the findings from a comprehensive review of Jarvis' directory structure, with the goal of establishing clear organizational principles that distinguish between Jarvis' identity/memory, operational capabilities, and project development work.
 
-The review adopts a **"Living Soul" architecture** metaphor with three layers:
-1. **Mind** (`/.claude/context/`) — Knowledge, patterns, state, memory
-2. **Spirit** (`/.claude/` excluding context) — Capabilities, persona, tools
-3. **Body** (`/Jarvis/` excluding .claude) — Infrastructure, interfaces, resources
+The review adopts the **Archon Architecture** with three layers:
+1. **Nous** (`/.claude/context/`) — Knowledge, patterns, state, memory
+2. **Pneuma** (`/.claude/` excluding context) — Capabilities, persona, tools
+3. **Soma** (`/Jarvis/` excluding .claude) — Infrastructure, interfaces, resources
+
+> **Terminology Note**: Originally documented as "Living Soul" architecture with Mind/Spirit/Body layers. Updated 2026-01-22 to Greek terminology: Archon = entity (Jarvis), Aion = project era.
 
 ---
 
 ## Part 1: The Three-Layer Model
 
-### Layer 1: Mind (`/.claude/context/`)
+### Layer 1: Nous (`/.claude/context/`)
 
 **Purpose**: What Jarvis KNOWS — accumulated wisdom that shapes decisions.
 
@@ -54,7 +57,7 @@ The review adopts a **"Living Soul" architecture** metaphor with three layers:
 - `upstream/` — Project Aion work, not Jarvis identity
 - `analysis/` — Project Aion work, not Jarvis identity
 
-### Layer 2: Spirit (`/.claude/` excluding context)
+### Layer 2: Pneuma (`/.claude/` excluding context)
 
 **Purpose**: What Jarvis CAN DO — capabilities and character that enable action.
 
@@ -91,7 +94,7 @@ The review adopts a **"Living Soul" architecture** metaphor with three layers:
 - `evolution/` — Merge evolution-queue.yaml into `state/queues/`
 - `plans/` — Move to `context/plans/` for session work plans
 
-### Layer 3: Body (`/Jarvis/` excluding .claude)
+### Layer 3: Soma (`/Jarvis/` excluding .claude)
 
 **Purpose**: How Jarvis INTERACTS — bridge between self and external world.
 

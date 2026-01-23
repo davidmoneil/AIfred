@@ -2,7 +2,7 @@
 
 **Purpose**: Operational scripts used during active sessions.
 
-**Layer**: Spirit (capabilities)
+**Layer**: Pneuma (capabilities)
 
 ---
 
@@ -42,4 +42,4 @@
 
 ---
 
-*Jarvis — Spirit Layer (Capabilities)*
+*Jarvis — Pneuma Layer (Capabilities)*

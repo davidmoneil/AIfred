@@ -2,7 +2,8 @@
 
 Reusable implementation patterns organized by category. Consult before implementing significant tasks.
 
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-01-22 (Archon Architecture v3.0.0)
+**Total Patterns**: 41
 
 ---
 
@@ -39,6 +40,7 @@ Fundamental patterns that govern how Jarvis operates.
 |---------|---------|-------------|
 | [wiggum-loop-pattern](wiggum-loop-pattern.md) | AC-02 multi-pass verification | **DEFAULT for all tasks** |
 | [jicm-pattern](jicm-pattern.md) | Intelligent context management | Context approaching limits |
+| [parallelization-strategy](parallelization-strategy.md) | Parallel vs sequential execution | Multi-tool/agent tasks |
 | [self-interruption-prevention](self-interruption-prevention.md) | Prevent unintended work stops | When blockers encountered |
 
 ---
@@ -151,6 +153,16 @@ Patterns for testing and setup validation.
 |---------|---------|-------------|
 | [setup-validation](setup-validation.md) | Validate setup completeness | After setup changes |
 | [autonomic-testing-framework](autonomic-testing-framework.md) | Test autonomic components | AC development |
+
+---
+
+## Architecture
+
+Patterns defining Archon structure and organization.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [archon-architecture-pattern](archon-architecture-pattern.md) | Three-layer Archon structure | Designing new Archons |
 
 ---
 

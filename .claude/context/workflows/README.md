@@ -2,7 +2,7 @@
 
 **Purpose**: Repeatable procedures for completing large tasks within sessions.
 
-**Layer**: Mind (procedural knowledge)
+**Layer**: Nous (procedural knowledge)
 
 ---
 
@@ -43,4 +43,4 @@ They sit between abstract patterns and concrete plans.
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

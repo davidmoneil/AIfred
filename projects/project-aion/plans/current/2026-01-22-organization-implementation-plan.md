@@ -2,18 +2,20 @@
 
 **Date**: 2026-01-22
 **Findings Reference**: `progress/2026-01-22-organization-findings.md`
-**Status**: Ready for Implementation
-**Estimated Sessions**: 2-3
+**Status**: Implemented (Phases 1-6 Complete)
+**Note**: Terminology updated to Archon Architecture (Greek naming) per Phase 7
 
 ---
 
 ## Overview
 
-This plan implements the organizational changes identified in the findings document, restructuring Jarvis according to the three-layer "Living Soul" architecture:
+This plan implements the organizational changes identified in the findings document, restructuring Jarvis according to the three-layer **Archon Architecture**:
 
-1. **Mind** (`/.claude/context/`) — Knowledge, patterns, state
-2. **Spirit** (`/.claude/`) — Capabilities, persona, tools
-3. **Body** (`/Jarvis/`) — Infrastructure, interfaces
+1. **Nous** (`/.claude/context/`) — Knowledge, patterns, state
+2. **Pneuma** (`/.claude/`) — Capabilities, persona, tools
+3. **Soma** (`/Jarvis/`) — Infrastructure, interfaces
+
+> **Terminology Note**: Originally documented as "Living Soul" with Mind/Spirit/Body. Updated 2026-01-22 to Greek: Archon = entity, Aion = project.
 
 ---
 
@@ -362,7 +364,7 @@ ls -la .claude/*.md .claude/*.yaml
 
 ```bash
 git add -A
-git commit -m "refactor: Implement Living Soul architecture for Jarvis organization
+git commit -m "refactor: Implement Archon architecture for Jarvis organization
 
 - Move AIfred integration work to projects/project-aion/evolution/
 - Reorganize Project Aion with current/archive structure

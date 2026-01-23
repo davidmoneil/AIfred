@@ -8,28 +8,39 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle
+**Status**: 🟡 In Progress
 
-**Last Completed**: Status Line Configuration — 2026-01-22
+**Last Completed**: README Footer Updates — 2026-01-22
 
 **Current Blocker**: None
 
-**Current Work**: None (Session ended)
+**Current Work**: Phase 7 — Archon Architecture Implementation
 
 ---
 
-## Session Summary (2026-01-22 — Quick Config Session)
+## Session Summary (2026-01-22 — Watcher Fix Session)
 
 ### What Was Accomplished
 
-- Configured Claude Code status line with:
-  - Token usage progress bar (20-char visual)
-  - User message counter
-  - Current time (HH:MM:SS)
-  - Session duration tracker
-- Enabled `alwaysThinkingEnabled: true` to show reasoning in chat history
+- Fixed statusline to show raw token count for watcher parsing
+  - Added `total_input_tokens` extraction from JSON
+  - Added fallback calculation from percentage
+  - Output format: `"123456 tokens [████░░] 60%"` — matches watcher regex
+- Verified all 3 scripts use compatible regex: `[0-9,]+ tokens`
+  - jarvis-watcher.sh, context-monitor.sh, signal-with-capture.sh
 
 **Files Modified**: `~/.claude/settings.json` (user global settings)
+
+---
+
+## Previous Session Summary (2026-01-22 — Quick Config Session)
+
+### What Was Accomplished
+
+- Configured Claude Code status line with token progress bar, message counter, time, session duration
+- Enabled `alwaysThinkingEnabled: true`
+
+**Files Modified**: `~/.claude/settings.json`
 
 ---
 
@@ -50,9 +61,9 @@
 - Added strictness levels (ALWAYS, Recommended, Optional)
 - Quick reference table for mandatory patterns
 
-**Task 6.3**: context/_index.md rewrite as "Map of the Mind"
-- Documented Living Soul Architecture (Mind/Spirit/Body layers)
-- Updated to v2.0.0
+**Task 6.3**: context/_index.md rewrite as "Map of Nous"
+- Documented Archon Architecture (Nous/Pneuma/Soma layers)
+- Updated to v3.0.0
 - Accurate directory structure reflecting Phase 1-5 changes
 
 **Files Modified This Session**:
@@ -100,9 +111,9 @@ Removed `wait_for_idle()` call from `trigger_jicm()` in jarvis-watcher.sh. The i
 
 **READMEs Created (~45):**
 - All Project Aion directories
-- All .claude/context directories
-- All .claude (Spirit layer) directories
-- All /Jarvis (Body layer) directories
+- All .claude/context directories (Nous layer)
+- All .claude directories (Pneuma layer)
+- All /Jarvis directories (Soma layer)
 
 **Standards Created:**
 - `readme-standard.md` — Mandatory README checking standard
@@ -113,10 +124,10 @@ Removed `wait_for_idle()` call from `trigger_jicm()` in jarvis-watcher.sh. The i
 
 ### Key Concepts Established
 
-**Three-Layer "Living Soul" Architecture:**
-1. Mind (/.claude/context/) — Knowledge, patterns, state
-2. Spirit (/.claude/) — Capabilities, persona, tools
-3. Body (/Jarvis/) — Infrastructure, interfaces
+**Three-Layer Archon Architecture:**
+1. Nous (/.claude/context/) — Knowledge, patterns, state
+2. Pneuma (/.claude/) — Capabilities, persona, tools
+3. Soma (/Jarvis/) — Infrastructure, interfaces
 
 **Behavioral Hierarchy:**
 ```

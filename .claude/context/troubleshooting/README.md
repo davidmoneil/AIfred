@@ -2,7 +2,7 @@
 
 **Purpose**: Specific problem resolutions and fixes.
 
-**Layer**: Mind (problem-solution memory)
+**Layer**: Nous (problem-solution memory)
 
 ---
 
@@ -35,4 +35,4 @@ Each troubleshooting document should include:
 
 ---
 
-*Jarvis — Mind Layer (Memory)*
+*Jarvis — Nous Layer (Memory)*

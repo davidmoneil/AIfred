@@ -2,7 +2,7 @@
 
 **Purpose**: Self-corrections, learnings, and accumulated wisdom from experience.
 
-**Layer**: Mind (long-term memory)
+**Layer**: Nous (long-term memory)
 
 ---
 
@@ -38,4 +38,4 @@ They feed into AC-05 Self-Reflection cycles.
 
 ---
 
-*Jarvis — Mind Layer (Memory)*
+*Jarvis — Nous Layer (Memory)*

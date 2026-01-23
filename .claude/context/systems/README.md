@@ -2,7 +2,7 @@
 
 **Purpose**: Host and environment documentation.
 
-**Layer**: Mind (environmental knowledge)
+**Layer**: Nous (environmental knowledge)
 
 ---
 
@@ -26,4 +26,4 @@ Reference when:
 
 ---
 
-*Jarvis — Mind Layer*
+*Jarvis — Nous Layer*

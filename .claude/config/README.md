@@ -2,7 +2,7 @@
 
 **Purpose**: Runtime configuration files.
 
-**Layer**: Spirit (configuration)
+**Layer**: Pneuma (configuration)
 
 ---
 
@@ -33,4 +33,4 @@ Never commit actual credentials.
 
 ---
 
-*Jarvis — Spirit Layer (Configuration)*
+*Jarvis — Pneuma Layer (Configuration)*
