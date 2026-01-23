@@ -8,17 +8,35 @@
 
 ## Current Work Status
 
-**Status**: 🟡 In Progress
+**Status**: 🟢 Idle
 
-**Last Completed**: Organization Architecture Phase 1 — 2026-01-22
+**Last Completed**: Organization Architecture Phases 1-5 — 2026-01-22
 
 **Current Blocker**: None
 
-**Current Work**: Organization Architecture Implementation — Phase 1 Complete, Phase 2 Next
+**Current Work**: Organization Architecture Implementation — Phases 1-5 Complete, Phase 6-8 Next
 
 ---
 
-## Session Summary (2026-01-22 — Organization Architecture)
+## Session Summary (2026-01-22 — Organization Architecture Session 2)
+
+### What Was Accomplished
+
+#### Phases 1-5: Complete
+
+**Phase 1** (committed earlier): Directory structure & READMEs
+**Phase 2**: Moved AIfred integration docs (14 files) to `evolution/aifred-integration/`
+**Phase 3**: Core identity reorganization — jarvis-identity.md, current-priorities.md elevated; templates distributed
+**Phase 4**: Organized ideas (10), plans (14), reports (35) into current/archive structure
+**Phase 5**: Created planning-tracker.yaml, updated session-exit.md with checklist hygiene
+
+#### Bug Fix: Watcher Idle-Wait Blocker
+
+Removed `wait_for_idle()` call from `trigger_jicm()` in jarvis-watcher.sh. The idle detection blocked indefinitely because model reasoning is continuous. Signal-based handoff (`.clear-ready-signal`) is the correct approach.
+
+---
+
+## Previous Session Summary (2026-01-22 — Organization Architecture Session 1)
 
 ### What Was Accomplished
 
@@ -60,15 +78,11 @@
 Standards → Patterns → Workflows → Designs → Plans → Lessons
 ```
 
-### Next Steps (Phase 2-8)
+### Next Steps (Phase 6-8)
 
-- Phase 2: Move AIfred integration docs to project-aion/evolution/
-- Phase 3: Reorganize core identity files
-- Phase 4: Reorganize Project Aion content
-- Phase 5: Create planning-tracker.yaml
-- Phase 6: Update core documentation
-- Phase 7: Verification and cleanup
-- Phase 8: Documentation consolidation
+- Phase 6: Update CLAUDE.md with pattern selection matrix, update _index.md files
+- Phase 7: Verify no broken references, create organization-pattern.md
+- Phase 8: Documentation consolidation, final commit
 
 ---
 
@@ -138,12 +152,18 @@ See integration-chronicle.md for full history.
 
 ## Next Session Pickup
 
-1. **Continue AIfred Integration** — Milestone 2: Analytics & Tracking (Sessions 2.1, 2.2)
+1. **Complete Organization Architecture** — Phases 6-8
+   - Update CLAUDE.md with pattern selection matrix
+   - Update patterns/_index.md and context/_index.md
+   - Verify no broken references
+   - Create organization-pattern.md
+   - Final commit
+
+2. **Then Continue AIfred Integration** — Milestone 2: Analytics & Tracking
    - Port file-access-tracker.js
    - Port session-tracker.js
-   - Design unified logging architecture
 
-2. **Deferred from previous sessions:**
+3. **Deferred:**
    - Update AC-04-jicm.md component spec
    - Add CSV logging to watcher for analytics
 
@@ -158,4 +178,4 @@ See integration-chronicle.md for full history.
 
 ---
 
-*Session state updated 2026-01-22.*
+*Session state updated 2026-01-22 (Session 2 — Phases 2-5 complete).*

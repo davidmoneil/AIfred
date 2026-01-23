@@ -11,6 +11,7 @@ Standard workflow for ending Claude Code sessions cleanly.
 - [ ] Capture MCP state (current + predicted for next session)
 - [ ] Review session todos (complete or document pending)
 - [ ] Update current-priorities.md with completed items
+- [ ] Checklist hygiene (review planning-tracker.yaml)
 - [ ] Commit any uncommitted changes
 - [ ] Push to GitHub if applicable
 - [ ] Disable On-Demand MCPs (Tier 3, high-token)
@@ -81,7 +82,7 @@ Check session todos:
 
 ### 4. Update Priorities
 
-**File**: `.claude/context/projects/current-priorities.md`
+**File**: `.claude/context/current-priorities.md`
 
 Add completed items to "Completed" section with date.
 
@@ -121,6 +122,31 @@ See @.claude/context/patterns/mcp-loading-strategy.md for tier definitions.
 
 Add any pending work to appropriate priority section.
 
+### 8. Checklist Hygiene
+
+**File**: `.claude/planning-tracker.yaml`
+
+Review planning documents for stale checkboxes and exit criteria.
+
+```bash
+# 1. Read the planning tracker
+cat .claude/planning-tracker.yaml
+```
+
+**For documents in `always_review`**:
+- Update session-state.md with current status
+- Update current-priorities.md with completed tasks
+
+**For documents matching current work scope**:
+- Check for unchecked items that may now be complete
+- Update checkboxes as appropriate
+- Note any deviations in progress docs
+
+**After review**:
+- Update `last_updated` in planning-tracker.yaml
+
+This step prevents checkbox drift — where tasks are completed but docs remain stale.
+
 ---
 
 ## Time Estimate
@@ -150,4 +176,4 @@ See @.claude/context/patterns/mcp-loading-strategy.md for full protocol.
 
 ---
 
-*Session Exit Procedure v2.0 — Updated 2026-01-09 (PR-8.5 MCP Protocol)*
+*Session Exit Procedure v2.1 — Updated 2026-01-22 (Checklist Hygiene step added)*

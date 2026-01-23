@@ -8,9 +8,17 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### AIfred Integration: Milestone 2 — Analytics & Tracking
+### Organization Architecture — Phases 6-8
 **Status**: 🔜 Next Session
-**Reference**: `.claude/context/upstream/integration-roadmap-2026-01-21.md`
+**Reference**: `projects/project-aion/plans/current/2026-01-22-organization-implementation-plan.md`
+
+- [ ] Phase 6: Update CLAUDE.md pattern selection matrix, _index.md files
+- [ ] Phase 7: Verify references, create organization-pattern.md
+- [ ] Phase 8: Final documentation consolidation
+
+### AIfred Integration: Milestone 2 — Analytics & Tracking
+**Status**: After Organization Complete
+**Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
 
 - [ ] Session 2.1: Port file-access-tracker.js, session-tracker.js, memory-maintenance.js
 - [ ] Session 2.2: Design unified logging architecture
@@ -49,6 +57,14 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### Organization Architecture Phases 1-5 (2026-01-22)
+- Phase 1: 18 directories, ~45 READMEs, readme-standard.md
+- Phase 2: 14 AIfred integration files moved to evolution/aifred-integration/
+- Phase 3: Core identity reorganized (jarvis-identity.md, current-priorities.md elevated)
+- Phase 4: 59 files organized into current/archive structure (ideas, plans, reports)
+- Phase 5: planning-tracker.yaml created, session-exit.md updated
+- Bug fix: Watcher idle-wait blocker removed
 
 ### AIfred Integration: Milestone 1 — Security Foundation (2026-01-22)
 - 6 hooks ported: credential-guard, branch-protection, amend-validator, docker-health-monitor, docker-restart-loop-detector, docker-post-op-health

@@ -1,0 +1,37 @@
+# Planning Tracker — Active documents with checklists/exit criteria
+# Jarvis maintains this as docs are created/archived
+# Review at session-end and milestone completion
+
+version: 1.0.0
+last_updated: 2026-01-22
+
+# Documents to always review at session-end
+always_review:
+  - path: .claude/context/session-state.md
+    purpose: Update current work status
+  - path: .claude/context/current-priorities.md
+    purpose: Update task completion status
+
+# Planning documents with checklists
+planning:
+  - path: projects/project-aion/roadmap.md
+    contains: [pr-status, deliverables, acceptance-criteria]
+    scope: project-aion
+    review_on: [pr-completion, milestone-completion]
+
+  - path: projects/project-aion/designs/current/phase-6-autonomy-design.md
+    contains: [sub-pr-checklists, acceptance-criteria]
+    scope: phase-6
+    review_on: [milestone-completion]
+
+  - path: projects/project-aion/evolution/aifred-integration/roadmap.md
+    contains: [session-exit-criteria, milestone-checklists]
+    scope: aifred-integration
+    review_on: [session-end, milestone-completion]
+
+# Progress documents
+progress:
+  - path: projects/project-aion/evolution/aifred-integration/chronicle.md
+    contains: [milestone-completion]
+    scope: aifred-integration
+    review_on: [milestone-completion]

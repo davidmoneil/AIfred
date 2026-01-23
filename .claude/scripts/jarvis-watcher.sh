@@ -346,11 +346,8 @@ threshold: $THRESHOLD
 reason: automatic_threshold
 EOF
 
-    # Step 0: Wait for Claude to become idle (graceful completion)
-    # This ensures current task completes before compression starts
-    log JICM "Step 0: Waiting for idle state (graceful completion)"
-    JICM_STATE="waiting_idle"
-    wait_for_idle
+    # Note: Idle wait removed — signal-based flow handles graceful completion
+    # Claude writes .clear-ready-signal when compression is done
 
     # Step 1: Send /intelligent-compress for AI-powered context compression
     # This invokes the skill which updates session-state, priorities, and compressed-context
