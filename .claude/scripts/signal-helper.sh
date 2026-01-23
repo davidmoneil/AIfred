@@ -2,11 +2,21 @@
 # Signal Helper Library for Jarvis
 # Provides functions for creating command signals
 #
+# AUTONOMY PRINCIPLE:
+# Jarvis operates autonomously by default (CLAUDE.md: "Do not wait for
+# instructions — assess, decide, act"). All signal functions auto-resume
+# after command execution unless explicitly paused with --pause flag.
+# Pausing is the exception, not the rule.
+#
 # Usage:
 #   source .claude/scripts/signal-helper.sh
+#   signal_command "/status"              # Auto-continues (default)
+#   signal_command "/status" --pause      # Waits for user (explicit)
 #   send_command_signal "/compact" "Focus on code" "skill:my-skill"
 #
 # Or direct execution:
+#   .claude/scripts/signal-helper.sh cmd "/status"
+#   .claude/scripts/signal-helper.sh cmd "/status" --pause
 #   .claude/scripts/signal-helper.sh send "/compact" "args" "source"
 
 set -euo pipefail
@@ -15,7 +25,7 @@ set -euo pipefail
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
 SIGNAL_FILE="$PROJECT_DIR/.claude/context/.command-signal"
 
-# Supported commands (for validation)
+# Supported commands (for validation - ALLOWLIST approach for shorthand functions)
 # Updated 2026-01-21: Added /statusline
 SUPPORTED_COMMANDS=(
     "/compact" "/rename" "/resume" "/export" "/doctor"
@@ -24,7 +34,24 @@ SUPPORTED_COMMANDS=(
     "/hooks" "/release-notes" "/clear" "/statusline"
 )
 
-# Validate command against whitelist
+# Blocked commands (for signal_command - BLOCKLIST approach)
+# These commands require interactive input or don't produce AI-useful output
+# All OTHER commands are allowed by default (autonomy-first)
+BLOCKED_COMMANDS=(
+    "/settings"    # Opens interactive settings menu
+    "/config"      # Opens interactive config menu
+    "/edit"        # Opens external text editor
+    "/help"        # Static help text, not actionable
+    "/vim"         # Vim mode toggle, interactive
+    "/model"       # Opens model selector menu
+    "/theme"       # Opens theme selector
+    "/permissions" # Opens permissions manager
+    "/mcp"         # Opens MCP server manager
+    "/plugins"     # Opens plugin manager
+    "/keybindings" # Opens keybindings editor
+)
+
+# Validate command against whitelist (for shorthand functions)
 validate_command() {
     local cmd="$1"
     for valid_cmd in "${SUPPORTED_COMMANDS[@]}"; do
@@ -33,6 +60,99 @@ validate_command() {
         fi
     done
     return 1
+}
+
+# Check if command is blocked (for signal_command - blocklist approach)
+is_blocked_command() {
+    local cmd="$1"
+    # Extract base command (before any arguments)
+    local base_cmd="${cmd%% *}"
+    for blocked in "${BLOCKED_COMMANDS[@]}"; do
+        if [[ "$base_cmd" == "$blocked" ]]; then
+            return 0  # Is blocked
+        fi
+    done
+    return 1  # Not blocked (allowed)
+}
+
+# ============================================================================
+# UNIVERSAL SIGNAL FUNCTION (Autonomy-First Design)
+# ============================================================================
+# signal_command - Send any slash command with autonomy as default
+#
+# Usage:
+#   signal_command "/status"              # Auto-continues after (DEFAULT)
+#   signal_command "/status" --pause      # Waits for user input (explicit)
+#   signal_command "/rename" "My Session" # Command with arguments
+#   signal_command "/compact" "Focus on code" --pause  # Args + pause
+#
+# Args:
+#   $1 - Command (with or without leading /)
+#   $2 - Arguments OR --pause flag
+#   $3 - --pause flag (if $2 was arguments)
+#
+# Autonomy Principle:
+#   By default, Jarvis continues working after command execution.
+#   Use --pause only when you explicitly need Jarvis to wait.
+# ============================================================================
+signal_command() {
+    local input="$1"
+    local arg2="${2:-}"
+    local arg3="${3:-}"
+
+    # Parse command and arguments
+    local command=""
+    local args=""
+    local pause_flag="false"
+
+    # Check if input contains a space (command + args in one string)
+    if [[ "$input" == *" "* ]]; then
+        command="${input%% *}"
+        args="${input#* }"
+    else
+        command="$input"
+    fi
+
+    # Ensure command starts with /
+    if [[ ! "$command" =~ ^/ ]]; then
+        command="/$command"
+    fi
+
+    # Parse remaining arguments
+    if [[ "$arg2" == "--pause" ]]; then
+        pause_flag="true"
+    elif [[ -n "$arg2" && "$arg2" != "--pause" ]]; then
+        # arg2 is additional arguments
+        if [[ -n "$args" ]]; then
+            args="$args $arg2"
+        else
+            args="$arg2"
+        fi
+        # Check if arg3 is --pause
+        if [[ "$arg3" == "--pause" ]]; then
+            pause_flag="true"
+        fi
+    fi
+
+    # Validate against blocklist
+    if is_blocked_command "$command"; then
+        echo "ERROR: '$command' is blocked from autonomous execution" >&2
+        echo "Reason: Requires interactive input or doesn't produce AI-useful output" >&2
+        echo "Blocked commands: ${BLOCKED_COMMANDS[*]}" >&2
+        return 1
+    fi
+
+    # Determine auto_resume (autonomy-first: true unless paused)
+    local auto_resume="true"
+    local resume_delay="3"
+    local resume_message="continue"
+
+    if [[ "$pause_flag" == "true" ]]; then
+        auto_resume="false"
+    fi
+
+    # Send the signal
+    send_command_signal "$command" "$args" "skill:universal" "normal" "$auto_resume" "$resume_delay" "$resume_message"
 }
 
 # Create and write a command signal
@@ -264,6 +384,11 @@ pending_signal() {
 # CLI interface when run directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     case "${1:-help}" in
+        cmd|command)
+            # Universal command signal (autonomy-first)
+            shift
+            signal_command "$@"
+            ;;
         send)
             shift
             send_command_signal "$@"
@@ -343,13 +468,26 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         help|--help|-h|*)
             echo "Signal Helper - Create command signals for Jarvis watcher"
             echo ""
+            echo "AUTONOMY PRINCIPLE: Jarvis auto-continues by default (--pause to opt out)"
+            echo ""
             echo "Usage:"
-            echo "  $0 send <command> [args] [source] [priority]"
+            echo "  $0 cmd <command> [args] [--pause]    # Universal (RECOMMENDED)"
+            echo "  $0 send <command> [args] [source] [priority] [auto_resume] [delay] [msg]"
             echo "  $0 <shorthand> [args]"
             echo "  $0 watcher-status"
             echo "  $0 pending"
             echo ""
-            echo "Shorthands:"
+            echo "Universal Command (autonomy-first):"
+            echo "  cmd /status                     - Execute and auto-continue (DEFAULT)"
+            echo "  cmd /status --pause             - Execute and wait for user"
+            echo "  cmd \"/rename My Session\"        - Command with arguments"
+            echo "  cmd /compact \"Focus on code\"    - Command with separate args"
+            echo ""
+            echo "Blocked commands (interactive, no autonomous execution):"
+            echo "  /settings, /config, /edit, /help, /vim, /model, /theme,"
+            echo "  /permissions, /mcp, /plugins, /keybindings"
+            echo ""
+            echo "Legacy Shorthands (still supported):"
             echo "  compact [instructions]   - Signal /compact"
             echo "  rename <name>            - Signal /rename (name required)"
             echo "  resume [session]         - Signal /resume"
@@ -369,18 +507,15 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
             echo "  release-notes            - Signal /release-notes"
             echo "  clear                    - Signal /clear"
             echo ""
-            echo "Auto-Resume Commands:"
+            echo "Auto-Resume Commands (legacy, prefer 'cmd' instead):"
             echo "  context-resume [msg] [delay]  - /context with auto-resume"
             echo "  with-resume <cmd> [args] [msg] [delay] - Any command with auto-resume"
             echo ""
             echo "Examples:"
-            echo "  $0 send /compact \"Focus on code\" skill:test"
-            echo "  $0 compact \"Summarize recent work\""
-            echo "  $0 rename \"Feature Implementation\""
-            echo "  $0 status"
-            echo "  $0 context-resume                    # /context then 'continue' after 3s"
-            echo "  $0 context-resume \"proceed\" 5       # /context then 'proceed' after 5s"
-            echo "  $0 with-resume /stats \"\" \"resume\"   # /stats then 'resume'"
+            echo "  $0 cmd /status                       # Auto-continues (recommended)"
+            echo "  $0 cmd /status --pause               # Waits for user"
+            echo "  $0 cmd /compact \"Focus on code\"      # With arguments"
+            echo "  $0 send /compact \"Focus\" skill:test  # Low-level send"
             ;;
     esac
 fi

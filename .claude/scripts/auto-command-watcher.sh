@@ -61,7 +61,8 @@ mkdir -p "$(dirname "$LOG_FILE")"
 # Banner
 echo -e "${CYAN}"
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║           JARVIS AUTO-COMMAND WATCHER v1.0                   ║"
+echo "║           JARVIS AUTO-COMMAND WATCHER v2.0                   ║"
+echo "║              Autonomy-First Design (M5)                      ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 echo ""
@@ -69,6 +70,9 @@ echo -e "  ${BLUE}Project:${NC}  $PROJECT_DIR"
 echo -e "  ${BLUE}Signal:${NC}   $SIGNAL_FILE"
 echo -e "  ${BLUE}Log:${NC}      $LOG_FILE"
 echo -e "  ${BLUE}Status:${NC}   ${GREEN}ACTIVE${NC}"
+echo ""
+echo -e "  ${GREEN}AUTONOMY PRINCIPLE:${NC} Commands auto-resume by default."
+echo "  Jarvis continues working after command execution unless --pause."
 echo ""
 echo "  Supported commands:"
 printf "    "
@@ -78,7 +82,7 @@ done
 echo ""
 echo ""
 echo "  This watcher executes slash commands autonomously when signals"
-echo "  are created by skills or hooks."
+echo "  are created by skills or hooks, then resumes Jarvis's work."
 echo ""
 echo -e "  Press ${YELLOW}Ctrl+C${NC} to stop"
 echo ""
@@ -198,6 +202,7 @@ process_signal() {
 
     # Parse JSON
     local command args timestamp source priority
+    local auto_resume resume_delay resume_message
 
     if ! command -v jq &> /dev/null; then
         echo -e "           ${RED}ERROR: jq not installed${NC}"
@@ -210,6 +215,11 @@ process_signal() {
     timestamp=$(echo "$signal_content" | jq -r '.timestamp // "unknown"')
     source=$(echo "$signal_content" | jq -r '.source // "unknown"')
     priority=$(echo "$signal_content" | jq -r '.priority // "normal"')
+
+    # Auto-resume fields (autonomy-first: default to true)
+    auto_resume=$(echo "$signal_content" | jq -r '.auto_resume // true')
+    resume_delay=$(echo "$signal_content" | jq -r '.resume_delay // 3')
+    resume_message=$(echo "$signal_content" | jq -r '.resume_message // "continue"')
 
     if [[ -z "$command" ]]; then
         echo -e "           ${RED}ERROR: No command in signal${NC}"
@@ -224,6 +234,11 @@ process_signal() {
     echo -e "           Source:    $source"
     echo -e "           Priority:  $priority"
     echo -e "           Timestamp: $timestamp"
+    if [[ "$auto_resume" == "true" ]]; then
+        echo -e "           AutoResume: ${GREEN}YES${NC} (${resume_delay}s → \"$resume_message\")"
+    else
+        echo -e "           AutoResume: ${YELLOW}NO${NC} (will wait for user)"
+    fi
 
     # Validate command
     if ! is_valid_command "$command"; then
@@ -253,19 +268,49 @@ process_signal() {
     sleep 1
 
     # Try execution methods in order
+    local exec_method=""
     if execute_via_tmux "$full_command"; then
         echo -e "           ${GREEN}SUCCESS via tmux${NC}"
         log_event "$command" "$args" "$source" "SUCCESS:tmux"
+        exec_method="tmux"
     elif execute_via_applescript "$full_command"; then
         echo -e "           ${YELLOW}TYPED via AppleScript (press Enter)${NC}"
         log_event "$command" "$args" "$source" "SUCCESS:applescript"
+        exec_method="applescript"
     elif execute_via_xdotool "$full_command"; then
         echo -e "           ${GREEN}SUCCESS via xdotool${NC}"
         log_event "$command" "$args" "$source" "SUCCESS:xdotool"
+        exec_method="xdotool"
     else
         echo -e "           ${RED}FAILED: No execution method available${NC}"
         log_event "$command" "$args" "$source" "ERROR: No execution method"
         return 1
+    fi
+
+    # Handle auto-resume (autonomy-first behavior)
+    if [[ "$auto_resume" == "true" && -n "$exec_method" ]]; then
+        echo -e "           ${CYAN}Auto-resume in ${resume_delay}s...${NC}"
+        sleep "$resume_delay"
+
+        # Send resume message using the same method that worked
+        case "$exec_method" in
+            tmux)
+                "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$resume_message" Enter
+                echo -e "           ${GREEN}RESUMED: Sent \"$resume_message\"${NC}"
+                log_event "auto-resume" "$resume_message" "$source" "SUCCESS:tmux"
+                ;;
+            xdotool)
+                xdotool type "$resume_message"
+                xdotool key Return
+                echo -e "           ${GREEN}RESUMED: Sent \"$resume_message\"${NC}"
+                log_event "auto-resume" "$resume_message" "$source" "SUCCESS:xdotool"
+                ;;
+            applescript)
+                # AppleScript requires user to press Enter, so we just notify
+                echo -e "           ${YELLOW}NOTE: User must press Enter after command, then type resume message${NC}"
+                log_event "auto-resume" "$resume_message" "$source" "SKIPPED:applescript"
+                ;;
+        esac
     fi
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
