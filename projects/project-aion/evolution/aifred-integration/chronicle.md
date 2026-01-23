@@ -283,7 +283,7 @@ Each milestone entry captures:
 **Sessions**: 4.1 (Core Patterns), 4.2 (Autonomous Execution)
 **Date**: 2026-01-23
 **Duration**: ~2 hours
-**Commits**: TBD
+**Commits**: `0616ada`
 **Status**: Complete
 
 ### 4.1 What Was Done
@@ -357,6 +357,82 @@ Each milestone entry captures:
 
 ---
 
+## Milestone 5: Auto-* Wrapper Refactoring (In Progress)
+
+**Sessions**: 5.1 (Universal Signal), 5.2 (Migration), 5.3 (Cleanup)
+**Date**: 2026-01-23
+**Duration**: ~1.5 hours (Session 5.1)
+**Commits**: `92ef6d2`
+**Status**: Session 5.1 Complete
+
+### 5.1 What Was Done
+
+**Session 5.1: Universal Signal Implementation**
+| Deliverable | Description |
+|-------------|-------------|
+| `signal_command()` | Universal function for any slash command |
+| Autonomy-first design | Auto-resume is DEFAULT, --pause to opt-out |
+| Blocklist validation | Block interactive commands (/settings, /config, etc.) |
+| Watcher auto-resume | Parse and act on auto_resume, resume_delay, resume_message |
+| CLI entry point | `signal-helper.sh cmd /status` |
+
+### 5.2 How It Was Approached
+
+**Sequence**:
+1. Analyzed existing signal-helper.sh shorthand functions (17 functions)
+2. Identified gap: watcher didn't implement auto-resume despite signal support
+3. Designed universal signal_command() with autonomy-first principle
+4. User feedback: changed from --resume (opt-in) to --pause (opt-out)
+5. Implemented blocklist for interactive commands
+6. Fixed watcher to parse and act on auto-resume fields
+7. Tested all scenarios (valid, blocked, args, --pause)
+
+**Key Design Decision**:
+- Autonomy is DEFAULT (per CLAUDE.md), pausing is the exception
+- Blocklist approach: block known-bad commands, allow everything else
+- This enables future Claude Code commands to work automatically
+
+### 5.3 Why Decisions Were Made
+
+| Decision | Reasoning |
+|----------|-----------|
+| **Autonomy-first (--pause opt-out)** | CLAUDE.md: "Jarvis operates autonomously by default. Do not wait for instructions." |
+| **Blocklist vs allowlist** | New Claude Code commands auto-supported; only block interactive ones |
+| **Fix watcher auto-resume** | Signal fields were designed but never implemented in watcher |
+| **3-second resume delay** | Allow command output to display before sending resume message |
+
+### 5.4 What Was Learned
+
+**Technical Insights**:
+- The auto-resume mechanism was designed in signal-helper.sh but never implemented in watcher
+- Autonomy-first is a design principle, not just a preference
+- Blocklist approach scales better than allowlist for evolving command sets
+
+**Pattern Discovered**:
+- Design principle alignment check: when implementing features, verify they align with documented principles (CLAUDE.md)
+- The user caught the --resume vs --pause inversion — design review matters
+
+### 5.5 What to Watch
+
+| Item | Type | Priority |
+|------|------|----------|
+| Session 5.2: Migration | Implementation | Next (test all 17 auto-* via universal) |
+| Session 5.3: Cleanup | Maintenance | After 5.2 (archive deprecated commands) |
+| AppleScript auto-resume | Edge case | Low (requires manual Enter) |
+
+### 5.6 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Functions added | 2 (signal_command, is_blocked_command) |
+| Watcher enhancements | 3 (parse, delay, resume injection) |
+| Lines added | 194 |
+| Tests run | 6 manual tests |
+| Issues found | 1 (watcher missing auto-resume) |
+| Issues resolved | 1 |
+
+---
+
 ## Cross-Milestone Patterns
 
 *[Patterns that emerge across multiple milestones — to be populated as work progresses]*
@@ -382,6 +458,9 @@ Each milestone entry captures:
 | 2026-01-22 | Rename docker hooks with docker-* prefix | Clarity, avoid ambiguity | M1 |
 | 2026-01-22 | Add CannonCoPilot to expected authors | Test failure revealed omission | M1 |
 | 2026-01-22 | Create integration-chronicle.md | Capture reasoning for future reference | M1 |
+| 2026-01-23 | Autonomy-first: --pause opt-out, not --resume opt-in | Aligns with CLAUDE.md autonomy principle | M5 |
+| 2026-01-23 | Blocklist approach for signal_command() | New commands auto-supported, only block interactive | M5 |
+| 2026-01-23 | Fix watcher auto-resume implementation | Signal fields existed but watcher didn't use them | M5 |
 
 ---
 

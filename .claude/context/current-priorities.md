@@ -9,10 +9,10 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## In Progress
 
 ### AIfred Integration: Milestone 5 — Auto-* Wrapper Refactoring
-**Status**: 🔜 Next
+**Status**: 🔄 In Progress
 **Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
 
-- [ ] Session 5.1: Implement universal signal_command() in signal-helper.sh
+- [x] Session 5.1: Implement universal signal_command() in signal-helper.sh ✅ (`92ef6d2`)
 - [ ] Session 5.2: Migration & testing of all 17 auto-* commands
 - [ ] Session 5.3: Documentation and deprecation notices
 
