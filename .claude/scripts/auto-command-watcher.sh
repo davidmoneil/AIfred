@@ -129,15 +129,46 @@ sanitize_args() {
 }
 
 # Execute command via tmux send-keys
+# Uses robust send pattern: text, small delay, then Enter separately
 execute_via_tmux() {
     local full_command="$1"
 
     if [[ -x "$TMUX_BIN" ]] && "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
         echo -e "           ${GREEN}Using tmux send-keys (fully autonomous)...${NC}"
-        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$full_command" Enter
+        # Send text first
+        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$full_command"
+        # Small delay to ensure text is registered
+        sleep 0.1
+        # Send Enter separately (C-m is Ctrl+M, more reliable than "Enter")
+        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
         return 0
     fi
     return 1
+}
+
+# Robust tmux message send with retry
+# Sends message and ensures submission with multiple Enter attempts if needed
+send_tmux_message() {
+    local message="$1"
+    local max_attempts="${2:-2}"
+    local attempt=1
+
+    while [[ $attempt -le $max_attempts ]]; do
+        # Send the message text
+        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$message"
+        sleep 0.1
+
+        # Send Enter (C-m is Ctrl+M = carriage return, most reliable)
+        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
+        sleep 0.2
+
+        # Second Enter to force submission if first didn't take
+        if [[ $attempt -lt $max_attempts ]]; then
+            "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
+        fi
+
+        ((attempt++))
+    done
 }
 
 # Execute command via AppleScript (macOS fallback)
@@ -295,13 +326,18 @@ process_signal() {
         # Send resume message using the same method that worked
         case "$exec_method" in
             tmux)
-                "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$resume_message" Enter
-                echo -e "           ${GREEN}RESUMED: Sent \"$resume_message\"${NC}"
-                log_event "auto-resume" "$resume_message" "$source" "SUCCESS:tmux"
+                # Use robust send with retry to ensure submission
+                echo -e "           ${CYAN}Sending resume message (robust mode)...${NC}"
+                send_tmux_message "$resume_message" 2
+                echo -e "           ${GREEN}RESUMED: Sent \"$resume_message\" (with Enter verification)${NC}"
+                log_event "auto-resume" "$resume_message" "$source" "SUCCESS:tmux:robust"
                 ;;
             xdotool)
                 xdotool type "$resume_message"
+                sleep 0.1
                 xdotool key Return
+                sleep 0.2
+                xdotool key Return  # Second Enter for reliability
                 echo -e "           ${GREEN}RESUMED: Sent \"$resume_message\"${NC}"
                 log_event "auto-resume" "$resume_message" "$source" "SUCCESS:xdotool"
                 ;;
