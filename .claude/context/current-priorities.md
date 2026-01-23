@@ -8,12 +8,12 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### AIfred Integration: Milestone 3 — JICM Complements
+### AIfred Integration: Milestone 4 — Documentation & Patterns
 **Status**: 🔜 Next
 **Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
 
-- [ ] Session 3.1: Port /context-analyze, /context-loss commands
-- [ ] Session 3.2: Port /capture, /history commands
+- [ ] Session 4.1: Port capability-layering, code-before-prompts, command-invocation, agent-invocation patterns
+- [ ] Session 4.2: Port autonomous-execution pattern + /analyze-codebase command
 
 ### PR-12.3: Independent Milestone Review (2026-01-21)
 **Status**: ⏸️ Paused (AIfred Integration priority)
@@ -49,6 +49,13 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### AIfred Integration Milestone 3: JICM Complements (2026-01-23)
+- Session 3.1: Created /context-analyze, /context-loss commands, compaction-essentials.md
+- Session 3.2: Created /capture (4 types), /history (7 subcommands) commands
+- Created history directory structure with templates and index
+- Updated weekly-context-analysis.sh for Jarvis log sources
+- Ollama integration skipped (deferred to later)
 
 ### Milestone Documentation Enforcement System (2026-01-23)
 - Implemented enforcement mechanism to prevent documentation drift

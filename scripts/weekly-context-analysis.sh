@@ -33,7 +33,7 @@ if [[ -f "$SCRIPT_DIR/config.sh" ]]; then
 fi
 
 # Defaults (can be overridden by config.sh or environment)
-PROJECT_DIR="${AIFRED_DIR:-$HOME/Code/AIfred}"
+PROJECT_DIR="${JARVIS_DIR:-$HOME/Claude/Jarvis}"
 CONTEXT_LOGS="$PROJECT_DIR/.claude/logs/context-usage"
 SESSION_LOGS="$PROJECT_DIR/.claude/logs"
 REPORT_DIR="$PROJECT_DIR/.claude/logs/reports"
@@ -42,6 +42,7 @@ BACKUP_DIR="$PROJECT_DIR/.claude/logs/backups"
 REPORT_FILE="$REPORT_DIR/context-analysis-$(date +%Y-%m-%d).md"
 
 # Configuration with defaults
+# Note: Ollama integration disabled by default - set CONTEXT_REDUCE=true to enable
 CONTEXT_REDUCE="${CONTEXT_REDUCE:-false}"
 REDUCE_THRESHOLD="${REDUCE_THRESHOLD:-5000}"
 REDUCE_MAX_SIZE="${REDUCE_MAX_SIZE:-50000}"
@@ -106,47 +107,63 @@ echo "" >> "$REPORT_FILE"
 echo "## Session Statistics" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-AUDIT_LOG="$SESSION_LOGS/audit.jsonl"
-if [[ -f "$AUDIT_LOG" ]]; then
-    # Count sessions this week
-    WEEK_AGO=$(date -d '7 days ago' '+%Y-%m-%d' 2>/dev/null || date -v-7d '+%Y-%m-%d' 2>/dev/null || echo "")
+# Jarvis uses multiple log sources instead of single audit.jsonl
+SELECTION_LOG="$SESSION_LOGS/selection-audit.jsonl"
+SESSION_EVENTS_LOG="$SESSION_LOGS/session-events.jsonl"
+TELEMETRY_DIR="$SESSION_LOGS/telemetry"
 
-    if [[ -n "$WEEK_AGO" ]]; then
-        SESSION_COUNT=$(grep -c "session_start\|session.*start" "$AUDIT_LOG" 2>/dev/null | tail -1 || echo "0")
-        TOOL_CALLS=$(wc -l < "$AUDIT_LOG" | tr -d ' ')
+# Count log entries from all sources
+TOTAL_ENTRIES=0
+echo "### Log Sources" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+echo "| Source | Entries | Size |" >> "$REPORT_FILE"
+echo "|--------|---------|------|" >> "$REPORT_FILE"
 
-        echo "- **Audit log entries**: $TOOL_CALLS" >> "$REPORT_FILE"
-        echo "- **Log file size**: $(du -h "$AUDIT_LOG" | cut -f1)" >> "$REPORT_FILE"
-    else
-        echo "*Could not calculate date range*" >> "$REPORT_FILE"
-    fi
-
-    # Get total estimated tokens from audit log if available
-    if command -v jq &>/dev/null; then
-        TOTAL_TOKENS=$(jq -s '[.[].estimated_tokens // 0] | add' "$AUDIT_LOG" 2>/dev/null || echo "0")
-        if [[ "$TOTAL_TOKENS" != "0" && "$TOTAL_TOKENS" != "null" ]]; then
-            echo "- **Estimated tokens (input)**: $TOTAL_TOKENS" >> "$REPORT_FILE"
-        fi
-    fi
-else
-    echo "*No audit log found at $AUDIT_LOG*" >> "$REPORT_FILE"
+if [[ -f "$SELECTION_LOG" ]]; then
+    ENTRIES=$(wc -l < "$SELECTION_LOG" | tr -d ' ')
+    SIZE=$(du -h "$SELECTION_LOG" 2>/dev/null | cut -f1 || echo "0")
+    echo "| selection-audit.jsonl | $ENTRIES | $SIZE |" >> "$REPORT_FILE"
+    ((TOTAL_ENTRIES += ENTRIES)) || true
 fi
+
+if [[ -f "$SESSION_EVENTS_LOG" ]]; then
+    ENTRIES=$(wc -l < "$SESSION_EVENTS_LOG" | tr -d ' ')
+    SIZE=$(du -h "$SESSION_EVENTS_LOG" 2>/dev/null | cut -f1 || echo "0")
+    echo "| session-events.jsonl | $ENTRIES | $SIZE |" >> "$REPORT_FILE"
+    ((TOTAL_ENTRIES += ENTRIES)) || true
+fi
+
+if [[ -d "$TELEMETRY_DIR" ]]; then
+    TELEMETRY_FILES=$(find "$TELEMETRY_DIR" -name "events-*.jsonl" 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$TELEMETRY_FILES" -gt 0 ]]; then
+        ENTRIES=$(cat "$TELEMETRY_DIR"/events-*.jsonl 2>/dev/null | wc -l | tr -d ' ')
+        SIZE=$(du -sh "$TELEMETRY_DIR" 2>/dev/null | cut -f1 || echo "0")
+        echo "| telemetry/ ($TELEMETRY_FILES files) | $ENTRIES | $SIZE |" >> "$REPORT_FILE"
+        ((TOTAL_ENTRIES += ENTRIES)) || true
+    fi
+fi
+
+if [[ $TOTAL_ENTRIES -eq 0 ]]; then
+    echo "| *No logs found* | - | - |" >> "$REPORT_FILE"
+fi
+
+echo "" >> "$REPORT_FILE"
+echo "- **Total log entries**: $TOTAL_ENTRIES" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
-# Tool usage breakdown
-if [[ -f "$AUDIT_LOG" ]] && command -v jq &>/dev/null; then
-    echo "### Tool Usage (Top 10)" >> "$REPORT_FILE"
+# Tool usage breakdown from selection-audit.jsonl
+if [[ -f "$SELECTION_LOG" ]] && command -v jq &>/dev/null; then
+    echo "### Tool/Agent Usage (Top 10)" >> "$REPORT_FILE"
     echo "" >> "$REPORT_FILE"
-    echo "| Tool | Calls | Tokens |" >> "$REPORT_FILE"
-    echo "|------|-------|--------|" >> "$REPORT_FILE"
+    echo "| Type | Name | Calls |" >> "$REPORT_FILE"
+    echo "|------|------|-------|" >> "$REPORT_FILE"
 
-    jq -s 'group_by(.tool) 
-        | map({key: .[0].tool, value: {calls: length, tokens: ([.[].estimated_tokens // 0] | add)}})
-        | sort_by(-.value.calls)
+    jq -s 'group_by(.type + ":" + (.tool // .agent // .skill // "unknown"))
+        | map({key: .[0].type, name: (.[0].tool // .[0].agent // .[0].skill // "unknown"), count: length})
+        | sort_by(-.count)
         | .[0:10]
-        | map({tool: .[0].key, calls: (map(.value.calls) | add), tokens: (map(.value.tokens) | add)})
         | .[]
-        | "| \(.tool) | \(.calls) | \(.tokens) |"' "$AUDIT_LOG" 2>/dev/null >> "$REPORT_FILE" || echo "*Could not parse tool usage*" >> "$REPORT_FILE"
+        | "| \(.key) | \(.name) | \(.count) |"' "$SELECTION_LOG" 2>/dev/null >> "$REPORT_FILE" || echo "*Could not parse tool usage*" >> "$REPORT_FILE"
 
     echo "" >> "$REPORT_FILE"
 fi

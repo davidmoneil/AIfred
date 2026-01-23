@@ -50,7 +50,8 @@ Jarvis uses a distributed logging architecture where multiple hooks capture even
 │  │  ├─ session-events.jsonl              ├─ context-estimate.json        │  │
 │  │  ├─ orchestration-detections.jsonl    │                               │  │
 │  │  ├─ agent-activity.jsonl              │                               │  │
-│  │  └─ corrections.jsonl                 │                               │  │
+│  │  ├─ corrections.jsonl                 │                               │  │
+│  │  └─ context-loss-reports.jsonl       │                               │  │
 │  │                                                                        │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                  │                                           │

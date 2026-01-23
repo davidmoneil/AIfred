@@ -24,6 +24,7 @@
 | `orchestration-detections.jsonl` | Complex task detections | `orchestration-detector.js` |
 | `agent-activity.jsonl` | Agent completions | `subagent-stop.js` |
 | `corrections.jsonl` | User corrections captured | `self-correction-capture.js` |
+| `context-loss-reports.jsonl` | Context forgotten after compaction | `/context-loss` command |
 
 ### Structured State (JSON - overwrite)
 

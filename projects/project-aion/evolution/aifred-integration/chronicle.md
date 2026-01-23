@@ -111,19 +111,164 @@ Each milestone entry captures:
 
 ## Milestone 2: Analytics & Tracking
 
-**Sessions**: 2.1, 2.2
-**Status**: Not started
+**Sessions**: 2.1 (Analytics Hooks), 2.2 (Unified Logging Architecture)
+**Date**: 2026-01-23
+**Duration**: ~3 hours
+**Commits**: `939fb2b`, `803a2db`
+**Status**: Complete
 
-*[To be completed after Milestone 2]*
+### 2.1 What Was Done
+
+**Analytics Hooks Ported (Session 2.1):**
+| Hook | Purpose | Adaptation |
+|------|---------|------------|
+| `file-access-tracker.js` | Tracks Read calls to context files | Direct port with stdin/stdout handler |
+| `session-tracker.js` | Logs session lifecycle events | Direct port, logs to session-events.json |
+| `memory-maintenance.js` | Tracks Memory MCP entity access | Direct port for entity usage analytics |
+
+**Unified Logging Architecture (Session 2.2):**
+| Deliverable | Description |
+|-------------|-------------|
+| `unified-logging-architecture.md` | Design document for consolidated logging |
+| Event schema | Canonical format for all log sources |
+| Data flow diagram | Visual showing 7 sources → unified stream |
+| Integration points | Connection to self-reflection (AC-05) |
+
+### 2.2 How It Was Approached
+
+**Sequence:**
+1. Analyzed AIfred analytics hooks for applicable patterns
+2. Ported hooks using template from M1 (stdin/stdout handler pattern)
+3. Registered hooks in `settings.json` (PostToolUse, Notification events)
+4. Designed unified logging architecture to consolidate 7 disparate log sources
+5. Documented schemas and integration points
+6. Updated `logs/README.md` with new structure
+
+**Key Design Decision:**
+- Chose to document architecture before implementation — understanding the full picture before building allows better decisions about event schemas and storage
+
+### 2.3 Why Decisions Were Made
+
+| Decision | Reasoning |
+|----------|-----------|
+| **Document architecture first** | 7 logging sources needed coherent schema before more hooks add more formats |
+| **Canonical event schema** | Common format enables cross-source analysis and AC-05 self-reflection input |
+| **PostToolUse for file-access-tracker** | Track reads AFTER they happen, not before (observation, not blocking) |
+| **Notification event for session-tracker** | Session lifecycle events are notifications, not tool executions |
+
+### 2.4 What Was Learned
+
+**Technical Insights:**
+- Jarvis has 7+ logging sources that were previously uncoordinated
+- Event-driven architecture scales better than polling for analytics
+- PostToolUse hooks see the full result, including any errors
+
+**Architecture Pattern Discovered:**
+- Unified logging requires: source → transformer → canonical format → unified store → consumers
+- Each log source needs its own transformer to canonical format
+
+### 2.5 What to Watch
+
+| Item | Type | Priority |
+|------|------|----------|
+| Unified event stream implementation | Future work | Medium (architecture designed, not built) |
+| Log rotation/archival | Operations | Medium (will grow over time) |
+| AC-05 integration | Integration | High (primary consumer of unified logs) |
+
+### 2.6 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Files created | 3 hooks + 1 design doc |
+| Lines added | ~950 |
+| Log sources documented | 7 |
+| Event schema fields | 12 canonical fields |
 
 ---
 
 ## Milestone 3: JICM Complements
 
-**Sessions**: 3.1, 3.2
-**Status**: Not started
+**Sessions**: 3.1 (Context Analysis), 3.2 (Knowledge Capture)
+**Date**: 2026-01-23
+**Duration**: ~3 hours
+**Commits**: TBD (single commit)
+**Status**: Complete
 
-*[To be completed after Milestone 3]*
+### 3.1 What Was Done
+
+**Session 3.1: Context Analysis Commands**
+| Deliverable | Description |
+|-------------|-------------|
+| `/context-analyze` | Command wrapper for weekly-context-analysis.sh |
+| `/context-loss` | Report forgotten context after compaction (JSONL logging) |
+| `compaction-essentials.md` | Jarvis-specific essential context for post-compaction |
+| Script update | weekly-context-analysis.sh adapted for Jarvis log sources |
+
+**Session 3.2: Knowledge Capture Commands**
+| Deliverable | Description |
+|-------------|-------------|
+| `/capture` | Knowledge capture command (4 types: learning, decision, session, research) |
+| `/history` | History search/browse command (7 subcommands + promote) |
+| Templates | 4 templates (learning.md, decision.md, session.md, research.md) |
+| Directory structure | `.claude/history/` with categories and READMEs |
+| `index.md` | Master searchable history index |
+
+### 3.2 How It Was Approached
+
+**Sequence**:
+1. Analyzed AIfred source commands for context-analyze, context-loss, capture, history
+2. Identified adaptations needed for Jarvis environment
+3. Created Session 3.1 commands first (context-analyze, context-loss)
+4. Updated weekly-context-analysis.sh to use Jarvis log sources (telemetry/, selection-audit.jsonl, session-events.jsonl)
+5. Created compaction-essentials.md with Jarvis-specific content (Archon, Wiggum Loop, AC components)
+6. Created Session 3.2 commands (capture, history)
+7. Built full directory structure with templates
+8. Updated documentation (logs/README.md, unified-logging-architecture.md)
+
+**Key Adaptation**:
+- Skipped Ollama integration per user request (CONTEXT_REDUCE=false by default)
+- Used CLAUDE_SESSION_ID instead of AIfred's .current-session file
+- Added Jarvis-specific categories (archon, orchestration, security, integration, aifred-porting)
+
+### 3.3 Why Decisions Were Made
+
+| Decision | Reasoning |
+|----------|-----------|
+| **Skip Ollama integration** | User requested — will add local models later |
+| **CLAUDE_SESSION_ID for session tracking** | Jarvis standard, already used by telemetry-emitter.js |
+| **Added archon/orchestration categories** | Jarvis-specific concepts that need dedicated capture |
+| **Memory MCP promote command** | Bridges file-based history with cross-session recall |
+| **Comprehensive templates** | Ensures consistent capture format |
+
+### 3.4 What Was Learned
+
+**Technical Insights**:
+- Jarvis has 7+ log sources requiring aggregation vs AIfred's single audit.jsonl
+- File-based history complements (not replaces) Memory MCP
+- Pattern detection (3+ similar reports) provides actionable improvement signals
+
+**Architecture Pattern**:
+- JICM complement commands form a knowledge lifecycle: Capture → Search → Analyze → Feedback
+- /context-loss → compaction-essentials.md creates a feedback loop for context preservation
+
+### 3.5 What to Watch
+
+| Item | Type | Priority |
+|------|------|----------|
+| Index auto-update | Implementation | Medium (currently manual) |
+| Ollama integration | Future work | Low (deferred by design) |
+| Memory MCP promote | Integration | Medium (requires Memory MCP) |
+| compaction-essentials injection | Integration | High (needs pre-compact hook) |
+
+### 3.6 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Commands created | 4 |
+| Templates created | 4 |
+| READMEs created | 5 |
+| Directories created | 15 |
+| Files modified | 3 |
 
 ---
 
