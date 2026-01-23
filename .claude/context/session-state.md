@@ -60,6 +60,32 @@ Implemented enforcement mechanism to prevent documentation drift (planning/progr
 - Documentation that says "MUST" with enforcement mechanisms will be followed
 - Enforcement levels: mandatory (blocking) > required (warning) > advisory (reminder)
 
+### Enforcement System Strengthening (COMPLETE)
+
+Additional enhancements after initial implementation:
+
+| Enhancement | Description |
+|-------------|-------------|
+| `milestone-completion-gate.yaml` v1.1 | Now references planning-tracker.yaml as source of truth (no hardcoded paths) |
+| `milestone-doc-enforcer.js` v1.1 | Dynamic path loading from planning-tracker.yaml |
+| `/reflect` Phase 3 | Added "Planning Tracker Verification" — identifies active docs, verifies in tracker |
+| `/maintain` Task 5 | Added "Planning Tracker Verification" — same plus orphan detection |
+| `session-trigger.js` | New hook — triggers AC-01 on "." input, "resume", etc. |
+
+**Files Created**:
+- `.claude/hooks/session-trigger.js`
+
+**Files Modified**:
+- `.claude/review-criteria/milestone-completion-gate.yaml` (v1.1)
+- `.claude/hooks/milestone-doc-enforcer.js` (v1.1)
+- `.claude/commands/reflect.md` (added Phase 3)
+- `.claude/commands/maintain.md` (added Task 5)
+- `.claude/settings.json` (registered session-trigger.js)
+
+**Commits**:
+- `15f95f3` — feat: Milestone Documentation Enforcement System
+- `c7ca9f8` — feat: Strengthen milestone gate and session triggers
+
 **Next Session**:
 - Test enforcement system on new session start
 - Update M2 chronicle and roadmap (intentionally deferred to test enforcement)
