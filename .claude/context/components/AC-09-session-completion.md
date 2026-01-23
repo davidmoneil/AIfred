@@ -158,7 +158,7 @@ Everything else triggers continuation or productive use of time.
 | File | Purpose | Create if Missing |
 |------|---------|-------------------|
 | `.claude/context/session-state.md` | Work status | Yes (minimal) |
-| `.claude/context/projects/current-priorities.md` | PR tracking | No (warn) |
+| `.claude/context/current-priorities.md` | PR tracking | No (warn) |
 | `.claude/reports/sessions/` | Summary storage | Yes (directory) |
 | `.claude/context/.checkpoint.md` | Continuation | Yes |
 

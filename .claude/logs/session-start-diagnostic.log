@@ -965,3 +965,51 @@
 2026-01-22T05:24:51Z | SessionStart | EnvValidation complete
 2026-01-22T05:24:51Z | SessionStart | current_work='' next_step=''
 2026-01-22T20:41:15Z | SessionEnd | /end-session invoked with /reflect + /maintain
+2026-01-22T21:03:23Z | SessionStart | source=startup | session=a27c1e84-9d31-4a59-ae73-a5427f394ce5 | local_time=14:03
+2026-01-22T21:03:23Z | SessionStart | time_of_day=afternoon
+2026-01-22T21:03:23Z | SessionStart | Weather: fetch failed or invalid response
+2026-01-22T21:03:23Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-22T21:03:23Z | SessionStart | Launched watcher
+2026-01-22T21:03:23Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-22T21:03:23Z | SessionStart | AIfred baseline up-to-date
+2026-01-22T21:03:23Z | SessionStart | EnvCheck: 10 uncommitted changes
+2026-01-22T21:03:23Z | SessionStart | EnvValidation complete
+2026-01-22T21:03:23Z | SessionStart | current_work='' next_step=''
+2026-01-23T03:02:28Z | PreCompact | Auto-checkpoint triggered
+2026-01-23T03:02:28Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-23T03:02:28Z | PreCompact | Checkpoint created (no signal - JICM decoupled)
+2026-01-23T03:03:23Z | SessionStart | source=compact | session=a27c1e84-9d31-4a59-ae73-a5427f394ce5 | local_time=20:03
+2026-01-23T03:03:23Z | SessionStart | time_of_day=evening
+2026-01-23T03:03:23Z | SessionStart | EnvValidation complete
+2026-01-23T03:03:23Z | SessionStart | current_work='' next_step=''
+2026-01-23T03:03:23Z | SessionStart | JICM v2: Loading compressed context
+2026-01-23T03:03:23Z | SessionStart | JICM v2: Deleted compressed context file
+2026-01-23T03:22:18Z | SessionStart | source=startup | session=06bf7d91-02f8-4e3a-82da-bcc02d6a3251 | local_time=20:22
+2026-01-23T03:22:18Z | SessionStart | time_of_day=evening
+2026-01-23T03:22:18Z | SessionStart | Weather: 33°F (feels like 32°F), Clear, 71% humidity
+2026-01-23T03:22:18Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T03:22:18Z | SessionStart | Launched watcher
+2026-01-23T03:22:18Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T03:22:18Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T03:22:18Z | SessionStart | EnvCheck: 20 uncommitted changes
+2026-01-23T03:22:18Z | SessionStart | EnvValidation complete
+2026-01-23T03:22:18Z | SessionStart | current_work='' next_step=''
+2026-01-23T03:31:57Z | Reflect | /reflect invoked
+2026-01-23T03:38:44Z | SessionStart | source=startup | session=a97ec256-0d3f-40ca-93fd-392d961c3578 | local_time=20:38
+2026-01-23T03:38:44Z | SessionStart | time_of_day=evening
+2026-01-23T03:38:44Z | SessionStart | Weather: 30°F (feels like 28°F), Partly cloudy, 85% humidity
+2026-01-23T03:38:44Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T03:38:44Z | SessionStart | Launched watcher
+2026-01-23T03:38:44Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T03:38:44Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T03:38:44Z | SessionStart | EnvCheck: 12 uncommitted changes
+2026-01-23T03:38:44Z | SessionStart | EnvValidation complete
+2026-01-23T03:38:44Z | SessionStart | current_work='' next_step=''
+2026-01-23T03:51:48Z | SessionStart | source=clear | session=5f40bd2c-d881-4969-8372-05f4ce171d65 | local_time=20:51
+2026-01-23T03:51:48Z | SessionStart | time_of_day=evening
+2026-01-23T03:51:48Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T03:51:48Z | SessionStart | EnvValidation complete
+2026-01-23T03:51:48Z | SessionStart | current_work='' next_step=''
+2026-01-23T03:51:48Z | SessionStart | JICM v2: Loading compressed context
+2026-01-23T03:51:48Z | SessionStart | JICM v2: Deleted compressed context file
+2026-01-23T03:52:26Z | SessionEnd | /end-session invoked

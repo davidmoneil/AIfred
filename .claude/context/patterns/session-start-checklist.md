@@ -75,7 +75,7 @@ sync analysis. Never ask "adopt/adapt/defer?" before the user has seen what chan
 ### 3. Load Context
 
 Review key context files as needed:
-- `@.claude/context/projects/current-priorities.md` — Active tasks
+- `@.claude/context/current-priorities.md` — Active tasks
 - `@paths-registry.yaml` — Path configuration
 - `@.claude/context/configuration-summary.md` — Current setup
 

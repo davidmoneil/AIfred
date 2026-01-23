@@ -238,7 +238,7 @@ echo "$TIMESTAMP | SessionStart | EnvValidation complete" >> "$LOG_DIR/session-s
 
 # ============== SESSION STATE CHECK ==============
 SESSION_STATE_FILE="$CLAUDE_PROJECT_DIR/.claude/context/session-state.md"
-PRIORITIES_FILE="$CLAUDE_PROJECT_DIR/.claude/context/projects/current-priorities.md"
+PRIORITIES_FILE="$CLAUDE_PROJECT_DIR/.claude/context/current-priorities.md"
 CURRENT_WORK=""
 NEXT_STEP=""
 
@@ -316,7 +316,7 @@ Guidelines for greeting:
 PHASE B - SYSTEM REVIEW:
 Review these files silently:
 - .claude/context/session-state.md (current work status)
-- .claude/context/projects/current-priorities.md (task backlog)
+- .claude/context/current-priorities.md (task backlog)
 
 PHASE C - BRIEFING:
 After greeting, provide brief status and AUTONOMOUSLY suggest next action:

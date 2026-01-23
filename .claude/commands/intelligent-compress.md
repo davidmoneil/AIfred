@@ -33,7 +33,7 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
    - Write back the file
 
 2. **current-priorities.md** - Mark completed items:
-   - Read `.claude/context/projects/current-priorities.md`
+   - Read `.claude/context/current-priorities.md`
    - Check off any completed priorities
    - Update "Next Step" if applicable
    - Write back the file

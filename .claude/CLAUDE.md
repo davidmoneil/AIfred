@@ -16,7 +16,7 @@ Master Archon for infrastructure, development, and self-improvement. AIfred base
 | Category | Primary | Secondary |
 |----------|---------|-----------|
 | **Session** | @.claude/context/session-state.md | @.claude/skills/session-management/SKILL.md |
-| **Tasks** | @.claude/context/projects/current-priorities.md | @paths-registry.yaml |
+| **Tasks** | @.claude/context/current-priorities.md | @paths-registry.yaml |
 | **Tooling** | @.claude/context/integrations/capability-matrix.md | @.claude/context/patterns/context-budget-management.md |
 | **Roadmap** | @projects/project-aion/roadmap.md | @CHANGELOG.md |
 | **Index** | @.claude/context/_index.md | — |
@@ -34,7 +34,7 @@ Master Archon for infrastructure, development, and self-improvement. AIfred base
 | **Humor** | Rare, dry, NEVER during emergencies |
 | **Safety** | Prefer reversible actions, confirm before destructive ops |
 
-Full specification: @.claude/persona/jarvis-identity.md
+Full specification: @.claude/jarvis-identity.md
 
 ---
 
@@ -45,6 +45,23 @@ Full specification: @.claude/persona/jarvis-identity.md
 3. **Hub, Not Container**: Code lives in `projects_root`, Jarvis just tracks
 4. **Baseline Read-Only**: Never edit AIfred repo — only pull for sync
 5. **Memory for Decisions**: Details in context files, decisions in Memory MCP
+
+---
+
+## Pattern Selection (MANDATORY)
+
+Before beginning ANY significant task, consult the relevant pattern:
+
+| Task Type | Required Pattern |
+|-----------|-----------------|
+| Multi-step implementation | @.claude/context/patterns/wiggum-loop-pattern.md |
+| Milestone completion | @.claude/context/patterns/milestone-review-pattern.md |
+| Tool/agent selection | @.claude/context/patterns/selection-intelligence-guide.md |
+| Context management | @.claude/context/patterns/jicm-pattern.md |
+| Session start | @.claude/context/patterns/startup-protocol.md |
+| Session end | @.claude/context/workflows/session-exit.md |
+
+**Wiggum Loop is DEFAULT behavior** — all other patterns apply situationally.
 
 ---
 

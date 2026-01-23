@@ -89,7 +89,7 @@ The session-state.md has grown large ([N] lines). Would you like to:
 | File | Update |
 |------|--------|
 | `.claude/context/session-state.md` | Status, accomplishments, next steps, key files |
-| `.claude/context/projects/current-priorities.md` | Move completed to "Recently Completed", add new items |
+| `.claude/context/current-priorities.md` | Move completed to "Recently Completed", add new items |
 
 **JICM Context Preservation Files** (update if relevant):
 

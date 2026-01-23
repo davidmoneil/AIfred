@@ -41,7 +41,7 @@ const { execSync } = require('child_process');
 // Configuration
 const WORKSPACE_ROOT = '/Users/aircannon/Claude/Jarvis';
 const SESSION_STATE_PATH = path.join(WORKSPACE_ROOT, '.claude/context/session-state.md');
-const PRIORITIES_PATH = path.join(WORKSPACE_ROOT, '.claude/context/projects/current-priorities.md');
+const PRIORITIES_PATH = path.join(WORKSPACE_ROOT, '.claude/context/current-priorities.md');
 const AIFRED_BASELINE = '/Users/aircannon/Claude/AIfred';
 const CHECKPOINT_PATH = path.join(WORKSPACE_ROOT, '.claude/context/.soft-restart-checkpoint.md');
 

@@ -264,7 +264,7 @@ When you need an On-Demand MCP that's not enabled:
 
 ### Core References
 - @.claude/context/session-state.md - Session state file
-- @.claude/context/projects/current-priorities.md - Priorities file
+- @.claude/context/current-priorities.md - Priorities file
 - @.claude/persona/jarvis-identity.md - Jarvis persona specification
 
 ### Patterns

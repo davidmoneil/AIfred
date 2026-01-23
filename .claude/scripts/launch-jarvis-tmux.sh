@@ -118,7 +118,7 @@ CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=99 ENABLE_TOOL_SEARCH=true CLAUDE_CO
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
 "$TMUX_BIN" new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" \
-    "export $CLAUDE_ENV && claude --dangerously-skip-permissions --verbose --debug" 
+    "export $CLAUDE_ENV && claude --dangerously-skip-permissions" 
 
 # Give Claude a moment to start
 sleep 2

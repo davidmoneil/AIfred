@@ -1,40 +1,195 @@
 # Patterns Index
 
-Reusable implementation patterns extracted from recurring practices.
+Reusable implementation patterns organized by category. Consult before implementing significant tasks.
+
+**Last Updated**: 2026-01-22
 
 ---
 
-## Active Patterns
+## Quick Reference — Mandatory Patterns
 
-| Pattern | Purpose | Quick Reference |
-|---------|---------|-----------------|
-| [Agent Selection](agent-selection-pattern.md) | Choose between custom agents, built-in subagents, skills, direct tools | Simple → Direct tools; Repeating → Custom agent |
-| [MCP Loading Strategy](mcp-loading-strategy.md) | Three strategies for MCP server loading | Always-On / On-Demand / Isolated |
-| [Memory Storage](memory-storage-pattern.md) | When/how to store in Memory MCP | Issues/decisions → Store; Routine → Skip |
-| [PARC Design Review](prompt-design-review.md) | Pre-implementation pattern check | Prompt → Assess → Relate → Create |
+| Task Type | Pattern | Strictness |
+|-----------|---------|------------|
+| Multi-step implementation | [wiggum-loop-pattern](wiggum-loop-pattern.md) | **ALWAYS** |
+| Milestone completion | [milestone-review-pattern](milestone-review-pattern.md) | **ALWAYS** |
+| Tool/agent selection | [selection-intelligence-guide](selection-intelligence-guide.md) | **ALWAYS** |
+| Context management | [jicm-pattern](jicm-pattern.md) | **ALWAYS** |
+| Session start | [startup-protocol](startup-protocol.md) | **ALWAYS** |
+| Session end | [session-exit](../workflows/session-exit.md) | **ALWAYS** |
 
 ---
 
-## Usage
+## Session Lifecycle
 
-Before implementing significant tasks:
+Patterns for session management from start to finish.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [startup-protocol](startup-protocol.md) | AC-01 three-phase startup | Every session start |
+| [session-start-checklist](session-start-checklist.md) | Mandatory session start steps | Every session start |
+| [session-completion-pattern](session-completion-pattern.md) | AC-09 clean session exit | Every session end |
+
+---
+
+## Core Behaviors
+
+Fundamental patterns that govern how Jarvis operates.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [wiggum-loop-pattern](wiggum-loop-pattern.md) | AC-02 multi-pass verification | **DEFAULT for all tasks** |
+| [jicm-pattern](jicm-pattern.md) | Intelligent context management | Context approaching limits |
+| [self-interruption-prevention](self-interruption-prevention.md) | Prevent unintended work stops | When blockers encountered |
+
+---
+
+## Selection & Routing
+
+Patterns for choosing the right tool, agent, or approach.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [selection-intelligence-guide](selection-intelligence-guide.md) | Quick tool/agent selection reference | Before any task |
+| [agent-selection-pattern](agent-selection-pattern.md) | Detailed agent vs skill vs tool decision | Complex routing decisions |
+| [tool-selection-intelligence](tool-selection-intelligence.md) | Research-backed tool precedence theory | Research/exploration tasks |
+| [selection-validation-tests](selection-validation-tests.md) | 10 test cases for selection accuracy | Validating selection logic |
+
+---
+
+## MCP Management
+
+Patterns for Model Context Protocol server management.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [mcp-loading-strategy](mcp-loading-strategy.md) | 3-tier MCP loading approach | Session start, MCP decisions |
+| [context-budget-management](context-budget-management.md) | Token budgets and MCP tiers | Context optimization |
+| [mcp-design-patterns](mcp-design-patterns.md) | Per-MCP best practices | Using specific MCPs |
+| [mcp-validation-harness](mcp-validation-harness.md) | 5-phase MCP validation | Adding new MCPs |
+| [batch-mcp-validation](batch-mcp-validation.md) | Batch testing for token limits | Validating MCP groups |
+
+---
+
+## Self-Improvement (Tier 2)
+
+Patterns for autonomous self-improvement cycles.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [self-improvement-pattern](self-improvement-pattern.md) | Full self-improvement cycle | Idle time, session end |
+| [self-reflection-pattern](self-reflection-pattern.md) | AC-05 session learnings | After significant work |
+| [self-evolution-pattern](self-evolution-pattern.md) | AC-06 capability growth | Queued improvements |
+| [rd-cycles-pattern](rd-cycles-pattern.md) | AC-07 research & development | New tool exploration |
+| [maintenance-pattern](maintenance-pattern.md) | AC-08 health checks | Periodic maintenance |
+
+---
+
+## Development & Git
+
+Patterns for code development and version control.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [milestone-review-pattern](milestone-review-pattern.md) | Validate milestone completion | PR/milestone completion |
+| [branching-strategy](branching-strategy.md) | Git branching for Project Aion | Branch decisions |
+| [cross-project-commit-tracking](cross-project-commit-tracking.md) | Multi-repo commit coordination | Working across repos |
+
+---
+
+## Design & Planning
+
+Patterns for design review and planning decisions.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [prompt-design-review](prompt-design-review.md) | PARC pre-implementation check | Before significant changes |
+| [memory-storage-pattern](memory-storage-pattern.md) | When/how to store in Memory MCP | Deciding what to persist |
+| [workspace-path-policy](workspace-path-policy.md) | Where projects and docs live | File placement decisions |
+
+---
+
+## Infrastructure
+
+Patterns for service and infrastructure management.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [service-lifecycle-pattern](service-lifecycle-pattern.md) | Ephemeral service management | Docker/service work |
+| [project-reporting-pattern](project-reporting-pattern.md) | Run reports + performance analysis | Demo/report tasks |
+| [multi-repo-credential-pattern](multi-repo-credential-pattern.md) | Credential management across repos | Multi-repo operations |
+
+---
+
+## Automation & Integration
+
+Patterns for automation and component integration.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [command-signal-protocol](command-signal-protocol.md) | Signal-based command invocation | Watcher integration |
+| [component-interaction-protocol](component-interaction-protocol.md) | AC component communication | Component development |
+| [override-disable-pattern](override-disable-pattern.md) | Suppress behaviors when needed | Troubleshooting |
+| [automated-context-management](automated-context-management.md) | Smart checkpoint workflow | Context optimization |
+
+---
+
+## Plugin & Skill Management
+
+Patterns for managing plugins and skills.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [plugin-decomposition-pattern](plugin-decomposition-pattern.md) | Extract/customize skills from plugins | Plugin customization |
+
+---
+
+## Testing & Validation
+
+Patterns for testing and setup validation.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [setup-validation](setup-validation.md) | Validate setup completeness | After setup changes |
+| [autonomic-testing-framework](autonomic-testing-framework.md) | Test autonomic components | AC development |
+
+---
+
+## Reference (Less Common)
+
+Patterns used less frequently or for specific scenarios.
+
+| Pattern | Purpose |
+|---------|---------|
+| [worktree-shell-functions](worktree-shell-functions.md) | Git worktree helpers |
+| [hook-consolidation-assessment](hook-consolidation-assessment.md) | Hook audit analysis |
+| [self-monitoring-commands](self-monitoring-commands.md) | Self-monitoring command set |
+
+---
+
+## Usage Guidelines
+
+### Before Implementing Tasks
 
 1. Check if a pattern exists for the task type
-2. Apply the pattern explicitly
-3. Document any new patterns discovered
+2. **Mandatory patterns MUST be applied** (marked as ALWAYS)
+3. Document any pattern deviations
 4. Update pattern docs if pattern evolves
 
----
-
-## Creating New Patterns
+### Creating New Patterns
 
 Create a pattern when:
 - Same approach is used 3+ times
 - Multiple commands share similar logic
 - A decision framework would help consistency
 
-Use the existing patterns as templates.
+### Pattern Strictness Levels
+
+| Level | Meaning |
+|-------|---------|
+| **ALWAYS** | Mandatory — never skip |
+| **Recommended** | Apply unless good reason not to |
+| **Optional** | Apply when relevant |
 
 ---
 
-**Last Updated**: 2026-01-02
+*Patterns Index — Jarvis Organization Architecture Phase 6*

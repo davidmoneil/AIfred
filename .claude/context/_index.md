@@ -1,9 +1,23 @@
-# Context Index
+# Context Index — Map of the Mind
 
-Central navigation for the Jarvis knowledge base.
+Central navigation for the Jarvis knowledge base (the "Mind" layer).
 
-**Version**: 1.9.5 (PR-10 Organization Cleanup)
+**Version**: 2.0.0 (Living Soul Architecture)
 **Philosophy**: Minimal, curated, always-relevant context
+
+---
+
+## The Living Soul Architecture
+
+Jarvis is organized into three layers:
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| **Mind** | `.claude/context/` | Knowledge, patterns, state (you are here) |
+| **Spirit** | `.claude/` | Capabilities, persona, tools |
+| **Body** | `/Jarvis/` | Infrastructure, interfaces |
+
+This index maps the **Mind** — operational knowledge that guides behavior.
 
 ---
 
@@ -11,352 +25,209 @@ Central navigation for the Jarvis knowledge base.
 
 | Need | Location |
 |------|----------|
-| Current work status | @.claude/context/session-state.md |
-| Active tasks | @.claude/context/projects/current-priorities.md |
+| Current work status | [session-state.md](session-state.md) |
+| Active tasks | [current-priorities.md](current-priorities.md) |
 | All paths | @paths-registry.yaml |
+| Pattern selection | [patterns/_index.md](patterns/_index.md) |
 
 ---
 
-## Knowledge Base Structure
+## Mind Structure
 
-### Systems (Infrastructure Documentation)
+### Session State (Top Level)
+
+Core files for session continuity:
+
+| File | Purpose | Update Frequency |
+|------|---------|------------------|
+| `session-state.md` | Current work status, blockers | Every session |
+| `current-priorities.md` | Active tasks and priorities | When work completes |
+| `configuration-summary.md` | Current setup state | After config changes |
+
+### Patterns (Behavioral Rules)
+
+How Jarvis behaves — 39 patterns organized by category.
+
+**Index**: [patterns/_index.md](patterns/_index.md)
+
+**Mandatory Patterns** (apply ALWAYS):
+- `wiggum-loop-pattern.md` — Multi-pass verification (DEFAULT)
+- `startup-protocol.md` — Session start sequence
+- `jicm-pattern.md` — Context management
+- `selection-intelligence-guide.md` — Tool/agent selection
+
+### Standards (Conventions)
+
+Project-wide rules for consistency:
+
+| Standard | Purpose |
+|----------|---------|
+| `severity-status-system.md` | `[X] CRITICAL` / `[!] HIGH` / etc. |
+| `model-selection.md` | Opus vs Sonnet vs Haiku |
+| `readme-standard.md` | README requirements |
+
+### Workflows (Procedures)
+
+Step-by-step guides for recurring tasks:
+
+| Workflow | Purpose |
+|----------|---------|
+| `session-exit.md` | Clean session ending |
+
+### Integrations (Tool Selection)
+
+How to choose and use tools:
+
+| File | Purpose |
+|------|---------|
+| `capability-matrix.md` | Task → tool selection |
+| `overlap-analysis.md` | Tool conflict resolution |
+| `mcp-installation.md` | MCP setup guide |
+| `memory-usage.md` | Memory MCP guidelines |
+| `skills-selection-guide.md` | Skill selection |
+
+### Components (Autonomic Specs)
+
+AC-01 through AC-09 component specifications:
+
 ```
-systems/
-├── _template.md          # Template for new services
-└── (your services here)
-```
-
-**Purpose**: Reference documentation for infrastructure. Created via `/discover` command.
-
-### Projects (Active Initiatives)
-```
-projects/
-└── current-priorities.md  # Active todos and priorities
-```
-
-**Purpose**: Track ongoing work and priorities.
-
-### Workflows (Repeatable Procedures)
-```
-workflows/
-├── session-exit.md       # End session procedure
-└── _template.md          # Template for new workflows
-```
-
-**Purpose**: Step-by-step guides for recurring tasks.
-
-### Standards (Conventions & Terminology)
-```
-standards/
-├── _index.md                   # Standards directory index
-├── severity-status-system.md   # Universal severity levels, status values
-└── model-selection.md          # When to use Opus vs Sonnet vs Haiku
-```
-
-**Purpose**: Project-wide standards for naming, classification, and terminology. Ensures consistency across commands, scripts, and documentation.
-
-**Active Standards**:
-- ✅ **Severity/Status System**: `[X] CRITICAL` / `[!] HIGH` / `[~] MEDIUM` / `[-] LOW`
-- ✅ **Model Selection**: Opus for architecture, Sonnet for dev, Haiku for quick checks
-
-### Patterns (Reusable Implementations)
-```
-patterns/
-├── _index.md                          # Patterns directory index
-├── agent-selection-pattern.md         # Choose agents vs subagents vs skills vs tools
-├── memory-storage-pattern.md          # When/how to store in Memory MCP
-├── prompt-design-review.md            # PARC pattern for design review
-├── session-start-checklist.md         # Mandatory session start steps
-├── branching-strategy.md              # Git branching for Project Aion
-├── workspace-path-policy.md           # Where projects and docs live
-├── mcp-loading-strategy.md            # 3-tier MCP loading (PR-8.5)
-├── mcp-design-patterns.md             # Per-MCP best practices (PR-8.5) ← NEW
-├── context-budget-management.md       # Context window optimization (PR-8)
-├── plugin-decomposition-pattern.md    # Extract skills from plugins (PR-8)
-├── automated-context-management.md    # Smart checkpoint workflow (PR-8.4)
-├── mcp-validation-harness.md          # 5-phase MCP validation (PR-8.4)
-├── batch-mcp-validation.md            # Batch testing for token limits (PR-8.5)
-├── tool-selection-intelligence.md     # Research-backed tool modality selection (PR-9)
-├── selection-intelligence-guide.md    # Quick selection reference (PR-9.1)
-├── selection-validation-tests.md      # 10 selection test cases (PR-9.4)
-├── project-reporting-pattern.md       # Run reports + performance analysis (Demo A)
-└── service-lifecycle-pattern.md       # Ephemeral service management (Demo A) ← NEW
-```
-
-**Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
-
-**Active Patterns**:
-- ✅ **Agent Selection**: Choose between custom agents, built-in subagents, skills, and direct tools
-- ✅ **Memory Storage Pattern**: Decision framework for Memory MCP storage
-- ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
-- ✅ **Session Start Checklist**: Mandatory steps at session start (includes baseline check)
-- ✅ **Workspace Path Policy**: Where projects and documentation live
-- ✅ **MCP Loading Strategy**: 3-tier loading (Always-On, Task-Scoped, On-Demand) (PR-8.5)
-- ✅ **MCP Design Patterns**: Per-MCP best practices based on validation (PR-8.5)
-- ✅ **Context Budget Management**: MCP loading tiers, plugin pruning, token budgets (PR-8)
-- ✅ **Plugin Decomposition**: Extract/customize skills from bundled plugins (PR-8)
-- ✅ **Automated Context Management**: Smart checkpoint with MCP optimization (PR-8.4)
-- ✅ **MCP Validation Harness**: 5-phase validation for new MCPs (PR-8.4)
-- ✅ **Batch MCP Validation**: Test MCPs in groups within token limits (PR-8.5)
-- ✅ **Tool Selection Intelligence**: Research-backed precedence theory (PR-9)
-- ✅ **Selection Intelligence Guide**: Quick reference for tool/agent/skill selection (PR-9.1)
-- ✅ **Selection Validation Tests**: 10 standardized test cases, 90% accuracy (PR-9.4)
-- ✅ **Project Reporting Pattern**: Run reports + performance analysis (Demo A) ← NEW
-
-### Templates (Repeatable Workflow Templates)
-```
-templates/
-├── tooling-evaluation-workflow.md      # Evaluate new tools (MCPs, plugins, skills)
-├── overlap-analysis-workflow.md        # Identify and resolve tool overlaps
-└── capability-matrix-update-workflow.md # Update capability matrix after changes
+components/
+├── AC-01-self-launch.md      # Session startup
+├── AC-02-wiggum-loop.md      # Multi-pass verification
+├── AC-04-jicm.md             # Context management
+├── AC-05-self-reflection.md  # Session learnings
+├── AC-06-self-evolution.md   # Capability growth
+├── AC-07-rd-cycles.md        # Research & development
+├── AC-08-maintenance.md      # Health checks
+└── AC-09-session-completion.md # Session exit
 ```
 
-**Purpose**: Step-by-step templates for repeatable processes, ensuring consistency across tool evaluations and capability updates.
-
-**Active Templates**:
-- ✅ **Tooling Evaluation**: ADOPT/ADAPT/REJECT decisions for new tools
-- ✅ **Overlap Analysis**: Detect and resolve tool conflicts
-- ✅ **Capability Matrix Update**: Add tools to selection matrix
-
-### Upstream (AIfred Baseline Tracking)
-```
-upstream/
-├── port-log.md               # History of porting decisions
-└── sync-report-YYYY-MM-DD.md # Generated sync reports
-```
-
-**Purpose**: Track changes from the read-only AIfred baseline for controlled porting to Jarvis.
-
-**Commands**:
-- `/sync-aifred-baseline` — Analyze baseline changes, generate adopt/adapt/reject report
-
-### Designs (Architecture Documents)
-```
-designs/
-└── (architecture documents here)
-```
-
-**Purpose**: Design documents for significant system architectures. These describe the "why" and "how" before implementation begins.
-
-### Integrations (API & Integration Guides)
-```
-integrations/
-├── memory-usage.md            # Memory MCP guidelines
-├── capability-matrix.md       # Task → tool selection matrix (PR-5/PR-7)
-├── overlap-analysis.md        # Tool overlap & conflict resolution (PR-5)
-├── mcp-installation.md        # Stage 1 MCP installation guide (PR-5)
-└── skills-selection-guide.md  # Skills selection guide (PR-7)
-```
-
-**Purpose**: Documentation for connecting systems and tool selection.
-
-**PR-5 Core Tooling Baseline**:
-- ✅ **Capability Matrix**: Task type → preferred tool → fallback
-- ✅ **Overlap Analysis**: Conflict resolution between tools
-- ✅ **MCP Installation**: Stage 1 server installation procedures
-
-**PR-7 Skills Inventory**:
-- ✅ **Skills Selection Guide**: When to use which skill
-
-### Learning (Background Knowledge)
-```
-learning/
-└── (notes and insights)
-```
-
-**Purpose**: Background knowledge that informs decisions.
-
----
-
-## Reference Documents (On-Demand)
+### Reference (On-Demand)
 
 Detailed documentation too verbose for always-on context:
 
 ```
 reference/
-├── _index.md                # Reference navigation
-├── workflow-patterns.md     # PARC, DDLA, COSA patterns
+├── workflow-patterns.md     # PARC, DDLA, COSA
 ├── project-management.md    # Auto-detection, registration
 └── commands-quick-ref.md    # All commands by category
 ```
 
-**When to Use**: Consult when CLAUDE.md doesn't have enough detail.
+### Archive
+
+Historical session states and completed work.
 
 ---
 
-## Project Aion Documentation
+## Spirit Layer (Parent Directory)
 
-All Project Aion evolution documentation is in `projects/project-aion/`:
+The Spirit layer (`.claude/`) contains capabilities:
+
+| Directory | Purpose |
+|-----------|---------|
+| `agents/` | Custom agent definitions |
+| `commands/` | Slash command specifications |
+| `hooks/` | Event-triggered behaviors |
+| `skills/` | Skill implementations |
+| `scripts/` | Utility scripts |
+| `config/` | Configuration files |
+| `state/` | Runtime state files |
+| `logs/` | Operational logs |
+
+**Identity**: `.claude/jarvis-identity.md` — Jarvis persona specification
+
+---
+
+## Project Aion (Evolution Layer)
+
+Evolution documentation lives in `projects/project-aion/`:
 
 ```
 projects/project-aion/
 ├── roadmap.md                    # Master development roadmap
-├── archon-identity.md            # Archon identity and terminology
 ├── versioning-policy.md          # Version bumping rules
-├── ideas/                        # Brainstorms and future planning
-├── plans/                        # PR implementation plans
-│   ├── pr-4-implementation-plan.md
-│   ├── pr-10-design-plan.md
-│   ├── one-shot-prd.md           # Benchmark PRD (moved from root)
-│   └── pr2-validation.md         # Validation doc (moved from root)
-└── reports/                      # PR-specific reports
+├── designs/                      # Architecture documents
+│   ├── current/                  # Active designs
+│   └── archive/                  # Historical designs
+├── plans/                        # Implementation plans
+│   ├── current/                  # Active plans
+│   └── archive/                  # Completed plans
+├── evolution/                    # Self-improvement tracking
+│   ├── aifred-integration/       # AIfred baseline work
+│   └── self-improvement/         # Autonomic improvements
+├── ideas/                        # Brainstorms
+├── reports/                      # Analysis reports
+└── progress/                     # Session/milestone progress
 ```
 
 **Design Principle**:
-- **BEHAVIOR** (how Jarvis operates) → `.claude/context/` (patterns, standards, workflows)
-- **EVOLUTION** (how Jarvis improves) → `projects/project-aion/` (roadmap, plans, ideas)
-
-**Exception**: `current-priorities.md` stays in `.claude/context/projects/` as it's operational context.
+- **BEHAVIOR** (how Jarvis operates) → `.claude/context/`
+- **EVOLUTION** (how Jarvis improves) → `projects/project-aion/`
 
 ---
 
 ## File Lifecycle
 
+```
+Discovery → Documentation → Context → Automation → Archive
+```
+
 1. **Discovery**: New findings go in context or ideas
-2. **Documentation**: Clean docs go in appropriate context subdirectory
+2. **Documentation**: Clean docs go in appropriate subdirectory
 3. **Context**: Stable, frequently-used info becomes context files
 4. **Automation**: Proven processes become slash commands
-5. **Archive**: Outdated/one-off items move to `docs/archive/`
+5. **Archive**: Outdated/one-off items move to archive
 
 ---
 
-## Tips for Claude
+## Navigation Tips
 
-When asked about infrastructure:
-1. Check this index to find relevant context files
-2. Load the specific context files using @ imports
-3. If information isn't documented yet, help create it
+**When implementing tasks**:
+1. Check `patterns/_index.md` for applicable patterns
+2. Apply mandatory patterns (Wiggum Loop is DEFAULT)
+3. Store decisions in Memory MCP
+4. Update relevant context files
 
-When documenting discoveries:
-1. Use appropriate template from systems/projects/workflows
-2. Follow naming conventions (descriptive-hyphenated-names.md)
-3. Keep files concise (50-200 lines ideal)
-4. Link to related context files
-
-When implementing tasks:
-1. **Apply PARC first** - check patterns before coding
-2. Use severity system for reporting issues
-3. Consider agent selection for complex tasks
-4. Store learnings in Memory MCP when appropriate
+**When looking for information**:
+1. Check this index first
+2. Use `@` imports to load specific files
+3. If not documented, help create it
 
 ---
 
 ## Maintenance
 
 **Create a context file when**:
-- You've referenced information 3+ times
-- It's critical for a system or project
-- It contains commands/paths you need regularly
+- Referenced 3+ times
+- Critical for a system
+- Contains paths/commands used regularly
 
-**Update existing files when**:
-- You discover new information
-- A configuration changed
-- You solved a problem worth documenting
+**Update files when**:
+- New information discovered
+- Configuration changed
+- Problem solved worth documenting
 
 **Refactor when**:
-- A file exceeds 300 lines (split it)
+- File exceeds 300 lines (split it)
 - Multiple files duplicate info (consolidate)
-- Structure doesn't match how you work
-
----
-
-## Setup Status
-
-**Run `/setup` to configure your environment and populate this knowledge base.**
-
-After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
 ## Recent Updates
 
-**2026-01-09**: PR-10 Organization Cleanup (v1.9.5)
-- ✅ Removed legacy OpenCode artifacts (AGENTS.md, opencode.json, .opencode/)
-- ✅ Split CLAUDE-full-reference.md into focused reference docs
-- ✅ Moved reports from .claude/ to docs/reports/
-- ✅ Consolidated OOXML schemas (47 files saved)
-- ✅ Audited hooks registration (10 active, 16 need review)
-- ✅ Created reference/ directory for on-demand docs
-- ✅ Added docs/reports/ for operational and validation reports
+**2026-01-22**: Living Soul Architecture (v2.0.0)
+- Organization Architecture Phases 1-6 complete
+- Path references updated (current-priorities.md elevated)
+- patterns/_index.md comprehensive rewrite (39 patterns)
+- CLAUDE.md pattern selection matrix added
+- Three-layer architecture documented
 
-**2026-01-09**: PR-9 Selection Intelligence Complete (v1.9.4)
-- ✅ PR-9.0: Component Extraction — 6 skills extracted from document-skills plugin
-- ✅ PR-9.1: Selection Framework — selection-intelligence-guide.md, agent-selection-pattern v2.0
-- ✅ PR-9.2: Research Tool Routing — Decision flowchart with context-lifecycle awareness
-- ✅ PR-9.3: Deselection Intelligence — suggest-mcps.sh enhanced (65+ keywords), MCP usage tracking
-- ✅ PR-9.4: Selection Validation — 10 test cases, 90% accuracy achieved
-- ✅ PR-9.5: Documentation Consolidation — capability-matrix v1.5, overlap-analysis v1.2
-
-**Critical Fix (2026-01-09)**: JS hooks not executing — added stdin/stdout wrapper to 5 hooks
-
-**2026-01-09**: PR-8.5 MCP Initialization Protocol Implemented
-- ✅ Created `suggest-mcps.sh` — Keyword-to-MCP mapping script
-- ✅ Updated `session-start.sh` — Auto-suggests MCPs based on "Next Step"
-- ✅ Updated `session-exit.md` — Added MCP state capture step
-- ✅ Updated `session-state.md` — Added MCP State section template
-- ✅ Updated `mcp-loading-strategy.md` — Full protocol documentation (v2.1)
-- ✅ Updated `mcp-design-patterns.md` — Session lifecycle section (v1.1)
-
-**2026-01-09**: PR-8.5 MCP Validation Complete + Documentation Revision
-- ✅ Completed batch validation of all 17 MCPs (13/13 task MCPs + 4 core MCPs)
-- ✅ Created mcp-design-patterns.md — Per-MCP best practices from validation
-- ✅ Revised mcp-loading-strategy.md — Updated 3-tier system with accurate token costs
-- ✅ Updated capability-matrix.md — Added research tool selection matrix
-- ✅ Updated overlap-analysis.md — Added research MCP complementarity (section 5a)
-- ✅ Documented 11 key discoveries from validation process
-
-**2026-01-08**: PR-8.4 MCP Validation Harness
-- ✅ Created 5-phase validation harness pattern
-- ✅ Validated 17 MCPs across 4 batches
-- ✅ Discovered tool loading limits (~45K tokens)
-- ✅ DuckDuckGo removed (bot detection), Brave Search added
-
-**2026-01-07**: PR-8 Context Budget Management (Extended Scope)
-- ✅ Created context-budget-management.md pattern document
-- ✅ Extended PR-8 scope in roadmap to include context optimization
-- ✅ Defined MCP loading tiers (Always-On, Session-Scoped, Task-Scoped)
-- ✅ Identified plugins for pruning (algorithmic-art, doc-coauthoring, slack-gif-creator)
-
-**2026-01-07**: PR-7 Skills Inventory Complete (v1.7.0)
-- ✅ Evaluated 64+ skills (16 official + 39 plugin + 9 project)
-- ✅ Created skills evaluation report
-- ✅ Created skills selection guide
-- ✅ Added 5 overlap categories (11-15)
-
-**2026-01-07**: PR-6 Plugins Expansion (Revised)
-- ✅ Added browser-automation plugin evaluation
-- ✅ Updated overlap analysis with browser automation category
-- ✅ Updated capability matrix with browser automation selection rules
-- ✅ Created templates directory with tooling workflows
-
-**2026-01-06**: PR-5 Core Tooling Baseline
-- ✅ Created capability matrix document (task → tool selection)
-- ✅ Created overlap analysis document (conflict resolution)
-- ✅ Created MCP installation guide (Stage 1 servers)
-- ✅ Created `/tooling-health` command for tooling validation
-- ✅ Updated integrations directory structure
-
-**2026-01-05**: Project Structure Reorganization
-- ✅ Consolidated all Project Aion docs into `projects/project-aion/`
-- ✅ Moved `docs/project-aion/` contents to `projects/project-aion/`
-- ✅ Moved `Project_Aion.md` to `projects/project-aion/roadmap.md`
-- ✅ Moved ideas from `.claude/context/ideas/` to `projects/project-aion/ideas/`
-- ✅ Established BEHAVIOR vs EVOLUTION separation principle
-- ✅ Created testing-validation-cadence.md, project-structure-clarity.md, venv-strategy.md brainstorms
-
-**2026-01-05**: PR-3 Upstream Sync Workflow
-- ✅ Added `/sync-aifred-baseline` command for controlled baseline porting
-- ✅ Created `upstream/` context directory with port-log and sync reports
-- ✅ Updated session-start-checklist with sync integration
-- ✅ Extended paths-registry.yaml with sync tracking fields
-
-**2026-01-01**: Standards and Patterns
-- ✅ Added standards directory with severity-status-system.md and model-selection.md
-- ✅ Added patterns directory with agent-selection, memory-storage, and PARC patterns
-- ✅ Created designs directory for architecture documents
-- ✅ Added /design-review command for explicit PARC invocation
-- ✅ Updated CLAUDE.md with Quick Links, Built-in Subagents, Advanced Task Patterns
+**2026-01-16**: PR-12 Autonomic Components
+- AC-01 through AC-09 specifications
+- Wiggum Loop (AC-02) as default behavior
+- Session lifecycle automation
 
 ---
 
-*Last Updated: 2026-01-09*
+*Context Index v2.0.0 — Map of the Mind (Living Soul Architecture)*
+*Last Updated: 2026-01-22*

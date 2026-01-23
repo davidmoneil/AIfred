@@ -51,7 +51,7 @@ Analyze next steps to determine which MCPs are critical:
 
 **Read these files:**
 1. `.claude/context/session-state.md` — "Next Session Pickup" section
-2. `.claude/context/projects/current-priorities.md` — immediate priorities
+2. `.claude/context/current-priorities.md` — immediate priorities
 
 **Keyword → MCP Mapping:**
 

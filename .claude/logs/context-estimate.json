@@ -1,10 +1,7 @@
 {
-  "sessionStart": "2026-01-22T01:01:08Z",
-  "totalTokens": 33744,
-  "actualTokens": 28744,
-  "toolCalls": 50,
-  "lastUpdate": "2026-01-22T01:24:49.324Z",
-  "percentage": 14.371999999999998,
-  "source": "jarvis-watcher",
-  "estimatedPercentage": 16.872
+  "sessionStart": "2026-01-23T03:51:48Z",
+  "totalTokens": 30000,
+  "toolCalls": 0,
+  "lastUpdate": "2026-01-23T03:51:48Z",
+  "percentage": 15.0
 }

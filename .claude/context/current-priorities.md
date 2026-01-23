@@ -8,11 +8,11 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### Organization Architecture — Phases 6-8
-**Status**: 🔜 Next Session
+### Organization Architecture — Phases 7-8
+**Status**: 🔜 Next Session (Phase 6 complete)
 **Reference**: `projects/project-aion/plans/current/2026-01-22-organization-implementation-plan.md`
 
-- [ ] Phase 6: Update CLAUDE.md pattern selection matrix, _index.md files
+- [x] Phase 6: Update CLAUDE.md pattern selection matrix, _index.md files ✅
 - [ ] Phase 7: Verify references, create organization-pattern.md
 - [ ] Phase 8: Final documentation consolidation
 

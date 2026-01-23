@@ -581,3 +581,62 @@
 2026-01-21T23:40:05Z | ERROR | tmux session 'jarvis' not found
 2026-01-22T01:00:08Z | INFO | Watcher started
 2026-01-22T01:04:38Z | INFO | Watcher shutting down...
+2026-01-22T01:27:15Z | INFO | Watcher started
+2026-01-22T04:41:35Z | JICM | ═══ JICM TRIGGERED: 81.2% (162582 tokens) ═══
+2026-01-22T04:41:35Z | JICM | Step 0: Waiting for idle state (graceful completion)
+2026-01-22T04:41:35Z | INFO | Waiting for idle state before JICM trigger...
+2026-01-22T04:41:35Z | INFO |   Claude is busy, waiting... (0s)
+2026-01-22T04:41:55Z | INFO |   Claude is busy, waiting... (20s)
+2026-01-22T04:42:05Z | INFO |   Claude is busy, waiting... (30s)
+2026-01-22T04:42:15Z | INFO |   Claude is busy, waiting... (40s)
+2026-01-22T04:42:25Z | INFO |   Claude is busy, waiting... (50s)
+2026-01-22T04:42:35Z | INFO |   Claude is busy, waiting... (60s)
+2026-01-22T04:42:45Z | INFO |   Claude is busy, waiting... (70s)
+2026-01-22T04:42:55Z | INFO |   Claude is busy, waiting... (80s)
+2026-01-22T04:43:05Z | INFO |   Claude is busy, waiting... (90s)
+2026-01-22T04:43:15Z | INFO |   Claude is busy, waiting... (100s)
+2026-01-22T04:43:26Z | INFO |   Claude is busy, waiting... (110s)
+2026-01-22T04:43:36Z | WARN | Idle timeout after 120s - proceeding anyway
+2026-01-22T21:03:23Z | INFO | Watcher started
+2026-01-23T02:49:00Z | JICM | ═══ JICM TRIGGERED: 82.6% (165218 tokens) ═══
+2026-01-23T02:49:00Z | JICM | Step 0: Waiting for idle state (graceful completion)
+2026-01-23T02:49:00Z | INFO | Waiting for idle state before JICM trigger...
+2026-01-23T02:49:04Z | INFO |   Idle state confirmed after 4s
+2026-01-23T02:49:04Z | JICM | Step 1: /intelligent-compress (AI compression)
+2026-01-23T02:49:04Z | CMD | Sending: /intelligent-compress
+2026-01-23T02:49:04Z | JICM | Step 2: Waiting for compression (max 60s)...
+2026-01-23T02:49:14Z | JICM |   Still waiting for compression... (10s)
+2026-01-23T02:49:25Z | JICM |   Still waiting for compression... (20s)
+2026-01-23T02:49:35Z | JICM |   Still waiting for compression... (30s)
+2026-01-23T02:49:45Z | JICM |   Still waiting for compression... (40s)
+2026-01-23T02:49:55Z | JICM |   Still waiting for compression... (50s)
+2026-01-23T02:50:05Z | JICM |   Still waiting for compression... (60s)
+2026-01-23T02:50:05Z | JICM | Step 3: Compression timeout, falling back to simple checkpoint
+2026-01-23T02:50:05Z | CMD | Sending: /clear
+2026-01-23T02:50:08Z | JICM | Step 4: Triggering work continuation (fallback)
+2026-01-23T02:50:08Z | CMD | Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+2026-01-23T02:53:08Z | JICM | Clear signal detected (.clear-ready-signal) - sending /clear
+2026-01-23T02:53:09Z | CMD | Sending: /clear
+2026-01-23T02:53:11Z | JICM | ═══ JICM TRIGGERED: 92.6% (185250 tokens) ═══
+2026-01-23T02:53:11Z | JICM | Step 0: Waiting for idle state (graceful completion)
+2026-01-23T02:53:11Z | INFO | Waiting for idle state before JICM trigger...
+2026-01-23T02:53:15Z | INFO |   Idle state confirmed after 4s
+2026-01-23T02:53:15Z | JICM | Step 1: /intelligent-compress (AI compression)
+2026-01-23T02:53:15Z | CMD | Sending: /intelligent-compress
+2026-01-23T02:53:16Z | JICM | Step 2: Waiting for compression (max 60s)...
+2026-01-23T02:53:26Z | JICM |   Still waiting for compression... (10s)
+2026-01-23T02:53:36Z | JICM |   Still waiting for compression... (20s)
+2026-01-23T02:53:46Z | JICM |   Still waiting for compression... (30s)
+2026-01-23T02:53:56Z | JICM |   Still waiting for compression... (40s)
+2026-01-23T02:54:06Z | JICM |   Still waiting for compression... (50s)
+2026-01-23T02:54:16Z | JICM |   Still waiting for compression... (60s)
+2026-01-23T02:54:16Z | JICM | Step 3: Compression timeout, falling back to simple checkpoint
+2026-01-23T02:54:16Z | CMD | Sending: /clear
+2026-01-23T02:54:19Z | JICM | Step 4: Triggering work continuation (fallback)
+2026-01-23T02:54:19Z | CMD | Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+2026-01-23T03:04:50Z | INFO | Resetting JICM trigger (context at 16% after successful completion)
+2026-01-23T03:14:13Z | INFO | Watcher started
+2026-01-23T03:14:21Z | INFO | Watcher shutting down...
+2026-01-23T03:38:46Z | INFO | Watcher started
+2026-01-23T03:51:46Z | JICM | Clear signal detected (.clear-ready-signal) - sending /clear
+2026-01-23T03:51:47Z | CMD | Sending: /clear

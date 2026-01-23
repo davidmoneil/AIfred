@@ -44,7 +44,7 @@ Read context state from session files.
 
 Read and summarize:
 1. `.claude/context/session-state.md` — Current work status
-2. `.claude/context/projects/current-priorities.md` — Immediate priorities
+2. `.claude/context/current-priorities.md` — Immediate priorities
 3. Current conversation work — What was accomplished
 
 ### Phase 3: MCP Evaluation
