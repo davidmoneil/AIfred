@@ -1,8 +1,25 @@
-# Project Aion Reports
+# Reports
 
-PR-specific deliverables, evaluation reports, and analysis documents for human review.
+**Purpose**: Major survey, review, and experimental results from Project Aion development.
 
-## Contents
+---
+
+## Structure
+
+| Directory | Contents |
+|-----------|----------|
+| `current/` | Recent reports (active reference) |
+| `archive/` | Historical reports |
+
+## Subdirectories (within current/ and archive/)
+
+| Directory | Contents |
+|-----------|---------|
+| `testing/` | PRD test results, validation reports |
+| `analysis/` | Architecture analysis, assessments |
+| `experiments/` | Experiment results |
+
+## Historical Reports (Pre-Reorganization)
 
 | Report | PR | Description |
 |--------|-----|-------------|
@@ -13,15 +30,25 @@ PR-specific deliverables, evaluation reports, and analysis documents for human r
 | `pr-8.3.1-hook-validation-roadmap.md` | PR-8 | Hook validation test procedures |
 | `pr-9.0-decomposition-report.md` | PR-9 | Plugin decomposition (6 skills extracted) |
 
-## Classification Rule
+## What Belongs Here
 
-Reports go here if they are:
-- Tied to a specific PR/milestone
-- Intended for human review and decision-making
-- Historical/archival value for project management
+- PRD execution reports
+- Autonomic testing results
+- Validation reports
+- Experiment findings
+- Major analysis documents
 
-Operational reports (tooling-health, mcp-validation, context-*) belong in `.claude/reports/`.
+## What Does NOT Belong Here
+
+- Session work logs → `progress/`
+- Implementation plans → `plans/`
+- Jarvis operational reports → `/.claude/reports/`
+
+## Key Distinction
+
+**Project Aion reports** (here): Results from development work
+**Jarvis operational reports** (`/.claude/reports/`): Self-improvement cycle outputs
 
 ---
 
-*Project Aion — PR Reports Archive*
+*Project Aion — Jarvis Development*
