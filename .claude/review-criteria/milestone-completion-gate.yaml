@@ -3,22 +3,32 @@
 # ENFORCEMENT LEVEL: BLOCKING
 # This gate MUST pass before any milestone can be marked complete.
 #
-# Version: 1.0.0
-# Created: 2026-01-23
-# Reference: planning-tracker.yaml, milestone-review-pattern.md
-
-version: 1.0.0
-created: 2026-01-23
-
-# =============================================================================
-# GATE DEFINITION
-# =============================================================================
-# A milestone completion gate ensures documentation hygiene by requiring
-# explicit verification of planning/progress document updates BEFORE
-# milestone sign-off.
+# IMPORTANT: This file does NOT hardcode document paths.
+# All document paths are sourced from: .claude/planning-tracker.yaml
+# This gate defines the LOGIC; planning-tracker.yaml defines the DOCUMENTS.
 #
-# This prevents the "forgot to update the chronicle" problem.
+# Version: 1.1.0
+# Created: 2026-01-23
+# Updated: 2026-01-23 (Removed hardcoded paths, reference planning-tracker.yaml)
+
+version: 1.1.0
+created: 2026-01-23
+updated: 2026-01-23
+
 # =============================================================================
+# SOURCE OF TRUTH
+# =============================================================================
+# All document paths come from planning-tracker.yaml
+# This gate NEVER hardcodes file paths — it references the tracker.
+#
+# To add/remove documents from gate checks:
+#   1. Edit .claude/planning-tracker.yaml
+#   2. Add document to planning[] or progress[] sections
+#   3. Set enforcement: mandatory
+#   4. Gate automatically picks up the change
+# =============================================================================
+
+source_of_truth: .claude/planning-tracker.yaml
 
 gate:
   name: milestone_completion
@@ -28,45 +38,49 @@ gate:
 # =============================================================================
 # REQUIRED CHECKS (ALL must pass)
 # =============================================================================
+# Document targets are resolved dynamically from planning-tracker.yaml
 
 required_checks:
 
   # 1. Planning Document Checkboxes
   - id: planning_checkboxes
     name: "Planning document checkboxes updated"
-    description: "Milestone-related checkboxes in roadmap.md are marked complete"
+    description: "Milestone-related checkboxes in planning docs are marked complete"
     enforcement: mandatory
+    source:
+      file: planning-tracker.yaml
+      section: planning
+      filter: "enforcement == 'mandatory' AND scope IN active_scopes"
     verification:
       type: file_content
-      target: "planning-tracker.yaml → planning[].path matching current scope"
       check: "Checkbox count increased OR milestone items marked [x]"
-    on_fail: "Block completion, list unchecked items"
+    on_fail: "Block completion, list unchecked items from matched documents"
 
-  # 2. Chronicle Entry Written
-  - id: chronicle_entry
-    name: "Chronicle entry written for milestone"
-    description: "Chronicle has complete entry with all 5 required sections"
+  # 2. Progress Document Entry Written
+  - id: progress_entry
+    name: "Progress document entry written for milestone"
+    description: "Progress docs (chronicle) have complete entry with required sections"
     enforcement: mandatory
+    source:
+      file: planning-tracker.yaml
+      section: progress
+      filter: "enforcement == 'mandatory' AND scope IN active_scopes"
     verification:
       type: file_content
-      target: "planning-tracker.yaml → progress[].path matching current scope"
-      check: "Milestone N section exists with: What Was Done, How, Why, Learned, Watch"
-    on_fail: "Block completion, prompt for chronicle update"
-    required_sections:
-      - "What Was Done"
-      - "How It Was Approached"
-      - "Why Decisions Were Made"
-      - "What Was Learned"
-      - "What to Watch"
+      check: "Milestone N section exists with required_sections from tracker"
+    on_fail: "Block completion, prompt for progress doc update"
 
   # 3. Session State Updated
   - id: session_state
     name: "Session state reflects completion"
     description: "session-state.md shows milestone work in 'What Was Done'"
     enforcement: mandatory
+    source:
+      file: planning-tracker.yaml
+      section: always_review
+      filter: "path CONTAINS 'session-state'"
     verification:
       type: file_modified
-      target: ".claude/context/session-state.md"
       check: "Modified today AND contains reference to completed milestone"
     on_fail: "Block completion, prompt for session state update"
 
@@ -77,7 +91,7 @@ required_checks:
     enforcement: recommended  # Can be skipped with reason
     verification:
       type: review_report
-      target: ".claude/reports/reviews/[milestone]-review-*.md"
+      target_pattern: ".claude/reports/reviews/{milestone}-review-*.md"
       check: "Report exists AND verdict = approved|conditional"
     on_skip: "Log reason, proceed with warning"
 

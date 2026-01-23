@@ -4,8 +4,12 @@
  * Detects milestone completion signals and enforces documentation requirements
  * by injecting reminders about required planning/progress document updates.
  *
- * Version: 1.0.0
+ * IMPORTANT: All document paths are sourced from planning-tracker.yaml
+ * This hook does NOT hardcode paths - it reads from the tracker dynamically.
+ *
+ * Version: 1.1.0
  * Created: 2026-01-23
+ * Updated: 2026-01-23 (Dynamic path loading from planning-tracker.yaml)
  * Event: UserPromptSubmit
  *
  * Trigger Phrases:
@@ -13,6 +17,7 @@
  * - "finished milestone", "/end-session" (with milestone work)
  *
  * Reference: .claude/review-criteria/milestone-completion-gate.yaml
+ * Source of Truth: .claude/planning-tracker.yaml
  */
 
 const fs = require('fs');
@@ -32,9 +37,10 @@ const MILESTONE_PATTERNS = [
 const END_SESSION_PATTERN = /\/end-session/i;
 
 /**
- * Read planning-tracker.yaml and extract required documents
+ * Parse planning-tracker.yaml and extract documents by section
+ * Returns structured object with planning, progress, always_review docs
  */
-function getRequiredDocuments(projectDir) {
+function parsePlanningTracker(projectDir) {
   const trackerPath = path.join(projectDir, '.claude', 'planning-tracker.yaml');
 
   if (!fs.existsSync(trackerPath)) {
@@ -44,32 +50,69 @@ function getRequiredDocuments(projectDir) {
   try {
     const content = fs.readFileSync(trackerPath, 'utf8');
 
-    // Simple YAML parsing for our structure
     const docs = {
       planning: [],
       progress: [],
       always_review: []
     };
 
-    // Extract paths with enforcement: mandatory
-    const mandatoryPaths = content.match(/path:\s*(.+)\n.*enforcement:\s*mandatory/g);
-    if (mandatoryPaths) {
-      mandatoryPaths.forEach(match => {
-        const pathMatch = match.match(/path:\s*(.+)/);
-        if (pathMatch) {
-          docs.planning.push(pathMatch[1].trim());
-        }
-      });
+    // Use regex to extract sections more reliably
+    // Extract always_review section
+    const alwaysMatch = content.match(/always_review:\s*\n((?:\s+-[^\n]+\n?(?:\s+[a-z_]+:[^\n]+\n?)*)*)/);
+    if (alwaysMatch) {
+      const entries = alwaysMatch[1].match(/-\s*path:\s*([^\n]+)[\s\S]*?(?=\s+-\s*path:|\n[a-z]|$)/g);
+      if (entries) {
+        entries.forEach(entry => {
+          const pathMatch = entry.match(/path:\s*([^\n]+)/);
+          const purposeMatch = entry.match(/purpose:\s*([^\n]+)/);
+          const enforcementMatch = entry.match(/enforcement:\s*([^\n]+)/);
+          if (pathMatch) {
+            docs.always_review.push({
+              path: pathMatch[1].trim(),
+              purpose: purposeMatch ? purposeMatch[1].trim() : null,
+              enforcement: enforcementMatch ? enforcementMatch[1].trim() : null
+            });
+          }
+        });
+      }
     }
 
-    // Extract progress documents
-    const progressSection = content.match(/progress:[\s\S]*?(?=\n[a-z_]+:|$)/);
-    if (progressSection) {
-      const progressPaths = progressSection[0].match(/path:\s*(.+)/g);
-      if (progressPaths) {
-        progressPaths.forEach(match => {
-          const p = match.replace('path:', '').trim();
-          docs.progress.push(p);
+    // Extract planning section
+    const planningMatch = content.match(/\nplanning:\s*\n((?:\s+-[^\n]+\n?(?:\s+[a-z_]+:[^\n]+\n?)*)*)/);
+    if (planningMatch) {
+      const entries = planningMatch[1].match(/-\s*path:\s*([^\n]+)[\s\S]*?(?=\s+-\s*path:|\n[a-z]|$)/g);
+      if (entries) {
+        entries.forEach(entry => {
+          const pathMatch = entry.match(/path:\s*([^\n]+)/);
+          const enforcementMatch = entry.match(/enforcement:\s*([^\n]+)/);
+          const scopeMatch = entry.match(/scope:\s*([^\n]+)/);
+          if (pathMatch) {
+            docs.planning.push({
+              path: pathMatch[1].trim(),
+              enforcement: enforcementMatch ? enforcementMatch[1].trim() : null,
+              scope: scopeMatch ? scopeMatch[1].trim() : null
+            });
+          }
+        });
+      }
+    }
+
+    // Extract progress section
+    const progressMatch = content.match(/\nprogress:\s*\n((?:\s+-[^\n]+\n?(?:\s+[a-z_]+:[^\n]+\n?)*)*)/);
+    if (progressMatch) {
+      const entries = progressMatch[1].match(/-\s*path:\s*([^\n]+)[\s\S]*?(?=\s+-\s*path:|\n[a-z]|$)/g);
+      if (entries) {
+        entries.forEach(entry => {
+          const pathMatch = entry.match(/path:\s*([^\n]+)/);
+          const enforcementMatch = entry.match(/enforcement:\s*([^\n]+)/);
+          const scopeMatch = entry.match(/scope:\s*([^\n]+)/);
+          if (pathMatch) {
+            docs.progress.push({
+              path: pathMatch[1].trim(),
+              enforcement: enforcementMatch ? enforcementMatch[1].trim() : null,
+              scope: scopeMatch ? scopeMatch[1].trim() : null
+            });
+          }
         });
       }
     }
@@ -79,6 +122,20 @@ function getRequiredDocuments(projectDir) {
     console.error(`[milestone-doc-enforcer] Error reading tracker: ${err.message}`);
     return null;
   }
+}
+
+/**
+ * Get mandatory documents filtered by enforcement level
+ */
+function getMandatoryDocuments(projectDir) {
+  const docs = parsePlanningTracker(projectDir);
+  if (!docs) return null;
+
+  return {
+    planning: docs.planning.filter(d => d.enforcement === 'mandatory'),
+    progress: docs.progress.filter(d => d.enforcement === 'mandatory'),
+    always_review: docs.always_review.filter(d => d.enforcement === 'mandatory')
+  };
 }
 
 /**
@@ -101,53 +158,34 @@ function wasModifiedToday(filePath) {
 }
 
 /**
- * Generate reminder message for documentation gate
+ * Generate dynamic reminder message from planning-tracker.yaml
  */
-function generateReminder(projectDir, isEndSession = false) {
-  const docs = getRequiredDocuments(projectDir);
+function generateDynamicReminder(projectDir) {
+  const docs = getMandatoryDocuments(projectDir);
   if (!docs) {
     return null;
   }
 
-  const reminder = {
-    type: 'milestone_doc_gate',
-    message: isEndSession
-      ? 'END-SESSION MILESTONE DOCUMENTATION CHECK'
-      : 'MILESTONE COMPLETION DOCUMENTATION GATE',
-    requirements: [
-      {
-        category: 'Planning Documents',
-        items: [
-          'projects/project-aion/evolution/aifred-integration/roadmap.md — Update session checkboxes',
-          'projects/project-aion/roadmap.md — Mark milestone deliverables complete'
-        ],
-        enforcement: 'MANDATORY'
-      },
-      {
-        category: 'Progress Documents',
-        items: [
-          'projects/project-aion/evolution/aifred-integration/chronicle.md — Write milestone entry with:',
-          '  - What Was Done',
-          '  - How It Was Approached',
-          '  - Why Decisions Were Made',
-          '  - What Was Learned',
-          '  - What to Watch'
-        ],
-        enforcement: 'MANDATORY'
-      },
-      {
-        category: 'Session State',
-        items: [
-          '.claude/context/session-state.md — Update with milestone completion'
-        ],
-        enforcement: 'MANDATORY'
-      }
-    ],
-    reference: '.claude/review-criteria/milestone-completion-gate.yaml',
-    action: 'VERIFY all mandatory documents are updated before proceeding'
-  };
+  // Build planning documents list from tracker
+  const planningItems = docs.planning.map(d =>
+    `- ${d.path}${d.purpose ? ' — ' + d.purpose : ''}`
+  );
 
-  return reminder;
+  // Build progress documents list from tracker
+  const progressItems = docs.progress.map(d =>
+    `- ${d.path}${d.purpose ? ' — ' + d.purpose : ''}`
+  );
+
+  // Build always_review list from tracker
+  const alwaysItems = docs.always_review.map(d =>
+    `- ${d.path}${d.purpose ? ' — ' + d.purpose : ''}`
+  );
+
+  return {
+    planning: planningItems,
+    progress: progressItems,
+    always_review: alwaysItems
+  };
 }
 
 /**
@@ -178,29 +216,37 @@ async function handler(context) {
 
   // If milestone completion detected, inject reminder
   if (milestoneDetected) {
-    const reminder = generateReminder(projectDir, false);
-    if (reminder) {
+    const docs = generateDynamicReminder(projectDir);
+    if (docs) {
+      const planningList = docs.planning.length > 0
+        ? docs.planning.join('\n')
+        : '- (none configured in planning-tracker.yaml)';
+
+      const progressList = docs.progress.length > 0
+        ? docs.progress.join('\n')
+        : '- (none configured in planning-tracker.yaml)';
+
       const additionalContext = `
 --- MILESTONE DOCUMENTATION GATE TRIGGERED ---
 
-Before marking this milestone complete, verify the following documents are updated:
+Before marking this milestone complete, verify the following documents are updated.
+**Source of truth: .claude/planning-tracker.yaml**
 
 **MANDATORY - Planning Documents:**
-- projects/project-aion/evolution/aifred-integration/roadmap.md (session checkboxes)
-- projects/project-aion/roadmap.md (milestone deliverables)
+${planningList}
 
 **MANDATORY - Progress Documents:**
-- projects/project-aion/evolution/aifred-integration/chronicle.md
+${progressList}
   Required sections: What Was Done, How, Why, What Was Learned, What to Watch
 
 **MANDATORY - Session State:**
-- .claude/context/session-state.md (milestone completion status)
+${docs.always_review.join('\n') || '- .claude/context/session-state.md'}
 
 **RECOMMENDED - Milestone Review:**
 - Run /review-milestone for formal AC-03 review
 
 Reference: .claude/review-criteria/milestone-completion-gate.yaml
-Reference: .claude/planning-tracker.yaml
+Source: .claude/planning-tracker.yaml (v2.0)
 
 ⚠️ Milestone completion is BLOCKED until documentation is verified.
 ---`;
@@ -228,21 +274,25 @@ Reference: .claude/planning-tracker.yaml
     }
 
     if (hasMilestoneWork) {
+      const docs = generateDynamicReminder(projectDir);
+      const docList = docs ? [
+        ...docs.planning,
+        ...docs.progress
+      ].join('\n  ') : '(check planning-tracker.yaml)';
+
       const additionalContext = `
 --- END-SESSION DOCUMENTATION REMINDER ---
 
 Milestone work detected in session. Before ending, verify:
 
 1. **Planning Tracker Review** (.claude/planning-tracker.yaml)
-   - Check documents in 'update_required_on: [session-end, milestone-completion]'
+   Documents with enforcement: mandatory:
+  ${docList}
 
-2. **Chronicle Entry** (if milestone completed)
-   - projects/project-aion/evolution/aifred-integration/chronicle.md
+2. **Verify updates** (modified today with milestone content)
 
-3. **Roadmap Checkboxes** (if milestone completed)
-   - Mark completed session/milestone items
-
-Enforcement: planning-tracker.yaml v2.0 — mandatory documents block completion
+Source: .claude/planning-tracker.yaml (v2.0)
+Enforcement: mandatory documents block completion
 ---`;
 
       return {

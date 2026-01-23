@@ -45,7 +45,27 @@ The `/maintain` command triggers Jarvis' maintenance workflows, performing clean
 - Reference link validation
 - Duplicate detection
 
-### 5. Optimization Analysis
+### 5. Planning Tracker Verification (MANDATORY)
+- **Identify active planning/progress documents** from recent work
+- Read `.claude/planning-tracker.yaml`
+- **Verify all active documents are registered** in the tracker
+- Check enforcement levels are appropriate
+- Detect orphaned tracker entries (files that no longer exist)
+- If gaps found:
+  - List in report
+  - Prompt to add missing documents
+  - Prompt to remove orphaned entries
+
+```
+Verification steps:
+1. Read planning-tracker.yaml
+2. Verify each listed file exists
+3. Scan projects/ for roadmap.md, chronicle.md, design docs
+4. Check if found docs are in tracker
+5. Report discrepancies
+```
+
+### 6. Optimization Analysis
 - Context usage patterns
 - Duplicate content detection
 - Consolidation opportunities
@@ -116,6 +136,7 @@ mkdir -p .claude/reports/maintenance
 - Tasks run: X
 - Issues found: Y
 - Actions proposed: Z
+- Planning tracker: [verified / gaps found]
 
 ## Cleanup Results
 [Files rotated, temps removed, orphans detected]
@@ -128,6 +149,15 @@ mkdir -p .claude/reports/maintenance
 
 ## Organization Review
 [Structure issues, duplicate detection]
+
+## Planning Tracker Verification
+| Document | Status | Action |
+|----------|--------|--------|
+| [path]   | In tracker / Missing / Orphaned | [none / add / remove] |
+
+**Tracker Version**: [version from planning-tracker.yaml]
+**Gaps Found**: [count or "None"]
+**Action Taken**: [added X / removed Y / N/A]
 
 ## Optimization Proposals
 [Consolidation opportunities → evolution queue]

@@ -73,11 +73,31 @@ The `/reflect` command triggers Jarvis' self-reflection process, analyzing corre
    - Pattern matching
    - Success/failure comparison
 
-4. **Output (Phase 3: Proposal)**
+4. **Planning Tracker Verification (Phase 3: MANDATORY)**
+   - **Identify active planning/progress documents** from session work
+   - Read `.claude/planning-tracker.yaml`
+   - **Verify all active documents are registered** in the tracker
+   - If documents are missing from tracker:
+     - List them in the report
+     - Prompt: "Add these to planning-tracker.yaml?"
+     - If confirmed, add with appropriate enforcement level
+   - This ensures no project documentation falls through the cracks
+
+   ```
+   Active document detection:
+   1. Scan session-state.md for file paths mentioned
+   2. Check git status for modified planning/progress docs
+   3. Look for roadmap.md, chronicle.md, design docs in work context
+   4. Compare against planning-tracker.yaml entries
+   5. Report any gaps
+   ```
+
+5. **Output (Phase 4: Proposal)**
    - Generate evolution proposals
    - Create/update lessons entries
    - Update lessons index
    - Write Memory MCP entities
+   - Include tracker verification results in report
 
 ## Output
 
@@ -106,12 +126,21 @@ mkdir -p .claude/reports/reflections
 - Corrections analyzed: X
 - Problems identified: Y
 - Proposals generated: Z
+- Planning tracker: [verified / gaps found]
 
 ## Problems Found
 [List with severity and category]
 
 ## Patterns Observed
 [Recurring issues and trends]
+
+## Planning Tracker Verification
+| Document | In Tracker | Enforcement |
+|----------|-----------|-------------|
+| [path]   | Yes/No    | [level]     |
+
+**Gaps Found**: [list or "None"]
+**Action Taken**: [added to tracker / deferred / N/A]
 
 ## Evolution Proposals
 [New proposals added to queue]
