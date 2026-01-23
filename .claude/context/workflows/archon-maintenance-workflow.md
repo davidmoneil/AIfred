@@ -318,8 +318,7 @@ For each misplaced file:
 - `configuration-summary.md`
 
 **Pneuma top-level** should only contain:
-- `CLAUDE.md`
-- `CLAUDE-full-reference.md`
+- `CLAUDE.md` (primary identity, < 150 lines)
 - `jarvis-identity.md`
 - `settings.json`
 - `planning-tracker.yaml`

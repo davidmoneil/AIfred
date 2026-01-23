@@ -188,8 +188,8 @@ Current size: 5.2K tokens (acceptable but improvable)
 
 - [x] Investigate unused plugins — **FINDING**: bundled in document-skills, cannot remove individually
 - [x] Resolve frontend-design duplicate — **FINDING**: accept duplication, standalone takes precedence
-- [x] CLAUDE.md refactoring — 78% reduction (510→113 lines)
-- [x] Create `CLAUDE-full-reference.md` archive
+- [x] CLAUDE.md refactoring — consolidated to 105 lines (v4.0.0)
+- [x] Removed `CLAUDE-full-reference.md` (consolidated into CLAUDE.md)
 - [x] Create `/context-budget` command
 - [x] Add context budget to `/tooling-health` Executive Summary
 
