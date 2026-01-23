@@ -2,10 +2,15 @@
 # Jarvis MUST review this at session-end and milestone completion
 # ENFORCEMENT: Documents marked 'mandatory' block completion until updated
 #
-# Version: 2.0.0 (Added enforcement levels)
+# Version: 2.1.0 (Added session_plans, legacy_with_checklists)
 # Last Updated: 2026-01-23
+#
+# LESSON LEARNED (2026-01-23):
+# - Any document with `- [ ]` checkboxes is a tracking doc, regardless of status
+# - "Superseded" docs may still have active checklists that need updating
+# - Session plan files (.claude/plans/) should show completion status
 
-version: 2.0.0
+version: 2.1.0
 last_updated: 2026-01-23
 
 # =============================================================================
@@ -28,6 +33,26 @@ always_review:
     enforcement: mandatory
     verify_updated: check_modified_today
 
+# Session plan files (ephemeral - update on completion)
+session_plans:
+  - path: .claude/plans/*.md
+    contains: [implementation-plan, exit-criteria]
+    scope: all
+    enforcement: advisory
+    update_required_on: [plan-completion]
+    action_on_completion: mark_status_complete
+    note: "Plan files should show COMPLETE status when work is done"
+
+# Project plans with checklists (should be archived when complete)
+project_plans:
+  - path: projects/project-aion/plans/current/*.md
+    contains: [implementation-tasks, phase-checklists]
+    scope: project-aion
+    enforcement: advisory
+    update_required_on: [plan-completion]
+    action_on_completion: move_to_archive
+    note: "Plans in current/ should be archived when fully implemented"
+
 # Planning documents with checklists
 planning:
   - path: projects/project-aion/roadmap.md
@@ -49,6 +74,15 @@ planning:
     enforcement: mandatory
     update_required_on: [session-end, milestone-completion]
     verify_command: "grep -c '\\- \\[x\\]' {} || echo 0"  # Count session checkboxes
+
+# Legacy/superseded docs that still have active checklists
+legacy_with_checklists:
+  - path: projects/project-aion/evolution/aifred-integration/recommendations.md
+    contains: [implementation-roadmap, decision-log]
+    scope: aifred-integration
+    enforcement: advisory
+    update_required_on: [milestone-completion]
+    note: "Marked superseded but still has tracking checkboxes - keep in sync"
 
 # Progress documents (MANDATORY for milestone completion)
 progress:

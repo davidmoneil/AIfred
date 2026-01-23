@@ -10,23 +10,27 @@
 | Type | Count | Last Entry |
 |------|-------|------------|
 | Sessions | 0 | - |
-| Learnings | 0 | - |
+| Learnings | 1 | 2026-01-23 |
 | Decisions | 0 | - |
 | Research | 0 | - |
 
-**Total Entries**: 0
+**Total Entries**: 1
 
 ---
 
 ## Recent Entries
 
-*No entries yet. Use `/capture` to add knowledge.*
+1. [learning] Any Document with Checkboxes is a Tracking Document (2026-01-23)
+   Pattern for identifying and tracking planning documents by checkbox presence.
 
 ---
 
 ## Tags Index
 
-*No tags yet. Tags are added automatically when entries are captured.*
+- #planning (1 entry)
+- #tracking (1 entry)
+- #documentation (1 entry)
+- #enforcement (1 entry)
 
 ---
 

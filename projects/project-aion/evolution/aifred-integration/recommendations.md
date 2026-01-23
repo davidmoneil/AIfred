@@ -255,16 +255,18 @@ cp /Users/aircannon/Claude/AIfred/.claude/hooks/branch-protection.js \
 
 ## Implementation Roadmap
 
-### Week 1: Security & Observability
-- [ ] Port credential-guard.js and branch-protection.js
-- [ ] Port observability hooks (4 files)
-- [ ] Register hooks in settings.json
-- [ ] Test hook functionality
+> **Note**: Detailed tracking in `roadmap.md`. This is a summary view.
 
-### Week 2: Commands & Patterns
-- [ ] Port JICM complement commands (4 commands)
-- [ ] Port documentation patterns (3 patterns)
-- [ ] Update pattern index
+### Week 1: Security & Observability (M1 - COMPLETE)
+- [x] Port credential-guard.js and branch-protection.js
+- [x] Port observability hooks (4 files)
+- [x] Register hooks in settings.json
+- [x] Test hook functionality
+
+### Week 2: Commands & Patterns (M2, M3 - COMPLETE)
+- [x] Port JICM complement commands (4 commands) — M3
+- [ ] Port documentation patterns (3 patterns) — M4 pending
+- [ ] Update pattern index — M4 pending
 
 ### Week 3: Evaluation Phase
 - [ ] Evaluate structured-planning skill fit
