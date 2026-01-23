@@ -34,12 +34,29 @@ Plans (Session-level work)
 
 ## Current Contents
 
-- `session-exit.md` — Clean session termination procedure
+| Workflow | Purpose | When to Use |
+|----------|---------|-------------|
+| `session-exit.md` | Clean session termination | Every session end |
+| `archon-maintenance-workflow.md` | Organizational health & integration | Large integrations, quarterly maintenance |
 
 ## Usage
 
 Workflows are consulted when performing specific large tasks.
 They sit between abstract patterns and concrete plans.
+
+### archon-maintenance-workflow.md
+
+Comprehensive 7-phase workflow for:
+- Large-scale integration efforts (porting from external sources)
+- Routine maintenance to correct Neuro drift
+- Layer boundary enforcement
+- Documentation refresh
+
+**Schedule**:
+- Weekly: 5-minute quick check
+- Monthly: 30-minute light maintenance
+- Quarterly: 2-4 hour full workflow
+- Before major integration: Full workflow with integration phase
 
 ---
 
