@@ -8,12 +8,12 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### AIfred Integration: Milestone 2 — Analytics & Tracking
-**Status**: After Organization Complete
+### AIfred Integration: Milestone 3 — JICM Complements
+**Status**: 🔜 Next
 **Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
 
-- [ ] Session 2.1: Port file-access-tracker.js, session-tracker.js, memory-maintenance.js
-- [ ] Session 2.2: Design unified logging architecture
+- [ ] Session 3.1: Port /context-analyze, /context-loss commands
+- [ ] Session 3.2: Port /capture, /history commands
 
 ### PR-12.3: Independent Milestone Review (2026-01-21)
 **Status**: ⏸️ Paused (AIfred Integration priority)
@@ -49,6 +49,11 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### AIfred Integration Milestone 2: Analytics & Tracking (2026-01-23)
+- Ported 3 analytics hooks: file-access-tracker, session-tracker, memory-maintenance
+- Created unified-logging-architecture.md design document
+- All hooks registered and logging to .claude/logs/
 
 ### Organization Architecture Phases 7-8 (2026-01-23)
 - Phase 7: Verified references, cleaned up orphaned files, confirmed directory structure
