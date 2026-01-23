@@ -1,37 +1,109 @@
 # Planning Tracker — Active documents with checklists/exit criteria
-# Jarvis maintains this as docs are created/archived
-# Review at session-end and milestone completion
+# Jarvis MUST review this at session-end and milestone completion
+# ENFORCEMENT: Documents marked 'mandatory' block completion until updated
+#
+# Version: 2.0.0 (Added enforcement levels)
+# Last Updated: 2026-01-23
 
-version: 1.0.0
-last_updated: 2026-01-22
+version: 2.0.0
+last_updated: 2026-01-23
 
-# Documents to always review at session-end
+# =============================================================================
+# ENFORCEMENT LEVELS
+# =============================================================================
+# mandatory: MUST be updated before milestone/session can be marked complete
+# required:  SHOULD be updated; warning if skipped but doesn't block
+# advisory:  Optional; reminder only
+# =============================================================================
+
+# Documents to always review at session-end (MANDATORY)
 always_review:
   - path: .claude/context/session-state.md
     purpose: Update current work status
+    enforcement: mandatory
+    verify_updated: check_modified_today
+
   - path: .claude/context/current-priorities.md
     purpose: Update task completion status
+    enforcement: mandatory
+    verify_updated: check_modified_today
 
 # Planning documents with checklists
 planning:
   - path: projects/project-aion/roadmap.md
     contains: [pr-status, deliverables, acceptance-criteria]
     scope: project-aion
-    review_on: [pr-completion, milestone-completion]
+    enforcement: mandatory
+    update_required_on: [pr-completion, milestone-completion]
+    verify_command: "grep -c '\\[x\\]' {} || echo 0"  # Count checked items
 
   - path: projects/project-aion/designs/current/phase-6-autonomy-design.md
     contains: [sub-pr-checklists, acceptance-criteria]
     scope: phase-6
-    review_on: [milestone-completion]
+    enforcement: required
+    update_required_on: [milestone-completion]
 
   - path: projects/project-aion/evolution/aifred-integration/roadmap.md
     contains: [session-exit-criteria, milestone-checklists]
     scope: aifred-integration
-    review_on: [session-end, milestone-completion]
+    enforcement: mandatory
+    update_required_on: [session-end, milestone-completion]
+    verify_command: "grep -c '\\- \\[x\\]' {} || echo 0"  # Count session checkboxes
 
-# Progress documents
+# Progress documents (MANDATORY for milestone completion)
 progress:
   - path: projects/project-aion/evolution/aifred-integration/chronicle.md
-    contains: [milestone-completion]
+    contains: [milestone-narrative, decisions, learnings]
     scope: aifred-integration
-    review_on: [milestone-completion]
+    enforcement: mandatory
+    update_required_on: [milestone-completion]
+    verify_command: "grep -c '^## Milestone' {} || echo 0"  # Count milestone entries
+    required_sections:
+      - "What Was Done"
+      - "How It Was Approached"
+      - "Why Decisions Were Made"
+      - "What Was Learned"
+      - "What to Watch"
+
+# =============================================================================
+# MILESTONE COMPLETION GATE
+# =============================================================================
+# Before any milestone can be marked complete, ALL of the following must be true:
+# 1. Relevant planning doc checkboxes updated
+# 2. Chronicle entry written (if scope matches)
+# 3. session-state.md reflects completion
+# 4. AC-03 review passed OR explicitly skipped by user
+#
+# Reference: .claude/review-criteria/milestone-completion-gate.yaml
+# =============================================================================
+
+milestone_gate:
+  enabled: true
+  require_ac03_review: true
+  allow_skip_with_reason: true
+
+  # Documents that MUST be updated for milestone completion
+  required_updates:
+    - planning_doc_checkboxes
+    - chronicle_entry
+    - session_state
+
+  # Scopes currently active (filter which docs apply)
+  active_scopes:
+    - project-aion
+    - aifred-integration
+
+# =============================================================================
+# VERIFICATION PROTOCOL
+# =============================================================================
+# How Jarvis verifies documents are actually updated (not just touched)
+
+verification:
+  # Check file was modified today
+  check_modified_today: "find {} -mtime 0 | grep -q ."
+
+  # Check for unchecked items in scope
+  check_pending_items: "grep -c '\\- \\[ \\]' {} || echo 0"
+
+  # Check chronicle has entry for milestone N
+  check_chronicle_entry: "grep -q 'Milestone {N}.*COMPLETE\\|Status.*Complete' {}"

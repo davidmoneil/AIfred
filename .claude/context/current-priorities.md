@@ -50,6 +50,15 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 
 ## Recently Completed
 
+### Milestone Documentation Enforcement System (2026-01-23)
+- Implemented enforcement mechanism to prevent documentation drift
+- Created `milestone-completion-gate.yaml` with blocking requirements
+- Created `milestone-doc-enforcer.js` hook (detects milestone signals)
+- Updated `planning-tracker.yaml` v2.0 with enforcement levels
+- Updated `milestone-review-pattern.md` v1.3 (Section 8 MANDATORY)
+- Updated `/end-session` v2.2 with mandatory gate check
+- Root cause: advisory patterns without enforcement → fixed with blocking gates
+
 ### AIfred Integration Milestone 2: Analytics & Tracking (2026-01-23)
 - Ported 3 analytics hooks: file-access-tracker, session-tracker, memory-maintenance
 - Created unified-logging-architecture.md design document

@@ -53,6 +53,54 @@ Prepare context artifacts that help the next session start cleanly:
 
 ---
 
+## Milestone Documentation Gate (MANDATORY)
+
+**BLOCKING CHECK**: If milestone work was done this session, documentation MUST be verified.
+
+### Step 0: Milestone Work Detection
+
+1. **Check session-state.md** for milestone indicators:
+   - Look for: "milestone", "M1", "M2", etc., "AIfred integration", "PR-" references
+
+2. **If milestone work detected**, run the **Milestone Completion Gate**:
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  MILESTONE DOCUMENTATION GATE                                       │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ⚠️  Milestone work detected. Verify documentation before exit:    │
+│                                                                     │
+│  MANDATORY CHECKS:                                                  │
+│  □ Planning document checkboxes updated                             │
+│    - projects/project-aion/evolution/aifred-integration/roadmap.md  │
+│    - projects/project-aion/roadmap.md (if PR deliverables)          │
+│                                                                     │
+│  □ Chronicle entry written (if milestone completed)                 │
+│    - projects/project-aion/evolution/aifred-integration/chronicle.md│
+│    - Required sections: What Done, How, Why, Learned, Watch         │
+│                                                                     │
+│  □ Session state reflects milestone work                            │
+│    - .claude/context/session-state.md                               │
+│                                                                     │
+│  RECOMMENDED:                                                       │
+│  □ Run /review-milestone for formal AC-03 review                    │
+│                                                                     │
+│  Reference: .claude/planning-tracker.yaml                           │
+│  Reference: .claude/review-criteria/milestone-completion-gate.yaml  │
+│                                                                     │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+3. **BLOCK exit if mandatory documentation missing**:
+   - Prompt: "Milestone documentation incomplete. Update now before proceeding?"
+   - If user confirms, help update the missing documents
+   - If user skips, log skip reason to `.claude/logs/gate-skips.jsonl`
+
+4. **If no milestone work detected**, proceed to Session Activity Check.
+
+---
+
 ## Session Activity Check
 
 Check what was done this session:
@@ -82,7 +130,33 @@ The session-state.md has grown large ([N] lines). Would you like to:
 
 **If archiving**: Run `.claude/scripts/archive-session-state.sh`
 
-### 2. Update Session State & Context Docs
+### 2. Planning Tracker Review (MANDATORY)
+
+**Read and process `.claude/planning-tracker.yaml`**:
+
+```bash
+cat .claude/planning-tracker.yaml
+```
+
+**For documents with `enforcement: mandatory`**:
+1. Verify each document matching current scope was updated today
+2. For planning docs: check session/milestone checkboxes are marked
+3. For progress docs: verify chronicle has entry for completed milestones
+
+**Verification commands**:
+```bash
+# Check if file was modified today
+find [path] -mtime 0 | grep -q . && echo "Updated today" || echo "NOT UPDATED"
+
+# Count checkboxes in roadmap
+grep -c '\- \[x\]' projects/project-aion/evolution/aifred-integration/roadmap.md
+```
+
+**If mandatory docs not updated**: STOP and update them before proceeding.
+
+---
+
+### 3. Update Session State & Context Docs
 
 **Primary State Files** (ALWAYS update):
 
@@ -91,13 +165,14 @@ The session-state.md has grown large ([N] lines). Would you like to:
 | `.claude/context/session-state.md` | Status, accomplishments, next steps, key files |
 | `.claude/context/current-priorities.md` | Move completed to "Recently Completed", add new items |
 
-**JICM Context Preservation Files** (update if relevant):
+**Progress Documents** (MANDATORY if milestone completed):
 
-| File | When to Update |
-|------|----------------|
-| `projects/project-aion/evolution/aifred-integration/chronicle.md` | After AIfred integration milestones |
-| `.claude/context/session-chronicle.md` | After significant multi-session work |
-| `.claude/context/projects/pr-chronicle.md` | After PR completions |
+| File | When to Update | Enforcement |
+|------|----------------|-------------|
+| `projects/project-aion/evolution/aifred-integration/chronicle.md` | After AIfred integration milestones | **MANDATORY** |
+| `projects/project-aion/evolution/aifred-integration/roadmap.md` | After session work | **MANDATORY** |
+| `.claude/context/session-chronicle.md` | After significant multi-session work | Required |
+| `.claude/context/projects/pr-chronicle.md` | After PR completions | Required |
 
 **Update session-state.md**:
 - Set status to 🟢 Idle (or 🟡 Active if continuing later)
@@ -105,14 +180,14 @@ The session-state.md has grown large ([N] lines). Would you like to:
 - Update "Next Session Pickup" with next steps (if any)
 - List key files modified
 
-### 3. Review Todos
+### 4. Review Todos
 
 Check if any todos remain:
 - Mark completed items
 - Move incomplete items to current-priorities.md
 - Clear session todo list
 
-### 4. Verify Report Files (if /reflect or /maintain was run)
+### 5. Verify Report Files (if /reflect or /maintain was run)
 
 If self-improvement cycles were run this session, verify reports exist:
 
@@ -124,7 +199,7 @@ ls -la .claude/reports/maintenance/maintenance-$(date +%Y-%m-%d)*.md 2>/dev/null
 
 **If reports are missing**, create them before proceeding.
 
-### 5. Version Bump Check (Milestone-Based)
+### 6. Version Bump Check (Milestone-Based)
 
 **Evaluate if a version bump is needed** based on session accomplishments:
 
@@ -162,7 +237,7 @@ ls -la .claude/reports/maintenance/maintenance-$(date +%Y-%m-%d)*.md 2>/dev/null
 | PR-10 | 2.0.0 (Phase 5) |
 | PR-14 | 3.0.0 (Phase 6) |
 
-### 6. Git Commit
+### 7. Git Commit
 
 If there are uncommitted changes:
 
@@ -185,7 +260,7 @@ git commit -m "Release vX.X.X - [PR description]
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 ```
 
-### 7. GitHub Push
+### 8. GitHub Push
 
 Push to Project_Aion branch (NOT main — main is read-only baseline):
 
@@ -193,7 +268,7 @@ Push to Project_Aion branch (NOT main — main is read-only baseline):
 git push origin Project_Aion
 ```
 
-### 8. Tag Release (Optional)
+### 9. Tag Release (Optional)
 
 For MINOR and MAJOR bumps, create a git tag:
 
@@ -202,11 +277,11 @@ git tag vX.X.X
 git push origin vX.X.X
 ```
 
-### 9. Clear Session Activity
+### 10. Clear Session Activity
 
 Reset the session activity tracker for next session.
 
-### 10. Cross-Project Commit Check (If Multi-Repo)
+### 11. Cross-Project Commit Check (If Multi-Repo)
 
 If commits were made to multiple repositories this session:
 
@@ -218,7 +293,7 @@ If commits were made to multiple repositories this session:
 3. If yes, push each project's branch
 4. Report results per project
 
-### 11. Disable On-Demand MCPs
+### 12. Disable On-Demand MCPs
 
 Check session-state.md for any On-Demand MCPs enabled this session.
 List them for user to disable (they must be OFF by default per MCP Loading Strategy).
@@ -231,14 +306,20 @@ After completing the checklist, provide a summary:
 Session Exit Complete
 ━━━━━━━━━━━━━━━━━━━━━
 
+✅ Milestone documentation gate: [PASSED / SKIPPED (reason)]
+✅ Planning tracker verified
 ✅ Session state updated
 ✅ Priorities updated
+✅ Chronicle updated: [yes / no milestone work]
 ✅ Version: [current version] → [new version] (or "unchanged")
 ✅ Changes committed: [commit hash]
 ✅ Pushed to Project_Aion branch
 
 Files Modified:
 - [list of files]
+
+Documentation Updated:
+- [list planning/progress docs updated, or "N/A"]
 
 Version Info:
 - Current: vX.X.X
@@ -268,4 +349,4 @@ Next Time:
 
 ---
 
-*Jarvis v2.1.0 — Project Aion Master Archon (AC-09 pre-completion offer + personalized closing added)*
+*Jarvis v2.2.0 — Project Aion Master Archon (Milestone Documentation Gate enforcement added 2026-01-23)*

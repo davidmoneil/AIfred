@@ -547,9 +547,27 @@ acceptance:
 
 ---
 
-## 8. Completion Documentation
+## 8. Completion Documentation (MANDATORY)
 
-After a milestone passes review, document the work in a **Chronicle** to preserve reasoning and approach for future reference.
+> **ENFORCEMENT LEVEL: BLOCKING**
+>
+> Milestone completion is **BLOCKED** until documentation requirements are verified.
+> Reference: `.claude/review-criteria/milestone-completion-gate.yaml`
+
+After a milestone passes review, document the work in a **Chronicle** to preserve reasoning and approach for future reference. **This step is MANDATORY, not optional.**
+
+### Completion Gate Requirements
+
+Before any milestone can be marked complete, ALL of the following MUST be verified:
+
+| Requirement | Document | Enforcement |
+|-------------|----------|-------------|
+| Planning checkboxes updated | roadmap.md | **MANDATORY** |
+| Chronicle entry written | chronicle.md | **MANDATORY** |
+| Session state current | session-state.md | **MANDATORY** |
+| AC-03 review passed | review report | Recommended |
+
+**Gate Reference**: `.claude/planning-tracker.yaml` (v2.0)
 
 ### Purpose
 
@@ -631,6 +649,21 @@ Each milestone entry should include:
 - Avoid repeated mistakes
 - Understand historical context when maintaining code
 - Onboard new contributors effectively
+
+### Enforcement Mechanism
+
+The `milestone-doc-enforcer.js` hook detects milestone completion signals and:
+1. Injects documentation requirements as `additionalContext`
+2. References the planning-tracker.yaml for required documents
+3. Blocks completion claims until verification
+
+**Trigger phrases detected**:
+- "milestone complete", "milestone done", "M[N] complete"
+- "finished milestone", "/end-session" (with milestone work)
+
+**Integration with `/end-session`**:
+- End-session includes mandatory review of planning-tracker.yaml
+- Documents with `enforcement: mandatory` must be verified updated
 
 ---
 
@@ -833,4 +866,4 @@ Milestone reviews and Wiggum Loop work together:
 
 ---
 
-*Milestone Review Pattern v1.2.0 — Jarvis Phase 6 PR-12.3 (Validated PRD-V3 2026-01-20, Completion Documentation added 2026-01-22)*
+*Milestone Review Pattern v1.3.0 — Jarvis Phase 6 PR-12.3 (Validated PRD-V3 2026-01-20, Completion Documentation MANDATORY 2026-01-23)*

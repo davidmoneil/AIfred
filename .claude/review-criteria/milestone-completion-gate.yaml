@@ -1,0 +1,162 @@
+# Milestone Completion Gate — Mandatory Pre-Completion Requirements
+#
+# ENFORCEMENT LEVEL: BLOCKING
+# This gate MUST pass before any milestone can be marked complete.
+#
+# Version: 1.0.0
+# Created: 2026-01-23
+# Reference: planning-tracker.yaml, milestone-review-pattern.md
+
+version: 1.0.0
+created: 2026-01-23
+
+# =============================================================================
+# GATE DEFINITION
+# =============================================================================
+# A milestone completion gate ensures documentation hygiene by requiring
+# explicit verification of planning/progress document updates BEFORE
+# milestone sign-off.
+#
+# This prevents the "forgot to update the chronicle" problem.
+# =============================================================================
+
+gate:
+  name: milestone_completion
+  enforcement: blocking  # blocking | warning | advisory
+  description: "Verify all planning and progress documents are updated before milestone sign-off"
+
+# =============================================================================
+# REQUIRED CHECKS (ALL must pass)
+# =============================================================================
+
+required_checks:
+
+  # 1. Planning Document Checkboxes
+  - id: planning_checkboxes
+    name: "Planning document checkboxes updated"
+    description: "Milestone-related checkboxes in roadmap.md are marked complete"
+    enforcement: mandatory
+    verification:
+      type: file_content
+      target: "planning-tracker.yaml → planning[].path matching current scope"
+      check: "Checkbox count increased OR milestone items marked [x]"
+    on_fail: "Block completion, list unchecked items"
+
+  # 2. Chronicle Entry Written
+  - id: chronicle_entry
+    name: "Chronicle entry written for milestone"
+    description: "Chronicle has complete entry with all 5 required sections"
+    enforcement: mandatory
+    verification:
+      type: file_content
+      target: "planning-tracker.yaml → progress[].path matching current scope"
+      check: "Milestone N section exists with: What Was Done, How, Why, Learned, Watch"
+    on_fail: "Block completion, prompt for chronicle update"
+    required_sections:
+      - "What Was Done"
+      - "How It Was Approached"
+      - "Why Decisions Were Made"
+      - "What Was Learned"
+      - "What to Watch"
+
+  # 3. Session State Updated
+  - id: session_state
+    name: "Session state reflects completion"
+    description: "session-state.md shows milestone work in 'What Was Done'"
+    enforcement: mandatory
+    verification:
+      type: file_modified
+      target: ".claude/context/session-state.md"
+      check: "Modified today AND contains reference to completed milestone"
+    on_fail: "Block completion, prompt for session state update"
+
+  # 4. AC-03 Review (Optional but Recommended)
+  - id: ac03_review
+    name: "AC-03 Milestone Review passed"
+    description: "Formal milestone review completed with passing scores"
+    enforcement: recommended  # Can be skipped with reason
+    verification:
+      type: review_report
+      target: ".claude/reports/reviews/[milestone]-review-*.md"
+      check: "Report exists AND verdict = approved|conditional"
+    on_skip: "Log reason, proceed with warning"
+
+# =============================================================================
+# GATE WORKFLOW
+# =============================================================================
+
+workflow:
+  trigger_phrases:
+    - "milestone complete"
+    - "milestone done"
+    - "M[0-9]+ complete"
+    - "finished milestone"
+    - "milestone [0-9]+ done"
+
+  sequence:
+    1: "Detect milestone completion signal"
+    2: "Identify current scope from session-state.md"
+    3: "Load planning-tracker.yaml"
+    4: "Filter documents by scope"
+    5: "Run required_checks in order"
+    6: "If any mandatory check fails → BLOCK with specific remediation"
+    7: "If recommended checks fail → WARN but allow proceed"
+    8: "On all pass → Allow completion, log success"
+
+  on_block:
+    message: |
+      ⛔ MILESTONE COMPLETION BLOCKED
+
+      The following documentation updates are required before this milestone can be marked complete:
+
+      {failed_checks}
+
+      Please update the required documents and try again.
+
+      Reference: .claude/review-criteria/milestone-completion-gate.yaml
+
+    remediation_prompt: true  # Offer to help update docs
+
+  on_pass:
+    message: |
+      ✅ Milestone Completion Gate PASSED
+
+      All documentation requirements verified:
+      - [ ] Planning checkboxes updated
+      - [ ] Chronicle entry complete
+      - [ ] Session state current
+
+      Milestone may now be marked complete.
+
+# =============================================================================
+# SKIP PROTOCOL
+# =============================================================================
+# Gate can be skipped ONLY with explicit user approval and documented reason
+
+skip_protocol:
+  allowed: true
+  requires:
+    - explicit_user_confirmation: "Skip documentation gate? This is not recommended."
+    - reason_provided: "Reason for skip will be logged"
+
+  logging:
+    file: ".claude/logs/gate-skips.jsonl"
+    format: |
+      {"timestamp": "{ISO8601}", "gate": "milestone_completion", "milestone": "{N}", "reason": "{user_reason}", "skipped_checks": [{check_ids}]}
+
+# =============================================================================
+# INTEGRATION POINTS
+# =============================================================================
+
+integrations:
+  # Hook that triggers this gate
+  trigger_hook: "milestone-doc-enforcer.js"
+
+  # Pattern that defines documentation requirements
+  documentation_pattern: "milestone-review-pattern.md"
+
+  # Command that can manually trigger gate check
+  manual_command: "/review-milestone --gate-only"
+
+  # End-session integration
+  end_session_check: true  # Also run at /end-session if milestone work detected

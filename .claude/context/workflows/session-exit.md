@@ -7,16 +7,26 @@ Standard workflow for ending Claude Code sessions cleanly.
 ## Quick Checklist
 
 ```markdown
+## MANDATORY GATE (if milestone work done)
+- [ ] Milestone Documentation Gate PASSED
+  - [ ] Planning doc checkboxes updated (roadmap.md)
+  - [ ] Chronicle entry written (if milestone completed)
+  - [ ] Session state reflects milestone work
+
+## STANDARD CHECKS
+- [ ] Review planning-tracker.yaml (mandatory docs verified)
 - [ ] Update session-state.md (status, summary, next pickup)
 - [ ] Capture MCP state (current + predicted for next session)
 - [ ] Review session todos (complete or document pending)
 - [ ] Update current-priorities.md with completed items
-- [ ] Checklist hygiene (review planning-tracker.yaml)
 - [ ] Commit any uncommitted changes
 - [ ] Push to GitHub if applicable
 - [ ] Disable On-Demand MCPs (Tier 3, high-token)
 - [ ] Note any blockers or follow-ups
 ```
+
+> **Gate Reference**: `.claude/review-criteria/milestone-completion-gate.yaml`
+> **Tracker Reference**: `.claude/planning-tracker.yaml`
 
 ---
 
@@ -176,4 +186,4 @@ See @.claude/context/patterns/mcp-loading-strategy.md for full protocol.
 
 ---
 
-*Session Exit Procedure v2.1 — Updated 2026-01-22 (Checklist Hygiene step added)*
+*Session Exit Procedure v2.2 — Updated 2026-01-23 (Milestone Documentation Gate enforcement added)*
