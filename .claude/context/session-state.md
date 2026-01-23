@@ -18,20 +18,37 @@
 
 ---
 
-## Quick Session (2026-01-23 09:29)
+## Session (2026-01-23 09:50)
 
 **What Was Done**:
-- Fixed status line token counting discrepancy
-- Root cause: `used_percentage` measures conversation only, `total_input_tokens` includes base context (~40k)
-- Fix: Calculate percentage from `total_input_tokens / context_window_size`
-- Added debug logging to `/tmp/statusline-debug.json` for verification
+- **Statusline token fix (corrected)**:
+  - Previous fix was wrong: `total_input_tokens` is CUMULATIVE across all API calls
+  - `used_percentage` is the CORRECT current context usage metric
+  - Fixed statusline to use `used_percentage` directly, calculate displayed tokens from it
+  - Removed debug logging
+- **Documented Claude Code statusline JSON schema** — full breakdown of all available fields
+- **Fixed broken path references** (Organization Architecture Phase 7):
+  - `context/upstream/` → `projects/project-aion/evolution/aifred-integration/`
+  - `.claude/persona/jarvis-identity.md` → `.claude/jarvis-identity.md`
+  - Updated 10+ files with corrected paths
 
 **Files Modified**:
-- `~/.claude/settings.json` (statusLine command)
+- `~/.claude/settings.json` (statusLine command — user global)
+- `.claude/commands/sync-aifred-baseline.md`
+- `.claude/commands/end-session.md`
+- `.claude/hooks/session-start.sh`
+- `.claude/hooks/setup-hook.sh`
+- `.claude/context/patterns/session-start-checklist.md`
+- `.claude/context/patterns/startup-protocol.md`
+- `.claude/context/patterns/milestone-review-pattern.md`
+- `.claude/context/components/AC-01-self-launch.md`
+- `.claude/skills/session-management/SKILL.md`
+- `.claude/agents/memory-bank-synchronizer.md`
 
 **Next Session**:
-- Verify fix via `/tmp/statusline-debug.json`
-- Remove debug logging once confirmed
+- Verify statusline with --verbose --debug
+- Continue Organization Architecture Phase 7-8 (if needed)
+- Then AIfred Integration Milestone 2
 
 ---
 

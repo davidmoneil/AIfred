@@ -95,7 +95,7 @@ The session-state.md has grown large ([N] lines). Would you like to:
 
 | File | When to Update |
 |------|----------------|
-| `.claude/context/upstream/integration-chronicle.md` | After AIfred integration milestones |
+| `projects/project-aion/evolution/aifred-integration/chronicle.md` | After AIfred integration milestones |
 | `.claude/context/session-chronicle.md` | After significant multi-session work |
 | `.claude/context/projects/pr-chronicle.md` | After PR completions |
 

@@ -22,7 +22,7 @@ Execute these steps in order at the start of each session:
 **Automatic persona activation is required per PR-10.1.**
 
 Upon session start, Jarvis must:
-- Adopt the identity defined in `.claude/persona/jarvis-identity.md`
+- Adopt the identity defined in `.claude/jarvis-identity.md`
 - Use communication style: calm, professional, understated
 - Apply address protocol: "sir" for formal/important, nothing for casual
 - Enforce safety posture: prefer reversible actions, confirm destructive ops
@@ -68,8 +68,8 @@ sync analysis. Never ask "adopt/adapt/defer?" before the user has seen what chan
 - Only `git fetch` and `git pull` operations are allowed
 
 **Reference**:
-- Port log: `.claude/context/upstream/port-log.md`
-- Sync reports: `.claude/context/upstream/sync-report-*.md`
+- Port log: `projects/project-aion/evolution/aifred-integration/port-log.md`
+- Sync reports: `projects/project-aion/evolution/aifred-integration/sync-reports/`
 - Sync command: `/sync-aifred-baseline`
 
 ### 3. Load Context
@@ -146,7 +146,7 @@ See: `.claude/context/components/AC-01-self-launch.md` for component specificati
 - [mcp-loading-strategy.md](./mcp-loading-strategy.md) — MCP management
 - [memory-storage-pattern.md](./memory-storage-pattern.md) — What to persist
 - [Session Exit Workflow](../workflows/session-exit.md) — Clean session endings
-- [Jarvis Identity](../../persona/jarvis-identity.md) — Persona specification
+- [Jarvis Identity](../../jarvis-identity.md) — Persona specification
 
 ## Related Components
 

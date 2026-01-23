@@ -274,7 +274,7 @@ Weather check failure degrades gracefully (skip weather mention).
 | Pattern document | `.claude/context/patterns/startup-protocol.md` | ✅ complete |
 | State file | `.claude/state/components/AC-01-launch.json` | ✅ created by hook |
 | Checklist | `.claude/context/patterns/session-start-checklist.md` | ✅ complete |
-| Persona | `.claude/persona/jarvis-identity.md` | ✅ referenced |
+| Persona | `.claude/jarvis-identity.md` | ✅ referenced |
 | Skill | `.claude/skills/session-management/SKILL.md` | ✅ integrated |
 
 ### Phase A: Greeting & Orientation

@@ -594,7 +594,7 @@ Each milestone entry should include:
 
 | Context | Chronicle Path |
 |---------|----------------|
-| AIfred Integration | `.claude/context/upstream/integration-chronicle.md` |
+| AIfred Integration | `projects/project-aion/evolution/aifred-integration/chronicle.md` |
 | Project Aion PRs | `.claude/context/projects/pr-chronicle.md` |
 | General Work | `.claude/context/session-chronicle.md` |
 

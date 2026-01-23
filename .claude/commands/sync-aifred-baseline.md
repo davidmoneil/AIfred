@@ -19,12 +19,12 @@ Only `git fetch` and `git pull` operations are allowed. Never edit, commit, bran
 
 **Every invocation MUST generate TWO report files:**
 
-1. **Formal Sync Report**: `.claude/context/upstream/sync-report-YYYY-MM-DD.md`
+1. **Formal Sync Report**: `projects/project-aion/evolution/aifred-integration/sync-reports/sync-report-YYYY-MM-DD.md`
    - Structured ADOPT/ADAPT/REJECT/DEFER classifications
    - File-by-file analysis
    - Rationales for each decision
 
-2. **Ad-Hoc Assessment**: `.claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md`
+2. **Ad-Hoc Assessment**: `projects/project-aion/evolution/aifred-integration/sync-reports/adhoc-assessment-YYYY-MM-DD.md`
    - Key discoveries (what was unexpected or important)
    - Questions resolved during analysis
    - Implications for Jarvis architecture
@@ -112,7 +112,7 @@ For each significant change, determine:
 
 ## Phase 4: Generate Report
 
-Create a structured report at `.claude/context/upstream/sync-report-YYYY-MM-DD.md`:
+Create a structured report at `projects/project-aion/evolution/aifred-integration/sync-reports/sync-report-YYYY-MM-DD.md`:
 
 ```markdown
 # AIfred Baseline Sync Report
@@ -177,7 +177,7 @@ Create a structured report at `.claude/context/upstream/sync-report-YYYY-MM-DD.m
 
 ## Update Port Log?
 
-If proceeding with any ports, update `.claude/context/upstream/port-log.md`.
+If proceeding with any ports, update `projects/project-aion/evolution/aifred-integration/port-log.md`.
 ```
 
 ## Phase 5: Update Tracking (If Not Dry-Run)
@@ -185,12 +185,12 @@ If proceeding with any ports, update `.claude/context/upstream/port-log.md`.
 If `$ARGUMENTS` is "full" and user approves:
 
 1. Update `paths-registry.yaml` → `aifred_baseline.last_synced_commit`
-2. Append to `.claude/context/upstream/port-log.md`
+2. Append to `projects/project-aion/evolution/aifred-integration/port-log.md`
 3. Create patches for ADOPT items (optional)
 
 ## Phase 6: Generate Ad-Hoc Assessment
 
-Create an ad-hoc assessment at `.claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md`:
+Create an ad-hoc assessment at `projects/project-aion/evolution/aifred-integration/sync-reports/adhoc-assessment-YYYY-MM-DD.md`:
 
 ```markdown
 # AIfred Sync Ad-Hoc Assessment
@@ -261,8 +261,8 @@ Changes Analyzed:
 └── DEFER:  N items for later review
 
 Reports Generated:
-├── Formal: .claude/context/upstream/sync-report-YYYY-MM-DD.md
-└── Ad-Hoc: .claude/context/upstream/adhoc-assessment-YYYY-MM-DD.md
+├── Formal: projects/project-aion/evolution/aifred-integration/sync-reports/sync-report-YYYY-MM-DD.md
+└── Ad-Hoc: projects/project-aion/evolution/aifred-integration/sync-reports/adhoc-assessment-YYYY-MM-DD.md
 
 Next Steps:
 - [Recommended actions based on findings]

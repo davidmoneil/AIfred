@@ -150,7 +150,7 @@ These files had potential updates but contain user content:
 | `current-priorities.md` | User planning |
 | `session-state.md` | Session history |
 | `projects/project-aion/roadmap.md` | Strategic planning |
-| `.claude/context/upstream/port-log.md` | Historical decisions |
+| `projects/project-aion/evolution/aifred-integration/port-log.md` | Historical decisions |
 
 ## Success Criteria
 
