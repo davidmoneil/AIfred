@@ -151,24 +151,22 @@ execute_via_tmux() {
 send_tmux_message() {
     local message="$1"
     local max_attempts="${2:-2}"
-    local attempt=1
 
-    while [[ $attempt -le $max_attempts ]]; do
-        # Send the message text
-        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$message"
-        sleep 0.1
+    # First, send an empty Enter to "wake up" the input if needed
+    # This clears any lingering state and ensures focus
+    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
+    sleep 0.3
 
-        # Send Enter (C-m is Ctrl+M = carriage return, most reliable)
-        "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
-        sleep 0.2
+    # Now send the actual message
+    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" "$message"
+    sleep 0.2
 
-        # Second Enter to force submission if first didn't take
-        if [[ $attempt -lt $max_attempts ]]; then
-            "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
-        fi
+    # Send Enter to submit
+    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
+    sleep 0.3
 
-        ((attempt++))
-    done
+    # If message might not have submitted, send another Enter
+    "$TMUX_BIN" send-keys -t "$TMUX_SESSION" C-m
 }
 
 # Execute command via AppleScript (macOS fallback)

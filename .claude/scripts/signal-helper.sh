@@ -144,7 +144,7 @@ signal_command() {
 
     # Determine auto_resume (autonomy-first: true unless paused)
     local auto_resume="true"
-    local resume_delay="3"
+    local resume_delay="5"  # 5 seconds to ensure Claude Code is ready for input
     local resume_message="continue"
 
     if [[ "$pause_flag" == "true" ]]; then
