@@ -2,8 +2,8 @@
 
 Reusable implementation patterns organized by category. Consult before implementing significant tasks.
 
-**Last Updated**: 2026-01-22 (Archon Architecture v3.0.0)
-**Total Patterns**: 42
+**Last Updated**: 2026-01-23 (M4 Pattern Porting)
+**Total Patterns**: 46
 
 ---
 
@@ -95,6 +95,20 @@ Patterns for code development and version control.
 | [milestone-review-pattern](milestone-review-pattern.md) | Validate milestone completion | PR/milestone completion |
 | [branching-strategy](branching-strategy.md) | Git branching for Project Aion | Branch decisions |
 | [cross-project-commit-tracking](cross-project-commit-tracking.md) | Multi-repo commit coordination | Working across repos |
+
+---
+
+## Capability Architecture (AIfred Ported)
+
+Patterns for building layered, deterministic capabilities.
+
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| [capability-layering-pattern](capability-layering-pattern.md) | 5-layer capability stack | Creating new automated capabilities |
+| [code-before-prompts-pattern](code-before-prompts-pattern.md) | Deterministic code over AI inference | Skill/command implementation |
+| [command-invocation-pattern](command-invocation-pattern.md) | CLI/Agent/Skill routing | Designing new commands |
+| [agent-invocation-pattern](agent-invocation-pattern.md) | Agent definition and invocation | Creating/invoking agents |
+| [autonomous-execution-pattern](autonomous-execution-pattern.md) | Scheduled headless execution | Cron/systemd automation |
 
 ---
 

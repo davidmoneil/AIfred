@@ -8,12 +8,13 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### AIfred Integration: Milestone 4 — Documentation & Patterns
+### AIfred Integration: Milestone 5 — Auto-* Wrapper Refactoring
 **Status**: 🔜 Next
 **Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
 
-- [ ] Session 4.1: Port capability-layering, code-before-prompts, command-invocation, agent-invocation patterns
-- [ ] Session 4.2: Port autonomous-execution pattern + /analyze-codebase command
+- [ ] Session 5.1: Implement universal signal_command() in signal-helper.sh
+- [ ] Session 5.2: Migration & testing of all 17 auto-* commands
+- [ ] Session 5.3: Documentation and deprecation notices
 
 ### PR-12.3: Independent Milestone Review (2026-01-21)
 **Status**: ⏸️ Paused (AIfred Integration priority)
@@ -49,6 +50,11 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### AIfred Integration Milestone 4: Documentation & Patterns (2026-01-23)
+- Session 4.1: Ported 4 core patterns (capability-layering, code-before-prompts, command-invocation, agent-invocation)
+- Session 4.2: Ported autonomous-execution pattern + /analyze-codebase command
+- Updated pattern index with "Capability Architecture" section (46 patterns total)
 
 ### AIfred Integration Milestone 3: JICM Complements (2026-01-23)
 - Session 3.1: Created /context-analyze, /context-loss commands, compaction-essentials.md

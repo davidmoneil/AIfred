@@ -263,10 +263,10 @@ cp /Users/aircannon/Claude/AIfred/.claude/hooks/branch-protection.js \
 - [x] Register hooks in settings.json
 - [x] Test hook functionality
 
-### Week 2: Commands & Patterns (M2, M3 - COMPLETE)
+### Week 2: Commands & Patterns (M2, M3, M4 - COMPLETE)
 - [x] Port JICM complement commands (4 commands) — M3
-- [ ] Port documentation patterns (3 patterns) — M4 pending
-- [ ] Update pattern index — M4 pending
+- [x] Port documentation patterns (5 patterns) — M4
+- [x] Update pattern index — M4
 
 ### Week 3: Evaluation Phase
 - [ ] Evaluate structured-planning skill fit

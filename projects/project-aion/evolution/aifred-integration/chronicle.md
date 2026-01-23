@@ -278,15 +278,96 @@ Each milestone entry captures:
 
 ---
 
+## Milestone 4: Documentation & Patterns
+
+**Sessions**: 4.1 (Core Patterns), 4.2 (Autonomous Execution)
+**Date**: 2026-01-23
+**Duration**: ~2 hours
+**Commits**: TBD
+**Status**: Complete
+
+### 4.1 What Was Done
+
+**Session 4.1: Core Patterns**
+| Pattern | Purpose |
+|---------|---------|
+| `capability-layering-pattern.md` | 5-layer stack for automated capabilities |
+| `code-before-prompts-pattern.md` | Deterministic code over AI inference |
+| `command-invocation-pattern.md` | CLI/Agent/Skill command routing |
+| `agent-invocation-pattern.md` | Agent definition and invocation standards |
+
+**Session 4.2: Autonomous Execution**
+| Deliverable | Description |
+|-------------|-------------|
+| `autonomous-execution-pattern.md` | Scheduled headless Claude Code execution |
+| `/analyze-codebase` | Codebase analysis with Mermaid diagram generation |
+| Pattern index update | Added new "Capability Architecture" section |
+
+### 4.2 How It Was Approached
+
+**Sequence**:
+1. Read all 5 AIfred source patterns
+2. Ported 4 core patterns with Jarvis-specific adaptations (paths, references)
+3. Updated pattern index with new "Capability Architecture (AIfred Ported)" section
+4. Ported autonomous-execution-pattern with simplified wrapper script template
+5. Created /analyze-codebase command for systematic codebase documentation
+
+**Adaptations**:
+- Updated paths from AIfred (Scripts/) to Jarvis (scripts/)
+- Removed TELOS references (Jarvis doesn't have TELOS yet)
+- Simplified autonomous execution to focus on core concepts
+- Updated agent references to match Jarvis agent library
+
+### 4.3 Why Decisions Were Made
+
+| Decision | Reasoning |
+|----------|-----------|
+| **New index section** | "Capability Architecture" groups related AIfred patterns |
+| **Simplified wrapper script** | Full template available in pattern; command shows concept |
+| **Cross-references preserved** | Patterns reference each other for cohesive documentation |
+| **Permission tiers kept** | 3-tier model (Discovery/Analyze/Implement) provides clear safety boundaries |
+
+### 4.4 What Was Learned
+
+**Documentation Patterns**:
+- AIfred patterns are well-structured with consistent format
+- Pattern cross-references create a cohesive knowledge network
+- Capability layering philosophy applies broadly to Jarvis
+
+**Architecture Insight**:
+- The 5-layer capability stack (Idea → Code → CLI → Prompt → User) is a powerful design principle
+- "Code Before Prompts" aligns with Jarvis's existing Wiggum Loop philosophy
+
+### 4.5 What to Watch
+
+| Item | Type | Priority |
+|------|------|----------|
+| Pattern adoption | Process | Medium (need to apply patterns to existing commands) |
+| /analyze-codebase testing | Validation | Low (optional feature) |
+| Scheduled execution setup | Infrastructure | Low (requires cron/systemd config) |
+
+### 4.6 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Patterns ported | 5 |
+| Commands created | 1 |
+| Pattern index sections added | 1 |
+| Total pattern count | 46 (was 42) |
+
+---
+
 ## Cross-Milestone Patterns
 
 *[Patterns that emerge across multiple milestones — to be populated as work progresses]*
 
 ### Recurring Decisions
-- *TBD*
+- Port with minimal adaptation — keep AIfred patterns intact where possible
+- Update paths and references but preserve structure
+- Add Jarvis-specific categories where needed
 
 ### Escalating Concerns
-- *TBD*
+- None identified
 
 ### Validated Approaches
 - **Hook porting template** (validated M1): source → stdin/stdout → adaptations → test → register → commit
