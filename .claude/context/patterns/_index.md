@@ -3,7 +3,7 @@
 Reusable implementation patterns organized by category. Consult before implementing significant tasks.
 
 **Last Updated**: 2026-01-22 (Archon Architecture v3.0.0)
-**Total Patterns**: 41
+**Total Patterns**: 42
 
 ---
 
@@ -163,6 +163,7 @@ Patterns defining Archon structure and organization.
 | Pattern | Purpose | When to Use |
 |---------|---------|-------------|
 | [archon-architecture-pattern](archon-architecture-pattern.md) | Three-layer Archon structure | Designing new Archons |
+| [organization-pattern](organization-pattern.md) | File placement decisions | Creating new files/directories |
 
 ---
 
