@@ -191,7 +191,7 @@ Each milestone entry captures:
 **Sessions**: 3.1 (Context Analysis), 3.2 (Knowledge Capture)
 **Date**: 2026-01-23
 **Duration**: ~3 hours
-**Commits**: TBD (single commit)
+**Commits**: `a9cf29a`, `3358cbc` (tracker fix)
 **Status**: Complete
 
 ### 3.1 What Was Done
@@ -250,6 +250,12 @@ Each milestone entry captures:
 **Architecture Pattern**:
 - JICM complement commands form a knowledge lifecycle: Capture → Search → Analyze → Feedback
 - /context-loss → compaction-essentials.md creates a feedback loop for context preservation
+
+**Documentation Pattern** (discovered post-M3):
+- Any document with `- [ ]` checkboxes is a tracking document, regardless of stated status
+- "Superseded" docs may still have active checklists (recommendations.md case)
+- Session plans (.claude/plans/) should show completion status
+- planning-tracker.yaml updated to v2.1.0 with new categories
 
 ### 3.5 What to Watch
 
