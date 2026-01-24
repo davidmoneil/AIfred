@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-23
+**Last Updated**: 2026-01-24
 
 ---
 
@@ -58,6 +58,14 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### JICM v3.0.0 — Complete Redesign (2026-01-24)
+- **Solution A**: Statusline-Unified — jarvis-watcher.sh uses official Claude Code JSON API
+- **Solution B**: Hook-Orchestrated — precompact-analyzer.js generates preservation manifest
+- **Solution C**: Agent-Autonomous — jicm-agent.md with velocity prediction (opt-in)
+- Documentation sweep: 5 core JICM files updated to v3.0.0
+- Archived redundant scripts: `auto-clear-watcher.sh`, `auto-command-watcher.sh`
+- Commits: `8d05265`, `dded9e0`, `806a995`
 
 ### AIfred Integration Milestone 4: Documentation & Patterns (2026-01-23)
 - Session 4.1: Ported 4 core patterns (capability-layering, code-before-prompts, command-invocation, agent-invocation)

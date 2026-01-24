@@ -1051,3 +1051,160 @@
 2026-01-23T16:29:12Z | SessionStart | EnvValidation complete
 2026-01-23T16:29:12Z | SessionStart | current_work='' next_step=''
 2026-01-23T16:41:38Z | SessionEnd | /end-session invoked (quick exit)
+2026-01-23T16:42:28Z | SessionStart | source=startup | session=14792b01-8e43-47bc-a16a-0cf6979e9c1c | local_time=09:42
+2026-01-23T16:42:28Z | SessionStart | time_of_day=morning
+2026-01-23T16:42:28Z | SessionStart | Weather: 28°F (feels like 26°F), Mist, 88% humidity
+2026-01-23T16:42:28Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T16:42:28Z | SessionStart | Launched watcher
+2026-01-23T16:42:28Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T16:42:28Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T16:42:28Z | SessionStart | EnvCheck: 9 uncommitted changes
+2026-01-23T16:42:28Z | SessionStart | EnvValidation complete
+2026-01-23T16:42:28Z | SessionStart | current_work='' next_step=''
+2026-01-23T16:49:30Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:49:39Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:49:46Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:49:50Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:49:58Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:02Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:06Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:09Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:13Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:16Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:20Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:23Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:28Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:31Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T16:50:34Z | SessionStart | source=clear | session=69196915-6c25-4dc1-8594-6b1399617f0e | local_time=09:50
+2026-01-23T16:50:34Z | SessionStart | time_of_day=morning
+2026-01-23T16:50:34Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T16:50:34Z | SessionStart | EnvValidation complete
+2026-01-23T16:50:34Z | SessionStart | current_work='' next_step=''
+2026-01-23T17:49:49Z | SessionEnd | /end-session invoked
+2026-01-23T17:51:18Z | SessionStart | source=startup | session=bdc9692e-9c7c-4f9a-af64-b216dfe383ac | local_time=10:51
+2026-01-23T17:51:18Z | SessionStart | time_of_day=morning
+2026-01-23T17:51:18Z | SessionStart | Weather: 32°F (feels like 31°F), Mist, haze, 81% humidity
+2026-01-23T17:51:18Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T17:51:18Z | SessionStart | Launched watcher
+2026-01-23T17:51:18Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T17:51:18Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T17:51:18Z | SessionStart | EnvCheck: 11 uncommitted changes
+2026-01-23T17:51:18Z | SessionStart | EnvValidation complete
+2026-01-23T17:51:18Z | SessionStart | current_work='' next_step=''
+2026-01-23T18:45:31Z | SessionStart | source=startup | session=5fc3ff4d-9b8a-413d-99fb-2fa6039fa16e | local_time=11:45
+2026-01-23T18:45:31Z | SessionStart | time_of_day=morning
+2026-01-23T18:45:31Z | SessionStart | Weather: 34°F (feels like 33°F), Haze, 79% humidity
+2026-01-23T18:45:31Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T18:45:31Z | SessionStart | Launched watcher
+2026-01-23T18:45:31Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T18:45:31Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T18:45:31Z | SessionStart | EnvCheck: 11 uncommitted changes
+2026-01-23T18:45:31Z | SessionStart | EnvValidation complete
+2026-01-23T18:45:31Z | SessionStart | current_work='' next_step=''
+2026-01-23T18:56:55Z | SessionEnd | /end-session invoked
+2026-01-23T19:02:27Z | SessionStart | source=startup | session=9066c7de-6988-409c-870d-cf144c2d5b96 | local_time=12:02
+2026-01-23T19:02:27Z | SessionStart | time_of_day=afternoon
+2026-01-23T19:02:27Z | SessionStart | Weather: fetch failed or invalid response
+2026-01-23T19:02:27Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T19:02:27Z | SessionStart | Launched watcher
+2026-01-23T19:02:27Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T19:02:27Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T19:02:27Z | SessionStart | EnvCheck: 11 uncommitted changes
+2026-01-23T19:02:27Z | SessionStart | EnvValidation complete
+2026-01-23T19:02:27Z | SessionStart | current_work='' next_step=''
+2026-01-23T19:57:27Z | SessionEnd | /end-session invoked
+2026-01-23T20:22:27Z | SessionStart | source=startup | session=79989d0c-f9f6-486a-88db-42251bdf462b | local_time=13:22
+2026-01-23T20:22:27Z | SessionStart | time_of_day=afternoon
+2026-01-23T20:22:27Z | SessionStart | Weather: 34°F (feels like 30°F), Overcast, 62% humidity
+2026-01-23T20:22:27Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T20:22:27Z | SessionStart | Launched watcher
+2026-01-23T20:22:27Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T20:22:27Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T20:22:27Z | SessionStart | EnvCheck: 11 uncommitted changes
+2026-01-23T20:22:27Z | SessionStart | EnvValidation complete
+2026-01-23T20:22:27Z | SessionStart | current_work='' next_step=''
+2026-01-23T21:52:53Z | SessionEnd | /end-session invoked
+2026-01-23T21:55:10Z | SessionStart | source=startup | session=8fa91120-0ea1-486f-90c6-f8ac5365c98d | local_time=14:55
+2026-01-23T21:55:10Z | SessionStart | time_of_day=afternoon
+2026-01-23T21:55:10Z | SessionStart | Weather: 37°F (feels like 32°F), Haze, 67% humidity
+2026-01-23T21:55:10Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T21:55:10Z | SessionStart | Launched watcher
+2026-01-23T21:55:10Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-23T21:55:10Z | SessionStart | AIfred baseline up-to-date
+2026-01-23T21:55:10Z | SessionStart | EnvCheck: 12 uncommitted changes
+2026-01-23T21:55:10Z | SessionStart | EnvValidation complete
+2026-01-23T21:55:10Z | SessionStart | current_work='' next_step=''
+2026-01-23T22:56:58Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:04Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:06Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:08Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:11Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:13Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:16Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:22Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:24Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:26Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:29Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:31Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:33Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:35Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:41Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:44Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:47Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:49Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:51Z | Stop | Recent checkpoint detected, blocking stop to trigger clear
+2026-01-23T22:57:55Z | SessionStart | source=clear | session=8bc2b95e-4f82-4039-97c4-f620d7e9d57c | local_time=15:57
+2026-01-23T22:57:55Z | SessionStart | time_of_day=afternoon
+2026-01-23T22:57:55Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-23T22:57:55Z | SessionStart | EnvValidation complete
+2026-01-23T22:57:55Z | SessionStart | current_work='' next_step=''
+2026-01-24T01:14:04Z | SessionStart | source=startup | session=74b5d2de-97fe-4a41-b15a-613307e02c69 | local_time=18:14
+2026-01-24T01:14:04Z | SessionStart | time_of_day=evening
+2026-01-24T01:14:04Z | SessionStart | Weather: 37°F (feels like 32°F), Overcast, 70% humidity
+2026-01-24T01:14:04Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-24T01:14:04Z | SessionStart | Launched watcher
+2026-01-24T01:14:04Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-24T01:14:04Z | SessionStart | AIfred baseline up-to-date
+2026-01-24T01:14:04Z | SessionStart | EnvCheck: 18 uncommitted changes
+2026-01-24T01:14:04Z | SessionStart | EnvValidation complete
+2026-01-24T01:14:04Z | SessionStart | current_work='' next_step=''
+2026-01-24T01:41:26Z | SessionStart | source=startup | session=ef8f4e0e-0c2e-4ef4-b7c7-b7e4e0c7764a | local_time=18:41
+2026-01-24T01:41:26Z | SessionStart | time_of_day=evening
+2026-01-24T01:41:26Z | SessionStart | Weather: 36°F (feels like 31°F), Overcast, 73% humidity
+2026-01-24T01:41:26Z | SessionStart | JICM reset: context-estimate.json baseline=30000
+2026-01-24T01:41:26Z | SessionStart | Launched watcher
+2026-01-24T01:41:26Z | SessionStart | MCP suggestions: enable=[] disable=[]
+2026-01-24T01:41:26Z | SessionStart | AIfred baseline up-to-date
+2026-01-24T01:41:26Z | SessionStart | EnvCheck: 19 uncommitted changes
+2026-01-24T01:41:26Z | SessionStart | EnvValidation complete
+2026-01-24T01:41:26Z | SessionStart | current_work='' next_step=''
+2026-01-24T04:55:35Z | PreCompact | Auto-checkpoint triggered
+2026-01-24T04:55:35Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-24T04:55:35Z | PreCompact | Checkpoint created (no signal - JICM decoupled)
+2026-01-24T04:56:57Z | SessionStart | source=compact | session=ef8f4e0e-0c2e-4ef4-b7c7-b7e4e0c7764a | local_time=21:56
+2026-01-24T04:56:57Z | SessionStart | time_of_day=night
+2026-01-24T04:56:57Z | SessionStart | EnvValidation complete
+2026-01-24T04:56:57Z | SessionStart | current_work='' next_step=''
+2026-01-24T05:38:26Z | PreCompact | Auto-checkpoint triggered
+2026-01-24T05:38:26Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-24T05:38:26Z | PreCompact | Checkpoint created (no signal - JICM decoupled)
+2026-01-24T05:39:29Z | SessionStart | source=compact | session=ef8f4e0e-0c2e-4ef4-b7c7-b7e4e0c7764a | local_time=22:39
+2026-01-24T05:39:29Z | SessionStart | time_of_day=night
+2026-01-24T05:39:29Z | SessionStart | EnvValidation complete
+2026-01-24T05:39:29Z | SessionStart | current_work='' next_step=''
+2026-01-24T05:49:42Z | PreCompact | Auto-checkpoint triggered
+2026-01-24T05:49:42Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-24T05:49:42Z | PreCompact | Checkpoint created (no signal - JICM decoupled)
+2026-01-24T05:51:04Z | SessionStart | source=compact | session=ef8f4e0e-0c2e-4ef4-b7c7-b7e4e0c7764a | local_time=22:51
+2026-01-24T05:51:04Z | SessionStart | time_of_day=night
+2026-01-24T05:51:04Z | SessionStart | EnvValidation complete
+2026-01-24T05:51:04Z | SessionStart | current_work='' next_step=''
+2026-01-24T19:58:06Z | SessionEnd | /end-session invoked
+2026-01-24T19:58:08Z | PreCompact | Auto-checkpoint triggered
+2026-01-24T19:58:08Z | PreCompact | Disabled Tier 2 MCPs
+2026-01-24T19:58:08Z | PreCompact | Checkpoint created (no signal - JICM decoupled)
+2026-01-24T19:59:20Z | SessionStart | source=compact | session=ef8f4e0e-0c2e-4ef4-b7c7-b7e4e0c7764a | local_time=12:59
+2026-01-24T19:59:20Z | SessionStart | time_of_day=afternoon
+2026-01-24T19:59:20Z | SessionStart | EnvValidation complete
+2026-01-24T19:59:20Z | SessionStart | current_work='' next_step=''
+2026-01-24T19:59:57Z | SessionEnd | /end-session invoked
