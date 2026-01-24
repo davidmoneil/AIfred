@@ -132,13 +132,13 @@ echo "$TIMESTAMP" > "$SIGNAL_FILE"
 **Functions**:
 - Detects if checkpoint was recently created
 - Blocks stop if checkpoint exists but signal file doesn't
-- Instructs Claude to run `/trigger-clear`
+- Instructs Claude to signal clear via `autonomous-commands` skill
 
 ```bash
 # Block and instruct clear
 jq -n '{
     "decision": "block",
-    "reason": "Run /trigger-clear to signal the auto-clear watcher"
+    "reason": "Signal /clear via autonomous-commands skill"
 }'
 ```
 
@@ -181,13 +181,15 @@ keystroke return
 | `list-mcp-status.sh` | Shows registered vs disabled MCPs |
 | `stop-watcher.sh` | Stops watcher process |
 
-### 7. Trigger Clear Command (`.claude/commands/trigger-clear.md`)
+### 7. Signal Clear via Skill
 
-**Invokable by**: Claude via Skill tool
+**Invokable by**: Claude via `autonomous-commands` skill
 
 **Functions**:
-- Creates signal file for watcher
+- Creates signal file for watcher via `signal_command()`
 - Used when manual checkpoint triggers clear sequence
+
+**Note**: The `/trigger-clear` command has been replaced by the `autonomous-commands` skill which uses `signal-helper.sh` to create signals.
 
 ---
 
@@ -420,7 +422,7 @@ cat .claude/logs/session-start-diagnostic.log
 | `.claude/scripts/list-mcp-status.sh` | Show MCP state |
 | `.claude/scripts/stop-watcher.sh` | Stop watcher process |
 | `.claude/commands/context-checkpoint.md` | Manual checkpoint command |
-| `.claude/commands/trigger-clear.md` | Signal watcher to send /clear |
+| `.claude/skills/autonomous-commands/SKILL.md` | Signal commands (replaces trigger-clear.md) |
 
 ---
 

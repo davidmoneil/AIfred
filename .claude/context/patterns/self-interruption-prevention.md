@@ -60,7 +60,7 @@ All `auto-*` commands in `.claude/commands/` follow this pattern:
 
 - `.claude/scripts/signal-helper.sh` — Signal creation library
 - `.claude/scripts/jarvis-watcher.sh` — Watcher that executes signals
-- `.claude/commands/auto-*.md` — All autonomous command skills
+- `.claude/skills/autonomous-commands/SKILL.md` — Autonomous command execution skill
 
 ## See Also
 

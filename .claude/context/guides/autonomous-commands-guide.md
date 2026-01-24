@@ -1,7 +1,8 @@
 # Autonomous Commands User Guide
 
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Created**: 2026-01-20
+**Updated**: 2026-01-23 (Skills Migration)
 
 Execute Claude Code built-in slash commands autonomously without manual input.
 
@@ -186,9 +187,9 @@ export TMUX_SESSION=my-session
 
 ### Add custom commands
 
-1. Add to whitelist in `auto-command-watcher.sh`
+1. Add to whitelist/blocklist in `auto-command-watcher.sh`
 2. Add signal function in `signal-helper.sh`
-3. Create command file in `.claude/commands/auto-*.md`
+3. Update `autonomous-commands` skill description with trigger phrases
 
 ---
 
@@ -208,8 +209,7 @@ export TMUX_SESSION=my-session
 | `.claude/scripts/launch-jarvis-tmux.sh` | Launch Claude with watcher |
 | `.claude/scripts/auto-command-watcher.sh` | Watcher script |
 | `.claude/scripts/signal-helper.sh` | Signal creation library |
-| `.claude/skills/autonomous-commands/SKILL.md` | Main skill definition |
-| `.claude/commands/auto-*.md` | Individual command wrappers |
+| `.claude/skills/autonomous-commands/SKILL.md` | Main skill definition (handles all commands) |
 | `.claude/context/patterns/command-signal-protocol.md` | Protocol specification |
 | `.claude/logs/command-signals.log` | Execution log |
 

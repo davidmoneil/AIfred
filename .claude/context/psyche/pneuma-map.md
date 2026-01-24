@@ -21,7 +21,7 @@ Pneuma is what Jarvis CAN DO — capabilities and character that enable action.
 │
 ├── agents/                   # Custom agent definitions (14)
 ├── commands/                 # Slash commands (30+)
-├── skills/                   # On-demand skills (11)
+├── skills/                   # On-demand skills (16)
 ├── hooks/                    # Event automation (14)
 ├── scripts/                  # Session scripts (~20)
 ├── plugins/                  # Plugin definitions
@@ -77,7 +77,7 @@ agents/
 | Session | setup, end-session, checkpoint |
 | Self-Improvement | reflect, evolve, research, maintain |
 | Validation | tooling-health, design-review, validate-selection |
-| Autonomous | auto-* (17 wrappers) |
+| Autonomous | via autonomous-commands skill |
 | Orchestration | orchestration/plan, status, resume |
 
 **Structure**:
@@ -100,7 +100,12 @@ commands/
 | mcp-validation | MCP testing |
 | skill-creator | Skill development |
 | session-management | Session lifecycle |
-| autonomous-commands | Auto-* wrapper |
+| autonomous-commands | Signal-based native command execution |
+| context-management | JICM context orchestration |
+| self-improvement | AC-05/06/07/08 orchestration |
+| validation | System validation workflows |
+| ralph-loop | Iterative development |
+| jarvis-status | AC component status display |
 
 **Structure**:
 ```
@@ -227,7 +232,7 @@ state/ ────────────────► reports/ (state→rep
 |------|-------|
 | Agents | 14 active |
 | Commands | 30+ |
-| Skills | 11 |
+| Skills | 16 |
 | Hooks | 14 registered |
 | Scripts | ~20 session scripts |
 

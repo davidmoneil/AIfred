@@ -314,7 +314,7 @@ that essential state is preserved.
 | Jarvis watcher | `.claude/scripts/jarvis-watcher.sh` | **primary monitor** |
 | Intelligent compress | `.claude/commands/intelligent-compress.md` | exists |
 | Context compressor agent | `.claude/agents/context-compressor.md` | exists (opus) |
-| JICM compact command | `.claude/commands/jicm-compact.md` | exists |
+| Context management skill | `.claude/skills/context-management/SKILL.md` | exists |
 | Context estimate log | `.claude/logs/context-estimate.json` | written by watcher |
 | Launch script | `.claude/scripts/launch-jarvis-tmux.sh` | env vars set |
 | Session-start hook | `.claude/hooks/session-start.sh` | restores context |
@@ -384,9 +384,10 @@ that essential state is preserved.
 | 2026-01-21 | Single 80% threshold | Simplify: one trigger point, graceful completion before |
 | 2026-01-21 | Idle detection before trigger | Don't interrupt Claude mid-response |
 | 2026-01-21 | Opus model for compression | Higher quality context preservation |
-| 2026-01-21 | /auto-context baseline | Informed decisions on what to drop |
+| 2026-01-21 | /context baseline via skill | Informed decisions on what to drop |
 | 2026-01-21 | Learnings always preserved | Resolved issues contain valuable lessons |
-| 2026-01-21 | Rename /auto-compact → /jicm-compact | Avoid conflict with native /compact |
+| 2026-01-21 | Signal-based compaction via skill | autonomous-commands skill handles /compact signal |
+| 2026-01-23 | Commands migrated to skills | /jicm-compact, /auto-* commands deleted; functionality in skills |
 
 ---
 

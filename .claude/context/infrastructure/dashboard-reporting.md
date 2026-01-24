@@ -503,7 +503,7 @@ dashboard:
 | `.claude/hooks/dashboard-aggregator.js` | Data aggregation | planned |
 | `.claude/hooks/alert-manager.js` | Alert handling | planned |
 | `.claude/hooks/report-generator.js` | Report creation | planned |
-| `.claude/commands/status.md` | Status command | planned |
+| `.claude/skills/jarvis-status/SKILL.md` | Status skill | exists |
 | `.claude/commands/health.md` | Health command | planned |
 | `.claude/commands/report.md` | Report command | planned |
 | `.claude/config/dashboard-config.yaml` | Configuration | planned |
