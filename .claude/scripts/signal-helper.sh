@@ -462,6 +462,24 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         watcher-status)
             watcher_status
             ;;
+        context-status|ctx)
+            # Read context from statusline capture (no TUI scraping needed)
+            STATUSLINE_FILE="$HOME/.claude/logs/statusline-input.json"
+            if [[ -f "$STATUSLINE_FILE" ]]; then
+                USED=$(jq -r '.context_window.used_percentage // 0' "$STATUSLINE_FILE")
+                REMAINING=$(jq -r '.context_window.remaining_percentage // 100' "$STATUSLINE_FILE")
+                INPUT_TOKENS=$(jq -r '.context_window.total_input_tokens // 0' "$STATUSLINE_FILE")
+                OUTPUT_TOKENS=$(jq -r '.context_window.total_output_tokens // 0' "$STATUSLINE_FILE")
+                COST=$(jq -r '.cost.total_cost_usd // 0' "$STATUSLINE_FILE")
+                TOTAL=$((INPUT_TOKENS + OUTPUT_TOKENS))
+                echo "Context: ${USED}% used, ${REMAINING}% remaining"
+                echo "Tokens: ${TOTAL} (in:${INPUT_TOKENS} out:${OUTPUT_TOKENS})"
+                printf "Cost: \$%.2f\n" "$COST"
+            else
+                echo "ERROR: Statusline capture not found at $STATUSLINE_FILE"
+                echo "Ensure jarvis-statusline.sh is configured in ~/.claude/settings.json"
+            fi
+            ;;
         pending)
             pending_signal
             ;;
