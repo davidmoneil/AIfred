@@ -70,6 +70,6 @@ Response:
 
 ## Related
 
-- `/context` — Check current context usage
-- `/auto-compact` — Trigger compression manually
-- `/intelligent-compress` — Run JICM compression directly
+- `/context` — Check current context usage (native command)
+- `/compact` — Compact context (native command)
+- `/intelligent-compress` — Run JICM intelligent compression

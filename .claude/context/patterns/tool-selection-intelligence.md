@@ -1968,23 +1968,20 @@ scripts/
 └── project-detector.js      # UserPromptSubmit: URL detection
 ```
 
-**Commands** (13 total):
+**Commands** (core custom commands):
 ```
 .claude/commands/
-├── checkpoint.md            # Session checkpoint
-├── end-session.md           # Clean exit
-├── context-budget.md        # Context analysis
-├── context-checkpoint.md    # Full checkpoint workflow
-├── trigger-clear.md         # Signal watcher
+├── checkpoint.md            # Session checkpoint for MCP restart
+├── end-session.md           # Clean exit with commit
 ├── setup.md                 # Initial configuration
-├── setup-readiness.md       # Environment check
 ├── tooling-health.md        # Tooling validation
-├── design-review.md         # PARC pattern
-├── health-report.md         # Health reporting
-├── sync-aifred-baseline.md  # Baseline sync
-├── soft-restart.md          # Deprecated
-└── smart-checkpoint.md      # Deprecated
+├── jarvis.md                # Quick access menu
+├── intelligent-compress.md  # JICM compression
+├── autocompact-threshold.md # Threshold config
+└── orchestration/           # Orchestration commands
 ```
+Note: Native commands (/help, /status, /compact, /clear) restored.
+Auto-* wrappers migrated to autonomous-commands skill.
 
 ---
 
