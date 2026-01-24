@@ -512,7 +512,7 @@ check_for_clear_signal() {
 
 banner() {
     # Compact 3-line banner for 12-line pane
-    echo -e "${CYAN}━━━ JARVIS WATCHER v2.0 ━━━${NC} threshold:${THRESHOLD}% interval:${INTERVAL}s"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v3.0 ━━━${NC} threshold:${THRESHOLD}% interval:${INTERVAL}s"
     echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} Commands ${GREEN}●${NC} JICM │ Ctrl+C to stop"
     echo ""
 }
