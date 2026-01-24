@@ -26,7 +26,9 @@ At 70%+ context: checkpoint to `session-state.md`, run `/checkpoint`, prepare fo
 ### Session End (AC-09)
 Run `/end-session` — updates state, commits work, documents session
 
-## Commands
+## Commands & Skills
+
+### Commands (user-invocable)
 
 | Command | Purpose |
 |---------|---------|
@@ -36,6 +38,20 @@ Run `/end-session` — updates state, commits work, documents session
 | `/tooling-health` | Validate MCPs/hooks/skills |
 | `/reflect` | Trigger AC-05 self-reflection |
 | `/maintain` | Trigger AC-08 maintenance |
+
+### Skills (loaded on trigger phrases)
+
+| Skill | Purpose |
+|-------|---------|
+| `session-management` | Session lifecycle guidance |
+| `context-management` | JICM context optimization |
+| `self-improvement` | AC-05/06/07/08 orchestration |
+| `validation` | System validation workflows |
+| `autonomous-commands` | Signal-based native command execution |
+| `ralph-loop` | Iterative development technique |
+| `jarvis-status` | Autonomic component status |
+
+Full skills list: `.claude/skills/_index.md`
 
 ## Guardrails
 
@@ -104,4 +120,4 @@ Detailed docs load from subdirectories when needed:
 
 ---
 
-*Jarvis v4.0.0 — Autonomous Archon*
+*Jarvis v4.1.0 — Autonomous Archon (Skills Migration)*

@@ -4,7 +4,7 @@ Skills are comprehensive workflow guides that consolidate related commands, hook
 Unlike commands (single actions), skills provide end-to-end guidance for complex workflows.
 
 **Created**: 2026-01-06
-**Last Updated**: 2026-01-06
+**Last Updated**: 2026-01-23
 **Source**: AIfred baseline af66364 (ported from AIProjects)
 
 ---
@@ -14,7 +14,7 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | Skill | Description | Related Commands |
 |-------|-------------|------------------|
 | [session-management](session-management/SKILL.md) | Session lifecycle management | /checkpoint, /end-session |
-| [autonomous-commands](autonomous-commands/SKILL.md) | Execute built-in commands autonomously | /auto-compact, /auto-status, etc. (17 commands) |
+| [autonomous-commands](autonomous-commands/SKILL.md) | Execute native Claude Code commands via signal-based automation | N/A (replaces 17 deleted auto-* commands) |
 | [mcp-validation](mcp-validation/SKILL.md) | Validate MCP installation and configuration | /validate-mcp |
 | [plugin-decompose](plugin-decompose/SKILL.md) | Decompose plugins for analysis | /plugin-decompose |
 | [docx](docx/SKILL.md) | Word document creation and editing | N/A |
@@ -24,6 +24,11 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [mcp-builder](mcp-builder/SKILL.md) | Create MCP servers | N/A |
 | [skill-creator](skill-creator/SKILL.md) | Create new skills | N/A |
 | [example-skill](example-skill/SKILL.md) | Skill template reference | N/A |
+| [ralph-loop](ralph-loop/SKILL.md) | Iterative development via Ralph Wiggum technique | /ralph-loop, /cancel-ralph |
+| [jarvis-status](jarvis-status/SKILL.md) | Jarvis autonomic system status (AC-01 through AC-09) | N/A (replaces old /status) |
+| [context-management](context-management/SKILL.md) | JICM context monitoring, analysis, and optimization | /context-budget, /context-checkpoint, /smart-compact |
+| [self-improvement](self-improvement/SKILL.md) | AC-05/06/07/08 orchestration for continuous improvement | /self-improve, /reflect, /evolve, /research, /maintain |
+| [validation](validation/SKILL.md) | Tooling, infrastructure, and design validation | /tooling-health, /health-report, /validate-selection, /design-review |
 
 ---
 
