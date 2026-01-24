@@ -120,30 +120,79 @@ log() {
 }
 
 # =============================================================================
-# CONTEXT MONITORING
+# CONTEXT MONITORING (v3.0.0 - Statusline JSON API)
 # =============================================================================
 
-get_token_count() {
-    local pane_content
-    pane_content=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
+# Context file written by statusline (user-level or project-level)
+# Priority: project-level if exists, else user-level
+STATUSLINE_CONTEXT_FILE_PROJECT="$PROJECT_DIR/.claude/context/.statusline-context.json"
+STATUSLINE_CONTEXT_FILE_USER="$HOME/.claude/logs/statusline-input.json"
 
-    # Extract token count from status line (format: "120916 tokens" or "120,916 tokens")
-    local token_line
-    token_line=$(echo "$pane_content" | grep -oE '[0-9,]+ tokens' | tail -1 || true)
+# Determine which file to use (prefer user-level as it's always updated)
+if [[ -f "$STATUSLINE_CONTEXT_FILE_USER" ]]; then
+    STATUSLINE_CONTEXT_FILE="$STATUSLINE_CONTEXT_FILE_USER"
+elif [[ -f "$STATUSLINE_CONTEXT_FILE_PROJECT" ]]; then
+    STATUSLINE_CONTEXT_FILE="$STATUSLINE_CONTEXT_FILE_PROJECT"
+else
+    STATUSLINE_CONTEXT_FILE="$STATUSLINE_CONTEXT_FILE_USER"  # Default to user location
+fi
 
-    if [[ -n "$token_line" ]]; then
-        echo "$token_line" | tr -d ', tokens'
-    else
-        echo "0"
+# Read context status from official Claude Code statusline JSON
+# This replaces fragile tmux pane scraping with the official API
+get_context_status() {
+    if [[ ! -f "$STATUSLINE_CONTEXT_FILE" ]]; then
+        # Return empty status if file doesn't exist yet
+        echo '{"context_window": {"used_percentage": 0, "remaining_percentage": 100}}'
+        return 1
     fi
+
+    # Check file freshness (statusline updates every 300ms during activity)
+    local file_mtime
+    local current_time
+    local file_age
+
+    if [[ "$(uname)" == "Darwin" ]]; then
+        file_mtime=$(stat -f %m "$STATUSLINE_CONTEXT_FILE" 2>/dev/null || echo 0)
+    else
+        file_mtime=$(stat -c %Y "$STATUSLINE_CONTEXT_FILE" 2>/dev/null || echo 0)
+    fi
+    current_time=$(date +%s)
+    file_age=$((current_time - file_mtime))
+
+    if [[ $file_age -gt 120 ]]; then
+        log WARN "Context file stale (${file_age}s old) - Claude may be idle"
+    fi
+
+    cat "$STATUSLINE_CONTEXT_FILE"
 }
 
+# Get used percentage directly from statusline JSON
+get_used_percentage() {
+    local status
+    status=$(get_context_status 2>/dev/null)
+    echo "$status" | jq -r '.context_window.used_percentage // 0' 2>/dev/null || echo "0"
+}
+
+# Get total tokens from statusline JSON
+get_token_count() {
+    local status
+    status=$(get_context_status 2>/dev/null)
+    local input_tokens output_tokens
+
+    input_tokens=$(echo "$status" | jq -r '.context_window.total_input_tokens // 0' 2>/dev/null || echo "0")
+    output_tokens=$(echo "$status" | jq -r '.context_window.total_output_tokens // 0' 2>/dev/null || echo "0")
+
+    echo $((input_tokens + output_tokens))
+}
+
+# Legacy function for compatibility - now uses statusline data
 calc_percentage() {
     local tokens="$1"
     if [[ "$tokens" -gt 0 ]]; then
         echo "scale=1; ($tokens * 100) / $MAX_CONTEXT_TOKENS" | bc 2>/dev/null || echo "0"
     else
-        echo "0"
+        # If no tokens provided, read directly from statusline
+        get_used_percentage
     fi
 }
 
@@ -512,23 +561,26 @@ main() {
         fi
 
         # ─────────────────────────────────────────────────────────────
-        # 3. Context monitoring
+        # 3. Context monitoring (v3.0.0 - uses statusline JSON API)
         # ─────────────────────────────────────────────────────────────
         local tokens
-        tokens=$(get_token_count)
+        local pct
 
-        if [[ "$tokens" == "0" ]]; then
-            # Could not read tokens - might be between commands
+        # First try to get pre-calculated percentage from statusline (most accurate)
+        pct=$(get_used_percentage)
+
+        if [[ "$pct" == "0" ]] || [[ -z "$pct" ]]; then
+            # Statusline not available - might be between commands or session starting
             ((poll_count++))
             if [[ $((poll_count % 6)) -eq 0 ]]; then
-                echo -e "$(date +%H:%M:%S) ${YELLOW}·${NC} Waiting for token count..."
+                echo -e "$(date +%H:%M:%S) ${YELLOW}·${NC} Waiting for context data..."
             fi
             sleep "$INTERVAL"
             continue
         fi
 
-        local pct
-        pct=$(calc_percentage "$tokens")
+        # Get token count for display and logging
+        tokens=$(get_token_count)
         local pct_int
         pct_int=$(echo "$pct" | cut -d'.' -f1)
 

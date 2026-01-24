@@ -69,17 +69,19 @@ components:
       # Generate report file
       generate_report: true
 
-  # AC-04: Context Management (JICM v2)
-  # Updated 2026-01-21: Major refactoring
-  # - Removed context-accumulator.js (watcher handles monitoring)
-  # - Added idle detection before triggering compression
-  # - Single threshold at 80% (simplified from tiered)
+  # AC-04: Context Management (JICM v3)
+  # Updated 2026-01-23: Statusline JSON API integration
+  # - jarvis-watcher.sh now reads from .statusline-context.json (official API)
+  # - Replaced fragile tmux pane scraping with official Claude Code data
+  # - Pre-calculated used_percentage from statusline is authoritative
+  # - Design: .claude/context/designs/jicm-architecture-solutions.md
   AC-04-jicm:
     enabled: true
+    version: "3.0.0"
     settings:
       # Token threshold for compression trigger
       # Formula: 0.80 * (MAX_CONTEXT - OUTPUT_TOKENS) = 0.80 * (200000 - 20000) = 144000
-      # jarvis-watcher.sh polls status line and triggers at this threshold
+      # jarvis-watcher.sh reads .statusline-context.json and triggers at this threshold
       threshold_tokens: 144000
       threshold_percentage: 80
       # Target compression ratio (legacy - see compression_target_percent)
@@ -88,6 +90,28 @@ components:
       auto_checkpoint: true
       # Trigger continuation after compression
       trigger_continuation: true
+
+      # Context monitoring (v3.0.0)
+      # Uses official Claude Code statusline JSON API
+      monitoring:
+        # File written by statusline-context-capture.sh
+        statusline_context_file: .claude/context/.statusline-context.json
+        # Poll interval (seconds) - statusline updates every 300ms on activity
+        poll_interval: 30
+        # Max age before context file considered stale (seconds)
+        max_stale_seconds: 120
+        # Context window size (Claude's max)
+        context_window_size: 200000
+        # Effective limit before performance degradation
+        effective_limit: 180000
+
+      # Threshold tiers for graduated response
+      thresholds:
+        healthy: 50     # Normal operation, no action
+        caution: 60     # Log warning
+        warning: 70     # Create soft checkpoint, continue
+        critical: 80    # JICM trigger, intelligent compress
+        emergency: 95   # Force immediate /clear
 
       # Intelligent Compression Settings (context-compressor agent)
       # Invoked via /intelligent-compress command

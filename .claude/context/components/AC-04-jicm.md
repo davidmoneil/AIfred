@@ -1,11 +1,11 @@
 # AC-04 JICM — Autonomic Component Specification
 
 **Component ID**: AC-04
-**Version**: 2.0.0
+**Version**: 3.0.0
 **Status**: active
 **Created**: 2026-01-16
-**Last Modified**: 2026-01-21
-**PR**: PR-12.4, JICM v2 Refactoring
+**Last Modified**: 2026-01-23
+**PR**: JICM v3.0.0 — Statusline JSON API Integration
 
 ---
 
@@ -50,19 +50,34 @@ Jarvis Intelligent Context Management (JICM) monitors and manages the context wi
 | **Event-Based** | Wiggum Loop step 5 (Context Check) | medium |
 | **Scheduled** | Every N tool calls (~10-20) | low |
 
-### Trigger Implementation (JICM v2)
+### Trigger Implementation (JICM v3)
 ```
-Monitoring strategy:
-  - jarvis-watcher.sh polls tmux status line every 30s
-  - Writes token count to context-estimate.json
-  - Idle detection before triggering (wait_for_idle)
-  - Single threshold at 80% triggers intelligent compression
+Monitoring strategy (v3.0.0):
+  - jarvis-watcher.sh reads from ~/.claude/logs/statusline-input.json
+  - Uses official Claude Code statusline JSON API (not tmux scraping)
+  - Pre-calculated used_percentage from API is authoritative
+  - Polls every 30s, checks file freshness (max 120s stale)
 
-Threshold actions (v2 simplified):
+Data source: Statusline JSON provides:
+  {
+    "context_window": {
+      "used_percentage": 68,          // Pre-calculated, authoritative
+      "remaining_percentage": 32,
+      "context_window_size": 200000,
+      "total_input_tokens": 153943,
+      "total_output_tokens": 154672
+    }
+  }
+
+Threshold actions (v3):
   80%  TRIGGER   → Wait for idle → /intelligent-compress → /clear → resume
-  99%  OVERRIDE  → Native auto-compact (delayed via CLAUDE_AUTOCOMPACT_PCT_OVERRIDE)
+  99%  OVERRIDE  → Native auto-compact (delayed via claudeCode.autoCompact.threshold)
 
-Note: context-accumulator.js REMOVED in v2. Watcher handles all monitoring.
+Archived scripts (replaced by jarvis-watcher.sh):
+  - auto-clear-watcher.sh (archived)
+  - auto-command-watcher.sh (archived)
+
+Design doc: .claude/context/designs/jicm-architecture-solutions.md
 ```
 
 ### Suppression Conditions
