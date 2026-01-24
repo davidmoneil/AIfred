@@ -42,9 +42,9 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 
 These updates ensure the context-compressor agent has accurate information to preserve.
 
-## Step 3: Run /auto-context and Spawn Context-Compressor Agent
+## Step 3: Run /context and Spawn Context-Compressor Agent
 
-First, capture the context baseline by running `/auto-context` (or reading the current context state). This provides the categorical breakdown of what's in the context window.
+First, capture the context baseline by running `/context` (or reading the current context state). This provides the categorical breakdown of what's in the context window.
 
 Then use the Task tool with these EXACT parameters:
 
@@ -56,8 +56,8 @@ prompt: |
 
   **Mode**: default (target 15-20% of original)
 
-  **Context Baseline** (from /auto-context):
-  [Include the /auto-context output here showing token usage by category]
+  **Context Baseline** (from /context):
+  [Include the /context output here showing token usage by category]
 
   You have access to the full conversation history. Using the context baseline as your guide:
 
@@ -138,7 +138,7 @@ Read settings from `.claude/config/autonomy-config.yaml` under `components.AC-04
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 ```
 
-### Step 3: Run /auto-context and Spawn Context-Compressor Agent
+### Step 3: Run /context and Spawn Context-Compressor Agent
 
 First capture context baseline, then spawn the agent:
 
@@ -151,10 +151,10 @@ Task tool:
 
     **Compression Mode**: [mode from config or args]
     **Target**: [percentage based on mode]
-    **Context Baseline**: [/auto-context output]
+    **Context Baseline**: [/context output]
 
     Instructions:
-    1. Review the /auto-context baseline to understand what's consuming tokens
+    1. Review the /context baseline to understand what's consuming tokens
     2. Analyze the full conversation context (you have access to it)
     3. Identify: critical decisions, active work, pending todos, blockers
     4. Summarize: tool outputs, resolved issues (with learnings), multi-step workflow skeletons

@@ -200,7 +200,7 @@ keystroke return
 | File | Purpose | Created By | Consumed By |
 |------|---------|------------|-------------|
 | `.soft-restart-checkpoint.md` | Work state, next steps | PreCompact / context-checkpoint | SessionStart |
-| `.auto-clear-signal` | Trigger for watcher | PreCompact / trigger-clear | Watcher |
+| `.auto-clear-signal` | Trigger for watcher | PreCompact / autonomous-commands skill | Watcher |
 | `.watcher-pid` | Watcher process ID | Watcher / launch-watcher | launch-watcher |
 
 ### MCP Configuration
@@ -237,8 +237,8 @@ keystroke return
 1. [USER] Runs /context-checkpoint
 2. [AUTO] Claude creates checkpoint, disables MCPs
 3. [AUTO] Stop hook detects checkpoint, blocks
-4. [AUTO] Stop hook tells Claude to run /trigger-clear
-5. [AUTO] Claude runs /trigger-clear (via Skill tool)
+4. [AUTO] Stop hook tells Claude to signal /clear via autonomous-commands skill
+5. [AUTO] Claude uses autonomous-commands skill to create signal file
 6. [AUTO] Signal file created
 7. [AUTO] Watcher sends /clear
 8. [AUTO] SessionStart auto-resumes

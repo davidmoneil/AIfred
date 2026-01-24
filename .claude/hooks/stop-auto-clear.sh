@@ -22,7 +22,7 @@ if [[ ! -f "$CHECKPOINT_FILE" ]]; then
     exit 0
 fi
 
-# Check if /trigger-clear was already run (prevents loop)
+# Check if clear was already signaled via autonomous-commands skill (prevents loop)
 if [[ -f "$PENDING_FILE" ]]; then
     echo "$TIMESTAMP | Stop | Clear already pending, allowing stop" >> "$LOG_DIR/session-start-diagnostic.log"
     exit 0
@@ -51,7 +51,7 @@ echo "$TIMESTAMP | Stop | Recent checkpoint detected, blocking stop to trigger c
 # Block stop and instruct Claude to trigger clear
 jq -n '{
   "decision": "block",
-  "reason": "A context checkpoint was just created. To apply MCP changes and reduce context, run /trigger-clear now. This will signal the auto-clear watcher to send /clear.",
+  "reason": "A context checkpoint was just created. To apply MCP changes and reduce context, use the autonomous-commands skill to signal /clear. This will trigger the auto-clear watcher.",
   "systemMessage": "🔄 Checkpoint detected - triggering auto-clear sequence"
 }'
 

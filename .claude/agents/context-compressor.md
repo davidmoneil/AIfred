@@ -92,11 +92,11 @@ Write to `.claude/context/.compressed-context.md`:
 [What the next session should do to continue]
 ```
 
-## Context Baseline from /auto-context
+## Context Baseline from /context
 
-The Jarvis orchestration layer will provide you with the results of `/auto-context` (or equivalent context analysis). This is the **categorical baseline** of context window contents.
+The Jarvis orchestration layer will provide you with the results of `/context` (or equivalent context analysis). This is the **categorical baseline** of context window contents.
 
-**Treat /auto-context output as authoritative for:**
+**Treat /context output as authoritative for:**
 - What categories of content are currently loaded
 - Token usage by category (system prompt, conversation, tools, MCPs, etc.)
 - Which MCPs and plugins are active
@@ -113,11 +113,11 @@ The Jarvis orchestration layer will provide you with the results of `/auto-conte
 - File paths and modifications
 - Pending todos
 
-Use the /auto-context baseline to make informed decisions about what can be aggressively dropped vs what must be preserved.
+Use the /context baseline to make informed decisions about what can be aggressively dropped vs what must be preserved.
 
 ## Workflow
 
-1. **Review /auto-context baseline** - Understand what's consuming context
+1. **Review /context baseline** - Understand what's consuming context
 2. **Scan context** - Review the full conversation inherited from parent
 3. **Categorize** - Identify what falls into preserve/summarize/drop
 4. **Compress** - Write concise versions of preserved content

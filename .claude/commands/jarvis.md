@@ -35,7 +35,6 @@ Display this menu of commonly used commands for quick reference and selection.
 | `/sync-aifred-baseline` | Analyze upstream AIfred changes for porting |
 | `/todos` | Show current todo list |
 | `/tooling-health` | Validate MCPs, plugins, hooks, and skills |
-| `/trigger-clear` | Signal auto-clear watcher to send /clear |
 | `/usage` | Show API usage statistics |
 | `/validate-mcp` | Validate MCP installation and functionality |
 | `/validate-selection` | Validate tool selection decisions |
@@ -92,7 +91,6 @@ Display this menu of commonly used commands for quick reference and selection.
 - `/resume` — Resume chat
 - `/stats` — Statistics
 - `/todos` — Todo list
-- `/trigger-clear` — Signal auto-clear
 - `/usage` — API usage
 - `/validate-selection` — Selection quality check
 

@@ -8,13 +8,21 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### AIfred Integration: Milestone 5 — Auto-* Wrapper Refactoring
-**Status**: 🔄 In Progress
-**Reference**: `projects/project-aion/evolution/aifred-integration/roadmap.md`
+### Command-to-Skills Migration (v4.1.0)
+**Status**: 🔄 In Progress (Phase 6)
+**Plan**: `.claude/plans/nested-floating-token.md`
 
-- [x] Session 5.1: Implement universal signal_command() in signal-helper.sh ✅ (`92ef6d2`)
-- [ ] Session 5.2: Migration & testing of all 17 auto-* commands
-- [ ] Session 5.3: Documentation and deprecation notices
+**Completed:**
+- [x] Phase 1: Delete 4 conflicting commands (help, status, compact, clear)
+- [x] Phase 2: Create context-management skill
+- [x] Phase 3: Create self-improvement skill
+- [x] Phase 4: Create validation skill
+- [x] Phase 5: Delete 17 auto-* wrapper commands (functionality in autonomous-commands skill)
+
+**In Progress:**
+- [ ] Phase 6: Documentation sweep (~55 remaining files with stale references)
+
+**Commits:** `21043ad` (migration), `13a48ca` (partial docs)
 
 ### PR-12.3: Independent Milestone Review (2026-01-21)
 **Status**: ⏸️ Paused (AIfred Integration priority)
