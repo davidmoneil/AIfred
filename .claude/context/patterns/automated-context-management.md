@@ -1,9 +1,9 @@
 # Automated Context Management Pattern
 
 **Created**: 2026-01-07
-**PR Reference**: PR-8.3.1
-**Status**: Active — Ready for Testing
-**Version**: 2.0 (Zero-Action Automation)
+**PR Reference**: PR-8.3.1, JICM v3.0.0
+**Status**: Active
+**Version**: 3.0 (Statusline JSON API)
 
 ---
 
@@ -43,6 +43,8 @@ This pattern eliminates the need for manual intervention when context limits are
 
 ## Architecture
 
+### JICM v3.0.0 — Statusline JSON API
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           JARVIS SESSION                                 │
@@ -54,25 +56,39 @@ This pattern eliminates the need for manual intervention when context limits are
 │           │                      │                      │               │
 │           ▼                      ▼                      ▼               │
 │  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐     │
-│  │ Launch watcher  │    │ Create ckpt     │    │ Block stop if   │     │
-│  │ Load checkpoint │    │ Disable MCPs    │    │ checkpoint new  │     │
-│  │ Auto-resume     │    │ Write signal    │    │                 │     │
+│  │ Load checkpoint │    │ Analyze context │    │ Block stop if   │     │
+│  │ Auto-resume     │    │ Generate manifest│   │ checkpoint new  │     │
+│  │                 │    │ Create ckpt     │    │                 │     │
 │  └─────────────────┘    └─────────────────┘    └─────────────────┘     │
 │                                  │                                      │
 └──────────────────────────────────│──────────────────────────────────────┘
                                    │
-                                   ▼ Signal File
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      AUTO-CLEAR WATCHER                                  │
-│                    (Separate Terminal Window)                            │
-│                                                                          │
-│  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │  Monitors: .claude/context/.auto-clear-signal                    │   │
-│  │  On detect: Wait 3s → Send /clear keystroke to Claude window     │   │
-│  └─────────────────────────────────────────────────────────────────┘   │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+    ┌──────────────────────────────┼──────────────────────────────┐
+    │                              ▼                              │
+    │  ┌───────────────────────────────────────────────────────┐  │
+    │  │         ~/.claude/logs/statusline-input.json          │  │
+    │  │  {                                                     │  │
+    │  │    "context_window": {                                 │  │
+    │  │      "used_percentage": 42,   ← Official, authoritative│  │
+    │  │      "remaining_percentage": 58,                       │  │
+    │  │      "context_window_size": 200000                     │  │
+    │  │    }                                                   │  │
+    │  │  }                                                     │  │
+    │  └───────────────────────────────────────────────────────┘  │
+    │                              │                              │
+    │                              ▼                              │
+    │  ┌───────────────────────────────────────────────────────┐  │
+    │  │              jarvis-watcher.sh (v3.0.0)                │  │
+    │  │  - Reads statusline JSON every 30s                     │  │
+    │  │  - Triggers JICM at 80% threshold                      │  │
+    │  │  - Sends /intelligent-compress → /clear via tmux       │  │
+    │  └───────────────────────────────────────────────────────┘  │
+    │                       JARVIS WATCHER                        │
+    │                     (tmux split pane)                       │
+    └─────────────────────────────────────────────────────────────┘
 ```
+
+**Key Change in v3.0.0**: The watcher now reads `used_percentage` directly from Claude Code's official statusline JSON API instead of scraping token counts from tmux pane content.
 
 ---
 
@@ -102,9 +118,41 @@ jq -n --arg ctx "AUTO-RESUME: Continue working on tasks..." '{
 }'
 ```
 
-### 2. PreCompact Hook (`.claude/hooks/pre-compact.sh`)
+### 2. PreCompact Hook Chain
 
 **Triggers on**: Context approaching threshold (before autocompaction)
+
+#### 2a. PreCompact Analyzer (`.claude/hooks/precompact-analyzer.js`) — JICM v3
+
+**Functions**:
+- Reads context status from statusline JSON
+- Extracts active tasks from `current-priorities.md`
+- Extracts decisions from `session-state.md`
+- Generates preservation manifest for AI-driven compression
+
+```javascript
+// Preservation manifest structure
+const manifest = {
+  version: "1.0.0",
+  context_status: {
+    used_percentage: contextData.context_window?.used_percentage || 0,
+    remaining_percentage: contextData.context_window?.remaining_percentage || 100
+  },
+  preserve: [
+    { type: "task", content: "...", priority: "critical" },
+    { type: "decision", content: "...", priority: "high" }
+  ],
+  compress: [
+    { type: "tool_output", age_minutes: 30, priority: "low" }
+  ],
+  discard: [
+    { type: "error_trace", resolved: true }
+  ]
+};
+// Written to: .claude/context/.preservation-manifest.json
+```
+
+#### 2b. PreCompact Hook (`.claude/hooks/pre-compact.sh`)
 
 **Functions**:
 - Creates checkpoint file with work state
@@ -142,26 +190,30 @@ jq -n '{
 }'
 ```
 
-### 4. Auto-Clear Watcher (`.claude/scripts/auto-clear-watcher.sh`)
+### 4. Jarvis Watcher (`.claude/scripts/jarvis-watcher.sh`) — JICM v3
 
-**Runs in**: Separate Terminal window (auto-launched)
+**Runs in**: tmux split pane (via launch-jarvis-tmux.sh)
 
-**Functions**:
-- Monitors for `.auto-clear-signal` file
-- Sends `/clear` keystroke to Claude window via AppleScript (macOS) or xdotool (Linux)
-- Targets Claude window (avoids watcher window by checking title)
+**Functions (v3.0.0)**:
+- Reads context usage from `~/.claude/logs/statusline-input.json` (official API)
+- Monitors command signal files
+- Triggers JICM sequence at 80% threshold
+- Sends commands via tmux keystroke injection
 
-```applescript
--- Find Claude window (not watcher)
-repeat with w in windows
-    if custom title of w does not contain "Watcher" then
-        set frontmost of targetWindow to true
-    end if
-end repeat
--- Send keystrokes
-keystroke "/clear"
-keystroke return
+```bash
+# v3.0.0: Read from statusline JSON API
+get_used_percentage() {
+    status=$(cat "$STATUSLINE_CONTEXT_FILE" 2>/dev/null)
+    echo "$status" | jq -r '.context_window.used_percentage // 0'
+}
+
+# JICM trigger sequence
+if (( $(echo "$pct >= $JICM_THRESHOLD" | bc -l) )); then
+    # Wait for idle, then: /intelligent-compress → /clear → continue
+fi
 ```
+
+**Supersedes**: `auto-clear-watcher.sh` (archived)
 
 ### 5. Launch Watcher (`.claude/scripts/launch-watcher.sh`)
 
@@ -189,7 +241,7 @@ keystroke return
 - Creates signal file for watcher via `signal_command()`
 - Used when manual checkpoint triggers clear sequence
 
-**Note**: The `/trigger-clear` command has been replaced by the `autonomous-commands` skill which uses `signal-helper.sh` to create signals.
+**Note**: The `/trigger-clear` command was deleted during the skills migration. Use the `autonomous-commands` skill with `signal-helper.sh` to create command signals.
 
 ---
 
@@ -200,8 +252,17 @@ keystroke return
 | File | Purpose | Created By | Consumed By |
 |------|---------|------------|-------------|
 | `.soft-restart-checkpoint.md` | Work state, next steps | PreCompact / context-checkpoint | SessionStart |
+| `.preservation-manifest.json` | AI compression priorities (v3) | precompact-analyzer.js | context-compressor agent |
 | `.auto-clear-signal` | Trigger for watcher | PreCompact / autonomous-commands skill | Watcher |
-| `.watcher-pid` | Watcher process ID | Watcher / launch-watcher | launch-watcher |
+| `.command-signal` | Command execution signal | autonomous-commands skill | jarvis-watcher.sh |
+| `.watcher-pid` | Watcher process ID | jarvis-watcher.sh | launch-jarvis-tmux.sh |
+
+### Context Monitoring Data Sources (v3)
+
+| File | Purpose | Updated By |
+|------|---------|------------|
+| `~/.claude/logs/statusline-input.json` | Official context usage (authoritative) | Claude Code statusline |
+| `.claude/logs/context-estimate.json` | Watcher's context log | jarvis-watcher.sh |
 
 ### MCP Configuration
 
@@ -412,17 +473,23 @@ cat .claude/logs/session-start-diagnostic.log
 
 | File | Purpose |
 |------|---------|
-| `.claude/hooks/session-start.sh` | Launch watcher, load checkpoint, auto-resume |
+| `.claude/hooks/session-start.sh` | Load checkpoint, auto-resume |
+| `.claude/hooks/precompact-analyzer.js` | Generate preservation manifest (v3) |
 | `.claude/hooks/pre-compact.sh` | Auto-checkpoint on context threshold |
 | `.claude/hooks/stop-auto-clear.sh` | Block stop, trigger clear sequence |
-| `.claude/scripts/launch-watcher.sh` | Open watcher in new Terminal |
-| `.claude/scripts/auto-clear-watcher.sh` | Monitor signals, send /clear |
+| `.claude/scripts/jarvis-watcher.sh` | Unified watcher (v3: statusline JSON) |
+| `.claude/scripts/launch-jarvis-tmux.sh` | Launch Claude with watcher in tmux |
+| `.claude/scripts/signal-helper.sh` | Signal creation library |
 | `.claude/scripts/disable-mcps.sh` | Disable MCPs |
 | `.claude/scripts/enable-mcps.sh` | Enable MCPs |
 | `.claude/scripts/list-mcp-status.sh` | Show MCP state |
-| `.claude/scripts/stop-watcher.sh` | Stop watcher process |
-| `.claude/commands/context-checkpoint.md` | Manual checkpoint command |
-| `.claude/skills/autonomous-commands/SKILL.md` | Signal commands (replaces trigger-clear.md) |
+| `.claude/agents/context-compressor.md` | AI-powered context compression |
+| `.claude/skills/autonomous-commands/SKILL.md` | Signal commands |
+| `.claude/skills/context-management/SKILL.md` | JICM context optimization |
+
+**Archived (superseded by jarvis-watcher.sh)**:
+| `.claude/scripts/archived/auto-clear-watcher.sh` | Legacy: monitor signals |
+| `.claude/scripts/archived/auto-command-watcher.sh` | Legacy: command signals |
 
 ---
 
@@ -434,6 +501,6 @@ cat .claude/logs/session-start-diagnostic.log
 
 ---
 
-*Automated Context Management Pattern v2.0*
-*PR-8.3.1 — Zero-Action Context Management*
-*Created: 2026-01-07*
+*Automated Context Management Pattern v3.0*
+*PR-8.3.1, JICM v3.0.0 — Statusline JSON API Integration*
+*Created: 2026-01-07 | Updated: 2026-01-23*

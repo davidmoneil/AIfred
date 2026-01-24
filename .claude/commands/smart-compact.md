@@ -96,13 +96,13 @@ This reduces context by ~20-30K tokens.
 
 ## Clear Signal (--full mode)
 
-Signal the auto-clear watcher:
+Signal the jarvis-watcher:
 
 ```bash
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.auto-clear-signal
 ```
 
-The watcher will detect this and send `/clear` to the Claude Code window.
+The jarvis-watcher.sh will detect this and send `/clear` to the Claude Code window.
 
 ## Post-Clear Flow
 
@@ -151,10 +151,12 @@ This command includes safeguards:
 
 - @.claude/context/patterns/automated-context-management.md
 - @.claude/context/patterns/context-budget-management.md
-- @.claude/hooks/context-accumulator.js
-- @.claude/hooks/subagent-stop.js (JICM integration)
+- @.claude/context/designs/jicm-architecture-solutions.md
+- @.claude/scripts/jarvis-watcher.sh (v3: statusline JSON API)
+- @.claude/hooks/precompact-analyzer.js (preservation manifest)
+- @.claude/agents/context-compressor.md (AI-powered compression)
 
 ---
 
 *JICM: Jarvis Intelligent Context Management*
-*Created: 2026-01-09 | PR-9 / AIfred Sync ADAPT #7*
+*Created: 2026-01-09 | Updated: 2026-01-23 (v3.0.0)*

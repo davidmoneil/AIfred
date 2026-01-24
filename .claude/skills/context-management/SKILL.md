@@ -1,6 +1,6 @@
 ---
 name: context-management
-version: 1.0.0
+version: 2.0.0
 description: |
   Jarvis Intelligent Context Management (JICM) - monitor, analyze, and optimize context usage.
   Use when: "context budget", "context usage", "context analysis", "context checkpoint",
@@ -161,30 +161,36 @@ Document when context is forgotten after compaction, building evidence for impro
 
 ---
 
-## JICM Architecture
+## JICM Architecture (v3.0.0)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    AC-04: JICM Components                       │
+│                    AC-04: JICM Components (v3)                  │
 ├─────────────────────────────────────────────────────────────────┤
-│  MONITORING                                                     │
-│  └─ context-accumulator.js (hook) → context-estimate.json      │
-│  └─ subagent-stop.js → threshold checks                        │
+│  MONITORING (Official API)                                      │
+│  └─ jarvis-watcher.sh reads statusline-input.json              │
+│  └─ used_percentage from Claude Code (authoritative)           │
 ├─────────────────────────────────────────────────────────────────┤
 │  ANALYSIS                                                       │
 │  └─ /context-budget → category breakdown                        │
 │  └─ /context-analyze → weekly patterns                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  PRESERVATION                                                   │
-│  └─ compaction-essentials.md → what to never forget            │
+│  PRESERVATION (AI-Driven)                                       │
+│  └─ precompact-analyzer.js → preservation manifest             │
+│  └─ context-compressor agent → intelligent compression          │
 │  └─ /context-loss → track forgotten context                     │
 ├─────────────────────────────────────────────────────────────────┤
 │  OPTIMIZATION                                                   │
 │  └─ /smart-compact → manual trigger                             │
 │  └─ /context-checkpoint → automated workflow                    │
-│  └─ auto-command-watcher.sh → executes /compact, /clear         │
+│  └─ jarvis-watcher.sh → JICM trigger at 80% threshold           │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+**Key v3.0.0 Changes**:
+- Uses official Claude Code statusline JSON API (`~/.claude/logs/statusline-input.json`)
+- PreCompact hook generates preservation manifest for AI-driven compression
+- Unified jarvis-watcher.sh replaces separate watcher scripts
 
 ---
 
@@ -248,11 +254,16 @@ After `/clear`:
 ### Components
 - @.claude/context/components/AC-04-jicm.md
 
-### Infrastructure
-- @.claude/hooks/context-accumulator.js
+### Infrastructure (JICM v3.0.0)
+- @.claude/scripts/jarvis-watcher.sh (statusline JSON API monitoring)
+- @.claude/hooks/precompact-analyzer.js (preservation manifest)
+- @.claude/agents/context-compressor.md (AI-powered compression)
 - @.claude/hooks/subagent-stop.js
 - @.claude/context/compaction-essentials.md
 
+### Design Documents
+- @.claude/context/designs/jicm-architecture-solutions.md (complete v3 architecture)
+
 ---
 
-*Context Management Skill v1.0.0 - AC-04 JICM Orchestration*
+*Context Management Skill v2.0.0 - AC-04 JICM v3 Orchestration*

@@ -1,9 +1,10 @@
 # JICM Pattern — Jarvis Intelligent Context Management
 
-**Version**: 1.0.0
+**Version**: 3.0.0
 **Created**: 2026-01-16
+**Updated**: 2026-01-23
 **Component**: AC-04 JICM
-**PR**: PR-12.4
+**PR**: PR-12.4, JICM v3.0.0
 
 ---
 
@@ -54,35 +55,45 @@ This is distinct from Claude Code's auto-compression, which can lose important c
 
 ---
 
-## 2. Monitoring Architecture
+## 2. Monitoring Architecture (v3.0.0)
 
-### Context Tracking
+### Context Tracking — Statusline JSON API
+
+**JICM v3.0.0** uses the official Claude Code statusline JSON API for authoritative context usage data, replacing the previous token estimation approach.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    CONTEXT TRACKING ARCHITECTURE                     │
+│                    CONTEXT TRACKING ARCHITECTURE (v3)               │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  ┌───────────────────────────────────────────────────────────────┐  │
-│  │  context-accumulator.js (PostToolUse Hook)                     │  │
+│  │  Claude Code Statusline (Official API)                         │  │
 │  │                                                                 │  │
-│  │  Triggered: After every tool call                              │  │
-│  │  Actions:                                                       │  │
-│  │    1. Estimate tokens added by tool result                     │  │
-│  │    2. Update context-estimate.json                             │  │
-│  │    3. Check against thresholds                                 │  │
-│  │    4. Emit warning if threshold crossed                        │  │
+│  │  Source: ~/.claude/logs/statusline-input.json                  │  │
+│  │  Updated: Every turn by Claude Code                            │  │
 │  │                                                                 │  │
-│  │  Output: context-estimate.json                                  │  │
 │  │  {                                                              │  │
-│  │    "session_id": "uuid",                                       │  │
-│  │    "estimated_tokens": 145000,                                 │  │
-│  │    "estimated_percent": 72.5,                                  │  │
-│  │    "threshold_status": "WARNING",                              │  │
-│  │    "last_updated": "2026-01-16T14:30:00.000Z",                 │  │
-│  │    "mcps_loaded": 8,                                           │  │
-│  │    "tool_calls": 47                                            │  │
+│  │    "context_window": {                                         │  │
+│  │      "used_percentage": 42,        ← Authoritative             │  │
+│  │      "remaining_percentage": 58,                               │  │
+│  │      "context_window_size": 200000,                            │  │
+│  │      "total_input_tokens": 84000,                              │  │
+│  │      "total_output_tokens": 42000                              │  │
+│  │    }                                                            │  │
 │  │  }                                                              │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                              │                                      │
+│                              ▼                                      │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │  jarvis-watcher.sh (v3.0.0)                                    │  │
+│  │                                                                 │  │
+│  │  Polls: Every 30 seconds                                       │  │
+│  │  Actions:                                                       │  │
+│  │    1. Read used_percentage from statusline JSON                │  │
+│  │    2. Check against 80% threshold                              │  │
+│  │    3. If exceeded: trigger JICM sequence                       │  │
+│  │    4. Log to context-estimate.json                             │  │
+│  │                                                                 │  │
 │  └───────────────────────────────────────────────────────────────┘  │
 │                                                                      │
 │  ┌───────────────────────────────────────────────────────────────┐  │

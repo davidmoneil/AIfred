@@ -268,12 +268,14 @@ components:
 
 ## Related
 
-- @.claude/agents/context-compressor.md — Agent definition
+- @.claude/agents/context-compressor.md — Agent definition (uses preservation manifest)
 - @.claude/commands/smart-compact.md — Simple checkpoint (fallback)
 - @.claude/context/patterns/automated-context-management.md
+- @.claude/hooks/precompact-analyzer.js — Generates preservation manifest (v3)
 - @.claude/hooks/session-start.sh — Post-clear injection
+- @.claude/context/designs/jicm-architecture-solutions.md — v3 architecture
 
 ---
 
-*JICM v2: Intelligent Context Compression*
-*Created: 2026-01-20*
+*JICM v3: Intelligent Context Compression*
+*Created: 2026-01-20 | Updated: 2026-01-23*
