@@ -11,8 +11,22 @@ Canonical definitions for all terminology used in Jarvis documentation.
 
 | Term | Greek | Definition |
 |------|-------|------------|
-| **Aion** | αἰών (ay-ON) | The PROJECT — an era/epoch of autonomic AI entities. "Project Aion" is the initiative to create autonomous AI assistants. |
-| **Archon** | ἄρχων (AR-kon) | The ENTITIES — individual autonomous agents. Jarvis is an Archon. "Archon Architecture" is the blueprint for how an Archon is structured. |
+| **Aion** | αἰών (ay-ON) | The PROJECT — an era/epoch of autopoietic AI entities. "Project Aion" is the initiative to create self-creating AI assistants. |
+| **Archon** | ἄρχων (AR-kon) | The ENTITIES — individual autopoietic agents. Jarvis is an Archon. "Archon Architecture" is the blueprint for how an Archon is structured. |
+
+---
+
+## Systems Theory Terms
+
+| Term | Greek | Definition |
+|------|-------|------------|
+| **Autonomous** | αὐτός + νόμος | Self-governing; acting independently without external control. Jarvis is NOT autonomous — he defers on policy-crossing decisions. |
+| **Autonomic** | αὐτός + νόμος | Reflexive, involuntary, stimulus-triggered. The AC-## systems are autonomic — hooks, watchers, homeostatic regulators. |
+| **Autopoietic** | αὐτός + ποίησις | Self-creating, self-maintaining organizational identity. What Jarvis IS — continuously regenerating his own structure. |
+| **Homeostasis** | ὅμοιος + στάσις | Tendency to maintain internal stability. JICM maintains context homeostasis; Wiggum Loop maintains task progress. |
+| **Psychosomatic** | ψυχή + σῶμα | Mind-body integration. The Nous-Pneuma-Psyche-Soma-Neuro stack forms Jarvis's psychosomatic architecture. |
+
+**Key insight**: Jarvis is not an autonomic system. Jarvis HAS autonomic systems. Jarvis IS autopoietic.
 
 ---
 
