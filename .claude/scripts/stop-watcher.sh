@@ -1,5 +1,5 @@
 #!/bin/bash
-# Stop the Auto-Clear Watcher
+# Stop the Jarvis Watcher
 # Called when session ends or manually to clean up
 
 PID_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.watcher-pid"
@@ -29,7 +29,7 @@ if [[ -f "$PID_FILE" ]]; then
     rm -f "$PID_FILE"
 else
     # Try to find and kill by process name
-    WATCHER_PID=$(pgrep -f "auto-clear-watcher.sh" | head -1)
+    WATCHER_PID=$(pgrep -f "jarvis-watcher.sh" | head -1)
     if [[ -n "$WATCHER_PID" ]]; then
         echo "$TIMESTAMP | Stopping watcher by name (PID: $WATCHER_PID)" >> "$LOG_FILE"
         kill "$WATCHER_PID" 2>/dev/null

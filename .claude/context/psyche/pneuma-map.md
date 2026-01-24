@@ -125,7 +125,7 @@ skills/
 | Security | credential-guard, branch-protection, amend-validator |
 | Docker | docker-health-monitor, docker-restart-loop-detector, docker-post-op-health |
 | Session | session-start-hook, user-prompt-submit |
-| Context | auto-command-watcher |
+| Context | precompact-analyzer |
 
 **Registered in**: `settings.json`
 
@@ -134,7 +134,7 @@ skills/
 | Category | Scripts |
 |----------|---------|
 | MCP Management | mcp-enable.sh, mcp-disable.sh, mcp-status.sh |
-| Signal Automation | signal-command.sh, auto-command-watcher.sh |
+| Signal Automation | signal-helper.sh, jarvis-watcher.sh |
 | Context | context-checkpoint.sh, restore-context.sh |
 | Benchmarking | benchmark-runner.js, scoring-engine.js |
 

@@ -160,7 +160,7 @@ All signal executions are logged to `.claude/logs/command-signals.log`:
 
 - **Skills**: Create signals via `signal-helper.sh`
 - **Hooks**: Create signals via Node.js fs operations
-- **Watcher**: `auto-command-watcher.sh` (enhanced from `auto-clear-watcher.sh`)
+- **Watcher**: `jarvis-watcher.sh` (unified v3.0.0 — replaces auto-command-watcher.sh and auto-clear-watcher.sh)
 - **Launcher**: `launch-jarvis-tmux.sh` starts watcher automatically
 
 ---

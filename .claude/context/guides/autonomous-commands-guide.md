@@ -16,7 +16,7 @@ Execute Claude Code built-in slash commands autonomously without manual input.
 .claude/scripts/launch-jarvis-tmux.sh
 ```
 
-This starts Claude Code with the auto-command watcher in a split pane.
+This starts Claude Code with the Jarvis watcher in a split pane.
 
 ### 2. Use Natural Language
 
@@ -77,7 +77,7 @@ Claude creates a signal file, the watcher detects it, and executes the command v
 │     - Runs: signal_usage                                        │
 │     - Creates: .claude/context/.command-signal                  │
 ├─────────────────────────────────────────────────────────────────┤
-│  3. auto-command-watcher.sh (in tmux pane):                     │
+│  3. jarvis-watcher.sh (in tmux pane):                           │
 │     - Detects signal file                                       │
 │     - Validates JSON: {"command":"/usage",...}                  │
 │     - Executes: tmux send-keys -t jarvis "/usage" Enter         │
@@ -163,7 +163,7 @@ Start Jarvis properly:
 
 Or start watcher manually in a separate terminal:
 ```bash
-.claude/scripts/auto-command-watcher.sh
+.claude/scripts/jarvis-watcher.sh
 ```
 
 ### tmux session not found?
@@ -187,7 +187,7 @@ export TMUX_SESSION=my-session
 
 ### Add custom commands
 
-1. Add to whitelist/blocklist in `auto-command-watcher.sh`
+1. Add to whitelist/blocklist in `jarvis-watcher.sh`
 2. Add signal function in `signal-helper.sh`
 3. Update `autonomous-commands` skill description with trigger phrases
 
@@ -207,7 +207,7 @@ export TMUX_SESSION=my-session
 | File | Purpose |
 |------|---------|
 | `.claude/scripts/launch-jarvis-tmux.sh` | Launch Claude with watcher |
-| `.claude/scripts/auto-command-watcher.sh` | Watcher script |
+| `.claude/scripts/jarvis-watcher.sh` | Unified watcher (v3.0.0) |
 | `.claude/scripts/signal-helper.sh` | Signal creation library |
 | `.claude/skills/autonomous-commands/SKILL.md` | Main skill definition (handles all commands) |
 | `.claude/context/patterns/command-signal-protocol.md` | Protocol specification |

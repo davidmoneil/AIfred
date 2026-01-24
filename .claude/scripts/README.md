@@ -13,9 +13,8 @@
 - `suggest-mcps.sh` — Keyword-to-MCP mapping
 
 ### Signal-Based Automation
-- `signal-command.sh` — Universal command signaling
 - `signal-helper.sh` — Signal utility functions
-- `auto-command-watcher.sh` — Watches for command signals
+- `jarvis-watcher.sh` — Unified watcher (v3.0.0): context + command signals
 
 ### Context Management
 - `context-checkpoint.sh` — Save context state

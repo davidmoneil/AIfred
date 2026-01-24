@@ -7,7 +7,7 @@ description: |
   "check status", "export conversation", "resume previous session", "run doctor",
   "show costs", "review code", "show todos", "list hooks", "security review",
   "show statistics", "show context info", "release notes", "bash processes".
-  This skill creates signals that the auto-command-watcher executes via keystroke injection.
+  This skill creates signals that the jarvis-watcher executes via keystroke injection.
 category: automation
 tags: [commands, automation, signals, watcher]
 created: 2026-01-20
@@ -21,11 +21,11 @@ Execute Claude Code built-in slash commands autonomously via signal-based watche
 
 ## Overview
 
-This skill enables Claude to trigger built-in slash commands without user intervention. Commands are executed via keystroke injection through the auto-command-watcher running in a tmux pane.
+This skill enables Claude to trigger built-in slash commands without user intervention. Commands are executed via keystroke injection through the jarvis-watcher running in a tmux pane.
 
 **Prerequisites**:
 - Claude running in tmux via `launch-jarvis-tmux.sh`
-- Auto-command-watcher running in bottom pane
+- Jarvis watcher running in bottom pane
 - jq installed for JSON parsing
 
 ---
@@ -304,7 +304,7 @@ This will launch Claude in tmux with the watcher in a split pane.
 │  1. Claude (via this skill) creates signal file                  │
 │     └── .claude/context/.command-signal (JSON)                   │
 ├──────────────────────────────────────────────────────────────────┤
-│  2. auto-command-watcher.sh detects signal                       │
+│  2. jarvis-watcher.sh detects signal                             │
 │     └── Polls every 2 seconds                                    │
 ├──────────────────────────────────────────────────────────────────┤
 │  3. Watcher validates and executes                               │
@@ -321,7 +321,7 @@ This will launch Claude in tmux with the watcher in a split pane.
 
 - Signal Protocol: @.claude/context/patterns/command-signal-protocol.md
 - Signal Helper: @.claude/scripts/signal-helper.sh
-- Watcher Script: @.claude/scripts/auto-command-watcher.sh
+- Watcher Script: @.claude/scripts/jarvis-watcher.sh
 - tmux Launcher: @.claude/scripts/launch-jarvis-tmux.sh
 
 ---

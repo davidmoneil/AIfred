@@ -366,7 +366,7 @@ watcher_status() {
         return 0
     else
         echo "Watcher is NOT RUNNING"
-        echo "Start with: .claude/scripts/auto-command-watcher.sh"
+        echo "Start with: .claude/scripts/jarvis-watcher.sh"
         return 1
     fi
 }

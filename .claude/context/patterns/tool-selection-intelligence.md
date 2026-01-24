@@ -1931,7 +1931,7 @@ Local Tooling Task
 ├── adjust-mcp-config.sh     # Config modification
 ├── restore-mcp-config.sh    # Config restore
 ├── mcp-unload-workflow.sh   # Unload procedure
-├── auto-clear-watcher.sh    # AppleScript automation
+├── jarvis-watcher.sh        # Unified watcher (v3.0.0)
 ├── launch-watcher.sh        # Start watcher
 └── stop-watcher.sh          # Stop watcher
 

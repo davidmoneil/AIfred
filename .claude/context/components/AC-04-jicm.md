@@ -151,7 +151,7 @@ Design doc: .claude/context/designs/jicm-architecture-solutions.md
 | context-accumulator.js | soft | Reduced accuracy, continue |
 | AC-02 Wiggum Loop | soft | No context check step |
 | MCP disable scripts | soft | Manual MCP management |
-| Auto-clear watcher | soft | Manual /clear required |
+| Jarvis watcher | soft | Manual /clear required |
 
 ### MCP Dependencies
 | MCP Server | Tools Used | Required |
@@ -322,7 +322,7 @@ that essential state is preserved.
 
 ## Implementation Notes
 
-### Current Implementation (JICM v2)
+### Current Implementation (JICM v3)
 | Artifact | Path | Status |
 |----------|------|--------|
 | Component spec | `.claude/context/components/AC-04-jicm.md` | exists |
@@ -385,9 +385,9 @@ that essential state is preserved.
 - Best for simpler continuations
 
 ### Open Questions
-- [ ] JICM Agent implementation details?
+- [x] JICM Agent implementation details? — Implemented in Solution C
 - [ ] Archive file format and retention?
-- [ ] Integration with auto-clear watcher timing?
+- [x] Integration with jarvis-watcher timing? — Unified in v3.0.0
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
