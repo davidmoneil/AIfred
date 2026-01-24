@@ -246,7 +246,8 @@ process_signal() {
     priority=$(echo "$signal_content" | jq -r '.priority // "normal"')
 
     # Auto-resume fields (autonomy-first: default to true)
-    auto_resume=$(echo "$signal_content" | jq -r '.auto_resume // true')
+    # NOTE: Can't use jq's // operator for booleans - it treats false as falsy
+    auto_resume=$(echo "$signal_content" | jq -r 'if .auto_resume == false then "false" else "true" end')
     resume_delay=$(echo "$signal_content" | jq -r '.resume_delay // 3')
     resume_message=$(echo "$signal_content" | jq -r '.resume_message // "continue"')
 
