@@ -119,6 +119,53 @@ Combine the JSON outputs and format for display.
 
 ---
 
+## JICM Agent Status (v3.0.0)
+
+When the JICM autonomous agent is running, display enhanced context monitoring:
+
+### Check JICM Agent Status
+
+```bash
+# Check if JICM status file exists and is fresh
+cat .claude/context/.jicm-status.json 2>/dev/null | jq '.'
+```
+
+### JICM Status Format
+
+```
+AC-04 JICM Enhanced Status:
++--------------------------------------------------------------+
+|  Context: 65% used (130K / 200K tokens)                       |
+|  Velocity: 2000 tokens/min (stable)                           |
+|  Prediction: 80% threshold in ~20 minutes                     |
+|  Agent: running | Confidence: high                            |
++--------------------------------------------------------------+
+|  Recommendation: Monitor (no action needed)                   |
++--------------------------------------------------------------+
+```
+
+### Read JICM Status
+
+```bash
+# Get current context usage from statusline
+jq -r '.context_window.used_percentage' ~/.claude/logs/statusline-input.json
+
+# Get JICM agent prediction if available
+jq -r '.prediction.threshold_80_in_minutes // "N/A"' .claude/context/.jicm-status.json 2>/dev/null
+```
+
+### JICM Status Fields
+
+| Field | Source | Description |
+|-------|--------|-------------|
+| `used_percentage` | statusline-input.json | Current context usage (authoritative) |
+| `velocity` | .jicm-status.json | Tokens consumed per minute |
+| `prediction` | .jicm-status.json | Time until threshold |
+| `agent_status` | .jicm-status.json | running, starting, stopped |
+| `recommendation` | .jicm-status.json | Suggested action |
+
+---
+
 ## Quick Actions
 
 | Need | Action |

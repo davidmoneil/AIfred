@@ -135,6 +135,27 @@ if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
         "$CLAUDE_PROJECT_DIR/.claude/scripts/launch-watcher.sh" &
         echo "$TIMESTAMP | SessionStart | Launched watcher" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
+
+    # ============== JICM AGENT SPAWN SIGNAL (v3.0.0 Solution C) ==============
+    # Check if JICM autonomous agent is enabled in config
+    JICM_AGENT_ENABLED=$(yq -r '.components."AC-04-jicm".settings.autonomous_agent.enabled // false' "$CONFIG_FILE" 2>/dev/null || echo "false")
+
+    if [[ "$JICM_AGENT_ENABLED" == "true" ]]; then
+        # Write spawn signal for Claude to detect and spawn JICM agent
+        JICM_SPAWN_SIGNAL="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-agent-spawn-signal"
+        cat > "$JICM_SPAWN_SIGNAL" <<EOF
+{
+    "action": "spawn_jicm_agent",
+    "timestamp": "$TIMESTAMP",
+    "config": {
+        "agent_file": ".claude/agents/jicm-agent.md",
+        "status_file": ".claude/context/.jicm-status.json",
+        "run_in_background": true
+    }
+}
+EOF
+        echo "$TIMESTAMP | SessionStart | JICM agent spawn signal created" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
 fi
 
 # ============== MCP SUGGESTIONS ==============

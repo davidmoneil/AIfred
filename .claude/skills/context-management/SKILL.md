@@ -264,6 +264,11 @@ After `/clear`:
 ### Design Documents
 - @.claude/context/designs/jicm-architecture-solutions.md (complete v3 architecture)
 
+### JICM Agent (Solution C)
+- @.claude/agents/jicm-agent.md (autonomous monitoring agent)
+- Status file: `.claude/context/.jicm-status.json`
+- Provides: velocity tracking, threshold prediction, proactive management
+
 ---
 
 *Context Management Skill v2.0.0 - AC-04 JICM v3 Orchestration*

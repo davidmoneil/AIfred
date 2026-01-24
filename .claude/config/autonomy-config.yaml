@@ -128,6 +128,30 @@ components:
         # Inject compressed context post-clear via additionalContext
         auto_inject: true
 
+      # JICM Autonomous Agent (Solution C)
+      # Optional background agent for advanced context management
+      autonomous_agent:
+        # Enable autonomous JICM agent spawning
+        enabled: false  # Set to true to activate Solution C
+        # Agent definition file
+        agent_file: .claude/agents/jicm-agent.md
+        # Status file written by agent
+        status_file: .claude/context/.jicm-status.json
+        # Velocity tracking
+        velocity:
+          # Number of samples for velocity calculation
+          sample_count: 10
+          # Confidence threshold for predictions
+          confidence_threshold: 0.8
+        # Proactive management
+        proactive:
+          # Auto-disable Tier 2 MCPs at this threshold
+          mcp_disable_threshold: 70
+          # Begin checkpoint draft at this threshold
+          checkpoint_draft_threshold: 75
+          # Generate preservation manifest at this threshold
+          manifest_threshold: 80
+
   # AC-05: Self-Reflection
   AC-05-reflect:
     enabled: true
