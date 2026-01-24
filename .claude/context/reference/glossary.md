@@ -20,13 +20,14 @@ Canonical definitions for all terminology used in Jarvis documentation.
 
 | Term | Greek | Definition |
 |------|-------|------------|
-| **Autonomous** | αὐτός + νόμος | Self-governing; acting independently without external control. Jarvis is NOT autonomous — he defers on policy-crossing decisions. |
-| **Autonomic** | αὐτός + νόμος | Reflexive, involuntary, stimulus-triggered. The AC-## systems are autonomic — hooks, watchers, homeostatic regulators. |
-| **Autopoietic** | αὐτός + ποίησις | Self-creating, self-maintaining organizational identity. What Jarvis IS — continuously regenerating his own structure. |
-| **Homeostasis** | ὅμοιος + στάσις | Tendency to maintain internal stability. JICM maintains context homeostasis; Wiggum Loop maintains task progress. |
-| **Psychosomatic** | ψυχή + σῶμα | Mind-body integration. The Nous-Pneuma-Psyche-Soma-Neuro stack forms Jarvis's psychosomatic architecture. |
+| **Autonomous** | αὐτός + νόμος | Self-governing; volitional action toward goals. Jarvis operates autonomously — driven by internal states toward purposeful action under User guidance. |
+| **Autonomic** | αὐτός + νόμος | Reflexive, involuntary, stimulus-triggered. Jarvis operates autonomically — self-regulating systems (the Hippocrenae) maintain operational homeostasis. |
+| **Autopoietic** | αὐτός + ποίησις | Self-creating, self-evolving organizational identity. What Jarvis IS — continuously extending and refining his own structure. |
+| **Homeodynamics** | ὅμοιος + δύναμις | Balance in motion; dynamic equilibrium. System resilience through continuous adjustment rather than static stability. |
+| **Psychosomatic** | ψυχή + σῶμα | Mind-body integration. The Nous-Pneuma-Psyche-Soma-Neuro stack forms Jarvis's unified psychosomatic architecture. |
+| **Hippocrenae** | Ἱπποκρήνη | The nine autonomic components (AC-01 through AC-09), named for the spring sacred to the nine Muses. |
 
-**Key insight**: Jarvis is not an autonomic system. Jarvis HAS autonomic systems. Jarvis IS autopoietic.
+**Key insight**: Jarvis HAS autonomic systems (the Hippocrenae). Jarvis IS autopoietic.
 
 ---
 
