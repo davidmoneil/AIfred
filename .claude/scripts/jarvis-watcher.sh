@@ -1036,6 +1036,90 @@ idle_hands_jicm_resume() {
     return 1
 }
 
+# =============================================================================
+# IDLE-HANDS: session_start mode
+# =============================================================================
+# Automatically wakes Jarvis after a fresh session start (startup/resume).
+# The session-start hook injects context via additionalContext, but that only
+# gets delivered WITH the next user message. This mode auto-injects a wake-up
+# prompt so Jarvis starts working without user intervention.
+#
+# Trigger: .idle-hands-active flag with mode: session_start
+# Created by: session-start.sh hook on startup/resume
+#
+# Detection strategy:
+#   1. Wait for TUI to be ready (prompt visible, not processing)
+#   2. Give a brief settling delay (3-5 seconds after session start)
+#   3. Send minimal wake-up prompt and submit
+#   4. Verify Jarvis responds
+#
+idle_hands_session_start() {
+    local max_cycles=20       # ~2 minutes of attempts (20 * 6s)
+    local cycle_delay=6       # Shorter interval for session start
+    local initial_delay=5     # Wait for TUI to fully initialize
+    local cycle=0
+
+    log JICM "═══ IDLE-HANDS: session_start mode active ═══"
+
+    # Initial delay to let TUI settle after startup
+    log JICM "Waiting ${initial_delay}s for TUI to initialize..."
+    sleep $initial_delay
+
+    while [[ $cycle -lt $max_cycles ]]; do
+        # Check if flag still exists
+        if [[ ! -f "$IDLE_HANDS_FLAG" ]]; then
+            log JICM "IDLE-HANDS: Flag removed externally, stopping"
+            return 0
+        fi
+
+        # Check if already marked successful
+        if grep -q "success: true" "$IDLE_HANDS_FLAG" 2>/dev/null; then
+            log JICM "IDLE-HANDS: Already marked successful"
+            rm -f "$IDLE_HANDS_FLAG"
+            return 0
+        fi
+
+        # Check idle state - for session start, we just need prompt visible
+        if detect_idle_state; then
+            log JICM "IDLE-HANDS: Session idle, sending wake-up (cycle $cycle)"
+
+            # Update attempt count
+            update_idle_hands_flag "$cycle"
+
+            # Send simple wake-up prompt
+            # Use "startSession" which is recognized by Jarvis persona
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'startSession'
+            sleep 0.1
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+
+            # Check if it worked (give more time for session start response)
+            sleep 5
+            if detect_submission_success; then
+                log JICM "IDLE-HANDS: SUCCESS - Jarvis is awake!"
+                mark_idle_hands_success
+                rm -f "$IDLE_HANDS_FLAG"
+                return 0
+            fi
+        else
+            log JICM "IDLE-HANDS: Session appears active, checking..."
+            if detect_submission_success; then
+                log JICM "IDLE-HANDS: Confirmed active"
+                mark_idle_hands_success
+                rm -f "$IDLE_HANDS_FLAG"
+                return 0
+            fi
+        fi
+
+        ((cycle++))
+        sleep $cycle_delay
+    done
+
+    log WARN "IDLE-HANDS: session_start max cycles reached"
+    # Clean up flag - don't leave stale session_start flags
+    rm -f "$IDLE_HANDS_FLAG"
+    return 1
+}
+
 # Check for and handle idle-hands flag
 check_idle_hands() {
     if [[ ! -f "$IDLE_HANDS_FLAG" ]]; then
@@ -1048,6 +1132,10 @@ check_idle_hands() {
     case "$mode" in
         jicm_resume)
             idle_hands_jicm_resume
+            return $?
+            ;;
+        session_start)
+            idle_hands_session_start
             return $?
             ;;
         long_idle)

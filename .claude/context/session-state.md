@@ -2,35 +2,39 @@
 
 ## Current Work Status
 
-**Status**: 🟡 Idle — JICM v5 Submission Patterns Validated, Ready for Full Cycle Test
+**Status**: 🟢 Active — JICM v5 Implementation Complete
 
-**Last Completed**: JICM v5 submission pattern validation — 2026-02-04
+**Last Completed**: JICM v5 full cycle test — 2026-02-04 17:05
 
-**Current Task**: JICM v5 Full Cycle Test — Waiting for organic 50% threshold
+**Current Task**: Validate session_start idle-hands mode on next fresh session start
 
 **Current Blocker**: None
 
-**Work In Progress**:
-- JICM v5 fully implemented and documented
-- Submission patterns validated (C-m, Enter, standalone CR work)
-- Full cycle test pending (need 50% context threshold)
-
 **Completed This Session (2026-02-04)**:
-1. ✅ Ran submission method hypothesis testing (6 hypotheses A-F)
-2. ✅ Discovered root cause: CR must be separate tmux call, not embedded in -l string
-3. ✅ Validated external execution requirement (self-injection fails)
-4. ✅ Updated jarvis-watcher.sh with validated patterns (3 methods only)
-5. ✅ Created lesson: `lessons/tmux-self-injection-limitation.md`
-6. ✅ Updated JICM v5 design docs (Section 10, Section 6.4.1-6.4.2)
-7. ✅ Updated command-signal-protocol.md with Critical Constraint
-8. ✅ Created experiment report: `projects/project-aion/experiments/tmux-submission-2026-02-04/`
-9. ✅ Updated session-start.sh with architecture notes
-10. ✅ Preserved test scripts with methodology documentation
+1. ✅ Fixed watcher token extraction (was using cumulative totals, now uses TUI exact/percentage)
+2. ✅ Implemented v5.1.0 multi-method token extraction (TUI exact → TUI abbrev → JSON current_usage → validate)
+3. ✅ Fixed launch-watcher.sh threshold 80%→50% (JICM v5 consistency)
+4. ✅ Synced all three launcher scripts (jarvis-watcher.sh, launch-watcher.sh, launch-jarvis-tmux.sh)
+5. ✅ Committed fix: `a6577c6` — "fix(watcher): Robust multi-method token extraction (v5.1.0)"
+6. ✅ Deleted obsolete scripts: auto-clear-watcher.sh, auto-command-watcher.sh
+7. ✅ Restarted watcher in jarvis:1 with correct token count
+8. ✅ Implemented session_start idle-hands mode (jarvis-watcher.sh:1056-1121)
+9. ✅ Added session_start flag creation in session-start.sh (lines 681-694)
+10. ✅ JICM v5 full cycle test: compression→clear→restoration SUCCESSFUL
+
+**JICM v5 Cycle Test Results (2026-02-04 17:00)**:
+- Threshold trigger at 53% ✓
+- `/intelligent-compress` sent by watcher ✓
+- Compression agent completed (~8,500 tokens, 12:1 ratio) ✓
+- Context restored via conversation continuation mechanism ✓
+- Session resumed seamlessly without manual intervention ✓
+- Signal files cleaned up properly ✓
 
 **Next Steps**:
-1. Run full JICM v5 cycle test (manual or wait for threshold)
-2. Verify compression → interrupt → clear → injection → resume flow
-3. Consider git commit after successful full cycle
+1. Test session_start mode on fresh session (requires closing and reopening Claude Code)
+2. Commit session_start idle-hands implementation
+3. Update JICM v5 documentation with test results
+4. Consider long_idle and workflow_chain modes for future
 
 ---
 

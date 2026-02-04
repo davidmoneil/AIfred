@@ -673,6 +673,26 @@ Present status and offer to continue with pending work or suggest alternatives."
 
     MESSAGE="Session started ($SOURCE)$MCP_SUGGESTION$ENV_STATUS"
 
+    # ═══ SESSION START IDLE-HANDS FLAG ═══
+    # Create idle-hands flag for automatic session wake-up
+    # The watcher will detect this and auto-inject a wake-up prompt
+    # This ensures Jarvis starts working without requiring user input
+    #
+    # Skip if JARVIS_MANUAL_MODE is set (user wants manual control)
+    if [[ "$JARVIS_MANUAL_MODE" != "true" ]]; then
+        cat > "$V5_IDLE_HANDS_FLAG" << IDLE_HANDS_EOF
+mode: session_start
+source: $SOURCE
+created: $TIMESTAMP
+auto_continue: $AUTO_CONTINUE
+next_step: ${NEXT_STEP:-none}
+submission_attempts: 0
+last_attempt: null
+success: false
+IDLE_HANDS_EOF
+        echo "$TIMESTAMP | SessionStart | Created .idle-hands-active flag (mode: session_start, source: $SOURCE)" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": $AUTO_CONTINUE}" > "$STATE_DIR/AC-01-launch.json"
 
