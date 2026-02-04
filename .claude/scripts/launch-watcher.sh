@@ -4,11 +4,12 @@
 #
 # Features:
 # - Checks if watcher is already running (avoids duplicates)
+# - Uses atomic mutex lock to prevent race conditions
 # - Prefers tmux window (terminal-agnostic, works in iTerm2/Terminal/any)
 # - Falls back to background process if not in tmux
 # - Self-terminates when main session ends
 #
-# Updated: 2026-01-20 — Terminal-agnostic approach using tmux
+# Updated: 2026-01-31 — Added mutex lock for race condition prevention
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
 TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
@@ -16,10 +17,11 @@ TMUX_SESSION="${TMUX_SESSION:-jarvis}"
 
 WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jarvis-watcher.sh"
 PID_FILE="$PROJECT_DIR/.claude/context/.watcher-pid"
+LOCK_DIR="$PROJECT_DIR/.claude/context/.watcher-launch.lock"
 LOG_FILE="$PROJECT_DIR/.claude/logs/watcher-launcher.log"
 
-# Watcher configuration
-WATCHER_THRESHOLD="${JARVIS_WATCHER_THRESHOLD:-80}"
+# Watcher configuration (JICM v5: 50% threshold)
+WATCHER_THRESHOLD="${JARVIS_WATCHER_THRESHOLD:-50}"
 WATCHER_INTERVAL="${JARVIS_WATCHER_INTERVAL:-30}"
 
 mkdir -p "$(dirname "$LOG_FILE")"
@@ -29,7 +31,40 @@ log() {
     echo "$TIMESTAMP | $1" >> "$LOG_FILE"
 }
 
-# Check if watcher is already running
+# Cleanup function for lock
+cleanup_lock() {
+    rmdir "$LOCK_DIR" 2>/dev/null
+}
+
+# ============================================================================
+# ATOMIC MUTEX LOCK — Prevent race conditions during launch
+# ============================================================================
+# mkdir is atomic on POSIX systems - if it succeeds, we have the lock
+# Lock expires after 30s to handle crashed launchers
+
+# Check for stale lock (older than 30 seconds)
+if [[ -d "$LOCK_DIR" ]]; then
+    lock_age=$(( $(date +%s) - $(stat -f %m "$LOCK_DIR" 2>/dev/null || echo "0") ))
+    if [[ $lock_age -gt 30 ]]; then
+        log "Removing stale lock (${lock_age}s old)"
+        rmdir "$LOCK_DIR" 2>/dev/null
+    fi
+fi
+
+# Try to acquire lock
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    log "Another launcher is running (lock exists)"
+    exit 0
+fi
+
+# Ensure lock is cleaned up on exit
+trap cleanup_lock EXIT
+
+# ============================================================================
+# CHECK IF WATCHER IS ALREADY RUNNING
+# ============================================================================
+
+# Check by PID file
 if [[ -f "$PID_FILE" ]]; then
     OLD_PID=$(cat "$PID_FILE")
     if ps -p "$OLD_PID" > /dev/null 2>&1; then
@@ -41,7 +76,7 @@ if [[ -f "$PID_FILE" ]]; then
     fi
 fi
 
-# Also check by process name
+# Also check by process name (backup check)
 EXISTING_PID=$(pgrep -f "jarvis-watcher.sh" | head -1)
 if [[ -n "$EXISTING_PID" ]]; then
     log "Watcher already running (found PID: $EXISTING_PID)"

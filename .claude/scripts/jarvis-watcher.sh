@@ -144,11 +144,131 @@ log() {
 }
 
 # =============================================================================
-# CONTEXT MONITORING (v4.0.0)
+# CONTEXT MONITORING (v5.1.0 — Robust Multi-Method)
 # =============================================================================
+# Token extraction priority:
+#   1. PRIMARY: Parse exact tokens from TUI pane capture ("63257 tokens")
+#   2. SECONDARY: Parse abbreviated format from TUI ("63.2k")
+#   3. FALLBACK: Sum current_usage fields from statusline JSON
+#   4. VALIDATION: Cross-check against percentage × context_window_size
+#
+# This approach handles:
+#   - Debug mode vs non-debug mode screen format differences
+#   - Stale or missing statusline JSON
+#   - Various TUI layout configurations
 
 STATUSLINE_FILE="$HOME/.claude/logs/statusline-input.json"
 
+# Cache for TUI capture (avoid repeated tmux calls within same poll cycle)
+CACHED_PANE_CONTENT=""
+CACHED_PANE_TIME=0
+
+# Capture TUI pane content (cached for 5 seconds)
+capture_tui_pane() {
+    local now
+    now=$(date +%s)
+    local cache_age=$((now - CACHED_PANE_TIME))
+
+    if [[ $cache_age -lt 5 ]] && [[ -n "$CACHED_PANE_CONTENT" ]]; then
+        echo "$CACHED_PANE_CONTENT"
+        return 0
+    fi
+
+    if ! "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
+        echo ""
+        return 1
+    fi
+
+    CACHED_PANE_CONTENT=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
+    CACHED_PANE_TIME=$now
+    echo "$CACHED_PANE_CONTENT"
+}
+
+# METHOD 1: Parse exact token count from TUI (e.g., "63257 tokens")
+get_tokens_from_tui_exact() {
+    local pane_content
+    pane_content=$(capture_tui_pane)
+
+    if [[ -z "$pane_content" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    # Look for exact token count at end of status line: "63257 tokens"
+    local exact_tokens
+    exact_tokens=$(echo "$pane_content" | grep -oE '[0-9]+ tokens' | tail -1 | grep -oE '[0-9]+')
+
+    if [[ -n "$exact_tokens" ]] && [[ "$exact_tokens" -gt 0 ]]; then
+        echo "$exact_tokens"
+        return 0
+    fi
+
+    echo "0"
+    return 1
+}
+
+# METHOD 2: Parse abbreviated token count from TUI (e.g., "63.2k")
+get_tokens_from_tui_abbreviated() {
+    local pane_content
+    pane_content=$(capture_tui_pane)
+
+    if [[ -z "$pane_content" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    # Look for abbreviated format in status bar: "63.2k" or "63k"
+    # Pattern: number followed by 'k' (case insensitive) in status line
+    local abbrev_tokens
+    abbrev_tokens=$(echo "$pane_content" | tail -3 | grep -oE '[0-9]+\.?[0-9]*k' | head -1)
+
+    if [[ -n "$abbrev_tokens" ]]; then
+        # Remove 'k' suffix and multiply by 1000
+        local numeric_part
+        numeric_part=$(echo "$abbrev_tokens" | sed 's/k$//')
+        # Handle decimal: 63.2 → 63200
+        if [[ "$numeric_part" == *"."* ]]; then
+            # Multiply by 1000, handling decimal
+            local result
+            result=$(echo "$numeric_part * 1000" | bc 2>/dev/null | cut -d'.' -f1)
+            if [[ -n "$result" ]] && [[ "$result" -gt 0 ]]; then
+                echo "$result"
+                return 0
+            fi
+        else
+            echo $((numeric_part * 1000))
+            return 0
+        fi
+    fi
+
+    echo "0"
+    return 1
+}
+
+# METHOD 3: Parse percentage from TUI (e.g., "32%")
+get_percentage_from_tui() {
+    local pane_content
+    pane_content=$(capture_tui_pane)
+
+    if [[ -z "$pane_content" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    # Look for percentage in status bar area (last 3 lines)
+    local pct
+    pct=$(echo "$pane_content" | tail -3 | grep -oE '[0-9]+%' | head -1 | tr -d '%')
+
+    if [[ -n "$pct" ]] && [[ "$pct" -gt 0 ]] && [[ "$pct" -le 100 ]]; then
+        echo "$pct"
+        return 0
+    fi
+
+    echo "0"
+    return 1
+}
+
+# METHOD 4: Get context from statusline JSON (fallback)
 get_context_status() {
     if [[ ! -f "$STATUSLINE_FILE" ]]; then
         echo '{"context_window": {"used_percentage": 0, "remaining_percentage": 100}}'
@@ -157,19 +277,117 @@ get_context_status() {
     cat "$STATUSLINE_FILE"
 }
 
-get_used_percentage() {
+# METHOD 5: Sum current_usage fields from statusline JSON
+get_tokens_from_json_current_usage() {
     local status
     status=$(get_context_status 2>/dev/null)
-    echo "$status" | jq -r '.context_window.used_percentage // 0' 2>/dev/null || echo "0"
+
+    if [[ -z "$status" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    # Sum all current_usage token fields
+    local input output cache_create cache_read total
+    input=$(echo "$status" | jq -r '.context_window.current_usage.input_tokens // 0' 2>/dev/null || echo "0")
+    output=$(echo "$status" | jq -r '.context_window.current_usage.output_tokens // 0' 2>/dev/null || echo "0")
+    cache_create=$(echo "$status" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0' 2>/dev/null || echo "0")
+    cache_read=$(echo "$status" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0' 2>/dev/null || echo "0")
+
+    total=$((input + output + cache_create + cache_read))
+    echo "$total"
+    return 0
 }
 
-get_token_count() {
+# METHOD 6: Calculate tokens from percentage (validation/fallback)
+get_tokens_from_percentage() {
+    local pct="$1"
+    local context_size="${2:-$MAX_CONTEXT_TOKENS}"
+    echo $(( (pct * context_size) / 100 ))
+}
+
+# MAIN FUNCTION: Get percentage (prioritizes TUI, falls back to JSON)
+get_used_percentage() {
+    local pct
+
+    # Try TUI first (most accurate, real-time)
+    pct=$(get_percentage_from_tui)
+    if [[ "$pct" != "0" ]] && [[ -n "$pct" ]]; then
+        echo "$pct"
+        return 0
+    fi
+
+    # Fallback to statusline JSON
     local status
     status=$(get_context_status 2>/dev/null)
-    local input_tokens output_tokens
-    input_tokens=$(echo "$status" | jq -r '.context_window.total_input_tokens // 0' 2>/dev/null || echo "0")
-    output_tokens=$(echo "$status" | jq -r '.context_window.total_output_tokens // 0' 2>/dev/null || echo "0")
-    echo $((input_tokens + output_tokens))
+    pct=$(echo "$status" | jq -r '.context_window.used_percentage // 0' 2>/dev/null || echo "0")
+    echo "$pct"
+}
+
+# MAIN FUNCTION: Get token count (multi-method with validation)
+get_token_count() {
+    local tokens=0
+    local method_used=""
+
+    # METHOD 1: Try exact TUI tokens first (most accurate)
+    tokens=$(get_tokens_from_tui_exact)
+    if [[ "$tokens" != "0" ]] && [[ -n "$tokens" ]]; then
+        method_used="tui_exact"
+    fi
+
+    # METHOD 2: Try abbreviated TUI tokens
+    if [[ "$tokens" == "0" ]] || [[ -z "$tokens" ]]; then
+        tokens=$(get_tokens_from_tui_abbreviated)
+        if [[ "$tokens" != "0" ]] && [[ -n "$tokens" ]]; then
+            method_used="tui_abbrev"
+        fi
+    fi
+
+    # METHOD 3: Try JSON current_usage sum
+    if [[ "$tokens" == "0" ]] || [[ -z "$tokens" ]]; then
+        tokens=$(get_tokens_from_json_current_usage)
+        if [[ "$tokens" != "0" ]] && [[ -n "$tokens" ]]; then
+            method_used="json_usage"
+        fi
+    fi
+
+    # VALIDATION: Cross-check against percentage estimate
+    local pct
+    pct=$(get_used_percentage)
+    local pct_estimate
+    pct_estimate=$(get_tokens_from_percentage "$pct" "$MAX_CONTEXT_TOKENS")
+
+    # If we got tokens, validate they're roughly consistent with percentage
+    if [[ "$tokens" -gt 0 ]] && [[ "$pct_estimate" -gt 0 ]]; then
+        # Allow 20% variance between token count and percentage estimate
+        local variance_threshold=$((pct_estimate / 5))  # 20%
+        local diff=$((tokens - pct_estimate))
+        diff=${diff#-}  # Absolute value
+
+        if [[ $diff -gt $variance_threshold ]] && [[ $variance_threshold -gt 1000 ]]; then
+            # Significant mismatch - log warning but use TUI value if available
+            # (TUI is authoritative, JSON might be stale)
+            if [[ "$method_used" == "tui_exact" ]] || [[ "$method_used" == "tui_abbrev" ]]; then
+                # Trust TUI over JSON estimate
+                :
+            else
+                # No TUI data, use percentage estimate as more reliable
+                tokens=$pct_estimate
+                method_used="pct_estimate"
+            fi
+        fi
+    fi
+
+    # FALLBACK: If still no tokens, use percentage estimate
+    if [[ "$tokens" == "0" ]] || [[ -z "$tokens" ]]; then
+        tokens=$pct_estimate
+        method_used="pct_fallback"
+    fi
+
+    # Store method used for debugging (optional)
+    export LAST_TOKEN_METHOD="$method_used"
+
+    echo "$tokens"
 }
 
 update_status() {
@@ -178,13 +396,14 @@ update_status() {
     local state="$3"
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.0.0
+version: 5.1.0
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
 state: $state
 trigger_count: $TRIGGER_COUNT
 failure_count: $FAILURE_COUNT
+token_method: ${LAST_TOKEN_METHOD:-unknown}
 EOF
 }
 
