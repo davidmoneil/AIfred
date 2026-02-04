@@ -1,0 +1,89 @@
+# Research Agenda
+# Tracks pending research topics for AC-07 R&D Cycles
+#
+# Status: PENDING | IN_PROGRESS | COMPLETE | DEFERRED | REJECTED
+# Priority: HIGH | MEDIUM | LOW
+# Source: session observation, user request, pattern analysis, external discovery
+
+version: 1.0.0
+last_updated: 2026-02-04
+
+# ============================================================================
+# PENDING RESEARCH TOPICS
+# ============================================================================
+
+pending:
+  - id: RD-001
+    title: "Long Idle Detection Patterns"
+    description: |
+      Research patterns for detecting extended idle periods (>30 min) and
+      appropriate autonomous actions to take during downtime.
+    priority: MEDIUM
+    source: JICM v5 idle-hands architecture
+    created: 2026-02-04
+    related_files:
+      - .claude/scripts/jarvis-watcher.sh
+      - .claude/context/designs/jicm-v5-design-addendum.md
+    notes: |
+      Consider: self-improvement cycles, documentation review, health checks
+
+  - id: RD-002
+    title: "Workflow Chain Automation"
+    description: |
+      Research patterns for chaining workflows across sessions when one task
+      triggers another (e.g., test failure → fix → retest).
+    priority: LOW
+    source: idle-hands mode extension idea
+    created: 2026-02-04
+    related_files:
+      - .claude/scripts/jarvis-watcher.sh
+    notes: |
+      May require persistent state tracking across /clear cycles
+
+  - id: RD-003
+    title: "Context Compression Optimization"
+    description: |
+      Research optimal compression strategies for different work types
+      (coding vs research vs documentation).
+    priority: MEDIUM
+    source: JICM v5 compression agent observations
+    created: 2026-02-04
+    related_files:
+      - .claude/agents/compression-agent.md
+    notes: |
+      Current 12:1 ratio is good but may be improvable for specific patterns
+
+# ============================================================================
+# IN PROGRESS
+# ============================================================================
+
+in_progress: []
+
+# ============================================================================
+# COMPLETED
+# ============================================================================
+
+completed:
+  - id: RD-000
+    title: "tmux Self-Injection Limitation"
+    description: "Investigated why Bash tool calls cannot inject prompts to same session"
+    priority: HIGH
+    source: JICM v5 development
+    completed: 2026-02-04
+    result: DOCUMENTED
+    outcome_file: .claude/context/lessons/tmux-self-injection-limitation.md
+    notes: |
+      Root cause: Ink TUI raw mode creates input state collision.
+      Solution: Use external watcher process for all prompt injection.
+
+# ============================================================================
+# DEFERRED
+# ============================================================================
+
+deferred: []
+
+# ============================================================================
+# REJECTED
+# ============================================================================
+
+rejected: []

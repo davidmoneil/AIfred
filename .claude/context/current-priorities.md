@@ -8,28 +8,27 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ## In Progress
 
-### JICM v4.0.0 — Testing Phase (2026-01-31)
-**Status**: 🧪 Implementation Complete — Testing Required
+### JICM v5.0.0 — Two-Mechanism Resume Architecture (2026-02-04)
+**Status**: ✅ Implementation Complete — Testing Session_Start Mode
 
-Implemented full JICM v4 system with parallel compression and cascade resume.
+Implemented full JICM v5 system with simplified 50% threshold and two-mechanism resume.
 
 **Completed:**
-- [x] Diagnose double-clear stall condition (version mismatch root cause)
-- [x] Update `session-start.sh` with v4 signal detection + debounce
-- [x] Update `/intelligent-compress` command to v4 file names
-- [x] Update `jarvis-watcher.sh` with manual compression detection
-- [x] Create `jicm-continuation-verifier.js` cascade hook
-- [x] Update `jicm-v4-architecture.md` checklist
-- [x] Create implementation report
+- [x] v5.1.0 Robust multi-method token extraction (TUI exact → TUI abbrev → JSON)
+- [x] Single 50% threshold (simplified from dual threshold)
+- [x] Two-mechanism resume architecture (hook injection + idle-hands)
+- [x] jicm_resume idle-hands mode implementation
+- [x] session_start idle-hands mode implementation
+- [x] External execution requirement documented (lessons/tmux-self-injection-limitation.md)
+- [x] Full cycle test: compression → clear → restoration (PASSED)
 
 **Testing Required:**
-- [ ] `/intelligent-compress` full cycle test
-- [ ] Debounce protection test (rapid `/clear` commands)
-- [ ] Automatic threshold trigger test
-- [ ] Cascade continuation verification test
+- [ ] session_start mode test (requires fresh session)
+- [ ] long_idle mode (future enhancement)
+- [ ] workflow_chain mode (future enhancement)
 
-**Report**: `.claude/context/reports/jicm-v4-implementation-report.md`
-**Design**: `.claude/context/designs/jicm-v4-architecture.md`
+**Commits**: `a6577c6` (token extraction), `5a5eae4` (session_start mode)
+**Design**: `.claude/context/designs/jicm-v5-design-addendum.md`
 
 ---
 
