@@ -3,7 +3,7 @@ description: Intelligent context compression using Claude model to analyze and c
 allowed-tools: Read, Write, Task, Bash, TodoWrite
 ---
 
-# Intelligent Compress
+# Intelligent Compress (JICM v5)
 
 **EXECUTE THESE STEPS IN ORDER:**
 
@@ -40,242 +40,144 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 
 3. **Check todos** - If any todos are in_progress, note them in session-state
 
-These updates ensure the context-compressor agent has accurate information to preserve.
+These updates ensure the compression agent has accurate information to preserve.
 
-## Step 3: Run /context and Spawn Context-Compressor Agent
+## Step 3: Spawn Compression Agent
 
-First, capture the context baseline by running `/context` (or reading the current context state). This provides the categorical breakdown of what's in the context window.
-
-Then use the Task tool with these EXACT parameters:
+Use the Task tool with these EXACT parameters:
 
 ```
-subagent_type: context-compressor
-model: opus
+subagent_type: compression-agent
+model: sonnet
+run_in_background: true
 prompt: |
-  Compress the current conversation context for session continuity.
+  Compress the current conversation context for JICM v5 continuation.
 
-  **Mode**: default (target 15-20% of original)
+  **Compression Target**: 10,000 - 30,000 tokens
+  **Threshold Trigger**: 50% context usage
 
-  **Context Baseline** (from /context):
-  [Include the /context output here showing token usage by category]
+  You have access to the full conversation history. Your task:
 
-  You have access to the full conversation history. Using the context baseline as your guide:
+  1. Read session transcript from ~/.claude/projects/.../[session-id].jsonl
+  2. Read foundation docs: CLAUDE.md, jarvis-identity.md, compaction-essentials.md
+  3. Read session state: session-state.md, current-priorities.md (READ-ONLY)
+  4. PRESERVE: Current task, decisions made, file paths, todos, blockers
+  5. SUMMARIZE: Tool outputs, resolved issues, multi-step workflow progress
+  6. DROP: File contents, verbose outputs, MCP schemas, exploration dead-ends
 
-  1. PRESERVE: Current task, decisions made, file paths, todos, blockers
-  2. SUMMARIZE: Tool outputs, resolved issues with learnings, multi-step workflow progress
-  3. DROP: Tier 3 MCP schemas, verbose file contents, redundant info, disabled plugin context
+  Write compressed context to: .claude/context/.compressed-context-ready.md
+  Write completion signal to: .claude/context/.compression-done.signal
 
-  Write the compressed context to: .claude/context/.compressed-context.md
-
-  Use the format specified in your agent instructions.
-  Return a brief summary of what was preserved and what was dropped.
+  Target: 10K-30K tokens. Self-contained for seamless continuation.
+  See compression-agent.md for full protocol.
 ```
 
-Wait for the agent to complete and return.
+**IMPORTANT**: Use `run_in_background: true` so Jarvis can continue working while compression runs.
 
 ## Step 4: Verify and Signal
 
-After agent returns:
+After agent returns (check `.compression-done.signal`):
 
-1. Verify `.claude/context/.compressed-context.md` exists
+1. Verify `.claude/context/.compressed-context-ready.md` exists
 2. Remove in-progress flag:
    ```bash
    rm -f .claude/context/.compression-in-progress
    ```
-3. Signal readiness for /clear:
-   ```bash
-   echo "compressed" > .claude/context/.clear-ready-signal
-   ```
+3. The signal file is already created by the agent
 
 ## Step 5: Confirm to User
 
-Say: "Compression complete. Watcher will send /clear shortly. Context will be restored on restart."
+Say: "Compression complete (JICM v5). The watcher will send /clear shortly, then inject the compressed context for seamless continuation. Target: 10K-30K tokens."
 
 ---
 
 ## Reference Information
 
-### How It Works
-
-Unlike `/compact` (generic summarization) or `/smart-compact` (simple checkpoint), this command uses Claude to **intelligently analyze and compress** the full conversation context.
-
-### Flow
+### JICM v5 Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 1. Read compression config from autonomy-config.yaml        │
-│ 2. Spawn context-compressor agent (haiku by default)        │
-│    - Agent receives full conversation context               │
-│    - Agent analyzes what to preserve/summarize/drop         │
-│    - Agent writes compressed context to temp file           │
-│ 3. Signal readiness for /clear                              │
-│ 4. Watcher sends /clear                                     │
-│ 5. Post-clear hook injects compressed context               │
+│ 1. /intelligent-compress triggered (manual or watcher)      │
+│ 2. Spawn compression-agent (background, sonnet)             │
+│    - Agent reads transcript + foundation docs + state       │
+│    - Agent compresses to 10K-30K tokens                     │
+│    - Agent writes .compressed-context-ready.md              │
+│    - Agent writes .compression-done.signal                  │
+│ 3. Watcher detects signal → sends /clear                    │
+│ 4. session-start.sh hook:                                   │
+│    - Injects context via additionalContext                  │
+│    - Creates .idle-hands-active flag                        │
+│ 5. Idle-hands monitor (Mechanism 2):                        │
+│    - Cycles through submission methods                      │
+│    - Wakes Jarvis if idle                                   │
+│ 6. Jarvis resumes work seamlessly                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Detailed Execution Steps
+### Data Sources (v5)
 
-### Step 1: Read Configuration
+**Transcript Sources** (ephemeral):
+- `~/.claude/projects/-Users-aircannon-Claude-Jarvis/[session-id].jsonl`
+- `~/.claude/projects/.../subagents/*.jsonl`
+- `.claude/context/.context-captured*.txt`
 
-```bash
-# Check if compression is already in progress
-if [ -f ".claude/context/.compression-in-progress" ]; then
-    echo "Compression already in progress, aborting"
-    exit 0
-fi
-```
+**Foundation Docs** (durable):
+- `.claude/CLAUDE.md`
+- `.claude/jarvis-identity.md`
+- `.claude/context/compaction-essentials.md`
 
-Read settings from `.claude/config/autonomy-config.yaml` under `components.AC-04-jicm.settings.compression`:
-- `model`: haiku | sonnet | opus
-- `mode`: aggressive | default | conservative
-- `target_percent`: specific percentage if set
-- `output_file`: where to write compressed context
+**Session State** (durable, READ-ONLY):
+- `.claude/context/session-state.md`
+- `.claude/context/current-priorities.md`
 
-### Step 2: Create In-Progress Flag
+### Compression Priorities
 
-```bash
-echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
-```
+**ALWAYS Preserve**:
+- Current task and status
+- Technical decisions (with rationale)
+- File paths modified
+- Active errors/blockers
+- User preferences
 
-### Step 3: Run /context and Spawn Context-Compressor Agent
-
-First capture context baseline, then spawn the agent:
-
-```
-Task tool:
-  subagent_type: context-compressor
-  model: opus
-  prompt: |
-    Compress the current conversation context.
-
-    **Compression Mode**: [mode from config or args]
-    **Target**: [percentage based on mode]
-    **Context Baseline**: [/context output]
-
-    Instructions:
-    1. Review the /context baseline to understand what's consuming tokens
-    2. Analyze the full conversation context (you have access to it)
-    3. Identify: critical decisions, active work, pending todos, blockers
-    4. Summarize: tool outputs, resolved issues (with learnings), multi-step workflow skeletons
-    5. Drop: Tier 3 MCP schemas, verbose file contents, disabled plugin context, redundant info
-    6. Write compressed context to: .claude/context/.compressed-context.md
-    7. Return a brief summary of what was preserved and what was dropped
-
-    The compressed context must be self-contained - the next session
-    should be able to continue work without additional context.
-```
-
-### Step 4: Verify Output
-
-After agent returns:
-- Check that `.claude/context/.compressed-context.md` exists
-- Verify it has content (not empty)
-- Log compression metrics if available
-
-### Step 5: Signal Ready for Clear
-
-```bash
-# Remove in-progress flag
-rm -f .claude/context/.compression-in-progress
-
-# Signal the watcher that compression is complete
-echo "compressed" > .claude/context/.clear-ready-signal
-```
-
-### Step 6: Wait for Watcher
-
-The watcher will detect `.clear-ready-signal` and send `/clear` to the Claude Code window.
-
-## Compression Priorities
-
-### ALWAYS Preserve
-- Current task and status (from todos)
-- Technical decisions made this session
-- File paths modified or referenced
-- User preferences expressed
-- Blockers or errors encountered
-
-### Summarize
-- Tool call results → outcomes only
-- File contents → 1-line relevance summary
+**Summarize**:
+- Tool results → outcomes only
+- File contents → 1-line summary
 - Long explanations → key points
 
-### Drop
-- Full file contents (they're on disk)
+**Drop**:
+- Full file contents
 - Verbose command outputs
 - Resolved issues
-- Superseded decisions
+- MCP schemas
+- Exploration dead-ends
 
-## Post-Clear Injection
-
-The session-start hook will:
-1. Detect `.claude/context/.compressed-context.md`
-2. Read its contents
-3. Inject via `additionalContext` in the hook response
-4. Delete the file after injection
-
-This ensures the next session starts with the compressed context.
-
-## Output Format
-
-```
-━━━ Intelligent Compression ━━━
-
-Configuration:
-  Model: haiku
-  Mode: default (15-20%)
-
-Spawning context-compressor agent...
-
-[Agent output summary]
-
-Compression complete:
-  Output: .claude/context/.compressed-context.md
-  Original: ~[X]K tokens (estimated)
-  Compressed: ~[Y]K tokens (estimated)
-  Ratio: [Z]%
-
-Signaling watcher for /clear...
-
-Next: Watcher will send /clear in ~3 seconds.
-      Compressed context will be injected on restart.
-```
-
-## Error Handling
-
-If compression fails:
-- Remove in-progress flag
-- Log error
-- Fall back to `/smart-compact` (simple checkpoint)
-- Continue with /clear anyway
-
-## Configuration
+### Configuration
 
 Settings in `.claude/config/autonomy-config.yaml`:
 
 ```yaml
 components:
   AC-04-jicm:
+    version: 5.0.0
     settings:
+      threshold: 50              # Single trigger threshold
       compression:
-        model: haiku           # haiku|sonnet|opus
-        mode: default          # aggressive|default|conservative
-        target_percent: null   # Override mode with specific %
-        output_file: .claude/context/.compressed-context.md
-        auto_inject: true      # Inject post-clear
+        model: sonnet            # haiku|sonnet|opus
+        target_min: 10000        # Minimum tokens
+        target_max: 30000        # Maximum tokens
+        output_file: .claude/context/.compressed-context-ready.md
+        auto_inject: true
 ```
 
 ## Related
 
-- @.claude/agents/context-compressor.md — Agent definition (uses preservation manifest)
-- @.claude/commands/smart-compact.md — Simple checkpoint (fallback)
-- @.claude/context/patterns/automated-context-management.md
-- @.claude/hooks/precompact-analyzer.js — Generates preservation manifest (v3)
-- @.claude/hooks/session-start.sh — Post-clear injection
-- @.claude/context/designs/jicm-architecture-solutions.md — v3 architecture
+- @.claude/agents/compression-agent.md — Agent specification (v5)
+- @.claude/context/designs/jicm-v5-design-addendum.md — Authoritative v5 spec
+- @.claude/context/designs/jicm-v5-resume-mechanisms.md — Resume mechanism details
+- @.claude/hooks/session-start.sh — Post-clear injection + idle-hands flag
+- @.claude/scripts/jarvis-watcher.sh — Context monitoring + idle-hands monitor
 
 ---
 
-*JICM v3: Intelligent Context Compression*
-*Created: 2026-01-20 | Updated: 2026-01-23*
+*JICM v5: Two-Mechanism Resume Architecture*
+*Created: 2026-01-20 | Updated: 2026-02-03*

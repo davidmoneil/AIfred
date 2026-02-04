@@ -110,7 +110,7 @@ echo "Starting Jarvis..."
 export TERM=xterm-256color
 
 # Context management environment variables
-# - CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: Delay native auto-compact to 99% (JICM handles at 77%)
+# - CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: Delay native auto-compact to 99% (JICM v5 handles at 50%)
 # - ENABLE_TOOL_SEARCH: Enable MCP tool search to reduce context usage
 # - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 20K (affects effective context budget)
 CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=99 ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000"
@@ -118,7 +118,7 @@ CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=99 ENABLE_TOOL_SEARCH=true CLAUDE_CO
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
 "$TMUX_BIN" new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" \
-    "export $CLAUDE_ENV && claude --dangerously-skip-permissions" 
+    "export $CLAUDE_ENV && claude --dangerously-skip-permissions --verbose --debug-file /Users/aircannon/Claude/Jarvis/.claude/logs/debug.log --continue" 
 
 # Give Claude a moment to start
 sleep 2
@@ -133,14 +133,14 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     export CLAUDE_PROJECT_DIR="$PROJECT_DIR"
 
     # Create watcher window (window 1, detached so we stay on window 0)
-    # Threshold 80% (from autonomy-config.yaml threshold_percentage)
+    # JICM v5: Single 50% threshold for compression trigger
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 80 --interval 30; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 50 --interval 30; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
-"$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 50000 2>/dev/null || true
+"$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"

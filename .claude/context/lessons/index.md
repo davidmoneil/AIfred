@@ -2,7 +2,7 @@
 
 **Purpose**: Categorical and chronological index of problems, solutions, and patterns.
 
-**Updated**: 2026-01-18 (R&D Cycle)
+**Updated**: 2026-02-04 (PAT-005: tmux self-injection limitation)
 
 ---
 
@@ -37,6 +37,7 @@ Recurring patterns discovered through reflection and R&D.
 | 2026-01-18 | PAT-002 | MCP tool deferral (auto:N) reduces context usage | New Discovery |
 | 2026-01-18 | PAT-003 | PreToolUse additionalContext enables dynamic context injection | New Discovery |
 | 2026-01-18 | PAT-004 | Single-agent ReAct loop (Wiggum) more reliable than multi-agent swarms | Confirmed |
+| 2026-02-04 | PAT-005 | **tmux self-injection fails from within Claude Code** | Critical Discovery |
 
 ---
 
@@ -54,6 +55,13 @@ Recurring patterns discovered through reflection and R&D.
 
 ### Agent Patterns
 - PAT-004: Single-agent ReAct loop (Wiggum) more reliable than multi-agent swarms
+
+### Signal Architecture / tmux Integration
+- PAT-005: tmux self-injection fails from within Claude Code
+  - **Full lesson**: `lessons/tmux-self-injection-limitation.md`
+  - **Key insight**: Bash tool calls block TUI event loop; keystrokes queue unpredictably
+  - **Solution**: All prompt injection must come from external processes (watcher pattern)
+  - **Affects**: JICM, command-signal-protocol, any autonomous prompt submission
 
 ### Documentation
 *None yet*
@@ -98,4 +106,4 @@ See `.claude/evolution/evolution-queue.yaml` for full proposal details.
 
 ---
 
-*Index maintained by AC-05 Self-Reflection — Updated 2026-01-20*
+*Index maintained by AC-05 Self-Reflection — Updated 2026-02-04*

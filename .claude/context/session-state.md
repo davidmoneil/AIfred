@@ -2,16 +2,102 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle — Session Complete
+**Status**: 🟡 Idle — JICM v5 Submission Patterns Validated, Ready for Full Cycle Test
 
-**Last Completed**: JICM v3.0.0 — All 3 Solutions Implemented — 2026-01-24
+**Last Completed**: JICM v5 submission pattern validation — 2026-02-04
+
+**Current Task**: JICM v5 Full Cycle Test — Waiting for organic 50% threshold
 
 **Current Blocker**: None
 
-**Next Session Pickup**:
-1. Phase 6: Continue documentation sweep (~55 files with stale references)
-2. Test JICM watcher restart with v3.0.0 code (kill old process, start new)
-3. Optional: Enable Solution C in `autonomy-config.yaml` for autonomous JICM agent
+**Work In Progress**:
+- JICM v5 fully implemented and documented
+- Submission patterns validated (C-m, Enter, standalone CR work)
+- Full cycle test pending (need 50% context threshold)
+
+**Completed This Session (2026-02-04)**:
+1. ✅ Ran submission method hypothesis testing (6 hypotheses A-F)
+2. ✅ Discovered root cause: CR must be separate tmux call, not embedded in -l string
+3. ✅ Validated external execution requirement (self-injection fails)
+4. ✅ Updated jarvis-watcher.sh with validated patterns (3 methods only)
+5. ✅ Created lesson: `lessons/tmux-self-injection-limitation.md`
+6. ✅ Updated JICM v5 design docs (Section 10, Section 6.4.1-6.4.2)
+7. ✅ Updated command-signal-protocol.md with Critical Constraint
+8. ✅ Created experiment report: `projects/project-aion/experiments/tmux-submission-2026-02-04/`
+9. ✅ Updated session-start.sh with architecture notes
+10. ✅ Preserved test scripts with methodology documentation
+
+**Next Steps**:
+1. Run full JICM v5 cycle test (manual or wait for threshold)
+2. Verify compression → interrupt → clear → injection → resume flow
+3. Consider git commit after successful full cycle
+
+---
+
+## Session Summary (2026-01-31) — JICM v4 Implementation
+
+### Context
+
+Session began with recovery from a stalled context restoration. The user observed a double-clear scenario:
+```
+/intelligent-compress → /clear → "Resume work..." → /clear → STALL
+```
+
+### Root Cause Analysis
+
+**Problem**: Version mismatch between JICM components caused context loss
+
+| Component | Version | Signal Files |
+|-----------|---------|--------------|
+| session-start.sh | v2 | `.compressed-context.md` |
+| /intelligent-compress | v3 | `.compressed-context.md`, `.clear-ready-signal` |
+| jarvis-watcher.sh | v4 | `.compressed-context-ready.md`, `.compression-done.signal` |
+
+**Stall Sequence**:
+1. First `/clear` processed successfully, context file deleted after use
+2. Second `/clear` arrived, no context file found
+3. Jarvis received no continuation instructions
+
+### Implementation Summary
+
+#### Files Modified
+
+| File | Changes |
+|------|---------|
+| `.claude/hooks/session-start.sh` | +80 lines: v4 signal detection, 30s debounce protection |
+| `.claude/scripts/jarvis-watcher.sh` | +25 lines: manual compression detection for /intelligent-compress |
+| `.claude/commands/intelligent-compress.md` | Updated to v4 file names, fixed HEREDOC bug |
+| `.claude/hooks/jicm-continuation-verifier.js` | NEW: Cascade continuation verification hook |
+| `.claude/settings.json` | Registered jicm-continuation-verifier.js |
+| `.claude/context/designs/jicm-v4-architecture.md` | Updated implementation checklist |
+
+#### Files Created
+
+| File | Purpose |
+|------|---------|
+| `.claude/hooks/jicm-continuation-verifier.js` | UserPromptSubmit hook for cascade reinforcement |
+| `.claude/context/reports/jicm-v4-implementation-report.md` | Comprehensive implementation report |
+
+### Key Fixes Applied
+
+1. **v4 Signal Detection**: session-start.sh now checks for `.compressed-context-ready.md` and `.in-progress-ready.md` with priority over legacy v2 files
+
+2. **Debounce Protection**: 30-second window prevents duplicate `/clear` processing
+
+3. **Manual Compression Support**: jarvis-watcher.sh detects `.compression-done.signal` even in monitoring state, enabling `/intelligent-compress` command compatibility
+
+4. **Cascade Verification**: jicm-continuation-verifier.js reinforces continuation context on UserPromptSubmit events
+
+### Testing Required
+
+- [ ] `/intelligent-compress` full cycle test
+- [ ] Debounce test (rapid `/clear` commands)
+- [ ] Automatic threshold trigger test
+- [ ] Cascade continuation verification
+
+### Report Document
+
+Full technical details: `.claude/context/reports/jicm-v4-implementation-report.md`
 
 ---
 

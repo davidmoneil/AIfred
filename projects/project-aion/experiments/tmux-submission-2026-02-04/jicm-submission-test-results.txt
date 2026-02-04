@@ -1,0 +1,34 @@
+# JICM Submission Method Test Results
+# 2026-02-03 - Full Test Run
+
+## Working Methods
+METHOD_1=SUCCESS  # C-m (Standard Enter)
+METHOD_2=SUCCESS  # -l $'\r' (Literal CR)
+METHOD_5=SUCCESS  # Enter (tmux Enter key)
+
+## Failed Methods
+METHOD_3=FAILED   # -l $'\n' (Literal LF)
+METHOD_4=FAILED   # -l $'\r\n' (Literal CRLF)
+METHOD_6=FAILED   # Escape C-m (Escape + Enter)
+METHOD_7=FAILED   # C-m C-m (Double Enter)
+
+## Recommendations
+RECOMMENDED=1
+RECOMMENDED_DESC=C-m (Standard Enter)
+
+## Key Observations
+- CR-based methods work: C-m, literal CR, Enter
+- LF-based methods fail: literal LF, CRLF
+- Multi-step methods fail: Escape+Enter, Double Enter
+- Ad hoc Bash script (separate text + C-m calls) FAILED
+- Test script (same pattern) SUCCEEDED
+
+## Hypothesis to Test
+The difference may be in how the text and submission are combined.
+Test script sends text, sleeps 0.2s, then sends submit.
+Ad hoc script may have timing or signal delivery issues.
+
+Possible factors:
+1. Single tmux send-keys call with text+CR combined
+2. Timing between text send and submit send
+3. Shell execution context differences

@@ -69,34 +69,28 @@ components:
       # Generate report file
       generate_report: true
 
-  # AC-04: Context Management (JICM v3)
-  # Updated 2026-01-23: Statusline JSON API integration
-  # - jarvis-watcher.sh now reads from .statusline-context.json (official API)
-  # - Replaced fragile tmux pane scraping with official Claude Code data
-  # - Pre-calculated used_percentage from statusline is authoritative
-  # - Design: .claude/context/designs/jicm-architecture-solutions.md
+  # AC-04: Context Management (JICM v4)
+  # Updated 2026-01-24: Parallel Compression with Cascade Resume
+  # - Two-threshold detection: x% (spawn agent), y% (fallback)
+  # - Parallel compression agent works while Jarvis continues
+  # - Two-layer executor: interrupt→dump→clear sequence
+  # - Cascade resumer hooks for robust continuation
+  # - Design: .claude/context/designs/jicm-v4-architecture.md
   AC-04-jicm:
     enabled: true
-    version: "3.0.0"
+    version: "4.0.0"
     settings:
-      # Token threshold for compression trigger
-      # Formula: 0.80 * (MAX_CONTEXT - OUTPUT_TOKENS) = 0.80 * (200000 - 20000) = 144000
-      # jarvis-watcher.sh reads .statusline-context.json and triggers at this threshold
-      threshold_tokens: 144000
-      threshold_percentage: 80
-      # Target compression ratio (legacy - see compression_target_percent)
-      compression_target: 0.6
       # Auto-create checkpoint before compression
       auto_checkpoint: true
       # Trigger continuation after compression
       trigger_continuation: true
 
-      # Context monitoring (v3.0.0)
+      # Context monitoring (v4.0.0)
       # Uses official Claude Code statusline JSON API
       monitoring:
-        # File written by statusline-context-capture.sh
-        statusline_context_file: .claude/context/.statusline-context.json
-        # Poll interval (seconds) - statusline updates every 300ms on activity
+        # Authoritative source for context data
+        statusline_file: ~/.claude/logs/statusline-input.json
+        # Poll interval (seconds)
         poll_interval: 30
         # Max age before context file considered stale (seconds)
         max_stale_seconds: 120
@@ -105,52 +99,57 @@ components:
         # Effective limit before performance degradation
         effective_limit: 180000
 
-      # Threshold tiers for graduated response
+      # JICM v4 Two-Threshold System
+      # x% (compression_trigger): Spawn parallel compression agent
+      # y% (fallback_trigger): Fall back to native /compact
+      # 95%: Claude Code auto-compact safety net (always enabled)
       thresholds:
-        healthy: 50     # Normal operation, no action
-        caution: 60     # Log warning
-        warning: 70     # Create soft checkpoint, continue
-        critical: 80    # JICM trigger, intelligent compress
-        emergency: 95   # Force immediate /clear
+        healthy: 50               # Normal operation, no action
+        caution: 60               # Log warning
+        compression_trigger: 70   # x% - Spawn compression agent (parallel)
+        fallback_trigger: 80      # y% - Native /compact fallback
+        # emergency: 95           # Handled by Claude Code auto-compact
 
-      # Intelligent Compression Settings (context-compressor agent)
-      # Invoked via /intelligent-compress command
-      compression:
-        # Model for compression: haiku (fast/cheap), sonnet (balanced), opus (quality)
-        # Using opus for highest quality context preservation and learning capture
-        model: opus
-        # Compression mode: aggressive (10%), default (15-20%), conservative (30%)
-        mode: default
-        # Specific target percentage (overrides mode if set)
-        target_percent: 20
-        # Write compressed context to this file
-        output_file: .claude/context/.compressed-context.md
-        # Inject compressed context post-clear via additionalContext
-        auto_inject: true
+      # Timeouts for v4 workflow
+      timeouts:
+        agent_max_seconds: 180    # 3 min for compression agent
+        dump_max_seconds: 30      # 30s for Jarvis to dump state
+        continuation_delay_1: 5   # First cascade hook delay
+        continuation_delay_2: 10  # Second cascade hook delay
+        continuation_delay_3: 15  # Final enforcement delay
 
-      # JICM Autonomous Agent (Solution C)
-      # Optional background agent for advanced context management
-      autonomous_agent:
-        # Enable autonomous JICM agent spawning
-        enabled: false  # Set to true to activate Solution C
-        # Agent definition file
-        agent_file: .claude/agents/jicm-agent.md
-        # Status file written by agent
-        status_file: .claude/context/.jicm-status.json
-        # Velocity tracking
-        velocity:
-          # Number of samples for velocity calculation
-          sample_count: 10
-          # Confidence threshold for predictions
-          confidence_threshold: 0.8
-        # Proactive management
-        proactive:
-          # Auto-disable Tier 2 MCPs at this threshold
-          mcp_disable_threshold: 70
-          # Begin checkpoint draft at this threshold
-          checkpoint_draft_threshold: 75
-          # Generate preservation manifest at this threshold
-          manifest_threshold: 80
+      # Circuit breakers and safeguards
+      safeguards:
+        debounce_seconds: 300           # 5 min between JICM triggers
+        max_triggers_per_session: 5     # Max triggers before standdown
+        failures_before_standdown: 3    # Consecutive failures → standdown
+        standdown_file: .claude/context/.jicm-standdown
+
+      # Compression Agent (spawned at x% threshold)
+      compression_agent:
+        agent_file: .claude/agents/compression-agent.md
+        model: sonnet              # Quality reasoning for compression
+        output_file: .claude/context/.compressed-context-ready.md
+        signal_file: .claude/context/.compression-done.signal
+
+      # Executor Layer 1 (interrupt + dump)
+      executor_layer1:
+        dump_prompt_file: .claude/context/.dump-prompt.md
+        dump_output_file: .claude/context/.in-progress-ready.md
+        signal_file: .claude/context/.dump-requested.signal
+
+      # Executor Layer 2 (send /clear)
+      executor_layer2:
+        signal_file: .claude/context/.clear-sent.signal
+        verify_percentage_drop: true
+        retry_on_failure: true
+
+      # Cascade Resumer Hooks
+      cascade_resumer:
+        hook1_signal: .claude/context/.continuation-injected.signal
+        hook2_signal: .claude/context/.continuation-verified.signal
+        hook3_signal: .claude/context/.jicm-complete.signal
+        continuation_template: .claude/context/patterns/jicm-continuation-prompt.md
 
   # AC-05: Self-Reflection
   AC-05-reflect:

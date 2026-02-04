@@ -1,6 +1,15 @@
 # JICM Pattern — Jarvis Intelligent Context Management
 
+> ⚠️ **SUPERSEDED**: This document describes JICM v3 architecture. The current authoritative specification is **JICM v5** in `context/designs/jicm-v5-design-addendum.md`. Key changes:
+> - Single 50% threshold (vs five-tier system)
+> - Two-mechanism resume system
+> - Mode-based idle-hands
+> - Combined data sources (transcript + docs)
+>
+> Retained for historical reference.
+
 **Version**: 3.0.0
+**Status**: SUPERSEDED by v5 — See `context/designs/jicm-v5-design-addendum.md`
 **Created**: 2026-01-16
 **Updated**: 2026-01-23
 **Component**: AC-04 JICM
@@ -719,4 +728,5 @@ cat .claude/metrics/AC-04-jicm.jsonl | tail -5
 
 ---
 
-*JICM Pattern — Jarvis Phase 6 PR-12.4*
+*JICM Pattern v3.0.0 — Jarvis Phase 6 PR-12.4*
+*Status: SUPERSEDED by JICM v5 — See `context/designs/jicm-v5-design-addendum.md`*

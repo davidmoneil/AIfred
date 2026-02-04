@@ -1,47 +1,73 @@
 {
   "component": "AC-04",
   "name": "jicm",
-  "version": "1.0.0",
-  "status": "implementing",
+  "version": "5.0.0",
+  "status": "implemented",
   "created": "2026-01-17T00:00:00.000Z",
-  "last_modified": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-02-04T00:00:00.000Z",
+  "specification": {
+    "authoritative_doc": ".claude/context/designs/jicm-v5-design-addendum.md",
+    "supporting_docs": [
+      ".claude/context/designs/jicm-v5-resume-mechanisms.md",
+      ".claude/context/designs/jicm-v5-clarifications.md",
+      ".claude/context/patterns/jicm-continuation-prompt.md"
+    ],
+    "superseded_docs": [
+      ".claude/context/designs/jicm-v4-architecture.md",
+      ".claude/context/patterns/jicm-pattern.md"
+    ]
+  },
+  "v5_design": {
+    "threshold": "50%",
+    "compression_target": "10k-30k tokens",
+    "mechanisms": ["hook_injection", "idle_hands_monitor"],
+    "idle_hands_modes": ["jicm_resume", "long_idle", "workflow_chain", "unsubmitted_text"],
+    "data_sources": {
+      "transcript": ["session.jsonl", "subagent.jsonl", "context-captured.txt"],
+      "foundation": ["CLAUDE.md", "jarvis-identity.md", "compaction-essentials.md"],
+      "session_state": ["session-state.md", "current-priorities.md"]
+    }
+  },
   "implementation": {
     "spec_complete": true,
-    "pattern_complete": true,
-    "context_accumulator": true,
-    "mcp_scripts": true,
-    "context_budget_command": true,
-    "triggers_tested": false,
+    "design_addendum_complete": true,
+    "resume_mechanisms_designed": true,
+    "hook_changes": true,
+    "watcher_changes": true,
+    "compression_agent_updated": true,
     "integration_tested": false,
-    "metrics_emission": false
+    "full_cycle_tested": false
   },
   "validation_checklist": {
-    "all_9_sections_completed": true,
-    "triggers_tested": false,
-    "inputs_outputs_validated": false,
-    "dependencies_verified": true,
-    "gates_implemented": false,
-    "metrics_emission_working": false,
-    "failure_modes_tested": false,
-    "integration_with_consumers_verified": false,
-    "documentation_updated": true
+    "v5_spec_complete": true,
+    "v4_docs_superseded": true,
+    "clarifications_aligned": true,
+    "implementation_planned": true,
+    "hook_implemented": true,
+    "watcher_implemented": true,
+    "submission_methods_tested": true,
+    "full_cycle_validated": false
   },
   "dependencies": {
-    "context_accumulator": {
-      "path": ".claude/hooks/context-accumulator.js",
-      "status": "exists"
+    "session_start_hook": {
+      "path": ".claude/hooks/session-start.sh",
+      "status": "v5_implemented"
     },
-    "disable_mcps": {
-      "path": ".claude/scripts/disable-mcps.sh",
-      "status": "exists"
+    "jarvis_watcher": {
+      "path": ".claude/scripts/jarvis-watcher.sh",
+      "status": "v5_implemented"
     },
-    "enable_mcps": {
-      "path": ".claude/scripts/enable-mcps.sh",
-      "status": "exists"
+    "compression_agent": {
+      "path": ".claude/agents/compression-agent.md",
+      "status": "v5_implemented"
     },
-    "context_budget": {
-      "path": ".claude/commands/context-budget.md",
-      "status": "exists"
+    "intelligent_compress": {
+      "path": ".claude/commands/intelligent-compress.md",
+      "status": "v5_implemented"
+    },
+    "test_script": {
+      "path": ".claude/scripts/test-submission-methods.sh",
+      "status": "created"
     }
   },
   "current_session": {
@@ -56,5 +82,14 @@
     "total_compressions": 0,
     "liftover_success_rate": null,
     "avg_checkpoint_size_tokens": null
+  },
+  "testing": {
+    "syntax_validated": true,
+    "submission_method_tested": true,
+    "submission_method_verified": "C-m, Enter, standalone CR (as separate call)",
+    "hypothesis_tested": true,
+    "external_execution_validated": true,
+    "full_cycle_tested": false,
+    "notes": "Submission patterns fully validated 2026-02-04. Key finding: CR must be separate call, not embedded in -l string. Self-injection fails. Experiment archived: projects/project-aion/experiments/tmux-submission-2026-02-04/"
   }
 }

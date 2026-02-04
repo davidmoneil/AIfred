@@ -144,6 +144,55 @@ echo '{"command":"/status","args":"","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ
 
 ---
 
+## Critical Constraint: External Execution Required
+
+### The Self-Injection Problem
+
+**Keystroke injection via tmux send-keys ONLY works from external processes.**
+
+If Claude Code (Jarvis) attempts to send `tmux send-keys` signals to its own tmux session from within a Bash tool call, the injection **fails unpredictably** due to:
+
+1. **Input State Collision**: Ink TUI in "busy" state while processing Bash command
+2. **Event Loop Interference**: Keystrokes queue while event loop blocked
+3. **Timing Race Conditions**: Script-side sleeps don't affect tmux event delivery
+
+### Correct Architecture
+
+```
+WORKS:    jarvis-watcher.sh (external) → send-keys → Claude Code (idle)
+FAILS:    Claude Code → Bash tool → send-keys → Same Claude Code (blocked)
+```
+
+### Implications
+
+| Scenario | Can Use send-keys? | Why |
+|----------|--------------------|-----|
+| Watcher detecting signal file | ✅ Yes | External process |
+| Bash tool in Claude session | ❌ No | Self-referential |
+| Detached background script | ✅ Yes | External after detach |
+| Hook using additionalContext | ✅ Yes | Not keystroke injection |
+
+### Workaround for In-Session Triggering
+
+If Jarvis needs to trigger deferred injection, spawn a **detached process**:
+
+```bash
+# Spawn script that outlives Bash tool call
+nohup /path/to/injection-script.sh &>/dev/null &
+disown
+# Bash returns immediately; script acts independently
+```
+
+Or use the **signal file pattern** (preferred):
+```bash
+# Create signal file; watcher picks it up externally
+echo '{"command":"/status",...}' > .claude/context/.command-signal
+```
+
+**Full lesson**: `.claude/context/lessons/tmux-self-injection-limitation.md`
+
+---
+
 ## Logging
 
 All signal executions are logged to `.claude/logs/command-signals.log`:

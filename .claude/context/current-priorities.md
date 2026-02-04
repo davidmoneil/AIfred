@@ -2,14 +2,39 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-01-24
+**Last Updated**: 2026-01-31
 
 ---
 
 ## In Progress
 
+### JICM v4.0.0 — Testing Phase (2026-01-31)
+**Status**: 🧪 Implementation Complete — Testing Required
+
+Implemented full JICM v4 system with parallel compression and cascade resume.
+
+**Completed:**
+- [x] Diagnose double-clear stall condition (version mismatch root cause)
+- [x] Update `session-start.sh` with v4 signal detection + debounce
+- [x] Update `/intelligent-compress` command to v4 file names
+- [x] Update `jarvis-watcher.sh` with manual compression detection
+- [x] Create `jicm-continuation-verifier.js` cascade hook
+- [x] Update `jicm-v4-architecture.md` checklist
+- [x] Create implementation report
+
+**Testing Required:**
+- [ ] `/intelligent-compress` full cycle test
+- [ ] Debounce protection test (rapid `/clear` commands)
+- [ ] Automatic threshold trigger test
+- [ ] Cascade continuation verification test
+
+**Report**: `.claude/context/reports/jicm-v4-implementation-report.md`
+**Design**: `.claude/context/designs/jicm-v4-architecture.md`
+
+---
+
 ### Command-to-Skills Migration (v4.1.0)
-**Status**: 🔄 In Progress (Phase 6)
+**Status**: ✅ Complete
 **Plan**: `.claude/plans/nested-floating-token.md`
 
 **Completed:**
@@ -18,11 +43,9 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 - [x] Phase 3: Create self-improvement skill
 - [x] Phase 4: Create validation skill
 - [x] Phase 5: Delete 17 auto-* wrapper commands (functionality in autonomous-commands skill)
+- [x] Phase 6: Documentation sweep (10 files updated with jarvis-watcher.sh references)
 
-**In Progress:**
-- [ ] Phase 6: Documentation sweep (~55 remaining files with stale references)
-
-**Commits:** `21043ad` (migration), `13a48ca` (partial docs)
+**Commits:** `21043ad` (migration), `13a48ca` (partial docs), `f360e4c` (doc sweep)
 
 ### PR-12.3: Independent Milestone Review (2026-01-21)
 **Status**: ⏸️ Paused (AIfred Integration priority)
@@ -58,6 +81,14 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 ---
 
 ## Recently Completed
+
+### JICM v4.0.0 — Parallel Compression with Cascade Resume (2026-01-31)
+- **Root Cause Fix**: Resolved double-clear stall caused by v2/v3/v4 version mismatch
+- **session-start.sh**: v4 signal detection with priority, 30s debounce protection
+- **jarvis-watcher.sh**: Manual compression detection for `/intelligent-compress` compatibility
+- **New Hook**: `jicm-continuation-verifier.js` for cascade reinforcement
+- **Updated Command**: `/intelligent-compress` migrated to v4 file names
+- **Report**: `.claude/context/reports/jicm-v4-implementation-report.md`
 
 ### JICM v3.0.0 — Complete Redesign (2026-01-24)
 - **Solution A**: Statusline-Unified — jarvis-watcher.sh uses official Claude Code JSON API
@@ -151,6 +182,14 @@ See `projects/project-aion/roadmap.md` for full roadmap.
 
 ### Future Enhancements
 - Auto-restart after rate-limit: Design pattern for automatic session continuation
+
+### Hippocrenae Documentation (from Autopoietic Paradigm v2.0.0)
+- [ ] Create `designs/hippocrenae-design.md` — Unified design philosophy for all nine AC systems
+- [ ] Per-AC design philosophy sections — Purpose and philosophy within autopoietic paradigm
+- [ ] Design schematics for each AC system in `designs/`
+- [ ] Update each AC-## component spec with Hippocrenae framing
+- [ ] Add Jung references to philosophical context (future)
+- [ ] Add theological/philosophical references as appropriate (future)
 
 ---
 
