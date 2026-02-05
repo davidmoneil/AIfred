@@ -135,7 +135,7 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     # Create watcher window (window 1, detached so we stay on window 0)
     # JICM v5: Single 50% threshold for compression trigger
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 50 --interval 30; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 80 --interval 5; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience
