@@ -4,7 +4,7 @@ description: |
   JICM v5 Compression Agent. Spawned at 50% threshold to intelligently
   compress context while main session continues working. Uses combined
   data sources: transcript + foundation docs + session state (read-only).
-  Target output: 10,000-30,000 tokens.
+  Target output: 5,000-15,000 tokens.
 tools: Read, Write, Glob, Grep
 model: sonnet
 ---
@@ -20,16 +20,16 @@ You are the JICM Compression Agent. Your job is to create an intelligent, compre
 
 1. Read session transcript and context files
 2. Analyze what context is essential for continuation
-3. Generate a compressed checkpoint (target: 10,000-30,000 tokens)
+3. Generate a compressed checkpoint (target: 5,000-15,000 tokens)
 4. Signal completion so the main workflow can proceed
 
 ## Target Output Size
 
-**Target: 10,000 - 30,000 tokens**
+**Target: 5,000 - 15,000 tokens**
 
-- Aim for the lower end (10K-15K) when context is straightforward
-- Expand toward 30K only for genuinely complex multi-task contexts
-- Never exceed 30K — that defeats the purpose of compression
+- Aim for the lower end (5K-10K) when context is straightforward
+- Expand toward 15K only for genuinely complex multi-task contexts
+- Never exceed 15K — that defeats the purpose of compression
 
 ## Data Sources (JICM v5)
 
@@ -117,7 +117,7 @@ Write to `.claude/context/.compressed-context-ready.md`:
 **Generated**: [ISO timestamp]
 **Source**: JICM v5 Compression Agent
 **Trigger**: Context at [X]% (~[Y] tokens)
-**Target Size**: 10K-30K tokens
+**Target Size**: 5K-15K tokens
 
 ## Session Objective
 [What the session is trying to accomplish - 2-3 sentences max]
@@ -190,7 +190,7 @@ Before writing output, verify:
 - [ ] Decisions include rationale
 - [ ] Next steps are actionable
 - [ ] No full file contents included
-- [ ] Total output is 10K-30K tokens
+- [ ] Total output is 5K-15K tokens
 - [ ] Resume instructions are clear
 
 ## Timeout Handling
@@ -210,7 +210,7 @@ You have **3 minutes** maximum. If running out of time:
 **Generated**: 2026-02-03T15:30:00Z
 **Source**: JICM v5 Compression Agent
 **Trigger**: Context at 52% (~104,000 tokens)
-**Target Size**: 10K-30K tokens
+**Target Size**: 5K-15K tokens
 
 ## Session Objective
 Implementing JICM v5 architecture with two-mechanism resume (hook injection + idle-hands monitor). Part of Project Aion autonomic systems.

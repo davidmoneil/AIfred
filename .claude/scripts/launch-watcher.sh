@@ -21,8 +21,8 @@ LOCK_DIR="$PROJECT_DIR/.claude/context/.watcher-launch.lock"
 LOG_FILE="$PROJECT_DIR/.claude/logs/watcher-launcher.log"
 
 # Watcher configuration (JICM v5: 50% threshold)
-WATCHER_THRESHOLD="${JARVIS_WATCHER_THRESHOLD:-50}"
-WATCHER_INTERVAL="${JARVIS_WATCHER_INTERVAL:-30}"
+WATCHER_THRESHOLD="${JARVIS_WATCHER_THRESHOLD:-80}"
+WATCHER_INTERVAL="${JARVIS_WATCHER_INTERVAL:-5}"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")

@@ -2,15 +2,49 @@
 
 ## Current Work Status
 
-**Status**: 🟡 Idle — Session Ended 2026-02-04 17:30
+**Status**: 🟢 Active — JICM v5.4.0 Complete
 
-**Last Completed**: Self-improvement cycle + JICM v5 implementation — 2026-02-04
+**Last Completed**: JICM v5.4.0 diagnostic enhancements — 2026-02-05 20:51
 
-**Next Session Pickup**: Test session_start idle-hands mode (requires fresh session start)
+**Current Task**: Watcher running stable, JICM v6 design pending implementation
 
 **Current Blocker**: None
 
-**Completed This Session (2026-02-04)**:
+**Completed This Session (2026-02-05)**:
+1. ✅ Fixed context balloon bug (removed Step 2 from /intelligent-compress)
+2. ✅ Added TUI cache invalidation function (invalidate_tui_cache)
+3. ✅ Added data consistency check (check_data_consistency)
+4. ✅ Fixed state machine bug (compression_triggered premature reset)
+5. ✅ Extended post-clear settling to 15 seconds
+6. ✅ Created JICM v6 design document (4 enhancement areas)
+7. ✅ Implemented critical state detection (detect_critical_state, handle_critical_state)
+8. ✅ Fixed token_method tracking (subshell export → temp file)
+9. ✅ Enhanced progress bar with threshold markers (50% JICM, 95% auto-compact)
+10. ✅ Added output token reservation indicator (4%)
+11. ✅ Updated color coding to match JICM zones
+12. ✅ **v5.3.2**: Fixed bash 3.2 set -e exit bug in detect_critical_state()
+13. ✅ **v5.4.0**: Added signal-aware shutdown logging (INT/TERM/HUP)
+14. ✅ **v5.4.0**: Added heartbeat display every 6 iterations (♡ marker)
+15. ✅ **v5.4.0**: Fixed poll_count double-increment bug (was 1,3,5,7...)
+16. ✅ **v5.4.0**: Added stale data retry limit (3 retries, then percentage fallback)
+17. ✅ **v5.4.0**: Enhanced debug output with token method and poll count
+
+**JICM v5.4.0 Changes**:
+- Signal-aware shutdown: logs INT/TERM/HUP signals that cause exit
+- Heartbeat display: shows status every 6 iterations even if tokens unchanged (♡)
+- Fixed poll_count double-increment bug (was incrementing twice per loop)
+- Stale data retry limit: 3 retries before falling back to percentage estimate
+- Enhanced debug output: shows token method and poll count
+
+**JICM v5.3.2 Changes**:
+- Token method now correctly reported in watcher status
+- Progress bar shows │ markers at 50% and 95% thresholds
+- Output reservation zone (▪) in last 4% of bar
+- Color coding: Green<50%, Yellow 50-79%, Red 80-94%, Magenta 95%+
+- Critical state detection for post_clear_restore, fresh_session, interrupted
+- **Fixed**: detect_critical_state() now always returns 0 (bash 3.2 compatibility)
+
+**Completed Previously (2026-02-04)**:
 1. ✅ Fixed watcher token extraction (was using cumulative totals, now uses TUI exact/percentage)
 2. ✅ Implemented v5.1.0 multi-method token extraction (TUI exact → TUI abbrev → JSON current_usage → validate)
 3. ✅ Fixed launch-watcher.sh threshold 80%→50% (JICM v5 consistency)

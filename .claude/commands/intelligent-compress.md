@@ -17,30 +17,16 @@ fi
 
 If file exists, STOP and say "Compression already in progress."
 
-## Step 2: Create In-Progress Flag and Update Session Files
+## Step 2: Create In-Progress Flag
 
-First, create the flag:
+Create the flag to prevent concurrent compressions:
 ```bash
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .claude/context/.compression-in-progress
 ```
 
-**CRITICAL**: Before spawning the agent, update these files with current work state:
-
-1. **session-state.md** - Update with current task status:
-   - Read `.claude/context/session-state.md`
-   - Update "Current Work" section with what you're working on RIGHT NOW
-   - Update "Status" to reflect current state
-   - Write back the file
-
-2. **current-priorities.md** - Mark completed items:
-   - Read `.claude/context/current-priorities.md`
-   - Check off any completed priorities
-   - Update "Next Step" if applicable
-   - Write back the file
-
-3. **Check todos** - If any todos are in_progress, note them in session-state
-
-These updates ensure the compression agent has accurate information to preserve.
+**NOTE**: Do NOT update session files here. The compression agent reads them directly and
+extracts context from the conversation transcript. Pre-updating files here would inflate
+context by ~20% before the agent even spawns, defeating the purpose of early compression.
 
 ## Step 3: Spawn Compression Agent
 
@@ -53,8 +39,8 @@ run_in_background: true
 prompt: |
   Compress the current conversation context for JICM v5 continuation.
 
-  **Compression Target**: 10,000 - 30,000 tokens
-  **Threshold Trigger**: 50% context usage
+  **Compression Target**: 5,000 - 15,000 tokens
+  **Threshold Trigger**: 40% context usage
 
   You have access to the full conversation history. Your task:
 
@@ -68,7 +54,7 @@ prompt: |
   Write compressed context to: .claude/context/.compressed-context-ready.md
   Write completion signal to: .claude/context/.compression-done.signal
 
-  Target: 10K-30K tokens. Self-contained for seamless continuation.
+  Target: 5K-15K tokens. Self-contained for seamless continuation.
   See compression-agent.md for full protocol.
 ```
 
@@ -87,7 +73,7 @@ After agent returns (check `.compression-done.signal`):
 
 ## Step 5: Confirm to User
 
-Say: "Compression complete (JICM v5). The watcher will send /clear shortly, then inject the compressed context for seamless continuation. Target: 10K-30K tokens."
+Say: "Compression complete (JICM v5). The watcher will send /clear shortly, then inject the compressed context for seamless continuation. Target: 5K-15K tokens."
 
 ---
 
@@ -100,7 +86,7 @@ Say: "Compression complete (JICM v5). The watcher will send /clear shortly, then
 │ 1. /intelligent-compress triggered (manual or watcher)      │
 │ 2. Spawn compression-agent (background, sonnet)             │
 │    - Agent reads transcript + foundation docs + state       │
-│    - Agent compresses to 10K-30K tokens                     │
+│    - Agent compresses to 5K-15K tokens                     │
 │    - Agent writes .compressed-context-ready.md              │
 │    - Agent writes .compression-done.signal                  │
 │ 3. Watcher detects signal → sends /clear                    │
@@ -160,22 +146,25 @@ components:
   AC-04-jicm:
     version: 5.0.0
     settings:
-      threshold: 50              # Single trigger threshold
+      threshold: 40              # Single trigger threshold
       compression:
         model: sonnet            # haiku|sonnet|opus
-        target_min: 10000        # Minimum tokens
-        target_max: 30000        # Maximum tokens
+        target_min: 5000        # Minimum tokens
+        target_max: 15000        # Maximum tokens
         output_file: .claude/context/.compressed-context-ready.md
         auto_inject: true
 ```
 
 ## Related
 
-- @.claude/agents/compression-agent.md — Agent specification (v5)
-- @.claude/context/designs/jicm-v5-design-addendum.md — Authoritative v5 spec
-- @.claude/context/designs/jicm-v5-resume-mechanisms.md — Resume mechanism details
-- @.claude/hooks/session-start.sh — Post-clear injection + idle-hands flag
-- @.claude/scripts/jarvis-watcher.sh — Context monitoring + idle-hands monitor
+<!-- NOTE: Do NOT use @ references here - they auto-load files into context,
+     causing a ~30K token balloon when this command runs. That defeats the
+     purpose of early compression at 50% threshold. -->
+- `.claude/agents/compression-agent.md` — Agent specification (v5)
+- `.claude/context/designs/jicm-v5-design-addendum.md` — Authoritative v5 spec
+- `.claude/context/designs/jicm-v5-resume-mechanisms.md` — Resume mechanism details
+- `.claude/hooks/session-start.sh` — Post-clear injection + idle-hands flag
+- `.claude/scripts/jarvis-watcher.sh` — Context monitoring + idle-hands monitor
 
 ---
 
