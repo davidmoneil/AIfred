@@ -38,6 +38,7 @@ Recurring patterns discovered through reflection and R&D.
 | 2026-01-18 | PAT-003 | PreToolUse additionalContext enables dynamic context injection | New Discovery |
 | 2026-01-18 | PAT-004 | Single-agent ReAct loop (Wiggum) more reliable than multi-agent swarms | Confirmed |
 | 2026-02-04 | PAT-005 | **tmux self-injection fails from within Claude Code** | Critical Discovery |
+| 2026-02-05 | PAT-006 | **Single authority for process launch** — avoid duplicate launcher race conditions | New Discovery |
 
 ---
 
@@ -62,6 +63,13 @@ Recurring patterns discovered through reflection and R&D.
   - **Key insight**: Bash tool calls block TUI event loop; keystrokes queue unpredictably
   - **Solution**: All prompt injection must come from external processes (watcher pattern)
   - **Affects**: JICM, command-signal-protocol, any autonomous prompt submission
+
+### Process Management / Concurrency
+- PAT-006: Single authority for process launch (avoid race conditions)
+  - **Context**: Duplicate watcher bug — two launchers, both passed checks, both launched
+  - **Key insight**: TOCTOU race between check and launch defeats duplicate detection
+  - **Solution**: Designate single authoritative launcher; others request/verify, don't launch
+  - **Affects**: Watcher management, future agent spawning, any background process coordination
 
 ### Documentation
 *None yet*
@@ -106,4 +114,4 @@ See `.claude/evolution/evolution-queue.yaml` for full proposal details.
 
 ---
 
-*Index maintained by AC-05 Self-Reflection — Updated 2026-02-04*
+*Index maintained by AC-05 Self-Reflection — Updated 2026-02-05*

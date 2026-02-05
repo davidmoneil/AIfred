@@ -75,4 +75,29 @@ proposals:
       - ".claude/context/lessons/self-corrections.md"
       - "PRD-V5 Correction #1"
 
-# Queue maintained by AC-05/AC-06 — Updated 2026-01-20
+  - id: EVO-2026-02-001
+    date: "2026-02-05"
+    source: reflection
+    priority: low
+    status: queued
+    summary: "Watcher Health Check at Session Start"
+    problem: |
+      No visibility into watcher state at session start. Duplicate watcher bug was only
+      discovered when user noticed two watchers running. Early detection would help.
+    proposal: |
+      Add watcher health verification to session-start hook:
+      1. Check if watcher is running (pgrep)
+      2. Verify single instance (count processes)
+      3. Log warning if multiple or none
+      4. Do NOT launch (leave that to tmux launcher)
+    implementation:
+      - Modify session-start.sh to add watcher_health_check() function
+      - Log to session-start-diagnostic.log
+      - Warning only, no action (avoids race conditions)
+    estimated_effort: low
+    related:
+      - ".claude/hooks/session-start.sh"
+      - "PAT-006: Single authority for process launch"
+      - ".claude/reports/reflections/reflection-2026-02-05.md"
+
+# Queue maintained by AC-05/AC-06 — Updated 2026-02-05

@@ -2,11 +2,11 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Active — JICM v5.4.0 Complete
+**Status**: 🟢 Session Complete — Ready for next session
 
-**Last Completed**: JICM v5.4.0 diagnostic enhancements — 2026-02-05 20:51
+**Last Completed**: End-session protocols with full self-improvement cycle — 2026-02-05 22:55
 
-**Current Task**: Watcher running stable, JICM v6 design pending implementation
+**Current Task**: None (session ended)
 
 **Current Blocker**: None
 
@@ -28,6 +28,22 @@
 15. ✅ **v5.4.0**: Fixed poll_count double-increment bug (was 1,3,5,7...)
 16. ✅ **v5.4.0**: Added stale data retry limit (3 retries, then percentage fallback)
 17. ✅ **v5.4.0**: Enhanced debug output with token method and poll count
+18. ✅ **v5.4.2**: Fixed interrupt loop bug (disabled interrupted handler)
+19. ✅ **v5.4.2**: Dynamic threshold marker in statusline (config-driven)
+20. ✅ **PRB-003**: Fixed duplicate watcher launch race condition
+21. ✅ Updated .gitignore with JICM runtime file patterns
+22. ✅ Full self-improvement cycle (AC-08 → AC-05 → AC-06)
+
+**Session Commits**:
+- `976ce91` — feat(jicm): JICM v5.4.2 — interrupt fix + statusline improvements
+- `2aa4296` — feat(jicm): Dynamic statusline config with approach/critical thresholds
+- `f83c128` — fix(jicm): Prevent duplicate watcher launches + gitignore runtime files
+
+**New Pattern Documented**:
+- PAT-006: Single authority for process launch (avoid race conditions)
+
+**Evolution Queue**:
+- EVO-2026-02-001: Watcher health check at session start (queued)
 
 **JICM v5.4.0 Changes**:
 - Signal-aware shutdown: logs INT/TERM/HUP signals that cause exit
@@ -74,10 +90,11 @@
 - Medium-risk queued: 1 (stale documentation audit)
 - Report: `.claude/reports/self-improve/self-improve-2026-02-04.md`
 
-**Next Steps**:
+**Next Steps** (for next session):
 1. Test session_start mode on fresh session (AUTO-WAKE TEST)
 2. Review stale documentation files (user-preferences.md, model-selection.md)
-3. Consider long_idle and workflow_chain modes for future
+3. Consider implementing EVO-2026-02-001 (watcher health check)
+4. Consider long_idle and workflow_chain modes for future
 
 ---
 
