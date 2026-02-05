@@ -5,9 +5,31 @@
 
 # Logs (rotated, can be large)
 .claude/logs/*.jsonl
+.claude/logs/*.log
+.claude/logs/*.json
 .claude/logs/archive/
 .claude/logs/.current-session
 .claude/logs/.session-activity
+.claude/logs/latest
+.claude/logs/debug.log
+
+# Runtime context files (regenerated each session)
+.claude/context/.watcher-*
+.claude/context/.jicm-*
+.claude/context/.command-output
+.claude/context/.context-captured*
+.claude/context/*.signal
+.claude/context/.preservation-manifest.json
+.claude/context/.idle-hands-*
+.claude/context/.clear-sent.signal
+.claude/context/.continuation-injected.signal
+
+# Compressed context (restored on /clear, not persisted)
+.claude/context/.compressed-context-ready.md
+.claude/context/.in-progress-ready.md
+
+# State files (runtime only)
+.claude/state/components/*.json
 
 # Agent sessions (transient)
 .claude/agents/sessions/*.md

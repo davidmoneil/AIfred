@@ -168,13 +168,20 @@ EOF
     fi
 fi
 
-# Launch auto-clear watcher on startup (not on clear/compact to avoid duplicates)
+# ============================================================================
+# WATCHER LAUNCH DISABLED — Handled by launch-jarvis-tmux.sh (2026-02-05)
+# ============================================================================
+# Previously launched watcher here, but this caused duplicate watchers:
+# 1. launch-jarvis-tmux.sh creates watcher window (primary)
+# 2. session-start.sh hook fires ~simultaneously (race condition)
+# 3. Both pass duplicate checks before either fully registers → 2 watchers
+#
+# Fix: Watcher is now ONLY launched by launch-jarvis-tmux.sh
+# This hook focuses on context injection; tmux launcher handles process management
+# ============================================================================
 if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
-    # Launch watcher in background (don't block hook)
-    if [[ -x "$CLAUDE_PROJECT_DIR/.claude/scripts/launch-watcher.sh" ]]; then
-        "$CLAUDE_PROJECT_DIR/.claude/scripts/launch-watcher.sh" &
-        echo "$TIMESTAMP | SessionStart | Launched watcher" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
+    # Watcher launch removed - see comment above
+    echo "$TIMESTAMP | SessionStart | Watcher launch skipped (handled by tmux launcher)" >> "$LOG_DIR/session-start-diagnostic.log"
 
     # ============== JICM AGENT SPAWN SIGNAL (v3.0.0 Solution C) ==============
     # Check if JICM autonomous agent is enabled in config
