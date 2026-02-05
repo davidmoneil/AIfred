@@ -44,6 +44,52 @@ See `_template.yaml` for full structure. Key fields:
 - `tasks[].depends_on`: Array of task IDs that must complete first
 - `tasks[].commits`: Git commits linked to this task
 
+## Fresh Context Execution
+
+For long-running or repetitive orchestrations, tasks can be executed in **fresh Claude instances** to avoid context pollution.
+
+### When to Use Fresh Context
+
+| Use Fresh Context | Use Normal Session |
+|-------------------|-------------------|
+| Many similar tasks | Building on previous reasoning |
+| Long-running autonomy | Interactive guidance needed |
+| Consistency matters | Context accumulation helps |
+| Independent tasks | Tasks share state |
+
+### How It Works
+
+```bash
+# Execute orchestration tasks with fresh context
+./scripts/fresh-context-loop.sh .claude/orchestration/my-feature.yaml
+
+# Or with inline tasks
+./scripts/fresh-context-loop.sh --tasks "Task 1|Task 2|Task 3"
+
+# Dry run to preview
+./scripts/fresh-context-loop.sh --dry-run .claude/orchestration/my-feature.yaml
+```
+
+Each task runs in a completely new Claude instance:
+1. Loop controller reads next pending task from YAML
+2. Spawns fresh Claude with ONLY that task's prompt
+3. Claude executes, commits changes, reports status
+4. Controller updates YAML and moves to next task
+
+Memory between tasks persists only via git commits and YAML status updates.
+
+### Configuration
+
+| Parameter | Default | Flag |
+|-----------|---------|------|
+| Max iterations | 10 | `-m N` |
+| Max turns per task | 15 | `-t N` |
+| Fail threshold | 3 | `-f N` |
+
+See `scripts/fresh-context-loop.sh --help` for full options.
+
+**Pattern documentation**: `.claude/context/patterns/fresh-context-pattern.md`
+
 ## Integration Points
 
 - **current-priorities.md**: Orchestrations link via `priority_link`
@@ -51,3 +97,4 @@ See `_template.yaml` for full structure. Key fields:
 - **TodoWrite**: Orchestration creates session todos
 - **Memory MCP**: Patterns stored for reuse
 - **Git**: Commits linked to tasks via `/orchestration:commit`
+- **Fresh Context**: Tasks can run in isolated Claude instances via `fresh-context-loop.sh`

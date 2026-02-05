@@ -27,6 +27,9 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 - @.claude/context/patterns/capability-layering-pattern.md - **Scripts over LLM** (Code → CLI → Prompt)
 - @.claude/context/patterns/code-before-prompts-pattern.md - Deterministic code, AI for intelligence
 - @.claude/context/patterns/autonomous-execution-pattern.md - Scheduled Claude jobs
+- @.claude/context/patterns/fresh-context-pattern.md - Fresh context execution (no pollution)
+- @.claude/context/patterns/secret-management-pattern.md - SOPS + age encryption for Docker secrets
+- @.claude/context/patterns/external-tool-evaluation-pattern.md - Systematic tool evaluation
 - @.claude/context/telos/TELOS.md - **Strategic goal alignment**
 - @.claude/skills/upgrade/SKILL.md - Self-improvement system
 - @.claude/skills/structured-planning/SKILL.md - Guided conversational planning
@@ -163,6 +166,10 @@ Your infrastructure-specific agents with persistent memory:
 | [project-lifecycle](@.claude/skills/project-lifecycle/SKILL.md) | Project creation and registration | `/create-project`, `/register-project` |
 | [infrastructure-ops](@.claude/skills/infrastructure-ops/SKILL.md) | Health checks and monitoring | `/health-report`, `/agent service-troubleshooter` |
 | [parallel-dev](@.claude/skills/parallel-dev/SKILL.md) | Autonomous parallel development | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate`, `/parallel-dev:merge` |
+| [system-utilities](@.claude/skills/system-utilities/SKILL.md) | Core CLI utilities | `/link-external`, `/sync-git` |
+| [orchestration](@.claude/orchestration/README.md) | Task orchestration with fresh-context | `/orchestration:plan`, `/orchestration:status` |
+| [upgrade](@.claude/skills/upgrade/SKILL.md) | Self-improvement and discovery | `/upgrade` |
+| [structured-planning](@.claude/skills/structured-planning/SKILL.md) | Guided conversational planning | `/plan`, `/plan:new`, `/plan:review` |
 
 ### When to Use Skills vs Commands vs Agents
 
@@ -272,9 +279,15 @@ The `.claude/hooks/` directory contains JavaScript hooks:
 | Hook | Event | Purpose |
 |------|-------|---------|
 | `audit-logger.js` | PreToolUse | Logs all tool executions |
+| `context-usage-tracker.js` | PreToolUse | Tracks context/token usage |
+| `compose-validator.js` | PreToolUse (Bash) | Validates docker-compose files |
 | `session-tracker.js` | Notification | Tracks session lifecycle |
 | `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
+| `priority-validator.js` | PostToolUse | Tracks evidence for priority completion |
+| `index-sync.js` | PostToolUse | Keeps _index.md files in sync |
 | `project-detector.js` | UserPromptSubmit | Auto-detects GitHub URLs and "new project" requests |
+| `skill-router.js` | UserPromptSubmit | Routes slash commands to parent skills |
+| `planning-mode-detector.js` | UserPromptSubmit | Auto-detects when planning is needed |
 | `doc-sync-trigger.js` | PostToolUse | Tracks code changes, suggests doc sync |
 
 ### Log Format
@@ -341,5 +354,5 @@ After setup, this section will be updated with your configuration details.
 
 ---
 
-*AIfred v2.0 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-01-21 - Major sync from AIProjects: Scripts over LLM, Pattern Detection, TELOS*
+*AIfred v2.1.0 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-02-05 - v2.1 sync: 6 new hooks, 3 patterns, 3 scripts, 2 skills, fresh-context execution*

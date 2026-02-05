@@ -2,8 +2,8 @@
 
 Comprehensive workflow guides that consolidate related commands, hooks, and patterns.
 
-**Last Updated**: 2026-01-21
-**Total Skills**: 7
+**Last Updated**: 2026-02-05
+**Total Skills**: 8
 
 ---
 
@@ -17,6 +17,7 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 | **parallel-dev** | Autonomous parallel development (planning, execution, validation, merge) | Development | Yes |
 | **upgrade** | Self-improvement system (discover, analyze, propose, implement) | Maintenance | No |
 | **structured-planning** | Guided conversational planning (new designs, reviews, features) | Planning | Yes |
+| **system-utilities** | Core CLI utilities (git sync, priorities, archival) | Maintenance | No |
 | **_template** | Code Before Prompts reference implementation | Reference | Yes |
 
 ---
@@ -36,6 +37,7 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 
 ### System Maintenance
 - **upgrade** - Self-improvement and discovery
+- **system-utilities** - Core CLI utilities (git sync, priority cleanup, history archival)
 
 ### Reference
 - **_template** - Teaching template for skill development
@@ -91,4 +93,4 @@ Need autonomous COMPLEX task execution?
 
 ---
 
-*AIfred Skills v2.0 - Major sync from AIProjects (2026-01-21)*
+*AIfred Skills v2.1 - Added system-utilities, orchestration fresh-context (2026-02-05)*

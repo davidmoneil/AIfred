@@ -2,8 +2,8 @@
 
 Automatic behaviors that run before/after tool executions.
 
-**Last Updated**: 2026-01-21
-**Total Hooks**: 26 (17 existing + 9 new from sync)
+**Last Updated**: 2026-02-05
+**Total Hooks**: 32 (26 existing + 6 new from v2.1 sync)
 
 ---
 
@@ -48,6 +48,13 @@ Automatic behaviors that run before/after tool executions.
 | `prompt-enhancer.js` | UserPromptSubmit | Inject LSP/MCP guidance |
 | `lsp-redirector.js` | PreToolUse | Redirect Grep to LSP tool |
 | `doc-sync-trigger.js` | PostToolUse | Track code changes, suggest sync |
+| `skill-router.js` | UserPromptSubmit | Route commands to parent skills for context |
+| `planning-mode-detector.js` | UserPromptSubmit | Auto-detect when planning is needed |
+| `priority-validator.js` | PostToolUse | Track evidence for priority completion |
+| `compose-validator.js` | PreToolUse | Validate docker-compose before deployment |
+| `context-usage-tracker.js` | PreToolUse | Estimate token/context usage per session |
+| `index-sync.js` | PostToolUse | Keep _index.md files in sync |
+| `project-detector.js` | UserPromptSubmit | Auto-detect and register projects |
 
 ---
 
@@ -123,16 +130,49 @@ echo "My Session" > .claude/logs/.current-session
 
 ## Creating New Hooks
 
+Hooks use stdin/stdout format - read JSON context from stdin, output JSON result to stdout:
+
 ```javascript
-module.exports = async (context) => {
-  const { tool, tool_input, result } = context;
-
+#!/usr/bin/env node
+async function handleHook(context) {
+  const { tool, parameters } = context;
   // Your logic here
+  return { proceed: true }; // or { proceed: false, message: "reason" }
+}
 
-  // Return nothing to continue, or throw to block
-};
+async function main() {
+  const chunks = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
+  }
+  const input = Buffer.concat(chunks).toString('utf8');
+  const context = JSON.parse(input);
+  const result = await handleHook(context);
+  console.log(JSON.stringify(result));
+}
+
+main().catch(err => {
+  console.error(`[my-hook] Fatal error: ${err.message}`);
+  console.log(JSON.stringify({ proceed: true }));
+});
 ```
+
+Register in `.claude/settings.json` under the appropriate event with a matcher.
 
 ---
 
-*AIfred Hooks v2.0 - Major sync from AIProjects (2026-01-21)*
+## New in v2.1 (2026-02-05)
+
+**6 new hooks synced from AIProjects:**
+- `skill-router.js` - Routes slash commands to parent skills for workflow context
+- `planning-mode-detector.js` - Detects planning-type requests, suggests `/plan` workflow
+- `priority-validator.js` - Tracks work evidence (commits, files, services) for priority validation
+- `compose-validator.js` - Validates docker-compose syntax and security before `docker compose up`
+- `context-usage-tracker.js` - Estimates token usage per session, saves daily reports
+- `index-sync.js` - Alerts when new files aren't referenced in `_index.md`
+
+**Settings format updated** to command-based hook registration (matches current Claude Code format).
+
+---
+
+*AIfred Hooks v2.1 - Sync from AIProjects (2026-02-05)*

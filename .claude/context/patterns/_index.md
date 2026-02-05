@@ -34,6 +34,13 @@ This directory contains reusable design patterns for AI infrastructure.
 
 ### Security & Authentication
 - **authentik-automation-pattern.md** - Token-based automation access
+- **secret-management-pattern.md** - SOPS + age encryption for Docker secrets
+
+### Evaluation & Quality
+- **external-tool-evaluation-pattern.md** - Systematic tool/project evaluation framework
+
+### Execution Patterns
+- **fresh-context-pattern.md** - Execute tasks in fresh Claude instances (no context pollution)
 
 ## Testing & Validation
 - **sync-validation-test.md** - Test pattern for synchronization

@@ -4,7 +4,19 @@
 
 AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
 
-## What's New in v2.0 (2026-01-21)
+## What's New in v2.1.0 (2026-02-05)
+
+Enhanced hooks, patterns, and automation from AIProjects sync:
+
+- **6 New Hooks** - skill-router, planning-mode-detector, priority-validator, compose-validator, context-usage-tracker, index-sync
+- **3 New Patterns** - fresh-context execution, secret management (SOPS + age), external tool evaluation
+- **3 New Scripts** - fresh-context-loop.sh, priority-cleanup.sh, claude-history-archiver.sh
+- **2 New Skills** - system-utilities, orchestration (enhanced with fresh-context)
+- **Fresh Context Execution** - Run orchestration tasks in isolated Claude instances to avoid context pollution
+- **Secret Management** - SOPS + age encryption pattern for Docker secrets (security by default)
+- **Hook Format Update** - All hooks now use stdin/stdout command format with matcher-based registration
+
+### v2.0 (2026-01-21)
 
 Major sync from AIProjects implementing "Scripts over LLM" philosophy:
 
@@ -82,6 +94,10 @@ Both CLIs share:
 - Security scanning before commits
 - Health checks after Docker changes
 - Documentation reminders
+- **Skill routing** - Auto-loads parent skill context for slash commands
+- **Planning detection** - Suggests structured planning for complex requests
+- **Context tracking** - Monitors token usage (important for non-Max users)
+- **Compose validation** - Validates docker-compose files before execution
 
 ### Specialized Agents
 - **docker-deployer**: Safely deploy and configure services
@@ -93,6 +109,8 @@ Both CLIs share:
 - **project-lifecycle**: Project creation, registration, and consolidation
 - **infrastructure-ops**: Health checks, container discovery, monitoring
 - **parallel-dev**: Autonomous parallel development with planning, execution, validation, and merge
+- **system-utilities**: Core CLI utilities (git sync, priority cleanup, history archival)
+- **orchestration**: Task orchestration with fresh-context execution mode
 
 ---
 
@@ -236,4 +254,4 @@ Built on patterns developed for personal AI infrastructure management. Inspired 
 
 ---
 
-*AIfred - Because your AI assistant should understand your infrastructure.*
+*AIfred v2.1.0 - Because your AI assistant should understand your infrastructure.*
