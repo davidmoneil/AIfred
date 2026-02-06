@@ -56,7 +56,7 @@ Run the CLI script:
               BACKUP STATUS
 ═══════════════════════════════════════════════════
 
-Repository: sftp:MediaServer:D:/Restic/AIServer-Backups
+Repository: sftp:BackupServer:/path/to/backups
 
 ✓ Backups healthy
 
@@ -71,8 +71,8 @@ Total Snapshots: 45
 
 ID        Time                 Host     Tags
 ───────────────────────────────────────────
-a1b2c3d4  2026-01-20 03:00    AIServer
-b2c3d4e5  2026-01-19 03:00    AIServer
+a1b2c3d4  2026-01-20 03:00    MyServer
+b2c3d4e5  2026-01-19 03:00    MyServer
 ...
 
 ═══════════════════════════════════════════════════

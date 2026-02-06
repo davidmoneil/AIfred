@@ -391,7 +391,7 @@ cat ~/.claude/logs/scheduled/upgrade-discover-*.json | tail -1 | jq '.result'
 
 ```bash
 # Weekly discovery - Sunday 6:00 AM
-0 6 * * 0 /home/davidmoneil/AIProjects/.claude/jobs/claude-scheduled.sh upgrade-discover
+0 6 * * 0 <project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover
 ```
 
 ### How It Works

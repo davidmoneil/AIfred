@@ -400,7 +400,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-User=davidmoneil
+User=<your-username>
 WorkingDirectory=<project_root>
 ExecStart=<project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover
 StandardOutput=append:<project_root>/.claude/logs/scheduled/systemd.log

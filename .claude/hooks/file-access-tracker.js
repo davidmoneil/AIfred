@@ -44,9 +44,10 @@ function shouldTrack(filePath) {
  * Get relative path from AIProjects root
  */
 function getRelativePath(filePath) {
-  const aiProjectsRoot = '/home/davidmoneil/AIProjects/';
-  if (filePath.startsWith(aiProjectsRoot)) {
-    return filePath.substring(aiProjectsRoot.length);
+  // Get project root dynamically (hook lives at .claude/hooks/)
+  const projectRoot = path.resolve(__dirname, '..', '..') + '/';
+  if (filePath.startsWith(projectRoot)) {
+    return filePath.substring(projectRoot.length);
   }
   return filePath;
 }
