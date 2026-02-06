@@ -1,70 +1,189 @@
 # AIfred
 
-**Your Personal AI Infrastructure Starter Kit**
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
+**A configuration framework that turns Claude Code into an AI that understands your entire environment -- not just one project at a time.**
 
-## What's New in v2.2.0 (2026-02-05)
+Most Claude Code setups live inside a single project. Your AI assistant knows that one codebase, follows that one set of rules, and forgets everything when you switch to something else. AIfred sits above your projects as a central hub, carrying context about your infrastructure, your decisions, and your workflows across everything you work on.
 
-**Environment Profile System** - Composable layers that shape your entire AIfred configuration:
+AIfred is built on the latest Claude Code capabilities -- hooks across all lifecycle events, skills with auto-invocation, composable subagents, and the full settings hierarchy. As Claude Code evolves, AIfred evolves with it.
 
-- **Profile System** - Select use-case layers (homelab, development, production) that dynamically configure hooks, permissions, patterns, and agents
-- **Profile Loader** - `node scripts/profile-loader.js` generates `settings.json` from YAML profiles
-- **5 New Hooks** - docker-validator, mcp-enforcer, port-conflict-detector, paths-registry-sync, service-registration-detector
-- **`/profile` Command** - Manage layers: `/profile add development`, `/profile remove homelab`
-- **Profile-Driven Setup** - Phase 2 now asks profile-specific questions dynamically
-- **Zero Breaking Changes** - No profiles = current settings.json works as-is
+Fork it, run the setup wizard, pick your environment profiles, and you have a battle-tested AI assistant in minutes instead of weeks.
 
-### v2.1.0 (2026-02-05)
-
-Enhanced hooks, patterns, and automation from AIProjects sync:
-
-- **6 New Hooks** - skill-router, planning-mode-detector, priority-validator, compose-validator, context-usage-tracker, index-sync
-- **3 New Patterns** - fresh-context execution, secret management (SOPS + age), external tool evaluation
-- **3 New Scripts** - fresh-context-loop.sh, priority-cleanup.sh, claude-history-archiver.sh
-- **2 New Skills** - system-utilities, orchestration (enhanced with fresh-context)
-- **Fresh Context Execution** - Run orchestration tasks in isolated Claude instances
-- **Secret Management** - SOPS + age encryption pattern for Docker secrets
-
-### v2.0 (2026-01-21)
-
-Major sync from AIProjects implementing "Scripts over LLM" philosophy:
-
-- **18 Design Patterns** - Including capability-layering, code-before-prompts, autonomous-execution
-- **26 Hooks** - Pattern detection, security (branch-protection, credential-guard), LSP guidance
-- **7 Skills** - upgrade, structured-planning, parallel-dev, session-management, and more
-- **16 CLI Scripts** - Deterministic operations (checkpoint, sync-git, discover-docker, etc.)
-- **TELOS Framework** - Strategic goal alignment system
-- **Pattern Detection** - Audit logger tracks which patterns are being used
-
----
-
-## Quick Start
-
-### With Claude Code
 ```bash
 git clone https://github.com/davidmoneil/AIfred.git
 cd AIfred
-claude
+claude    # or: opencode
 /setup
 ```
 
-### With OpenCode
+---
+
+## Why Does This Exist?
+
+Claude Code out of the box is powerful but empty. You get a blank CLAUDE.md and start from scratch every time. After months of daily use managing a home lab, building projects, and automating infrastructure, clear patterns emerged:
+
+- **The same problems keep getting solved from scratch.** Session handoffs, Docker health checks, git workflows, project discovery -- these are universal.
+- **Context dies between projects.** Decisions made in one project are invisible to another. Your AI assistant has no memory of what you learned yesterday.
+- **Infrastructure work is different from coding.** Every Claude Code framework out there optimizes for writing and reviewing code. Nobody built one for managing Docker services, monitoring systems, or running a home lab.
+
+AIfred captures those patterns into a reusable, composable framework.
+
+---
+
+## Who Is This For?
+
+**Home lab operators** who manage Docker services, NAS storage, monitoring stacks, and want an AI assistant that understands their infrastructure.
+
+**Developers managing multiple projects** who want consistent workflows, session continuity, and cross-project context instead of isolated per-project CLAUDE.md files.
+
+**Claude Code power users** who want to see what's possible with hooks, skills, agents, and profiles working together as a system -- and want a head start instead of building from scratch.
+
+---
+
+## What Makes It Different?
+
+### 1. A Hub, Not a Single-Project Config
+
+Most Claude Code customizations live inside one project directory. AIfred is designed as a central orchestration point that tracks and manages multiple projects. It maintains a path registry, creates context files for each project, and carries institutional knowledge across everything you work on. When you discover something in Project A, that knowledge is available when you're working in Project B.
+
+### 2. Built for Infrastructure, Not Just Code
+
+Every other Claude Code framework helps you write and review code faster. AIfred also helps you deploy Docker services, discover infrastructure, monitor health, troubleshoot systems, validate compose files, detect port conflicts, and manage a home lab. It includes infrastructure-specific hooks that no other framework has.
+
+### 3. Composable Environment Profiles
+
+No other project in the Claude Code ecosystem has this. You stack YAML layers -- `general + homelab`, or `general + development`, or all three -- and each layer adds specific hooks, permissions, patterns, and agents. Like Docker Compose overrides, but for your AI assistant's behavior.
+
+### 4. An Integrated System, Not a Collection
+
+Most projects give you a bag of 100+ commands or a set of personas. AIfred integrates hooks, commands, skills, agents, profiles, and a setup wizard where each component reinforces the others. The skill router loads context when you invoke commands. The orchestration detector breaks down complex tasks automatically. The audit logger tracks everything for observability. It's a framework, not a folder of markdown files.
+
+---
+
+## How It Works
+
+AIfred layers five capabilities on top of Claude Code:
+
+### Profiles Shape Your Environment
+
+You choose which layers apply to your setup. Each layer activates the right hooks, permissions, and patterns:
+
+| Profile | What It Adds |
+|---------|-------------|
+| **general** (always active) | Audit logging, security scanning, session management |
+| **homelab** | Docker validation, port conflict detection, health monitoring |
+| **development** | Project tracking, orchestration, parallel-dev, branch protection |
+| **production** | Strict security, deployment gates, destructive command blocking |
+
 ```bash
-git clone https://github.com/davidmoneil/AIfred.git
-cd AIfred
-opencode
-/init    # Generate initial context
-/setup   # Run configuration wizard
+# Pick your combination
+node scripts/profile-loader.js --layers general,homelab,development
 ```
 
-The `/setup` command guides you through configuration, adapting to your goals and preferences.
+### Hooks Automate the Repetitive
+
+26 JavaScript hooks run automatically at key moments -- before tool calls, after edits, on session start. They handle audit logging, security checks, Docker health validation, skill routing, planning detection, and documentation reminders. You don't invoke them; they just work.
+
+### Commands Give You Shortcuts
+
+49 slash commands for common operations: `/setup` to configure, `/checkpoint` to save state, `/discover-docker` to document services, `/sync-git` to push across projects, `/end-session` for clean handoffs.
+
+### Skills Guide Complex Workflows
+
+Skills are comprehensive workflow guides that bundle related commands, hooks, and patterns together. When you need session management, infrastructure ops, parallel development, or task orchestration, skills provide step-by-step guidance instead of making you remember which commands to run.
+
+### Agents Handle Autonomous Tasks
+
+Specialized agents work independently on complex tasks: deploying Docker services safely, troubleshooting infrastructure issues with learned patterns, or doing deep research with web sources and citations.
+
+---
+
+## Feature Overview
+
+### Environment Profiles
+
+Composable YAML layers that configure your entire AIfred installation:
+
+```bash
+/profile              # Show current layers
+/profile list         # Available profiles
+/profile add <layer>  # Add a layer
+/profile remove <x>   # Remove a layer
+```
+
+See [`profiles/README.md`](profiles/README.md) for full documentation.
+
+### Automation Hooks (26)
+
+| Category | Examples |
+|----------|---------|
+| **Security** | Branch protection, credential guard, compose validation |
+| **Operations** | Docker health checks, port conflict detection, restart loop detection |
+| **Workflow** | Skill routing, planning detection, orchestration, context tracking |
+| **Observability** | Audit logging, session tracking, documentation sync triggers |
+
+### Slash Commands (49)
+
+| Category | Commands |
+|----------|---------|
+| **Setup** | `/setup`, `/profile` |
+| **Session** | `/checkpoint`, `/end-session`, `/audit-log` |
+| **Infrastructure** | `/discover-docker`, `/check-health`, `/check-services` |
+| **Projects** | `/register-project`, `/new-code-project`, `/consolidate-project` |
+| **Git** | `/sync-git`, `/push-all-commits` |
+| **Planning** | `/plan`, `/design-review`, `/orchestration:plan` |
+| **Development** | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate` |
+
+### Skills (8)
+
+| Skill | Purpose |
+|-------|---------|
+| **session-management** | Session lifecycle: start, track, checkpoint, exit |
+| **infrastructure-ops** | Health checks, container discovery, monitoring |
+| **parallel-dev** | Autonomous parallel development with planning and validation |
+| **orchestration** | Multi-phase task tracking with dependency management |
+| **structured-planning** | Guided conversational planning for designs and features |
+| **project-lifecycle** | Project creation, registration, and consolidation |
+| **system-utilities** | Core CLI utilities: git sync, priority cleanup, history archival |
+| **upgrade** | Self-improvement: discover and apply updates automatically |
+
+### Agents
+
+| Agent | Purpose |
+|-------|---------|
+| **docker-deployer** | Deploy and configure Docker services safely |
+| **service-troubleshooter** | Diagnose infrastructure issues with learned patterns |
+| **deep-research** | In-depth topic investigation with web sources and citations |
+
+### Design Patterns (18+)
+
+Proven patterns extracted from real daily usage:
+
+| Pattern | What It Does |
+|---------|-------------|
+| **DDLA** | Discover, Document, Link, Automate -- systematic knowledge capture |
+| **COSA** | Capture, Organize, Structure, Automate -- information management |
+| **PARC** | Prompt, Assess, Relate, Create -- design review before implementation |
+| **Capability Layering** | Scripts for deterministic work, AI for judgment calls |
+| **Fresh Context Execution** | Run tasks in isolated Claude instances to avoid context pollution |
+| **Autonomous Execution** | Scheduled Claude jobs via cron with permission tiers |
+
+Plus patterns for secret management, memory storage, MCP loading strategies, cross-project tracking, and more.
+
+### Session Continuity
+
+Every session leaves a trail. State is tracked automatically so you can pick up where you left off, even days later. Clean handoffs with `/end-session` ensure nothing is lost between sessions.
+
+### Intelligent Memory
+
+Persistent knowledge graph (via Memory MCP) that remembers decisions, relationships, and lessons learned. Smart pruning archives inactive knowledge without losing it. Access tracking identifies what information matters most.
 
 ---
 
 ## Dual CLI Support
 
-AIfred supports both **Claude Code** (Anthropic) and **OpenCode** (open source):
+AIfred works with both **Claude Code** (Anthropic) and **OpenCode** (open source):
 
 | Feature | Claude Code | OpenCode |
 |---------|-------------|----------|
@@ -72,153 +191,8 @@ AIfred supports both **Claude Code** (Anthropic) and **OpenCode** (open source):
 | Settings | `.claude/settings.json` | `opencode.json` |
 | Commands | `.claude/commands/*.md` | `.opencode/command/*.md` |
 | Agents | `.claude/agents/*.md` | `.opencode/agent/*.md` |
-| MCP Config | `.mcp.json` | `opencode.json` (mcp section) |
 
-Both CLIs share:
-- Context files in `.claude/context/`
-- Knowledge base in `knowledge/`
-- External sources in `external-sources/`
-- Path registry in `paths-registry.yaml`
-
----
-
-## What You Get
-
-### Intelligent Memory
-- Persistent knowledge graph that remembers decisions, relationships, and lessons learned
-- Smart pruning that archives inactive knowledge without losing it
-- Access tracking to understand what information matters most
-
-### Session Management
-- Clean session handoffs with `/end-session`
-- Automatic state tracking so you can pick up where you left off
-- Session notes for complex work
-
-### Infrastructure Awareness
-- Auto-discovery of Docker services
-- System documentation that writes itself
-- Paths registry for external resources
-
-### Automation Hooks (Claude Code)
-- Audit logging for all operations
-- Security scanning before commits
-- Health checks after Docker changes
-- Documentation reminders
-- **Skill routing** - Auto-loads parent skill context for slash commands
-- **Planning detection** - Suggests structured planning for complex requests
-- **Context tracking** - Monitors token usage (important for non-Max users)
-- **Compose validation** - Validates docker-compose files before execution
-
-### Specialized Agents
-- **docker-deployer**: Safely deploy and configure services
-- **service-troubleshooter**: Diagnose issues with learned patterns
-- **deep-research**: In-depth investigation with citations
-
-### Skills (Comprehensive Workflows)
-- **session-management**: End-to-end session lifecycle (start, track, checkpoint, exit)
-- **project-lifecycle**: Project creation, registration, and consolidation
-- **infrastructure-ops**: Health checks, container discovery, monitoring
-- **parallel-dev**: Autonomous parallel development with planning, execution, validation, and merge
-- **system-utilities**: Core CLI utilities (git sync, priority cleanup, history archival)
-- **orchestration**: Task orchestration with fresh-context execution mode
-
----
-
-## Design Patterns
-
-AIfred is built on proven patterns from real-world usage:
-
-### DDLA: Discover → Document → Link → Automate
-When you find something new, AIfred helps you discover it, document it, link it to your knowledge base, and automate interactions with it.
-
-### COSA: Capture → Organize → Structure → Automate
-For new information: capture it quickly, organize into the right location, structure it properly, then automate if it repeats.
-
-### Session Continuity
-Every session leaves a trail. `session-state.md` tracks what you were doing, and `/end-session` ensures clean handoffs.
-
-### Memory vs Context
-- **Memory MCP**: Decisions, relationships, temporal events, lessons learned
-- **Context Files**: Detailed documentation, procedures, reference material
-
----
-
-## Directory Structure
-
-```
-AIfred/
-├── AGENTS.md               # OpenCode instructions
-├── opencode.json           # OpenCode configuration
-├── profiles/               # Environment profile definitions
-│   ├── general.yaml        # Base layer (always active)
-│   ├── homelab.yaml        # Docker, NAS, monitoring
-│   ├── development.yaml    # Code projects, CI/CD
-│   └── production.yaml     # Security hardening
-├── .opencode/
-│   ├── agent/              # OpenCode agent definitions
-│   └── command/            # OpenCode slash commands
-├── .claude/
-│   ├── CLAUDE.md           # Claude Code instructions
-│   ├── settings.json       # Claude Code permissions (generated from profiles)
-│   ├── config/             # Profile config (gitignored)
-│   ├── context/            # Knowledge base (shared)
-│   ├── commands/           # Claude Code slash commands
-│   ├── agents/             # Claude Code agents
-│   ├── hooks/              # Automation hooks
-│   ├── jobs/               # Cron jobs
-│   └── logs/               # Audit logs
-├── scripts/                # CLI automation scripts
-├── knowledge/              # Documentation (shared)
-├── external-sources/       # Symlinks to external data (shared)
-├── paths-registry.yaml     # Source of truth for paths (shared)
-└── setup-phases/           # Setup wizard definitions
-```
-
----
-
-## Environment Profiles
-
-AIfred uses composable **profile layers** that determine what gets configured:
-
-| Profile | Adds |
-|---------|------|
-| **general** (always) | Audit logging, security hooks, session management |
-| **homelab** | Docker validation, port conflict detection, health monitoring |
-| **development** | Project detection, orchestration, parallel-dev, git safety |
-| **production** | Strict security, deployment gates, destructive command blocking |
-
-### Common Combinations
-
-```bash
-# Personal home lab
-node scripts/profile-loader.js --layers general,homelab
-
-# Developer workstation
-node scripts/profile-loader.js --layers general,development
-
-# Full home lab + dev
-node scripts/profile-loader.js --layers general,homelab,development
-```
-
-### Managing Profiles
-
-```bash
-/profile              # Show current layers
-/profile list         # Available profiles
-/profile add <layer>  # Add a layer (requires restart)
-/profile remove <x>   # Remove a layer (requires restart)
-```
-
-See `profiles/README.md` for full documentation.
-
----
-
-## Requirements
-
-- **AI CLI**: Claude Code or OpenCode
-- **Git**: For version control
-- **Docker** (optional): For MCP servers and service management
-- **Linux/macOS**: Primary support (Windows experimental)
+Both share the context files, knowledge base, path registry, and external sources.
 
 ---
 
@@ -226,63 +200,89 @@ See `profiles/README.md` for full documentation.
 
 ### Automation Levels
 
-During setup, you choose your automation level:
+During setup, you choose how much autonomy your AI assistant gets:
 
-| Level | Description |
-|-------|-------------|
+| Level | Behavior |
+|-------|----------|
 | **Full** | Everything runs without prompting |
 | **Guided** | Major changes need confirmation |
 | **Manual** | Most operations prompt for approval |
 
 ### MCP Integration
 
-AIfred works best with the Memory MCP for persistent knowledge. During setup, you can enable:
+AIfred works best with MCP servers for extended capabilities:
 
-- **Memory MCP**: Knowledge graph storage (recommended)
-- **Docker MCP**: Container management
-- **Filesystem MCP**: Cross-directory access
-- **Browser MCP**: Web automation (Playwright)
+- **Memory MCP** -- Persistent knowledge graph (recommended)
+- **Docker MCP** -- Container management
+- **Filesystem MCP** -- Cross-directory file access
+- **Browser MCP** -- Web automation via Playwright
 
----
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `/setup` | Run the setup wizard |
-| `/end-session` | Clean session exit with documentation |
-| `/discover <target>` | Discover and document services |
-| `/health` | System health verification |
+The setup wizard walks you through enabling the ones you need.
 
 ---
 
-## Agents
+## Directory Structure
 
-Use agents via `@agent-name` (OpenCode) or Task tool (Claude Code):
-
-| Agent | Purpose |
-|-------|---------|
-| `docker-deployer` | Deploy and configure Docker services |
-| `service-troubleshooter` | Diagnose infrastructure issues |
-| `deep-research` | In-depth topic investigation |
+```
+AIfred/
+├── profiles/               # Environment profile definitions (YAML)
+│   ├── general.yaml        # Base layer (always active)
+│   ├── homelab.yaml        # Docker, NAS, monitoring
+│   ├── development.yaml    # Code projects, CI/CD
+│   └── production.yaml     # Security hardening
+├── .claude/
+│   ├── CLAUDE.md           # Claude Code instructions
+│   ├── settings.json       # Permissions (generated from profiles)
+│   ├── context/            # Knowledge base (37 files)
+│   ├── commands/           # Slash commands (49)
+│   ├── agents/             # Agent definitions
+│   ├── hooks/              # Automation hooks (26)
+│   ├── skills/             # Workflow skills (8)
+│   └── orchestration/      # Task orchestration configs
+├── .opencode/              # OpenCode-specific configs
+├── scripts/                # CLI automation scripts (16+)
+├── knowledge/              # Documentation and reference
+├── external-sources/       # Symlinks to external data
+├── paths-registry.yaml     # Source of truth for all paths
+└── setup-phases/           # 7-phase setup wizard
+```
 
 ---
 
-## Customization
+## Requirements
 
-After setup, customize by:
+- **Claude Code** or **OpenCode**
+- **Git**
+- **Node.js** (for profile loader)
+- **Docker** (optional, for infrastructure features)
+- **Linux/macOS** (Windows experimental)
 
-### Claude Code
-1. Edit `.claude/CLAUDE.md` for project-specific instructions
-2. Add commands in `.claude/commands/`
-3. Create agents in `.claude/agents/`
-4. Configure hooks as needed
+---
 
-### OpenCode
-1. Edit `AGENTS.md` for project-specific instructions
-2. Add commands in `.opencode/command/`
-3. Create agents in `.opencode/agent/`
-4. Configure MCP servers in `opencode.json`
+## Changelog
+
+### v2.2.0 (2026-02-05) -- Environment Profiles
+
+- Composable YAML profile system with 4 layers
+- Zero-dependency profile loader (`node scripts/profile-loader.js`)
+- 5 new hooks: docker-validator, mcp-enforcer, port-conflict-detector, paths-registry-sync, service-registration-detector
+- `/profile` command for managing layers
+- Profile-driven setup wizard questions
+
+### v2.1.0 (2026-02-05) -- Enhanced Automation
+
+- 6 new hooks: skill-router, planning-mode-detector, priority-validator, compose-validator, context-usage-tracker, index-sync
+- 3 new patterns: fresh-context execution, secret management (SOPS + age), external tool evaluation
+- Fresh context execution for isolated task processing
+- 3 new CLI scripts
+
+### v2.0.0 (2026-01-21) -- Foundation
+
+- 18 design patterns from real-world usage
+- 26 automation hooks with matcher-based registration
+- 7 skills: upgrade, structured-planning, parallel-dev, session-management, and more
+- 16 CLI scripts with deterministic operations
+- TELOS strategic goal alignment framework
 
 ---
 
@@ -296,16 +296,14 @@ AIfred is designed to be forked and customized. If you build something useful, c
 
 ---
 
+## Learn More
+
+- [profiles/README.md](profiles/README.md) -- Profile system documentation
+- [docs/PROJECT-PLAN.md](docs/PROJECT-PLAN.md) -- Architecture and development roadmap
+- [knowledge/docs/quick-start.md](knowledge/docs/quick-start.md) -- Getting started guide
+
+---
+
 ## License
 
-MIT License - See LICENSE file for details.
-
----
-
-## Acknowledgments
-
-Built on patterns developed for personal AI infrastructure management. Inspired by the need for repeatable, maintainable AI assistant configurations.
-
----
-
-*AIfred v2.2.0 - Because your AI assistant should understand your infrastructure.*
+Apache License 2.0 -- See [LICENSE](LICENSE) for details.
