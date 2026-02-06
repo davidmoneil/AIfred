@@ -1,0 +1,74 @@
+# AIfred Profile Schema Reference
+# ================================
+# Each profile YAML file follows this structure.
+# Profiles are composable layers merged left-to-right (general first).
+
+# Profile metadata
+name: string                    # Display name (e.g., "Home Lab")
+description: string             # One-line description
+version: string                 # Semver (e.g., "1.0.0")
+extends: string|null            # null for general, "general" for others
+
+# Hook registrations
+# Maps hook filename (without .js) to its configuration.
+# The profile loader generates settings.json hook entries from this.
+hooks:
+  <hook-name>:
+    enabled: boolean            # Whether to register this hook
+    event: string               # SessionStart|PreToolUse|PostToolUse|UserPromptSubmit|PreCompact|Stop|SubagentStop|Notification
+    matcher: string|null        # "*" (all tools), "Bash", "Grep", etc. null = no matcher (bare event)
+    priority: string            # core|recommended|optional (documentation only, does not affect order)
+    description: string         # What this hook does (for /profile list output)
+
+# Pattern references
+# Lists pattern files in .claude/context/patterns/ relevant to this profile.
+patterns:
+  recommended: [string]         # Pattern filenames to highlight
+  optional: [string]            # Additional patterns worth knowing
+
+# Skill references
+skills:
+  enabled: [string]             # Skill directory names from .claude/skills/
+
+# Agent references
+agents:
+  deploy: [string]              # Agent filenames from .claude/agents/
+  optional: [string]            # Additional agents worth knowing
+
+# Permission rules
+# Merged into settings.json permissions section.
+permissions:
+  allow: [string]               # Added to settings.json allow list (e.g., "Bash(docker ps:*)")
+  deny: [string]                # Added to settings.json deny list (deny always wins over allow)
+
+# Setup wizard questions
+# Asked during /setup when this profile layer is selected.
+setup_questions:
+  - id: string                  # Unique identifier (e.g., "docker_compose_dir")
+    prompt: string              # Question text shown to user
+    type: string                # text|choice|multi-choice|boolean|path
+    options:                    # For choice/multi-choice types
+      - label: string
+        value: string
+    default: string             # Default value
+    condition: string|null      # JS expression, e.g. "discovery.docker_installed == true"
+    stores_as: string           # Dot-path into config (e.g., "docker.compose_dir")
+    follow_ups:                 # Conditional follow-up questions
+      - condition: string       # JS expression based on this question's answer
+        question_id: string     # ID of follow-up question to ask
+
+# Cron/scheduled scripts
+scripts:
+  cron:
+    - script: string            # Path relative to AIfred root
+      schedule: string          # Cron expression
+      description: string       # What it does
+
+# Merge behavior:
+#   hooks:       Union, last-write-wins for same hook name
+#   patterns:    Union with deduplication
+#   skills:      Union with deduplication
+#   agents:      Union with deduplication
+#   permissions: Union (deny always takes precedence over allow)
+#   questions:   Append in layer order, skip duplicate IDs
+#   scripts:     Append in layer order, skip duplicate scripts

@@ -1,0 +1,188 @@
+# AIfred Development Profile
+# ==========================
+# Code projects, CI/CD, parallel development, testing.
+# Adds developer workflow hooks and project management.
+
+name: Development
+description: Code projects, git workflows, parallel development, and testing
+version: "1.0.0"
+extends: general
+
+hooks:
+  # --- Git Safety ---
+  amend-validator:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Validate git amend operations to prevent data loss
+
+  worktree-manager:
+    enabled: true
+    event: PostToolUse
+    matcher: Bash
+    priority: optional
+    description: Manage git worktrees for parallel development
+
+  # --- Project Detection ---
+  orchestration-detector:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: recommended
+    description: Auto-detect complex tasks for orchestration
+
+  project-detector:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: core
+    description: Auto-detect GitHub URLs and "new project" requests
+
+  planning-mode-detector:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: recommended
+    description: Suggest structured planning for complex requests
+
+  # --- Documentation ---
+  doc-sync-trigger:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: recommended
+    description: Track code changes and suggest doc sync
+
+  index-sync:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: optional
+    description: Alert when _index.md files miss new references
+
+  # --- Context & Session ---
+  context-usage-tracker:
+    enabled: true
+    event: PreToolUse
+    matcher: "*"
+    priority: recommended
+    description: Estimate token usage across tools
+
+  context-reminder:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: optional
+    description: Remind to update context files after work
+
+  session-exit-enforcer:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: recommended
+    description: Remind about session exit procedures
+
+  memory-maintenance:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: optional
+    description: Track Memory MCP entity access frequency
+
+  priority-validator:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: optional
+    description: Track evidence for priority completion
+
+patterns:
+  recommended:
+    - cross-project-commit-tracking
+    - worktree-shell-functions
+    - fresh-context-pattern
+  optional:
+    - external-tool-evaluation-pattern
+    - obsidian-collaboration-pattern
+
+skills:
+  enabled:
+    - parallel-dev
+    - orchestration
+    - project-lifecycle
+
+agents:
+  deploy:
+    - code-analyzer
+    - code-implementer
+    - code-tester
+  optional: []
+
+permissions:
+  allow: []
+  deny: []
+
+setup_questions:
+  - id: projects_root
+    prompt: "Where do your code projects live?"
+    type: path
+    options: []
+    default: ~/Code
+    condition: null
+    stores_as: development.projects_root
+    follow_ups:
+      - condition: "answer != ''"
+        question_id: register_existing
+
+  - id: register_existing
+    prompt: "Register existing projects now or add later with /register-project?"
+    type: choice
+    options:
+      - label: "Register now"
+        value: now
+      - label: "Add later"
+        value: later
+    default: later
+    condition: null
+    stores_as: development.register_mode
+    follow_ups: []
+
+  - id: parallel_dev
+    prompt: "Enable parallel development support (git worktrees)?"
+    type: boolean
+    options: []
+    default: "true"
+    condition: null
+    stores_as: development.parallel_dev_enabled
+    follow_ups: []
+
+  - id: naming_convention
+    prompt: "Preferred naming convention for branches?"
+    type: choice
+    options:
+      - label: "feature/name"
+        value: "feature/"
+      - label: "name"
+        value: ""
+      - label: "type/name (feat/, fix/, etc.)"
+        value: "type/"
+    default: "feature/"
+    condition: null
+    stores_as: development.branch_prefix
+    follow_ups: []
+
+  - id: knowledge_repo
+    prompt: "Link to a personal knowledge repository? (Obsidian vault, wiki, notes folder)"
+    type: path
+    options: []
+    default: ""
+    condition: null
+    stores_as: development.knowledge_repo
+    follow_ups: []
+
+scripts:
+  cron:
+    - script: scripts/weekly-context-analysis.sh
+      schedule: "0 6 * * 0"
+      description: Weekly context file analysis and optimization

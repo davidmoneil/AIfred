@@ -1,45 +1,43 @@
 # Phase 5: Hooks & Automation
 
-**Purpose**: Install automation hooks and configure scheduled jobs.
+**Purpose**: Generate hook configuration from environment profiles and configure scheduled jobs.
 
 ---
 
-## Core Hooks (Always Installed)
+## Profile-Driven Hook Configuration
 
-These hooks are essential for AIfred operation:
+Hooks are now managed through the **environment profile system**. Instead of manually selecting hooks, the profile loader generates `settings.json` based on your active profile layers from Phase 2.
 
-| Hook | Purpose |
-|------|---------|
-| `audit-logger.js` | Log all tool executions |
-| `session-tracker.js` | Track session lifecycle |
-| `session-exit-enforcer.js` | Remind about exit procedures |
-| `secret-scanner.js` | Prevent credential commits |
-| `context-reminder.js` | Prompt for documentation |
+### Generate Configuration
 
-### Installation
-
-Copy hooks from `.claude/hooks/` templates to active hooks.
-
-Verify each hook:
 ```bash
-node -c .claude/hooks/audit-logger.js
+# Generate settings.json from your active profile
+node scripts/profile-loader.js
+
+# Preview what would be generated without writing
+node scripts/profile-loader.js --dry-run
 ```
 
----
+This reads `.claude/config/active-profile.yaml` (created in Phase 2) and generates:
+- `.claude/settings.json` - Hook registrations and permissions
+- `.claude/config/profile-config.json` - Runtime config for profile-aware hooks
 
-## Optional Hooks (Based on Focus Areas)
+### What Gets Registered
 
-### Infrastructure Focus
-- `docker-health-check.js` - Verify container health
-- `compose-validator.js` - Validate compose files
-- `port-conflict-detector.js` - Check for port conflicts
+| Profile | Hooks Added |
+|---------|-------------|
+| **general** (always) | audit-logger, secret-scanner, branch-protection, credential-guard, session lifecycle, skill-router, mcp-enforcer |
+| **homelab** | docker-health-check, compose-validator, docker-validator, port-conflict-detector, health-monitor, restart-loop-detector |
+| **development** | amend-validator, project-detector, orchestration-detector, planning-mode-detector, doc-sync-trigger, worktree-manager |
+| **production** | credential-guard (strict), session-exit-enforcer (enforced), additional deny rules |
 
-### Development Focus
-- `branch-protection.js` - Protect main branches
-- `amend-validator.js` - Validate commit amends
+### Verify Hooks
 
-### Memory Enabled
-- `memory-maintenance.js` - Track entity access
+After generation, verify all hooks have valid syntax:
+
+```bash
+for f in .claude/hooks/*.js; do echo -n "$(basename $f): "; node -c "$f" && echo "OK"; done
+```
 
 ---
 

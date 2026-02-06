@@ -1,0 +1,193 @@
+# AIfred Home Lab Profile
+# =======================
+# Docker services, NAS, monitoring, service discovery.
+# Adds infrastructure-aware hooks and permissions.
+
+name: Home Lab
+description: Docker services, NAS, monitoring, and infrastructure management
+version: "1.0.0"
+extends: general
+
+hooks:
+  # --- Docker Safety ---
+  docker-health-check:
+    enabled: true
+    event: PostToolUse
+    matcher: Bash
+    priority: core
+    description: Verify container health after Docker operations
+
+  compose-validator:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Validate docker-compose files before execution
+
+  docker-validator:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: recommended
+    description: Comprehensive Docker deployment validation (compose, network, env)
+
+  health-monitor:
+    enabled: true
+    event: PostToolUse
+    matcher: Bash
+    priority: recommended
+    description: Monitor service health trends
+
+  restart-loop-detector:
+    enabled: true
+    event: PostToolUse
+    matcher: Bash
+    priority: recommended
+    description: Detect container restart loops
+
+  port-conflict-detector:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: recommended
+    description: Check for port conflicts before starting containers
+
+  # --- Service Discovery ---
+  service-registration-detector:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: optional
+    description: Suggest registering new services in monitoring
+
+patterns:
+  recommended:
+    - service-architecture-pattern
+    - health-endpoint-pattern
+    - secret-management-pattern
+  optional:
+    - authentik-automation-pattern
+
+skills:
+  enabled:
+    - infrastructure-ops
+    - system-utilities
+
+agents:
+  deploy:
+    - docker-deployer
+    - service-troubleshooter
+  optional: []
+
+permissions:
+  allow:
+    # Docker (read-only)
+    - "Bash(docker ps:*)"
+    - "Bash(docker logs:*)"
+    - "Bash(docker inspect:*)"
+    - "Bash(docker network ls:*)"
+    - "Bash(docker network inspect:*)"
+    - "Bash(docker volume ls:*)"
+    - "Bash(docker volume inspect:*)"
+    - "Bash(docker images:*)"
+    - "Bash(docker stats:*)"
+    - "Bash(docker info:*)"
+    - "Bash(docker version:*)"
+    - "Bash(docker-compose ps:*)"
+    - "Bash(docker-compose logs:*)"
+    - "Bash(docker-compose config:*)"
+
+    # Systemd (read-only)
+    - "Bash(systemctl status:*)"
+    - "Bash(systemctl is-active:*)"
+    - "Bash(systemctl is-enabled:*)"
+    - "Bash(systemctl list-units:*)"
+
+    # Network diagnostics
+    - "Bash(ping:*)"
+    - "Bash(curl:*)"
+    - "Bash(wget:*)"
+    - "Bash(nc:*)"
+    - "Bash(nslookup:*)"
+    - "Bash(dig:*)"
+    - "Bash(host:*)"
+    - "Bash(ip:*)"
+    - "Bash(ss:*)"
+    - "Bash(netstat:*)"
+
+  deny: []
+
+setup_questions:
+  - id: docker_compose_dir
+    prompt: "Where is your main Docker Compose directory?"
+    type: path
+    options: []
+    default: ~/docker
+    condition: null
+    stores_as: docker.compose_dir
+    follow_ups: []
+
+  - id: nas_enabled
+    prompt: "Do you have a NAS or network storage?"
+    type: boolean
+    options: []
+    default: "false"
+    condition: null
+    stores_as: storage.nas_enabled
+    follow_ups:
+      - condition: "answer == true"
+        question_id: nas_mount_path
+
+  - id: nas_mount_path
+    prompt: "Where is your NAS mounted?"
+    type: path
+    options: []
+    default: /mnt/nas
+    condition: "storage.nas_enabled == true"
+    stores_as: storage.nas_mount_path
+    follow_ups: []
+
+  - id: ssh_hosts
+    prompt: "Do you have other servers accessible via SSH?"
+    type: boolean
+    options: []
+    default: "false"
+    condition: null
+    stores_as: network.ssh_enabled
+    follow_ups: []
+
+  - id: critical_services
+    prompt: "Which Docker services are critical? (comma-separated container names)"
+    type: text
+    options: []
+    default: ""
+    condition: null
+    stores_as: docker.critical_services
+    follow_ups: []
+
+  - id: monitoring_stack
+    prompt: "Do you have a monitoring stack?"
+    type: choice
+    options:
+      - label: "Prometheus + Grafana"
+        value: prometheus-grafana
+      - label: "Loki + Promtail"
+        value: loki-promtail
+      - label: "Both"
+        value: both
+      - label: "None / Other"
+        value: none
+    default: none
+    condition: null
+    stores_as: monitoring.stack
+    follow_ups: []
+
+scripts:
+  cron:
+    - script: scripts/weekly-health-check.sh
+      schedule: "0 5 * * 0"
+      description: Weekly infrastructure health check
+
+    - script: scripts/weekly-docker-restart.sh
+      schedule: "0 3 * * 0"
+      description: Weekly Docker container restart for freshness

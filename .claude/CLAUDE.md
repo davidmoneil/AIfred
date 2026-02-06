@@ -8,6 +8,8 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 
 **Returning?** Check @.claude/context/session-state.md for where you left off.
 
+**Profile**: Check `.claude/config/active-profile.yaml` for current configuration, or run `/profile`.
+
 ---
 
 ## Quick Links
@@ -33,6 +35,8 @@ You are working in an **AIfred-configured environment** - a personal AI infrastr
 - @.claude/context/telos/TELOS.md - **Strategic goal alignment**
 - @.claude/skills/upgrade/SKILL.md - Self-improvement system
 - @.claude/skills/structured-planning/SKILL.md - Guided conversational planning
+- @profiles/README.md - **Environment profiles** (composable layers)
+- @.claude/context/patterns/environment-profile-pattern.md - Profile system design pattern
 
 ---
 
@@ -242,11 +246,36 @@ See @.claude/context/patterns/memory-storage-pattern.md for detailed guidance.
 
 ---
 
+## Environment Profiles
+
+AIfred uses composable **environment profiles** that determine which hooks, permissions, patterns, and agents are active.
+
+### Active Layers
+
+Profiles stack: `general` (always) + selected layers (`homelab`, `development`, `production`).
+
+Check current profile: `/profile` or `node scripts/profile-loader.js --current`
+
+### Managing Profiles
+
+```bash
+/profile              # Show active layers
+/profile list         # Show available profiles
+/profile add <layer>  # Add a profile layer (requires restart)
+/profile remove <x>   # Remove a profile layer (requires restart)
+/profile apply        # Regenerate settings.json
+```
+
+**Full documentation**: @profiles/README.md
+
+---
+
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
 | `/setup` | Initial configuration wizard |
+| `/profile` | Manage environment profile layers |
 | `/end-session` | Clean session exit |
 | `/checkpoint` | Save state for MCP-required restart |
 | `/design-review` | PARC pattern design review |
@@ -348,11 +377,11 @@ All logs stored as JSONL in `.claude/logs/audit.jsonl`:
 
 ## Project Status
 
-**Setup Status**: Not yet configured - run `/setup`
+Check `.claude/config/active-profile.yaml` for current configuration, or run `/profile`.
 
-After setup, this section will be updated with your configuration details.
+If not yet configured, run `/setup` to get started.
 
 ---
 
-*AIfred v2.1.0 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-02-05 - v2.1 sync: 6 new hooks, 3 patterns, 3 scripts, 2 skills, fresh-context execution*
+*AIfred v2.2.0 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-02-05 - v2.2: Environment profile system, 5 new hooks, profile-driven setup*

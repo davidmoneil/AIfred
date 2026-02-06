@@ -4,7 +4,18 @@
 
 AIfred provides battle-tested design patterns, automated setup, and a framework for building an intelligent assistant that understands your systems. Works with **Claude Code** and **OpenCode**.
 
-## What's New in v2.1.0 (2026-02-05)
+## What's New in v2.2.0 (2026-02-05)
+
+**Environment Profile System** - Composable layers that shape your entire AIfred configuration:
+
+- **Profile System** - Select use-case layers (homelab, development, production) that dynamically configure hooks, permissions, patterns, and agents
+- **Profile Loader** - `node scripts/profile-loader.js` generates `settings.json` from YAML profiles
+- **5 New Hooks** - docker-validator, mcp-enforcer, port-conflict-detector, paths-registry-sync, service-registration-detector
+- **`/profile` Command** - Manage layers: `/profile add development`, `/profile remove homelab`
+- **Profile-Driven Setup** - Phase 2 now asks profile-specific questions dynamically
+- **Zero Breaking Changes** - No profiles = current settings.json works as-is
+
+### v2.1.0 (2026-02-05)
 
 Enhanced hooks, patterns, and automation from AIProjects sync:
 
@@ -12,9 +23,8 @@ Enhanced hooks, patterns, and automation from AIProjects sync:
 - **3 New Patterns** - fresh-context execution, secret management (SOPS + age), external tool evaluation
 - **3 New Scripts** - fresh-context-loop.sh, priority-cleanup.sh, claude-history-archiver.sh
 - **2 New Skills** - system-utilities, orchestration (enhanced with fresh-context)
-- **Fresh Context Execution** - Run orchestration tasks in isolated Claude instances to avoid context pollution
-- **Secret Management** - SOPS + age encryption pattern for Docker secrets (security by default)
-- **Hook Format Update** - All hooks now use stdin/stdout command format with matcher-based registration
+- **Fresh Context Execution** - Run orchestration tasks in isolated Claude instances
+- **Secret Management** - SOPS + age encryption pattern for Docker secrets
 
 ### v2.0 (2026-01-21)
 
@@ -139,23 +149,67 @@ Every session leaves a trail. `session-state.md` tracks what you were doing, and
 AIfred/
 ├── AGENTS.md               # OpenCode instructions
 ├── opencode.json           # OpenCode configuration
+├── profiles/               # Environment profile definitions
+│   ├── general.yaml        # Base layer (always active)
+│   ├── homelab.yaml        # Docker, NAS, monitoring
+│   ├── development.yaml    # Code projects, CI/CD
+│   └── production.yaml     # Security hardening
 ├── .opencode/
 │   ├── agent/              # OpenCode agent definitions
 │   └── command/            # OpenCode slash commands
 ├── .claude/
 │   ├── CLAUDE.md           # Claude Code instructions
-│   ├── settings.json       # Claude Code permissions
+│   ├── settings.json       # Claude Code permissions (generated from profiles)
+│   ├── config/             # Profile config (gitignored)
 │   ├── context/            # Knowledge base (shared)
 │   ├── commands/           # Claude Code slash commands
 │   ├── agents/             # Claude Code agents
 │   ├── hooks/              # Automation hooks
 │   ├── jobs/               # Cron jobs
 │   └── logs/               # Audit logs
+├── scripts/                # CLI automation scripts
 ├── knowledge/              # Documentation (shared)
 ├── external-sources/       # Symlinks to external data (shared)
 ├── paths-registry.yaml     # Source of truth for paths (shared)
 └── setup-phases/           # Setup wizard definitions
 ```
+
+---
+
+## Environment Profiles
+
+AIfred uses composable **profile layers** that determine what gets configured:
+
+| Profile | Adds |
+|---------|------|
+| **general** (always) | Audit logging, security hooks, session management |
+| **homelab** | Docker validation, port conflict detection, health monitoring |
+| **development** | Project detection, orchestration, parallel-dev, git safety |
+| **production** | Strict security, deployment gates, destructive command blocking |
+
+### Common Combinations
+
+```bash
+# Personal home lab
+node scripts/profile-loader.js --layers general,homelab
+
+# Developer workstation
+node scripts/profile-loader.js --layers general,development
+
+# Full home lab + dev
+node scripts/profile-loader.js --layers general,homelab,development
+```
+
+### Managing Profiles
+
+```bash
+/profile              # Show current layers
+/profile list         # Available profiles
+/profile add <layer>  # Add a layer (requires restart)
+/profile remove <x>   # Remove a layer (requires restart)
+```
+
+See `profiles/README.md` for full documentation.
 
 ---
 
@@ -254,4 +308,4 @@ Built on patterns developed for personal AI infrastructure management. Inspired 
 
 ---
 
-*AIfred v2.1.0 - Because your AI assistant should understand your infrastructure.*
+*AIfred v2.2.0 - Because your AI assistant should understand your infrastructure.*

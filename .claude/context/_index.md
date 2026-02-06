@@ -71,6 +71,7 @@ patterns/
 - ✅ **Agent Selection**: Choose between custom agents, built-in subagents, skills, and direct tools
 - ✅ **Memory Storage Pattern**: Decision framework for Memory MCP storage
 - ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
+- ✅ **Environment Profiles**: Composable layers (homelab, development, production)
 
 ### Designs (Architecture Documents)
 ```
@@ -157,6 +158,13 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
+**2026-02-05**: Environment Profile System (v2.2)
+- ✅ Added composable profile layers (general, homelab, development, production)
+- ✅ Profile loader generates settings.json from YAML definitions
+- ✅ 5 new hooks: docker-validator, mcp-enforcer, port-conflict-detector, paths-registry-sync, service-registration-detector
+- ✅ /profile command for layer management
+- ✅ Profile-driven setup wizard
+
 **2026-01-01**: Standards and Patterns
 - ✅ Added standards directory with severity-status-system.md and model-selection.md
 - ✅ Added patterns directory with agent-selection, memory-storage, and PARC patterns
@@ -166,4 +174,4 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ---
 
-*Last Updated: 2026-01-01*
+*Last Updated: 2026-02-05*

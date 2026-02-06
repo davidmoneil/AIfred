@@ -39,6 +39,9 @@ This directory contains reusable design patterns for AI infrastructure.
 ### Evaluation & Quality
 - **external-tool-evaluation-pattern.md** - Systematic tool/project evaluation framework
 
+### Configuration & Environment
+- **environment-profile-pattern.md** - Composable profile layers (homelab, development, production)
+
 ### Execution Patterns
 - **fresh-context-pattern.md** - Execute tasks in fresh Claude instances (no context pollution)
 

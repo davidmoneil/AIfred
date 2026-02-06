@@ -1,0 +1,52 @@
+# AIfred Custom Profile Template
+# ===============================
+# Copy this file and customize for your own profile layer.
+# See profiles/schema.yaml for the full schema reference.
+# See profiles/README.md for documentation.
+
+name: My Custom Profile
+description: Describe what this profile adds
+version: "1.0.0"
+extends: general            # null for standalone, "general" for most cases
+
+hooks:
+  # Add hooks that should be enabled for this profile.
+  # Hook .js files must exist in .claude/hooks/
+  #
+  # example-hook:
+  #   enabled: true
+  #   event: PreToolUse         # SessionStart|PreToolUse|PostToolUse|UserPromptSubmit|PreCompact|Stop|SubagentStop|Notification
+  #   matcher: Bash             # "*" for all tools, "Bash"/"Grep"/etc for specific, null for bare events
+  #   priority: optional        # core|recommended|optional (documentation only)
+  #   description: What it does
+
+patterns:
+  recommended: []
+  optional: []
+
+skills:
+  enabled: []
+
+agents:
+  deploy: []
+  optional: []
+
+permissions:
+  allow: []
+  deny: []
+
+setup_questions: []
+  # - id: my_question
+  #   prompt: "Your question here?"
+  #   type: text              # text|choice|multi-choice|boolean|path
+  #   options: []
+  #   default: ""
+  #   condition: null
+  #   stores_as: custom.my_setting
+  #   follow_ups: []
+
+scripts:
+  cron: []
+  # - script: scripts/my-script.sh
+  #   schedule: "0 5 * * 0"
+  #   description: What it does

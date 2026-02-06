@@ -1,25 +1,57 @@
 # Phase 2: Purpose Interview
 
-**Purpose**: Understand user goals through outcome-focused questions.
+**Purpose**: Understand user goals through outcome-focused questions, then select environment profile layers.
 
 ---
 
-## Interview Questions
+## Step 1: Profile Layer Selection
 
-Ask these questions to understand the user's needs. Focus on **outcomes**, not technical specifics.
-
-### Question 1: Primary Purpose
-
-"What will you primarily use AIfred for?"
+"What will you use AIfred for?"
 
 **Options** (multi-select):
-- **Home Lab Management**: Docker services, networking, servers
-- **Development Projects**: Writing code, managing git repos
-- **System Administration**: Monitoring, backups, maintenance
-- **Learning & Documentation**: Building a knowledge base
-- **All of the above**
+- **Home Lab Management**: Docker services, NAS, monitoring, networking
+  → Adds `homelab` profile layer
+- **Development Projects**: Writing code, managing git repos, CI/CD
+  → Adds `development` profile layer
+- **Production / Operations**: Deployment gates, security hardening, strict audit
+  → Adds `production` profile layer
 
-### Question 2: Automation Level
+*The `general` profile is always active (core hooks, security, audit logging).*
+
+**Store**: Selected layers → `.claude/config/active-profile.yaml`
+
+---
+
+## Step 2: Profile-Specific Questions
+
+After layer selection, load `setup_questions` from each selected profile YAML and ask them dynamically.
+
+### How Dynamic Questions Work
+
+1. Load profile YAML files for selected layers
+2. Collect all `setup_questions` from each profile (in layer order)
+3. Skip duplicate question IDs
+4. Evaluate `condition` fields (skip questions whose conditions aren't met)
+5. Ask questions, storing answers in the config
+6. Process `follow_ups` for conditional sub-questions
+
+### Question Types
+
+| Type | UI | Example |
+|------|-----|---------|
+| `text` | Free text input | "Which services are critical?" |
+| `choice` | Single selection | "What monitoring stack?" |
+| `multi-choice` | Multi selection | "Which MCP servers to enable?" |
+| `boolean` | Yes/No | "Do you have a NAS?" |
+| `path` | Directory path | "Where do projects live?" |
+
+---
+
+## Step 3: Common Questions (Always Asked)
+
+These questions are always asked regardless of profile:
+
+### Automation Level
 
 "How much automation do you want?"
 
@@ -28,36 +60,7 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **Guided**: Ask me before major changes, automate routine tasks.
 - **Manual Control**: Ask me before most actions. I want to approve things.
 
-### Question 3: Existing Infrastructure
-
-"What existing infrastructure should AIfred know about?"
-
-**Options** (multi-select):
-- **Docker services on this machine**
-- **Other servers I can SSH to**
-- **NAS/network storage**
-- **Nothing yet - this is a fresh start**
-
-### Question 4: Project Management
-
-"Do you work on code projects? Where do they live?"
-
-**Context from Discovery**: [Show detected projects_root from Phase 1, e.g., "I found ~/Code with 5 projects"]
-
-**Explanation**: "AIfred is a hub that tracks your projects but doesn't contain them. Your code stays in your projects folder."
-
-**Options**:
-- **Yes, use discovered location**: [~/Code or detected path]
-- **Yes, but at a different location**: [user specifies]
-- **No, I don't work on code projects**
-
-**Follow-up** (if yes):
-"Would you like to register your existing projects now, or add them later with /register-project?"
-
-- **Register now**: [Show list from discovery, let user select]
-- **Add later**: Just set up the location, I'll register projects as needed
-
-### Question 5: Memory & Persistence
+### Memory & Persistence
 
 "Would you like AIfred to remember things between sessions?"
 
@@ -67,7 +70,7 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **Yes, enable persistent memory** (Recommended if Docker available)
 - **No, I'll manage context files manually**
 
-### Question 6: Session Management
+### Session Management
 
 "How should sessions be managed?"
 
@@ -76,7 +79,7 @@ Ask these questions to understand the user's needs. Focus on **outcomes**, not t
 - **Prompted**: Remind me to run /end-session with a checklist
 - **Manual**: I'll handle it myself
 
-### Question 7: GitHub Integration
+### GitHub Integration
 
 "Would you like AIfred changes tracked in GitHub?"
 
@@ -93,18 +96,43 @@ Based on answers, determine:
 
 | Setting | Source |
 |---------|--------|
-| `focus_areas` | Question 1 |
-| `automation_level` | Question 2 (full/guided/manual) |
-| `enable_discovery` | Question 3 |
-| `projects_root` | Question 4 (e.g., ~/Code) |
-| `register_existing_projects` | Question 4 follow-up |
-| `enable_memory_mcp` | Question 5 |
-| `session_mode` | Question 6 |
-| `github_enabled` | Question 7 |
+| `profile_layers` | Step 1 (layer selection) |
+| `automation_level` | Step 3 (full/guided/manual) |
+| `enable_memory_mcp` | Step 3 |
+| `session_mode` | Step 3 |
+| `github_enabled` | Step 3 |
+| Profile-specific settings | Step 2 (dynamic questions) |
 
 ---
 
-## Configuration Summary
+## Output
+
+### Write Active Profile
+
+Create `.claude/config/active-profile.yaml`:
+
+```yaml
+layers:
+  - general
+  - homelab        # if selected
+  - development    # if selected
+  - production     # if selected
+
+config:
+  automation_level: guided
+  memory_mcp: true
+  session_mode: prompted
+  github: true
+  # Profile-specific answers stored by stores_as paths:
+  docker:
+    compose_dir: ~/docker
+    critical_services: "portainer,caddy"
+  development:
+    projects_root: ~/Code
+    parallel_dev_enabled: true
+```
+
+### Create User Preferences
 
 Create `.claude/context/user-preferences.md`:
 
@@ -113,21 +141,16 @@ Create `.claude/context/user-preferences.md`:
 
 Configured during AIfred setup on [date].
 
-## Focus Areas
-- [list from Q1]
+## Profile Layers
+- [list of active layers]
 
 ## Automation Level
 [full/guided/manual]
 
 ## Features Enabled
-- Docker Discovery: [yes/no]
 - Memory MCP: [yes/no]
 - Session Automation: [level]
 - GitHub Sync: [yes/no]
-
-## Development
-- Projects Root: [path, e.g., ~/Code]
-- Registered Projects: [count or "none yet"]
 
 ## Notes
 [Any additional context from interview]
@@ -139,6 +162,7 @@ Configured during AIfred setup on [date].
 
 Based on answers, prepare for Phase 3:
 
+- Profile layers determine which hooks get registered (Phase 5)
 - If Docker discovery: Will scan containers in Phase 3
 - If Memory MCP: Will deploy in Phase 4
 - If GitHub: Will configure remote in Phase 7

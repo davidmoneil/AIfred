@@ -21,6 +21,10 @@ opencode.local.json
 # User-specific paths (create from template)
 paths-registry.yaml
 
+# Profile configuration (user-specific, create from template)
+.claude/config/active-profile.yaml
+.claude/config/profile-config.json
+
 # OS files
 .DS_Store
 Thumbs.db

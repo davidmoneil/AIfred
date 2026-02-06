@@ -1,0 +1,242 @@
+# AIfred General Profile
+# ======================
+# Always active. Provides core hooks, base permissions, and universal patterns.
+# All other profiles extend this one.
+
+name: General
+description: Core hooks, security, audit logging, and session management
+version: "1.0.0"
+extends: null
+
+hooks:
+  # --- Session Lifecycle ---
+  session-start:
+    enabled: true
+    event: SessionStart
+    matcher: null
+    priority: core
+    description: Load context and initialize session
+
+  session-stop:
+    enabled: true
+    event: Stop
+    matcher: null
+    priority: core
+    description: Desktop notification on session end
+
+  session-tracker:
+    enabled: true
+    event: Notification
+    matcher: null
+    priority: core
+    description: Track session lifecycle events
+
+  subagent-stop:
+    enabled: true
+    event: SubagentStop
+    matcher: null
+    priority: core
+    description: Agent chaining on subagent completion
+
+  pre-compact:
+    enabled: true
+    event: PreCompact
+    matcher: null
+    priority: core
+    description: Preserve critical state before context compaction
+
+  # --- Audit & Tracking ---
+  audit-logger:
+    enabled: true
+    event: PreToolUse
+    matcher: "*"
+    priority: core
+    description: Log all tool executions with pattern detection
+
+  context-usage-tracker:
+    enabled: true
+    event: PreToolUse
+    matcher: "*"
+    priority: recommended
+    description: Estimate token usage across tools
+
+  file-access-tracker:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: recommended
+    description: Track which files are read/written
+
+  cross-project-commit-tracker:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: recommended
+    description: Track commits across multiple projects
+
+  # --- Security ---
+  secret-scanner:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Prevent credential exposure in commands
+
+  branch-protection:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Protect main/production branches from force operations
+
+  credential-guard:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Guard against credential leakage
+
+  # --- Workflow Enhancement ---
+  prompt-enhancer:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: recommended
+    description: Enhance prompts with contextual information
+
+  skill-router:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: core
+    description: Route slash commands to parent skills
+
+  self-correction-capture:
+    enabled: true
+    event: UserPromptSubmit
+    matcher: null
+    priority: optional
+    description: Capture self-correction patterns for improvement
+
+  lsp-redirector:
+    enabled: true
+    event: PreToolUse
+    matcher: Grep
+    priority: recommended
+    description: Suggest LSP over grep for code navigation
+
+  # --- MCP Enforcement ---
+  mcp-enforcer:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: recommended
+    description: Suggest MCP tools over bash equivalents
+
+  # --- Path Registry ---
+  paths-registry-sync:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: recommended
+    description: Detect unregistered external paths
+
+patterns:
+  recommended:
+    - agent-selection-pattern
+    - capability-layering-pattern
+    - code-before-prompts-pattern
+    - memory-storage-pattern
+    - mcp-loading-strategy
+    - prompt-design-review
+    - environment-profile-pattern
+  optional:
+    - fresh-context-pattern
+    - secret-management-pattern
+    - external-tool-evaluation-pattern
+
+skills:
+  enabled:
+    - session-management
+    - structured-planning
+    - upgrade
+
+agents:
+  deploy:
+    - deep-research
+    - memory-bank-synchronizer
+  optional: []
+
+permissions:
+  allow:
+    # Git (read-only)
+    - "Bash(git status:*)"
+    - "Bash(git log:*)"
+    - "Bash(git diff:*)"
+    - "Bash(git branch:*)"
+    - "Bash(git fetch:*)"
+    - "Bash(git remote:*)"
+    - "Bash(git rev-parse:*)"
+    - "Bash(git show:*)"
+    - "Bash(git tag:*)"
+
+    # System info (read-only)
+    - "Bash(ls:*)"
+    - "Bash(cat:*)"
+    - "Bash(head:*)"
+    - "Bash(tail:*)"
+    - "Bash(tree:*)"
+    - "Bash(pwd:*)"
+    - "Bash(which:*)"
+    - "Bash(whoami:*)"
+    - "Bash(hostname:*)"
+    - "Bash(uname:*)"
+    - "Bash(df:*)"
+    - "Bash(du:*)"
+    - "Bash(free:*)"
+    - "Bash(uptime:*)"
+    - "Bash(date:*)"
+    - "Bash(env:*)"
+    - "Bash(printenv:*)"
+    - "Bash(find:*)"
+    - "Bash(grep:*)"
+    - "Bash(wc:*)"
+    - "Bash(sort:*)"
+    - "Bash(uniq:*)"
+    - "Bash(jq:*)"
+    - "Bash(yq:*)"
+
+    # Claude tools
+    - "Read"
+    - "Glob"
+    - "Grep"
+
+    # MCP read-only
+    - "mcp__mcp-gateway__read_graph"
+    - "mcp__mcp-gateway__search_nodes"
+    - "mcp__mcp-gateway__open_nodes"
+    - "mcp__mcp-gateway__fetch"
+
+  deny:
+    # Never read secrets
+    - "Read(~/.ssh/**)"
+    - "Read(**/.env)"
+    - "Read(**/credentials*)"
+    - "Read(**/secrets*)"
+    - "Read(**/*password*)"
+    - "Read(**/*token*)"
+
+    # Destructive operations
+    - "Bash(rm -rf /*)"
+    - "Bash(rm -rf ~/*)"
+    - "Bash(rm -rf /home/*)"
+    - "Bash(sudo rm -rf:*)"
+    - "Bash(mkfs:*)"
+    - "Bash(dd if=:*)"
+    - "Bash(chmod -R 777 /*)"
+    - "Bash(chown -R:*)"
+
+setup_questions: []
+
+scripts:
+  cron: []

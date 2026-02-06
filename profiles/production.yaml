@@ -1,0 +1,113 @@
+# AIfred Production Profile
+# =========================
+# Security hardening, deployment gates, strict audit.
+# Enforces safety rails for production environments.
+
+name: Production
+description: Security hardening, deployment gates, and strict audit controls
+version: "1.0.0"
+extends: general
+
+hooks:
+  # --- Strict Security ---
+  credential-guard:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Guard against credential leakage (strict mode)
+
+  amend-validator:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Validate git amend operations
+
+  compose-validator:
+    enabled: true
+    event: PreToolUse
+    matcher: Bash
+    priority: core
+    description: Validate docker-compose files before execution
+
+  # --- Enforced Context ---
+  session-exit-enforcer:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: core
+    description: Enforce session exit procedures (no skipping)
+
+  context-reminder:
+    enabled: true
+    event: PostToolUse
+    matcher: "*"
+    priority: core
+    description: Enforce context documentation (required, not optional)
+
+patterns:
+  recommended:
+    - secret-management-pattern
+    - service-architecture-pattern
+    - health-endpoint-pattern
+  optional: []
+
+skills:
+  enabled: []
+
+agents:
+  deploy: []
+  optional: []
+
+permissions:
+  allow: []
+  deny:
+    # Production safety - prevent destructive git operations
+    - "Bash(git push --force:*)"
+    - "Bash(git push -f:*)"
+    - "Bash(git reset --hard:*)"
+    - "Bash(git clean -f:*)"
+    - "Bash(rm -rf:*)"
+
+    # Prevent broad Docker destruction
+    - "Bash(docker system prune:*)"
+    - "Bash(docker volume prune:*)"
+    - "Bash(docker network prune:*)"
+    - "Bash(docker image prune -a:*)"
+
+setup_questions:
+  - id: deployment_gates
+    prompt: "Require confirmation before deploying changes?"
+    type: choice
+    options:
+      - label: "Always require confirmation"
+        value: always
+      - label: "Only for critical services"
+        value: critical
+      - label: "No gates"
+        value: none
+    default: always
+    condition: null
+    stores_as: production.deployment_gates
+    follow_ups: []
+
+  - id: audit_retention
+    prompt: "How long to retain audit logs?"
+    type: choice
+    options:
+      - label: "30 days"
+        value: "30"
+      - label: "90 days"
+        value: "90"
+      - label: "365 days"
+        value: "365"
+      - label: "Forever"
+        value: "0"
+    default: "90"
+    condition: null
+    stores_as: production.audit_retention_days
+    follow_ups: []
+
+scripts:
+  cron: []
