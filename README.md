@@ -11,7 +11,7 @@ AIfred is built on the latest Claude Code capabilities -- hooks across all lifec
 Fork it, run the setup wizard, pick your environment profiles, and you have a battle-tested AI assistant in minutes instead of weeks.
 
 ```bash
-git clone https://github.com/davidmoneil/AIfred.git
+git clone https://github.com/your-username/AIfred.git
 cd AIfred
 claude    # or: opencode
 /setup

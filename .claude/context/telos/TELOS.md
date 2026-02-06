@@ -1,7 +1,7 @@
 ---
 type: strategic-framework
 version: 1.0.0
-owner: David Moneil
+owner: Your Name
 review-schedule: weekly-light, monthly-deep, quarterly-planning
 last-review: 2026-01-20
 next-review: 2026-01-27

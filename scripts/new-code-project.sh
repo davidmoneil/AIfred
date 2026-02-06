@@ -361,7 +361,8 @@ if [[ "$GITHUB" == true ]]; then
     if command -v gh &> /dev/null; then
         log_info "Creating GitHub repository..."
         if gh repo create "$NAME" --private --source=. --push 2>/dev/null; then
-            log_success "Created GitHub repo: github.com/davidmoneil/${NAME}"
+            GH_USER=$(gh api user -q '.login' 2>/dev/null || echo "your-username")
+            log_success "Created GitHub repo: github.com/${GH_USER}/${NAME}"
         else
             log_warning "GitHub repo creation failed - may already exist or auth issue"
         fi
@@ -395,7 +396,7 @@ echo "  🔧 Language: ${LANG:-Not specified}"
 echo "  📝 Context:  .claude/context/projects/${NAME}.md"
 echo "  📊 Registry: paths-registry.yaml (update needed)"
 if [[ "$GITHUB" == true ]]; then
-echo "  🐙 GitHub:   github.com/davidmoneil/${NAME}"
+echo "  🐙 GitHub:   github.com/${GH_USER:-your-username}/${NAME}"
 fi
 echo "═══════════════════════════════════════════════════"
 echo ""

@@ -379,7 +379,7 @@ Agent troubleshoots the same issue repeatedly without learning
 
 ```markdown
 # BAD - Too narrow
-/agent check-nginx-port-80-on-aiserver
+/agent check-nginx-port-80-on-myserver
 ```
 
 **Fix**: Generalize to `/agent service-troubleshooter "nginx on aiserver"`.

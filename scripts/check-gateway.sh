@@ -17,7 +17,7 @@
 set -euo pipefail
 
 # Configuration
-UDM_HOST="${UDM_HOST:-udm-pro}"
+UDM_HOST="${UDM_HOST:-gateway}"
 SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new"
 
 usage() {

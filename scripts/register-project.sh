@@ -44,7 +44,7 @@ What It Does:
 
 Examples:
     $(basename "$0") ~/Code/existing-project
-    $(basename "$0") github.com/davidmoneil/some-repo
+    $(basename "$0") github.com/your-username/some-repo
     $(basename "$0") https://github.com/user/repo
 
 Exit Codes:
