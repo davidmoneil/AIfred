@@ -1,27 +1,87 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.4.2
+# JARVIS UNIFIED WATCHER — JICM v5.6.1
 # ============================================================================
-# Implements the JICM v5 Two-Mechanism Resume architecture.
+# Implements the JICM v5 context management architecture.
 #
-# Features:
-#   1. Context monitoring via statusline JSON API (authoritative)
-#   2. Single 50% threshold for compression trigger
-#   3. Parallel compression agent spawning
-#   4. Two-layer executor: interrupt→dump→clear sequence
-#   5. Idle-hands monitor (Mechanism 2) with submission variants
-#   6. Command signal execution
-#   7. Circuit breakers and safeguards
-#   8. TUI cache invalidation after /clear (v5.2.0)
-#   9. Data consistency checks for stale cache detection (v5.2.0)
-#  10. Critical state detection (v5.3.0 - JICM v6 prep)
+# Architecture:
+#   Section 0:   Standdown check
+#   Section 1:   Command signals
+#   Section 1.1: Idle-hands (planned transitions — post-clear resume, session start)
+#   Section 1.2: Critical state detection (unplanned emergencies — context lockout)
+#   Section 1.5: Compression completion → /clear
+#   Section 2:   Context monitoring (token count, percentage)
+#   Section 2.5: Emergency /compact (last resort, 5% from lockout)
+#   Section 3:   Threshold check → trigger /intelligent-compress
+#   Section 4:   State transitions (event-driven, Swiss watch precision)
+#
+# State machine: monitoring ↔ compression_triggered ↔ cleared
+# Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
 #
+# Changelog v5.6.1 (2026-02-06):
+#   - Fixed command delivery: wait_for_idle_brief() polls before send_command/send_text
+#   - Root cause: tmux send-keys during active generation consumed as text input
+#   - is_claude_busy() now returns via echo (bash 3.2 set -e safety), restricted to tail -5
+#   - All send_prompt_by_type() prompts converted to single-line (multi-line -l corrupts input)
+#   - Removed all DEBUG echo lines, cleaned up ERR/EXIT traps
+#
+# Changelog v5.6.0 (2026-02-06):
+#   COMPREHENSIVE REWRITE — 19 issues addressed across 4 categories
+#   Category A (Core Flow):
+#   - A1: Fixed bash 3.2 return 1 in $() across 6 functions; extended tail -5
+#   - A2: Event-driven state machine (Swiss watch), 3 active states only
+#   - A3: Compression success path clarity — fixed double-counting, short-circuit
+#   - A4: Grace period on ALL /clear paths (not just startup)
+#   - A5: Single poll_count increment point (was double in pct=0 path)
+#   Category B (Design Flaws):
+#   - B1: Removed all wait_for_idle blocking calls
+#   - B2: post_clear_unhandled catches hook failures at cleared→monitoring transition
+#   - B3: Removed MAX_TRIGGERS death-count (penalized successful compressions)
+#   - B4: All warnings now take corrective action or are informational
+#   - B5: Resolved by B3 (no trigger limit = no else branch)
+#   - B6: Reduced jicm_resume max_cycles from 50 to 20 (~4 min)
+#   Category C (Dead Code):
+#   - C1: Removed JICM_CRITICAL_PCT (never used as condition)
+#   - C2: Removed trigger_fallback_compact (dead v4)
+#   - C3: Removed 9 dead v4 functions (spawn, executor, cascade, etc.)
+#   - C4: Removed sections 2 & 3 from main loop (v4 state handlers)
+#   Category D (New Design):
+#   - D1: Emergency /compact at 5% from lockout (73% with defaults)
+#   - D2: --session-type flag for --continue awareness
+#   - D3: Customized resume prompts per mode (jicm_resume, session_start)
+#   - D4: Clear separation between idle-hands (planned) and critical-state (emergency)
+#
+# Changelog v5.5.1 (2026-02-05):
+#   - detect_critical_state() restricts checks to last 8/10 lines (stale buffer fix)
+#   - Extended startup grace period from 2 to 4 iterations
+#
+# Changelog v5.5.0 (2026-02-05):
+#   - Lowered default JICM_THRESHOLD from 80% to 65% (lockout-aware)
+#
+# Changelog v5.4.5 (2026-02-05):
+#   - PROPERLY FIXED context_exhausted loop using state machine, not debouncing
+#   - Root cause: After sending /clear, state remained "monitoring", so
+#     context_exhausted was re-detected before TUI refreshed
+#   - Fix: context_exhausted detection ONLY runs when JICM_STATE=="monitoring"
+#   - After handling context_exhausted, transition to state "cleared"
+#   - State machine prevents re-triggering; no debounce needed
+#
+# Changelog v5.4.4 (2026-02-05):
+#   - Attempted fix with debouncing (reverted - wrong approach)
+#
+# Changelog v5.4.3 (2026-02-05):
+#   - FIXED token extraction bug: get_tokens_from_tui_exact() now uses tail -3
+#     to restrict search to statusline area, preventing false matches from
+#     old tool outputs in scroll buffer (e.g., bash commands showing token counts)
+#   - Root cause: grep on full pane captured "181417 tokens" from old output
+#     while percentage correctly read 2% from statusline, causing data inconsistency
+#   - Added emergency context limit detection for "Context limit reached" and
+#     "Conversation too long" messages - triggers automatic /clear
+#
 # Changelog v5.4.2 (2026-02-05):
-#   - DISABLED "interrupted" state handler - caused runaway prompt loop
-#   - When watcher sends prompt, it interrupts Claude, which triggers "interrupted"
-#     detection, which sends another prompt, creating infinite loop
+#   - DISABLED "interrupted" state handler (removed entirely in v5.6.0)
 #   - User interrupts are intentional; user will provide next instruction
 #
 # Changelog v5.4.1 (2026-02-05):
@@ -50,10 +110,7 @@
 #
 # Changelog v5.3.0 (2026-02-05):
 #   - Added detect_critical_state() for TUI state detection
-#   - Added handle_critical_state() with responses for:
-#     * post_clear_restore: "(no content)" after /clear
-#     * fresh_session: "0 tokens" state
-#     * interrupted: "Interrupted · What should Claude do" state
+#   - Added handle_critical_state() — see v5.6.0 for current scope
 #   - Integrated critical state check into main loop (section 1.2)
 #
 # Changelog v5.2.0 (2026-02-05):
@@ -69,8 +126,8 @@
 
 set -euo pipefail
 
-# Debug: trap ERR to show where script fails
-trap 'echo "[DEBUG] Script failed at line $LINENO (exit code: $?)" >&2' ERR
+# Trap ERR to show where script fails (essential for bash 3.2 set -e debugging)
+trap 'echo "$(date +%H:%M:%S) [ERR] Script failed at line $LINENO (exit code: $?)" >&2' ERR
 
 # =============================================================================
 # CONFIGURATION
@@ -103,24 +160,33 @@ JICM_CONFIG_FILE="$PROJECT_DIR/.claude/context/.jicm-config"
 # Thresholds (JICM v5)
 # Single threshold for compression trigger (dynamically configurable)
 # See: jicm-v5-design-addendum.md Section 2.2
-JICM_THRESHOLD=${JICM_THRESHOLD:-80}
+#
+# CRITICAL: Claude Code lockout ceiling is ~78.5% with 15K output reserve.
+# Default threshold MUST be below this or JICM will never trigger in time.
+# Calculation: (200K - 15K output - ~28K compact buffer) / 200K = 78.5%
+JICM_THRESHOLD=${JICM_THRESHOLD:-65}
 RESERVED_OUTPUT_TOKENS=${RESERVED_OUTPUT_TOKENS:-15000}
 DEFAULT_INTERVAL=5
 
-# Timeouts
-AGENT_TIMEOUT=180        # 3 min for compression agent
-DUMP_TIMEOUT=30          # 30s for Jarvis to dump state
-CONTINUATION_DELAY_1=5   # First cascade check
-CONTINUATION_DELAY_2=10  # Second cascade check
-CONTINUATION_DELAY_3=15  # Final enforcement
+# v4 timeouts removed (C4): AGENT_TIMEOUT, DUMP_TIMEOUT, CONTINUATION_DELAY_*
 
 # Circuit Breakers
-DEBOUNCE_SECONDS=300     # 5 min between JICM triggers
-MAX_TRIGGERS=5           # Max triggers per session
-FAILURES_BEFORE_STANDDOWN=3
+DEBOUNCE_SECONDS=300     # 5 min (used as compression_triggered failsafe timeout)
+FAILURES_BEFORE_STANDDOWN=3  # Consecutive failures before standdown
+# NOTE: MAX_TRIGGERS removed (B3). Trigger count is tracked for observability
+# but never used as a gate. Penalizing successful compressions is wrong.
 
-# Context window
+# Context window & lockout (D1)
 MAX_CONTEXT_TOKENS=200000
+COMPACT_BUFFER_ESTIMATE=${COMPACT_BUFFER_ESTIMATE:-28000}  # Claude Code's internal compact buffer
+
+# Emergency /compact threshold: 5% below lockout ceiling
+# Lockout = (context_window - output_reserve - compact_buffer) / context_window
+LOCKOUT_PCT=$(( (MAX_CONTEXT_TOKENS - RESERVED_OUTPUT_TOKENS - COMPACT_BUFFER_ESTIMATE) * 100 / MAX_CONTEXT_TOKENS ))
+EMERGENCY_COMPACT_PCT=$((LOCKOUT_PCT - 5))
+
+# Session type (D2: --continue awareness)
+SESSION_TYPE="fresh"  # Default: fresh session. Set to "continue" via --session-type
 
 # Parse arguments
 INTERVAL=$DEFAULT_INTERVAL
@@ -128,14 +194,16 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --threshold) JICM_THRESHOLD="$2"; shift 2 ;;
         --interval) INTERVAL="$2"; shift 2 ;;
+        --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.4.0 — JICM Two-Mechanism Resume"
+            echo "JARVIS WATCHER v5.6.1 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
             echo "Options:"
-            echo "  --threshold PCT   Compression trigger (default: $JICM_THRESHOLD)"
-            echo "  --interval SEC    Poll interval (default: $DEFAULT_INTERVAL)"
+            echo "  --threshold PCT       Compression trigger (default: $JICM_THRESHOLD)"
+            echo "  --interval SEC        Poll interval (default: $DEFAULT_INTERVAL)"
+            echo "  --session-type TYPE   Session type: fresh|continue (default: fresh)"
             exit 0
             ;;
         *) shift ;;
@@ -174,6 +242,8 @@ JICM_STATE="monitoring"
 JICM_LAST_TRIGGER=0
 TRIGGER_COUNT=0
 FAILURE_COUNT=0
+GRACE_RESUME_UNTIL=0  # Timestamp until which grace period is active (post-clear, startup)
+EMERGENCY_COMPACT_SENT=false  # D1: Tracks if emergency /compact was sent (reset on context drop)
 
 # =============================================================================
 # LOGGING
@@ -235,7 +305,7 @@ capture_tui_pane() {
 
     if ! "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
         echo ""
-        return 1
+        return 0  # bash 3.2 set -e compatibility
     fi
 
     CACHED_PANE_CONTENT=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
@@ -244,18 +314,24 @@ capture_tui_pane() {
 }
 
 # METHOD 1: Parse exact token count from TUI (e.g., "63257 tokens")
+# BUGFIX v5.4.3: Restrict to last 3 lines (statusline area) to avoid matching
+# old tool outputs that show token counts elsewhere in the scroll buffer.
+# Root cause: grep on full pane captured stale values from bash outputs.
 get_tokens_from_tui_exact() {
     local pane_content
     pane_content=$(capture_tui_pane)
 
     if [[ -z "$pane_content" ]]; then
         echo "0"
-        return 1
+        return 0  # Always return 0 (bash 3.2 set -e compatibility)
     fi
 
-    # Look for exact token count at end of status line: "63257 tokens"
+    # Look for exact token count in statusline area (last 5 lines)
+    # Extended from tail -3 to tail -5 to handle varying TUI layouts:
+    # bypass-permissions line, statusline, input prompt, etc.
+    # CRITICAL: Must use tail BEFORE grep to avoid stale scroll buffer
     local exact_tokens
-    exact_tokens=$(echo "$pane_content" | grep -oE '[0-9]+ tokens' | tail -1 | grep -oE '[0-9]+')
+    exact_tokens=$(echo "$pane_content" | tail -5 | grep -oE '[0-9]+ tokens' | tail -1 | grep -oE '[0-9]+' || true)
 
     if [[ -n "$exact_tokens" ]] && [[ "$exact_tokens" -gt 0 ]]; then
         echo "$exact_tokens"
@@ -263,7 +339,7 @@ get_tokens_from_tui_exact() {
     fi
 
     echo "0"
-    return 1
+    return 0
 }
 
 # METHOD 2: Parse abbreviated token count from TUI (e.g., "63.2k")
@@ -273,23 +349,20 @@ get_tokens_from_tui_abbreviated() {
 
     if [[ -z "$pane_content" ]]; then
         echo "0"
-        return 1
+        return 0
     fi
 
     # Look for abbreviated format in status bar: "63.2k" or "63k"
-    # Pattern: number followed by 'k' (case insensitive) in status line
+    # Extended to tail -5 for varying TUI layouts
     local abbrev_tokens
-    abbrev_tokens=$(echo "$pane_content" | tail -3 | grep -oE '[0-9]+\.?[0-9]*k' | head -1)
+    abbrev_tokens=$(echo "$pane_content" | tail -5 | grep -oE '[0-9]+\.?[0-9]*k' | head -1 || true)
 
     if [[ -n "$abbrev_tokens" ]]; then
-        # Remove 'k' suffix and multiply by 1000
         local numeric_part
         numeric_part=$(echo "$abbrev_tokens" | sed 's/k$//')
-        # Handle decimal: 63.2 → 63200
         if [[ "$numeric_part" == *"."* ]]; then
-            # Multiply by 1000, handling decimal
             local result
-            result=$(echo "$numeric_part * 1000" | bc 2>/dev/null | cut -d'.' -f1)
+            result=$(echo "$numeric_part * 1000" | bc 2>/dev/null | cut -d'.' -f1 || true)
             if [[ -n "$result" ]] && [[ "$result" -gt 0 ]]; then
                 echo "$result"
                 return 0
@@ -301,7 +374,7 @@ get_tokens_from_tui_abbreviated() {
     fi
 
     echo "0"
-    return 1
+    return 0
 }
 
 # METHOD 3: Parse percentage from TUI (e.g., "32%")
@@ -311,12 +384,12 @@ get_percentage_from_tui() {
 
     if [[ -z "$pane_content" ]]; then
         echo "0"
-        return 1
+        return 0  # bash 3.2 set -e compatibility
     fi
 
-    # Look for percentage in status bar area (last 3 lines)
+    # Look for percentage in status bar area (last 5 lines)
     local pct
-    pct=$(echo "$pane_content" | tail -3 | grep -oE '[0-9]+%' | head -1 | tr -d '%')
+    pct=$(echo "$pane_content" | tail -5 | grep -oE '[0-9]+%' | head -1 | tr -d '%' || true)
 
     if [[ -n "$pct" ]] && [[ "$pct" -gt 0 ]] && [[ "$pct" -le 100 ]]; then
         echo "$pct"
@@ -324,16 +397,17 @@ get_percentage_from_tui() {
     fi
 
     echo "0"
-    return 1
+    return 0
 }
 
 # METHOD 4: Get context from statusline JSON (fallback)
 get_context_status() {
     if [[ ! -f "$STATUSLINE_FILE" ]]; then
         echo '{"context_window": {"used_percentage": 0, "remaining_percentage": 100}}'
-        return 1
+        return 0
     fi
-    cat "$STATUSLINE_FILE"
+    cat "$STATUSLINE_FILE" 2>/dev/null || echo '{"context_window": {"used_percentage": 0}}'
+    return 0
 }
 
 # METHOD 5: Sum current_usage fields from statusline JSON
@@ -343,7 +417,7 @@ get_tokens_from_json_current_usage() {
 
     if [[ -z "$status" ]]; then
         echo "0"
-        return 1
+        return 0  # bash 3.2 set -e compatibility
     fi
 
     # Sum all current_usage token fields
@@ -485,7 +559,7 @@ update_status() {
 
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.4.0
+version: 5.6.0
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
@@ -493,6 +567,7 @@ state: $state
 trigger_count: $TRIGGER_COUNT
 failure_count: $FAILURE_COUNT
 token_method: $token_method
+session_type: $SESSION_TYPE
 EOF
 }
 
@@ -516,24 +591,9 @@ enter_standdown() {
     log ERROR "Native Claude Code auto-compact will handle context management"
 }
 
-check_debounce() {
-    local now
-    now=$(date +%s)
-    local elapsed=$((now - JICM_LAST_TRIGGER))
-    if [[ $elapsed -lt $DEBOUNCE_SECONDS ]]; then
-        log INFO "Debounce active (${elapsed}s < ${DEBOUNCE_SECONDS}s)"
-        return 1  # Debounced
-    fi
-    return 0  # OK to trigger
-}
-
-check_trigger_limit() {
-    if [[ $TRIGGER_COUNT -ge $MAX_TRIGGERS ]]; then
-        enter_standdown "Max triggers reached ($TRIGGER_COUNT)"
-        return 1  # Limit reached
-    fi
-    return 0  # OK
-}
+# check_debounce() removed (C3) — dead code, no callers
+# check_trigger_limit() removed (B3) — penalizing successful compressions is wrong.
+# Standdown is only triggered by FAILURES_BEFORE_STANDDOWN (consecutive failures).
 
 record_failure() {
     FAILURE_COUNT=$((FAILURE_COUNT + 1))
@@ -556,7 +616,7 @@ write_jicm_config() {
 
 JICM_THRESHOLD=$JICM_THRESHOLD
 JICM_APPROACH_OFFSET=${JICM_APPROACH_OFFSET:-10}
-JICM_CRITICAL_PCT=${JICM_CRITICAL_PCT:-90}
+# JICM_CRITICAL_PCT removed (C1) — was never used as a condition
 RESERVED_OUTPUT_TOKENS=$RESERVED_OUTPUT_TOKENS
 CONTEXT_WINDOW_SIZE=$MAX_CONTEXT_TOKENS
 EOF
@@ -568,28 +628,45 @@ EOF
 # =============================================================================
 
 is_claude_busy() {
+    # Returns via echo: "busy" or "idle" (not return codes — bash 3.2 set -e safety)
     local pane_content
     pane_content=$("$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p 2>/dev/null || echo "")
 
-    # Look for spinner or processing indicators
-    if echo "$pane_content" | grep -qE '[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏◐◓◑◒▁▂▃▄▅▆▇]|Thinking|Processing|⣾⣽⣻⢿⡿⣟⣯⣷'; then
-        return 0  # Busy
+    # Check last 5 lines for spinner/processing indicators (avoid scroll history)
+    local busy_match
+    busy_match=$(echo "$pane_content" | tail -5 | grep -cE '[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏◐◓◑◒▁▂▃▄▅▆▇]|Thinking|Processing|⣾⣽⣻⢿⡿⣟⣯⣷' || true)
+
+    if [[ "$busy_match" -gt 0 ]]; then
+        echo "busy"
+        return 0
     fi
-    return 1  # Not busy
+    echo "idle"
+    return 0
 }
 
-wait_for_idle() {
-    local timeout="${1:-60}"
-    local wait_count=0
+# Wait for Claude to become idle before sending commands.
+# Unlike the old wait_for_idle() (removed in B1/C3 for blocking the main loop),
+# this is a BRIEF poll used ONLY inside send_command() — it blocks the command
+# delivery, not the entire monitoring loop. Max wait: 30s with 2s intervals.
+# After timeout, sends anyway (better to attempt delivery than skip entirely).
+wait_for_idle_brief() {
+    local max_wait=${1:-30}
+    local poll_interval=2
+    local waited=0
 
-    while [[ $wait_count -lt $timeout ]]; do
-        if ! is_claude_busy; then
-            return 0  # Idle
+    while [[ $waited -lt $max_wait ]]; do
+        local status
+        status=$(is_claude_busy)
+        if [[ "$status" == "idle" ]]; then
+            return 0  # Ready to send
         fi
-        sleep 2
-        ((wait_count += 2))
+        log CMD "Waiting for Claude to finish generating... (${waited}s/${max_wait}s)"
+        sleep "$poll_interval"
+        waited=$((waited + poll_interval))
     done
-    return 1  # Timeout
+
+    log WARN "wait_for_idle_brief: Claude still busy after ${max_wait}s, proceeding anyway"
+    return 0  # Always return 0 for bash 3.2 safety
 }
 
 # =============================================================================
@@ -612,7 +689,7 @@ send_command() {
 
     if ! "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
         log ERROR "tmux session '$TMUX_SESSION' not found"
-        return 1
+        return 0  # bash 3.2 safety
     fi
 
     local full_command="$command"
@@ -620,7 +697,14 @@ send_command() {
         full_command="$command $args"
     fi
 
+    # Wait for Claude to stop generating before injecting keystrokes.
+    # Without this, send-keys text gets consumed as input buffer content
+    # during active generation and never executes as a slash command.
+    # See: first live test 2026-02-06, /clear was lost during generation.
+    wait_for_idle_brief 30
+
     log CMD "Sending: $full_command"
+    # Canonical pattern (Section 6.4.1): text via -l, then C-m as SEPARATE call
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$full_command"
     sleep 0.1
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
@@ -631,9 +715,14 @@ send_text() {
     local text="$1"
     if ! "$TMUX_BIN" has-session -t "$TMUX_SESSION" 2>/dev/null; then
         log ERROR "tmux session '$TMUX_SESSION' not found"
-        return 1
+        return 0  # bash 3.2 safety
     fi
+
+    # Same idle-wait as send_command() — text prompts also need Claude to be at prompt
+    wait_for_idle_brief 30
+
     log CMD "Sending text (${#text} chars)"
+    # Canonical pattern (Section 6.4.1): text via -l, then C-m as SEPARATE call
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$text"
     sleep 0.1
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
@@ -684,181 +773,12 @@ cleanup_jicm_signals_only() {
     rm -f "$JICM_COMPLETE_SIGNAL"
 }
 
-# Spawn compression agent (called by /intelligent-compress, not directly by watcher)
-# In v5, the watcher sends /intelligent-compress command which handles spawning
-spawn_compression_agent() {
-    local tokens="$1"
-    local pct="$2"
-
-    log JICM "═══ SPAWNING COMPRESSION AGENT at ${pct}% ═══"
-
-    # Create spawn signal for Claude to pick up
-    # Claude's Task tool will be used to spawn the agent
-    cat > "$PROJECT_DIR/.claude/context/.spawn-compression-agent.signal" <<EOF
-{
-    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "action": "spawn_compression_agent",
-    "trigger_percentage": $pct,
-    "trigger_tokens": $tokens,
-    "agent": "compression-agent",
-    "model": "sonnet",
-    "timeout_seconds": $AGENT_TIMEOUT,
-    "compression_target": "5000-15000"
-}
-EOF
-
-    JICM_STATE="compression_spawned"
-    JICM_LAST_TRIGGER=$(date +%s)
-    TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
-
-    log JICM "Compression agent spawn signaled, waiting for completion..."
-}
-
-# EXECUTOR LAYER 1: Send interrupt + dump prompt
-executor_layer1_interrupt_and_dump() {
-    log JICM "═══ EXECUTOR LAYER 1: Interrupt + Dump ═══"
-
-    # Wait for Claude to be idle
-    log JICM "Waiting for idle state..."
-    wait_for_idle 30 || log WARN "Idle timeout, proceeding anyway"
-
-    # Send the dump prompt
-    local dump_prompt="JICM CONTEXT CHECKPOINT REQUEST
-
-Your context is being optimized. Before proceeding:
-
-1. Write your current work state to: .claude/context/.in-progress-ready.md
-   Include:
-   - What task you were working on
-   - Your current reasoning/thought process
-   - Any partial work or uncommitted changes
-   - Immediate next steps
-
-2. After writing the file, respond with exactly: DUMP_COMPLETE
-
-This ensures your work-in-progress survives the context optimization."
-
-    send_text "$dump_prompt"
-
-    # Write signal that dump was requested
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$DUMP_REQUESTED_SIGNAL"
-
-    JICM_STATE="dump_requested"
-    log JICM "Dump prompt sent, waiting for response..."
-}
-
-# EXECUTOR LAYER 2: Wait for dump, send /clear
-executor_layer2_wait_and_clear() {
-    log JICM "═══ EXECUTOR LAYER 2: Wait for Dump + Clear ═══"
-
-    local wait_count=0
-
-    # Wait for in-progress file to be written
-    while [[ ! -f "$IN_PROGRESS_FILE" ]] && [[ $wait_count -lt $DUMP_TIMEOUT ]]; do
-        sleep 2
-        ((wait_count += 2))
-        if [[ $((wait_count % 10)) -eq 0 ]]; then
-            log JICM "  Waiting for dump... (${wait_count}s)"
-        fi
-    done
-
-    if [[ -f "$IN_PROGRESS_FILE" ]]; then
-        log JICM "In-progress dump received"
-    else
-        log WARN "Dump timeout after ${DUMP_TIMEOUT}s - proceeding with /clear anyway"
-    fi
-
-    # Check if /clear was already sent recently (avoid duplicate)
-    if [[ -f "$CLEAR_SENT_SIGNAL" ]]; then
-        local clear_ts=$(cat "$CLEAR_SENT_SIGNAL" 2>/dev/null)
-        if [[ -n "$clear_ts" ]]; then
-            local clear_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clear_ts" +%s 2>/dev/null || echo "0")
-            local now_epoch=$(date +%s)
-            local clear_age=$((now_epoch - clear_epoch))
-            if [[ $clear_age -lt 60 ]]; then
-                log JICM "Skipping /clear - already sent ${clear_age}s ago"
-                JICM_STATE="monitoring"
-                reset_failure_count
-                return
-            fi
-        fi
-    fi
-
-    # Send /clear
-    log JICM "Sending /clear..."
-    send_command "/clear"
-
-    # Write signal that clear was sent
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
-
-    # Invalidate TUI cache - context data will be completely different after clear
-    invalidate_tui_cache
-
-    JICM_STATE="cleared"
-
-    # Start cascade resumer
-    trigger_cascade_resumer
-}
-
-# Cascade Resumer: Ensure Jarvis resumes properly
-trigger_cascade_resumer() {
-    log JICM "═══ CASCADE RESUMER: Starting ═══"
-
-    # The session-start hook should inject continuation context
-    # But we'll verify and re-inject if needed
-
-    # Wait for initial injection
-    sleep "$CONTINUATION_DELAY_1"
-
-    if [[ -f "$CONTINUATION_INJECTED_SIGNAL" ]]; then
-        log JICM "Continuation injected by hook"
-    else
-        log JICM "Cascade Check 1: Injecting continuation prompt"
-        inject_continuation_prompt
-    fi
-
-    # Second check
-    sleep "$CONTINUATION_DELAY_2"
-
-    if is_claude_busy; then
-        log JICM "Claude is working - continuation successful"
-    else
-        log JICM "Cascade Check 2: Re-injecting continuation"
-        inject_continuation_prompt
-    fi
-
-    # Final enforcement
-    sleep "$CONTINUATION_DELAY_3"
-
-    if is_claude_busy; then
-        log JICM "Work resumed successfully"
-        JICM_STATE="resumed"
-        reset_failure_count
-    else
-        log WARN "Cascade Check 3: Final enforcement"
-        send_text "Resume work immediately. Read .claude/context/.compressed-context-ready.md and .claude/context/.in-progress-ready.md then continue the interrupted task."
-        JICM_STATE="enforced"
-    fi
-
-    # Mark JICM cycle complete
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$JICM_COMPLETE_SIGNAL"
-    log JICM "═══ JICM CYCLE COMPLETE ═══"
-}
-
-inject_continuation_prompt() {
-    local continuation_text="CONTEXT CONTINUATION - DO NOT GREET
-
-Your context was just optimized. Resume work immediately.
-
-1. Read: .claude/context/.compressed-context-ready.md (preserved context)
-2. Read: .claude/context/.in-progress-ready.md (work in progress)
-3. Continue the task that was interrupted
-
-DO NOT say hello or ask how to help. Just resume working."
-
-    send_text "$continuation_text"
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CONTINUATION_INJECTED_SIGNAL"
-}
+# v4 functions removed (C3):
+#   spawn_compression_agent() — v5 uses /intelligent-compress command
+#   executor_layer1_interrupt_and_dump() — v5 compression handles context saving
+#   executor_layer2_wait_and_clear() — v5 section 1.5 handles /clear
+#   trigger_cascade_resumer() — v5 idle-hands handles resume
+#   inject_continuation_prompt() — v5 session-start hook handles injection
 
 # =============================================================================
 # IDLE-HANDS MONITOR (JICM v5 Mechanism 2)
@@ -947,17 +867,26 @@ detect_submission_success() {
 }
 
 # =============================================================================
-# CRITICAL STATE DETECTION (JICM v6)
+# CRITICAL STATE DETECTION (v5.6.0)
 # =============================================================================
-# Detect specific TUI states that require immediate intervention.
-# These are higher priority than general idle detection.
+# SCOPE: Unplanned emergencies and edge cases where normal hooks have FAILED.
 #
-# States handled:
-#   1. post_clear_restore: "(no content)" after /clear - IMMEDIATE action
-#   2. fresh_session: "0 tokens" - full context restoration
-#   3. interrupted: "Interrupted · What should Claude do" - resume prompt
+# This is the FALLBACK safety net. Normal transitions are handled by:
+#   - idle-hands (check_idle_hands): Planned transitions — post-clear resume,
+#     session start wake-up. Triggered by flag files from session-start.sh
+#     or the JICM compression cycle. Has sophisticated retry/escalation.
 #
-# Returns: mode name if critical state detected, empty string otherwise
+# Critical-state handles ONLY:
+#   1. context_exhausted: Claude Code is locked out — emergency /clear required
+#   2. post_clear_unhandled: /clear was sent but NO idle-hands flag exists
+#      AND 20+ seconds have elapsed — hooks have failed, emergency restore
+#
+# Removed in v5.6.0:
+#   - fresh_session: Handled by session_start idle-hands mode
+#   - interrupted: Disabled since v5.4.2 (causes runaway loop)
+#
+# Returns: state name string if emergency detected, empty string otherwise
+# IMPORTANT: Always returns 0 (bash 3.2 set -e compatibility)
 
 detect_critical_state() {
     local pane_content
@@ -965,38 +894,30 @@ detect_critical_state() {
 
     if [[ -z "$pane_content" ]]; then
         echo ""
-        return 0  # Always return 0 (bash 3.2 set -e compatibility)
-    fi
-
-    # Priority 1: Post-clear with no content - IMMEDIATE action required
-    # Pattern: "⎿  (no content)" or "/clear" followed by "(no content)"
-    if echo "$pane_content" | grep -qE '\(no content\)'; then
-        echo "post_clear_restore"
         return 0
     fi
 
-    # Priority 2: Fresh/cleared session with 0 tokens
-    # Pattern: "0 tokens" in status line area
-    if echo "$pane_content" | tail -5 | grep -qE '^\s*0 tokens|[^0-9]0 tokens'; then
-        echo "fresh_session"
-        return 0
+    # EMERGENCY: Context exhausted — Claude Code can't proceed
+    # Only check when state is "monitoring" to prevent re-triggering after /clear
+    # Restrict to last 8 lines to avoid stale scroll buffer (v5.5.1 fix)
+    if [[ "$JICM_STATE" == "monitoring" ]]; then
+        if echo "$pane_content" | tail -8 | grep -qE 'Context limit reached|Conversation too long'; then
+            echo "context_exhausted"
+            return 0
+        fi
     fi
 
-    # Priority 3: Interrupted state - DISABLED (v5.4.2)
-    # Previously triggered on "Interrupted · What should Claude do" but this
-    # causes a runaway loop: watcher prompt → interrupt → detect → prompt → ...
-    # When user interrupts Claude, they will provide the next instruction.
-    # The watcher should NOT intervene in this state.
-    #
-    # if echo "$pane_content" | grep -qE 'Interrupted.*What should Claude do'; then
-    #     echo "interrupted"
-    #     return 0
-    # fi
+    # EDGE CASE: /clear sent but idle-hands NOT active and 20s+ elapsed
+    # This catches scenarios where /clear was sent manually or by a failed
+    # JICM cycle that didn't create the idle-hands flag. If idle-hands IS
+    # active, it handles restoration (skip this check entirely).
+    if [[ ! -f "$IDLE_HANDS_FLAG" ]] && [[ "$JICM_STATE" == "cleared" ]]; then
+        if echo "$pane_content" | tail -10 | grep -qE '\(no content\)'; then
+            echo "post_clear_unhandled"
+            return 0
+        fi
+    fi
 
-    # No critical state detected
-    # IMPORTANT: Always return 0 to avoid set -e exit on command substitution
-    # (bash 3.2 on macOS triggers exit when subshell returns non-zero)
-    # Caller checks output: empty = no critical state, non-empty = critical state
     echo ""
     return 0
 }
@@ -1006,99 +927,95 @@ handle_critical_state() {
     local state="$1"
 
     case "$state" in
-        post_clear_restore)
-            log JICM "═══ CRITICAL STATE: Post-clear with no content ═══"
-            # IMMEDIATE context restoration
-            local restore_prompt='CONTEXT RESTORATION REQUIRED
+        context_exhausted)
+            log JICM "═══ EMERGENCY: Context exhausted — sending /clear ═══"
 
-Your context was just cleared. Resume work using these files:
-1. .claude/context/.compressed-context-ready.md (if exists)
-2. .claude/context/.in-progress-ready.md (if exists)
-3. .claude/context/session-state.md
+            # Save current work state
+            if [[ ! -f "$IN_PROGRESS_FILE" ]]; then
+                cat > "$IN_PROGRESS_FILE" <<'DUMP'
+# Emergency Context Checkpoint
 
-Do NOT greet. Continue the task that was in progress.'
-            if ! "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$restore_prompt" 2>/dev/null; then
-                log WARN "Failed to send restore prompt - tmux command failed"
-                return 1
+Context exhausted - JICM triggered emergency /clear.
+Read .claude/context/session-state.md for prior work context.
+DUMP
             fi
-            sleep 0.1
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
+
+            # Invalidate TUI cache and send /clear
+            invalidate_tui_cache
+            send_command "/clear"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
+
+            # STATE TRANSITION: Move to "cleared" state
+            # This prevents re-triggering context_exhausted on next iteration
+            # (the error message may still be visible until TUI refreshes)
+            JICM_STATE="cleared"
+            JICM_LAST_TRIGGER=$(date +%s)  # For section 4's 60s failsafe
+            GRACE_RESUME_UNTIL=$(($(date +%s) + 20))  # Protect cleared state (A4)
+            log JICM "State → cleared (awaiting post-clear restoration)"
             ;;
 
-        fresh_session)
-            log JICM "═══ CRITICAL STATE: Fresh session (0 tokens) ═══"
-            # Check if this is a JICM resume or true fresh start
-            if [[ -f "$COMPRESSED_CONTEXT_FILE" ]] || [[ -f "$IN_PROGRESS_FILE" ]]; then
-                # JICM resume
-                local jicm_prompt='JICM CONTEXT RESTORED
-
-Read these files and continue your interrupted task:
-1. .claude/context/.compressed-context-ready.md
-2. .claude/context/.in-progress-ready.md
-
-Do NOT greet. Resume work immediately.'
-                if ! "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$jicm_prompt" 2>/dev/null; then
-                    log WARN "Failed to send JICM prompt - tmux command failed"
-                    return 1
-                fi
-            else
-                # True fresh session - let session_start mode handle it
-                log JICM "Fresh session without JICM context - deferring to session_start mode"
-                return 1
-            fi
+        post_clear_unhandled)
+            log JICM "═══ EMERGENCY: Post-clear with no idle-hands recovery ═══"
+            log JICM "Normal hooks failed to create idle-hands flag. Emergency restore."
+            # Fires when: (a) detect_critical_state finds state==cleared + no idle-hands
+            #             (b) section 4 transitions cleared→monitoring without idle-hands
+            #
+            # IMPORTANT: Single-line prompt only. Multi-line -l strings cause newlines
+            # in the input buffer that can corrupt or prematurely submit commands.
+            # See: Section 6.4.1 Submission Pattern Requirements
+            local restore_prompt='[JICM-EMERGENCY] Hooks failed. Read .claude/context/.compressed-context-ready.md and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$restore_prompt" 2>/dev/null || true
             sleep 0.1
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
-            ;;
-
-        interrupted)
-            log JICM "═══ CRITICAL STATE: Interrupted ═══"
-            # Simple resume prompt
-            if ! "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "Resume your previous task." 2>/dev/null; then
-                log WARN "Failed to send resume prompt - tmux command failed"
-                return 1
-            fi
-            sleep 0.1
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
+            # Transition back to monitoring — we've done what we can
+            JICM_STATE="monitoring"
+            GRACE_RESUME_UNTIL=$(($(date +%s) + 20))  # Protect new monitoring state (A4)
             ;;
 
         *)
-            log WARN "Unknown critical state: $state"
-            return 1
+            log ERROR "Unknown critical state: $state — ignoring"
             ;;
     esac
 
     return 0
 }
 
-# Send prompt text based on prompt type
+# Send prompt text based on prompt type and mode
 # NOTE: Text is sent via -l flag (literal), then submit is sent SEPARATELY
 # See: lessons/tmux-self-injection-limitation.md
+#
+# Args: $1 = prompt_type (RESUME|SIMPLE|MINIMAL), $2 = mode context
+# Each mode+type combination has a customized prompt so the user can identify
+# which variant triggered, and Jarvis gets specialized instructions.
 send_prompt_by_type() {
     local prompt_type="$1"
+    local mode="${2:-jicm_resume}"
 
-    case "$prompt_type" in
-        "RESUME")
-            # Full resume prompt with explicit file paths and anti-patterns
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'JICM CONTEXT RESTORED - RESUME WORK
-
-Read these files and continue your interrupted task:
-1. .claude/context/.compressed-context-ready.md
-2. .claude/context/.in-progress-ready.md
-
-Do NOT greet. Do NOT ask questions. Resume work immediately.'
+    # CRITICAL: All prompts MUST be single-line. Multi-line -l strings inject
+    # literal newlines into the input buffer, causing premature submission or
+    # corrupted commands. See: Section 6.4.1 Submission Pattern Requirements.
+    case "${mode}:${prompt_type}" in
+        "jicm_resume:RESUME")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
             ;;
-        "SIMPLE")
-            # Simple directive if full prompt didn't work
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'Continue your work.'
+        "jicm_resume:SIMPLE")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Read .claude/context/.compressed-context-ready.md and continue work.'
             ;;
-        "MINIMAL")
-            # Minimal input to test basic submission
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '.'
+        "jicm_resume:MINIMAL")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Continue.'
+            ;;
+        "session_start:RESUME")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[SESSION-START] New session. Begin AC-01. Read .claude/context/session-state.md and .claude/context/current-priorities.md — assess state, decide next action, begin work. Do NOT just greet.'
+            ;;
+        "session_start:SIMPLE")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[SESSION-START] Read session-state.md and begin work.'
+            ;;
+        "session_start:MINIMAL")
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'startSession'
             ;;
         *)
-            # Default to simple prompt
-            log WARN "Unknown prompt type: $prompt_type, using SIMPLE"
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'Continue your work.'
+            # Fallback for any unrecognized combination
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "[${mode^^}] Resume work. Read .claude/context/session-state.md and continue."
             ;;
     esac
 }
@@ -1134,17 +1051,19 @@ apply_submission_method() {
 # Submit with current variant
 # Cycles through combinations of: 3 methods × 3 prompts = 9 variants
 # On retry, tries different combinations to find what works
+# Args: $1 = mode context (jicm_resume|session_start)
 submit_with_variant() {
+    local mode="${1:-jicm_resume}"
     local variant=$SUBMISSION_VARIANT_INDEX
     local method_idx=$((variant % ${#SUBMISSION_METHODS[@]}))
     local prompt_idx=$((variant / ${#SUBMISSION_METHODS[@]} % ${#SUBMISSION_PROMPTS[@]}))
     local prompt_type="${SUBMISSION_PROMPTS[$prompt_idx]}"
 
-    log JICM "Attempting submission variant $variant: method=$((method_idx + 1))/${#SUBMISSION_METHODS[@]} prompt=$prompt_type"
+    log JICM "Attempting submission variant $variant: mode=$mode method=$((method_idx + 1))/${#SUBMISSION_METHODS[@]} prompt=$prompt_type"
 
     # CANONICAL PATTERN: Send text first, then submit as SEPARATE call
     # This is validated to work; embedded CR in text fails
-    send_prompt_by_type "$prompt_type"
+    send_prompt_by_type "$prompt_type" "$mode"
     sleep 0.1  # Brief pause (optional but safe)
 
     # Apply submission method (separate send-keys call)
@@ -1212,7 +1131,7 @@ cleanup_jicm_files() {
 #   2. send-keys C-m         (submit as separate call)
 #
 idle_hands_jicm_resume() {
-    local max_cycles=50       # ~10 minutes of attempts (50 * 12s)
+    local max_cycles=20       # ~4 minutes of attempts (20 * 12s), then emergency restore (B6)
     local cycle_delay=12      # Seconds between attempts
     local cycle=0
 
@@ -1240,8 +1159,8 @@ idle_hands_jicm_resume() {
             # Update attempt count
             update_idle_hands_flag "$cycle"
 
-            # Try submission
-            submit_with_variant
+            # Try submission with jicm_resume mode prompts
+            submit_with_variant "jicm_resume"
 
             # Check if it worked
             if detect_submission_success; then
@@ -1264,9 +1183,11 @@ idle_hands_jicm_resume() {
         sleep $cycle_delay
     done
 
-    log WARN "IDLE-HANDS: Max cycles reached without confirmed success"
-    # Don't remove flag - leave for debugging
-    return 1
+    log WARN "IDLE-HANDS: Max cycles reached — firing emergency restore as last resort"
+    # Fire emergency restore directly (bypass variant system which already exhausted)
+    handle_critical_state "post_clear_unhandled"
+    rm -f "$IDLE_HANDS_FLAG"
+    return 0
 }
 
 # =============================================================================
@@ -1319,11 +1240,8 @@ idle_hands_session_start() {
             # Update attempt count
             update_idle_hands_flag "$cycle"
 
-            # Send simple wake-up prompt
-            # Use "startSession" which is recognized by Jarvis persona
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l 'startSession'
-            sleep 0.1
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+            # Send session-start wake-up using variant system
+            submit_with_variant "session_start"
 
             # Check if it worked (give more time for session start response)
             sleep 5
@@ -1347,10 +1265,13 @@ idle_hands_session_start() {
         sleep $cycle_delay
     done
 
-    log WARN "IDLE-HANDS: session_start max cycles reached"
-    # Clean up flag - don't leave stale session_start flags
+    log WARN "IDLE-HANDS: session_start max cycles reached — sending final wake-up"
+    # Send a direct session-start prompt as last resort
+    send_prompt_by_type "RESUME" "session_start"
+    sleep 0.1
+    "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
     rm -f "$IDLE_HANDS_FLAG"
-    return 1
+    return 0
 }
 
 # Check for and handle idle-hands flag
@@ -1368,56 +1289,42 @@ check_idle_hands() {
             return $?
             ;;
         session_start)
+            # D2: For --continue sessions, skip session_start injection.
+            # Continued sessions already have context; injecting AC-01 prompts
+            # could interfere with the user's continued conversation.
+            if [[ "$SESSION_TYPE" == "continue" ]]; then
+                log INFO "IDLE-HANDS: Skipping session_start for --continue session"
+                rm -f "$IDLE_HANDS_FLAG"
+                return 0
+            fi
             idle_hands_session_start
             return $?
             ;;
-        long_idle)
-            log INFO "IDLE-HANDS: long_idle mode not yet implemented"
-            ;;
-        workflow_chain)
-            log INFO "IDLE-HANDS: workflow_chain mode not yet implemented"
+        long_idle|workflow_chain)
+            log INFO "IDLE-HANDS: '$mode' mode not yet implemented — removing flag"
+            rm -f "$IDLE_HANDS_FLAG"
             ;;
         *)
-            log WARN "IDLE-HANDS: Unknown mode '$mode'"
+            log WARN "IDLE-HANDS: Unknown mode '$mode' — removing flag to prevent loop"
+            rm -f "$IDLE_HANDS_FLAG"
             ;;
     esac
 
     return 1
 }
 
-# Fallback to native /compact at y% threshold
-trigger_fallback_compact() {
-    local tokens="$1"
-    local pct="$2"
+# trigger_fallback_compact() removed (C2) — dead v4 state, never reached in v5
+# Emergency /compact is now handled by D1 mechanic (separate from compression flow)
 
-    log JICM "═══ FALLBACK: Native /compact at ${pct}% ═══"
-
-    wait_for_idle 30 || log WARN "Idle timeout, proceeding anyway"
-
-    send_command "/compact"
-
-    JICM_STATE="fallback_compact"
-    JICM_LAST_TRIGGER=$(date +%s)
-    TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
-}
-
-# Check for compression agent completion
-check_compression_complete() {
-    if [[ -f "$COMPRESSION_DONE_SIGNAL" ]]; then
-        log JICM "Compression agent completed"
-        rm -f "$COMPRESSION_DONE_SIGNAL"
-        return 0
-    fi
-    return 1
-}
+# check_compression_complete() removed (C3) — section 1.5 checks signal directly
 
 # =============================================================================
 # MAIN LOOP
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.4.0 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.4.2 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.6.1 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.6.1 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1441,7 +1348,7 @@ cleanup() {
 trap 'cleanup_with_signal INT' INT
 trap 'cleanup_with_signal TERM' TERM
 trap 'cleanup_with_signal HUP' HUP
-trap 'echo "[DEBUG] EXIT trap fired (signal was: $SHUTDOWN_SIGNAL)" >&2' EXIT
+trap 'log INFO "Watcher exiting (signal: $SHUTDOWN_SIGNAL)" 2>/dev/null || true' EXIT
 
 main() {
     banner
@@ -1452,7 +1359,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.4.2)"
+    log INFO "Watcher started (JICM v5.6.1, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
@@ -1479,8 +1386,16 @@ main() {
         fi
 
         # ─────────────────────────────────────────────────────────────
-        # 1.1 Check for idle-hands flag (JICM v5 Mechanism 2)
+        # 1.1 IDLE-HANDS: Planned transitions (flag-file triggered)
         # ─────────────────────────────────────────────────────────────
+        # Handles: post-clear resume (jicm_resume), session start wake-up
+        # (session_start). Has sophisticated retry/escalation logic.
+        #
+        # BLOCKS the main loop (up to ~4 min for jicm_resume, ~2 min for
+        # session_start). This is acceptable because:
+        #   - jicm_resume: context just cleared (~2-5%), no monitoring needed
+        #   - session_start: context at 0%, no monitoring needed
+        # Escape hatches: flag removal, success detection, max cycles → emergency restore (B4)
         if [[ -f "$IDLE_HANDS_FLAG" ]]; then
             check_idle_hands
             # After handling, continue to next iteration
@@ -1489,17 +1404,27 @@ main() {
         fi
 
         # ─────────────────────────────────────────────────────────────
-        # 1.2 Check for critical TUI states (JICM v6)
+        # 1.2 CRITICAL STATE: Unplanned emergencies (TUI pattern detection)
         # ─────────────────────────────────────────────────────────────
-        # These states require immediate intervention, higher priority than
-        # normal idle detection. Checks for:
-        #   - "(no content)" after /clear
-        #   - "0 tokens" (fresh/cleared session)
-        #   - "Interrupted" state
+        # FALLBACK safety net for when normal hooks have FAILED.
+        # Handles ONLY:
+        #   - context_exhausted: Claude Code lockout → emergency /clear
+        #   - post_clear_unhandled: /clear sent but hooks didn't create
+        #     idle-hands flag → emergency restore
         #
-        # Skip on first 2 iterations to avoid false positives on startup
+        # Skip during grace period to avoid false positives.
+        # Grace period is active during:
+        #   1. Startup: first 4 iterations (~20s)
+        #   2. Post-clear: GRACE_RESUME_UNTIL timestamp (20s after clear)
+        # This prevents false positives from stale TUI content after clear/restart.
         poll_count=$((poll_count + 1))
-        if [[ $poll_count -gt 2 ]]; then
+        local now_ts
+        now_ts=$(date +%s)
+        local grace_active=false
+        if [[ $poll_count -le 4 ]] || [[ $now_ts -lt $GRACE_RESUME_UNTIL ]]; then
+            grace_active=true
+        fi
+        if [[ "$grace_active" == "false" ]]; then
             local critical_state
             critical_state=$(detect_critical_state)
             if [[ -n "$critical_state" ]]; then
@@ -1513,102 +1438,82 @@ main() {
         fi
 
         # ─────────────────────────────────────────────────────────────
-        # 1.5 Check for /intelligent-compress completion
+        # 1.5 Compression completion → send /clear
         # ─────────────────────────────────────────────────────────────
-        # This handles BOTH:
-        #   - Manual: user runs /intelligent-compress (state=monitoring)
-        #   - Watcher-triggered: watcher sends /intelligent-compress (state=compression_triggered)
-        # In both cases, the compression agent creates .compression-done.signal when done
+        # SUCCESS PATH for the JICM compression cycle:
+        #   Section 5 (trigger) → /intelligent-compress → compression
+        #   agent runs → agent writes .compression-done.signal →
+        #   THIS SECTION detects signal → sends /clear → state="cleared"
+        #   → Section 6 handles cleared→monitoring (pct < 30% event)
+        #
+        # Handles BOTH:
+        #   - Watcher-triggered: section 3 set state=compression_triggered
+        #   - User-triggered: user ran /intelligent-compress (state=monitoring)
+        # In both cases, the compression agent creates .compression-done.signal
+        #
+        # NOTE: No trigger_limit check here — we're processing a COMPLETION,
+        # not initiating a trigger. Section 5 already counted the trigger.
         if [[ -f "$COMPRESSION_DONE_SIGNAL" ]] && [[ "$JICM_STATE" == "monitoring" || "$JICM_STATE" == "compression_triggered" ]]; then
-            log JICM "Detected compression completion signal (state: $JICM_STATE)"
-            # No debounce needed - signal file is removed after processing, preventing re-trigger
-            # Only check trigger_limit as safety net
-            if check_trigger_limit; then
-                JICM_LAST_TRIGGER=$(date +%s)
-                TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
-                rm -f "$COMPRESSION_DONE_SIGNAL"
-                # Skip Layer 1 (dump prompt) since /intelligent-compress already saved context
-                # Go directly to sending /clear
-                log JICM "═══ MANUAL COMPRESSION: Preparing /clear ═══"
+            local was_watcher_triggered="false"
+            if [[ "$JICM_STATE" == "compression_triggered" ]]; then
+                was_watcher_triggered="true"
+            fi
 
-                # Check if /clear was already sent recently (avoid duplicate with user's manual /clear)
-                if [[ -f "$CLEAR_SENT_SIGNAL" ]]; then
-                    local clear_ts=$(cat "$CLEAR_SENT_SIGNAL" 2>/dev/null)
-                    if [[ -n "$clear_ts" ]]; then
-                        local clear_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clear_ts" +%s 2>/dev/null || echo "0")
-                        local now_epoch=$(date +%s)
-                        local clear_age=$((now_epoch - clear_epoch))
-                        if [[ $clear_age -lt 60 ]]; then
-                            log JICM "Skipping /clear - already sent ${clear_age}s ago"
-                            JICM_STATE="monitoring"
-                            reset_failure_count
-                            log JICM "Manual compression cycle complete (no-op)"
-                            continue
-                        fi
+            log JICM "Detected compression completion signal (state: $JICM_STATE)"
+            rm -f "$COMPRESSION_DONE_SIGNAL"
+
+            # Check if /clear was already sent recently (avoid duplicate)
+            if [[ -f "$CLEAR_SENT_SIGNAL" ]]; then
+                local clear_ts
+                clear_ts=$(cat "$CLEAR_SENT_SIGNAL" 2>/dev/null)
+                if [[ -n "$clear_ts" ]]; then
+                    local clear_epoch
+                    clear_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clear_ts" +%s 2>/dev/null || echo "0")
+                    local now_epoch
+                    now_epoch=$(date +%s)
+                    local clear_age=$((now_epoch - clear_epoch))
+                    if [[ $clear_age -lt 60 ]]; then
+                        log JICM "Skipping /clear — already sent ${clear_age}s ago"
+                        JICM_STATE="monitoring"
+                        reset_failure_count
+                        log JICM "Compression cycle complete (no-op, /clear already sent)"
+                        continue
                     fi
                 fi
+            fi
 
-                wait_for_idle 30 || log WARN "Idle timeout, proceeding anyway"
-                log JICM "Sending /clear..."
-                send_command "/clear"
-                echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
-
-                # Invalidate TUI cache - context data will be completely different after clear
-                invalidate_tui_cache
-
-                JICM_STATE="cleared"
-                # Let session-start.sh handle continuation injection
-                # Extended settling delay for TUI to stabilize after clear
-                log JICM "Waiting 5s for TUI to stabilize after /clear..."
-                sleep 5
-                JICM_STATE="monitoring"
-                reset_failure_count
-                log JICM "Manual compression cycle complete"
+            # Send /clear (compressed context is ready for post-clear hook to inject)
+            if [[ "$was_watcher_triggered" == "true" ]]; then
+                log JICM "═══ COMPRESSION SUCCESS: Sending /clear (watcher-triggered) ═══"
             else
-                # Trigger limit reached
-                log WARN "Trigger limit reached - cannot process compression signal"
-                rm -f "$COMPRESSION_DONE_SIGNAL"  # Clean up anyway to avoid loop
+                log JICM "═══ COMPRESSION SUCCESS: Sending /clear (user-triggered) ═══"
             fi
+
+            send_command "/clear"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
+            invalidate_tui_cache
+
+            # Transition to "cleared" — section 4 handles cleared→monitoring
+            # via event detection (pct < 30%), not a hardcoded sleep
+            JICM_STATE="cleared"
+            JICM_LAST_TRIGGER=$(date +%s)  # Reset for section 4's 60s failsafe
+            GRACE_RESUME_UNTIL=$(($(date +%s) + 20))  # Post-clear grace (A2)
+            reset_failure_count
+            log JICM "State → cleared (section 4 handles transition to monitoring)"
+            continue
         fi
 
-        # ─────────────────────────────────────────────────────────────
-        # 2. Check for compression agent completion (watcher-spawned)
-        # ─────────────────────────────────────────────────────────────
-        if [[ "$JICM_STATE" == "compression_spawned" ]]; then
-            if check_compression_complete; then
-                # Compression done, proceed to Layer 1
-                executor_layer1_interrupt_and_dump
-            else
-                # Check for timeout
-                local now
-                now=$(date +%s)
-                local elapsed=$((now - JICM_LAST_TRIGGER))
-                if [[ $elapsed -gt $AGENT_TIMEOUT ]]; then
-                    log WARN "Compression agent timeout after ${elapsed}s"
-                    record_failure
-                    # Fall back to native /compact
-                    trigger_fallback_compact "$(get_token_count)" "$(get_used_percentage)"
-                fi
-            fi
-        fi
+        # Sections 2 & 3 removed (C4) — v4 compression_spawned/dump_requested flow
+        # v5 flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 
         # ─────────────────────────────────────────────────────────────
-        # 3. Check for dump completion (Layer 2)
-        # ─────────────────────────────────────────────────────────────
-        if [[ "$JICM_STATE" == "dump_requested" ]]; then
-            if [[ -f "$IN_PROGRESS_FILE" ]]; then
-                executor_layer2_wait_and_clear
-            fi
-        fi
-
-        # ─────────────────────────────────────────────────────────────
-        # 4. Context monitoring
+        # 2. Context monitoring
         # ─────────────────────────────────────────────────────────────
         local pct
         pct=$(get_used_percentage)
 
         if [[ "$pct" == "0" ]] || [[ -z "$pct" ]]; then
-            poll_count=$((poll_count + 1))
+            # poll_count already incremented in section 1.2 — no duplicate here
             if [[ $((poll_count % 6)) -eq 0 ]]; then
                 echo -e "$(date +%H:%M:%S) ${YELLOW}·${NC} Waiting for context data..."
             fi
@@ -1678,67 +1583,102 @@ main() {
             last_tokens=$tokens
         fi
 
-        echo "[DEBUG] Reached section 5 - threshold check (method: $token_method, poll: $poll_count)" >&2
+        # ─────────────────────────────────────────────────────────────
+        # 2.5 Emergency /compact — last resort before lockout (D1)
+        # ─────────────────────────────────────────────────────────────
+        # Fires at EMERGENCY_COMPACT_PCT (5% below lockout ceiling).
+        # This is separate from JICM compression — it's a raw /compact
+        # to prevent total lockout when compression is slow or fails.
+        # Only fires once; resets when context drops below threshold.
+        if [[ $pct_int -ge $EMERGENCY_COMPACT_PCT ]] && \
+           [[ "$JICM_STATE" != "cleared" ]] && \
+           [[ "$EMERGENCY_COMPACT_SENT" == "false" ]]; then
+            log JICM "═══ EMERGENCY /compact at ${pct_int}% (lockout at ~${LOCKOUT_PCT}%) ═══"
+            send_command "/compact"
+            EMERGENCY_COMPACT_SENT=true
+        fi
+
+        # Reset emergency compact flag when context drops below trigger
+        if [[ $pct_int -lt $EMERGENCY_COMPACT_PCT ]] && [[ "$EMERGENCY_COMPACT_SENT" == "true" ]]; then
+            EMERGENCY_COMPACT_SENT=false
+        fi
 
         # ─────────────────────────────────────────────────────────────
-        # 5. Threshold check (JICM v5 - single threshold)
+        # 3. Threshold check → trigger compression (JICM v5)
         # ─────────────────────────────────────────────────────────────
-        # NOTE: No debounce here. Natural debounce is context level itself:
-        # - If compression works → context drops below threshold
-        # - Won't re-trigger until context grows back above threshold
-        # Only trigger_limit as safety net (max triggers per session)
+        # TRIGGER POINT for the JICM compression cycle.
+        # Natural debounce: if compression works, context drops below
+        # threshold and won't re-trigger until it grows back.
+        #
+        # SUCCESS PATH continues in section 1.5:
+        #   /intelligent-compress → compression agent runs →
+        #   .compression-done.signal → section 1.5 sends /clear →
+        #   state="cleared" → section 4 event: pct<30% → monitoring
         if [[ "$JICM_STATE" == "monitoring" ]]; then
             if [[ $pct_int -ge $JICM_THRESHOLD ]]; then
-                if check_trigger_limit; then
-                    log JICM "═══ JICM v5: Context at ${pct}% - triggering compression ═══"
-                    wait_for_idle 30 || log WARN "Idle timeout, proceeding anyway"
-                    send_command "/intelligent-compress"
-                    JICM_STATE="compression_triggered"
-                    JICM_LAST_TRIGGER=$(date +%s)
-                    TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
-                else
-                    log WARN "Trigger limit reached ($TRIGGER_COUNT >= $MAX_TRIGGERS) - falling back to native /compact"
+                TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
+                log JICM "═══ JICM v5: Context at ${pct}% — triggering compression (#${TRIGGER_COUNT}) ═══"
+                send_command "/intelligent-compress"
+                JICM_STATE="compression_triggered"
+                JICM_LAST_TRIGGER=$(date +%s)
+            fi
+        fi
+
+        # ─────────────────────────────────────────────────────────────
+        # 4. State transitions (event-driven, Swiss watch precision)
+        # ─────────────────────────────────────────────────────────────
+        # Each state transitions based on observable EVENTS, not timers.
+        # Timeouts exist only as absolute last-resort failsafes.
+
+        if [[ "$JICM_STATE" == "compression_triggered" ]]; then
+            # EVENT: compression signal detected → handled in section 1.5
+            # (section 1.5 transitions to cleared/monitoring)
+            #
+            # FAILSAFE ONLY: If /intelligent-compress completely failed and
+            # no signal appeared after 300s, reset to monitoring
+            local now
+            now=$(date +%s)
+            local elapsed=$((now - JICM_LAST_TRIGGER))
+            if [[ $elapsed -gt $DEBOUNCE_SECONDS ]]; then
+                log ERROR "compression_triggered: 300s failsafe timeout. Compression may have failed. Resetting to monitoring."
+                cleanup_jicm_signals_only
+                JICM_STATE="monitoring"
+            fi
+        fi
+
+        if [[ "$JICM_STATE" == "cleared" ]]; then
+            # EVENT: Context has dropped (clear succeeded) → return to monitoring
+            # This is the precise gear: we KNOW /clear worked when pct drops
+            if [[ $pct_int -lt 30 ]]; then
+                log JICM "State: cleared → monitoring (context at ${pct_int}%, clear confirmed)"
+                cleanup_jicm_signals_only
+                JICM_STATE="monitoring"
+                # Re-engage grace period for post-clear stability
+                GRACE_RESUME_UNTIL=$(($(date +%s) + 20))
+
+                # B2 FIX: If idle-hands flag was never created (hooks failed),
+                # fire emergency restore NOW. Without this, post_clear_unhandled
+                # can never fire because it requires state==cleared, but we just
+                # transitioned to monitoring.
+                if [[ ! -f "$IDLE_HANDS_FLAG" ]]; then
+                    log JICM "No idle-hands flag after clear — hooks may have failed. Emergency restore."
+                    handle_critical_state "post_clear_unhandled"
+                fi
+            else
+                # FAILSAFE ONLY: If /clear somehow didn't reduce context after 60s
+                # (Only fires when event-driven transition hasn't happened yet)
+                local now
+                now=$(date +%s)
+                local elapsed=$((now - JICM_LAST_TRIGGER))
+                if [[ $elapsed -gt 60 ]]; then
+                    log ERROR "cleared: 60s failsafe timeout. Clear may have failed. Resetting to monitoring."
+                    JICM_STATE="monitoring"
                 fi
             fi
         fi
 
-        # ─────────────────────────────────────────────────────────────
-        # 6. Reset after JICM cycle completes
-        # ─────────────────────────────────────────────────────────────
-        # For "resumed" and "enforced" states: reset if cooldown passed OR context is low
-        if [[ "$JICM_STATE" == "resumed" ]] || [[ "$JICM_STATE" == "enforced" ]]; then
-            local now
-            now=$(date +%s)
-            local elapsed=$((now - JICM_LAST_TRIGGER))
-
-            # Reset after cooldown or if context is low (indicates successful clear)
-            if [[ $elapsed -gt $DEBOUNCE_SECONDS ]] || [[ $pct_int -lt 30 ]]; then
-                log INFO "JICM cycle complete, returning to monitoring"
-                cleanup_jicm_signals_only
-                JICM_STATE="monitoring"
-            fi
-        fi
-
-        # For "compression_triggered" state: ONLY reset after cooldown period
-        # Do NOT reset based on low percentage - compression_triggered waits for
-        # .compression-done.signal (handled in section 1.5) before the flow continues
-        if [[ "$JICM_STATE" == "compression_triggered" ]]; then
-            local now
-            now=$(date +%s)
-            local elapsed=$((now - JICM_LAST_TRIGGER))
-
-            # Only reset after full debounce period (timeout scenario)
-            if [[ $elapsed -gt $DEBOUNCE_SECONDS ]]; then
-                log WARN "Compression trigger timeout (${elapsed}s > ${DEBOUNCE_SECONDS}s), returning to monitoring"
-                cleanup_jicm_signals_only
-                JICM_STATE="monitoring"
-            fi
-        fi
-
         # poll_count already incremented at start of loop (line ~1462) - no duplicate here
-        echo "[DEBUG] End of loop iteration, about to sleep $INTERVAL (poll: $poll_count)" >&2
         sleep "$INTERVAL"
-        echo "[DEBUG] Woke from sleep, starting next iteration" >&2
     done
 }
 
