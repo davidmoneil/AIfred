@@ -63,7 +63,7 @@
 #   - Extended startup grace period from 2 to 4 iterations
 #
 # Changelog v5.5.0 (2026-02-05):
-#   - Lowered default JICM_THRESHOLD from 80% to 65% (lockout-aware)
+#   - Lowered default JICM_THRESHOLD from 80% to 65% (lockout-aware, superseded by v5.7.0)
 #
 # Changelog v5.4.5 (2026-02-05):
 #   - PROPERLY FIXED context_exhausted loop using state machine, not debouncing
@@ -166,10 +166,13 @@ JICM_CONFIG_FILE="$PROJECT_DIR/.claude/context/.jicm-config"
 # Single threshold for compression trigger (dynamically configurable)
 # See: jicm-v5-design-addendum.md Section 2.2
 #
-# CRITICAL: Claude Code lockout ceiling is ~78.5% with 15K output reserve.
-# Default threshold MUST be below this or JICM will never trigger in time.
-# Calculation: (200K - 15K output - ~28K compact buffer) / 200K = 78.5%
-JICM_THRESHOLD=${JICM_THRESHOLD:-65}
+# CRITICAL: Auto-compact fires at ~85% effective (default 95% minus internal reserves).
+# Default threshold 55% provides 30% (60K tokens) headroom for:
+#   - Current multi-step turn to complete before compression starts (~20% worst case)
+#   - Compression skill overhead (~1%)
+#   - Compression agent completion (~5%)
+# Calculation: 55% + 20% + 1% + 5% = 81% < 85% auto-compact
+JICM_THRESHOLD=${JICM_THRESHOLD:-55}
 RESERVED_OUTPUT_TOKENS=${RESERVED_OUTPUT_TOKENS:-15000}
 DEFAULT_INTERVAL=5
 

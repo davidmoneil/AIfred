@@ -110,10 +110,11 @@ echo "Starting Jarvis..."
 export TERM=xterm-256color
 
 # Context management environment variables
-# - CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: Native auto-compact at 70% (below 78.5% lockout ceiling)
 # - ENABLE_TOOL_SEARCH: Enable MCP tool search to reduce context usage
 # - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 15K (affects effective context budget)
-CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000"
+# Note: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE left at default (~95%, effective ~85%)
+#       JICM triggers at 55% with 30% headroom before auto-compact
+CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
@@ -133,9 +134,9 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     export CLAUDE_PROJECT_DIR="$PROJECT_DIR"
 
     # Create watcher window (window 1, detached so we stay on window 0)
-    # JICM v5.6.0: threshold=65, --session-type=continue (D2)
+    # JICM v5.7.0: threshold=55 (accounts for queuing delay before compression starts)
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 65 --interval 5 --session-type continue; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5 --session-type continue; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience
