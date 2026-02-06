@@ -286,7 +286,7 @@ Blocking release for major issues requires user decision.
 | Review criteria defaults | `.claude/review-criteria/defaults.yaml` | exists |
 | Reports directory | `.claude/reports/reviews/` | exists |
 | State file | `.claude/state/components/AC-03-review.json` | exists |
-| Report template | `.claude/context/templates/review-report.md` | planned |
+| Report template | `.claude/context/templates/review-report-template.md` | exists |
 
 ### Two-Level Review Process
 
@@ -331,9 +331,9 @@ Blocking release for major issues requires user decision.
 | **Conditional** | Minor issues | Note issues, approve with caveats |
 | **Rejected** | Major issues | Block release, trigger remediation |
 
-### Open Questions
-- [ ] Default review criteria checklist?
-- [ ] Integration with existing /design-review?
+### Resolved Questions
+- [x] Default review criteria checklist? → `.claude/review-criteria/defaults.yaml` (created 2026-01-17)
+- [x] Integration with existing /design-review? → Separate command, shares pattern but distinct scope (design-review is pre-implementation, milestone-review is post-implementation)
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
@@ -349,14 +349,14 @@ Blocking release for major issues requires user decision.
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (completion detection, manual command)
-- [ ] Inputs/outputs validated
-- [x] Dependencies verified (agents defined)
-- [ ] Gates implemented (release blocking)
+- [x] Triggers tested (manual `/review-milestone` validated 2026-02-06 on PR-12.4)
+- [x] Inputs/outputs validated (live review: code-review + project-manager agents both produced structured JSON, report saved to `reports/reviews/PR-12.4-review-2026-02-06.md`)
+- [x] Dependencies verified (agents defined, criteria files exist, template created)
+- [x] Gates implemented (verdict rules in defaults.yaml, completion gate in milestone-completion-gate.yaml)
 - [x] Metrics emission working (telemetry-emitter.js integrated)
-- [ ] Failure modes tested (missing roadmap, agent failure)
-- [ ] Integration with consumers verified (AC-02 remediation)
-- [x] Documentation updated
+- [ ] Failure modes tested (missing roadmap, agent failure — deferred to production use)
+- [ ] Integration with consumers verified (AC-02 remediation — deferred, requires rejected verdict scenario)
+- [x] Documentation updated (pattern v1.2.0, command doc, template, live report)
 
 ---
 

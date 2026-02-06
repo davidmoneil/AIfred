@@ -11,6 +11,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.3.0] - 2026-02-06
+
+**PR-12.3 + PR-12.4 Complete: Milestone Review + Context Management**
+
+### PR-12.3: Independent Milestone Review (AC-03)
+
+Two-level review system for automated quality gates at milestone boundaries.
+
+#### Added
+- **code-review agent** (`.claude/agents/code-review.md`) — Level 1 technical quality analysis
+- **project-manager agent** (`.claude/agents/project-manager.md`) — Level 2 progress/alignment review
+- **`/review-milestone` command** — Orchestrates two-level review workflow
+- **Review criteria** — `review-criteria/defaults.yaml`, `milestone-completion-gate.yaml`
+- **Review report template** — `context/templates/review-report-template.md`
+- **AC-03 component spec** — Full 9-section specification
+- **Milestone review pattern** — v1.2.0, validated (100% detection rate in PRD-V3)
+- **First live review** — PR-12.4 reviewed with CONDITIONAL verdict (CHANGELOG/VERSION gaps)
+
+### PR-12.4: JICM v5.6.2 — Enhanced Context Management (14-day sprint)
+
+Event-driven context management system with dual-mechanism resume architecture.
+
+#### Added
+- **JICM v5.6.2** — Full event-driven state machine (monitoring → compression → clear → restore → resume)
+- **Two-mechanism resume** — Hook injection (session-start.sh) + idle-hands watcher fallback
+- **Lockout ceiling discovery** — Claude Code locks at ~78.5% (output reserve + compact buffer)
+- **claude-code-env.sh** — Environment configuration for JICM thresholds
+- **Critical analysis report** — Self-assessment: 2 CRIT, 6 HIGH, 8 MED, 4 LOW findings
+- **Reorientation assessment** — Cost analysis of 14-day sprint, recommendation to return to roadmap
+- **Future work document** — Catalogued remaining improvements for maintenance mode
+- **R&D research reports** — AFK Code, Marvin, OpenClaw, Vestige analysis
+
+#### Fixed
+- **CRIT-01**: `check_idle_hands()` bash 3.2 crash (return 1 → return 0)
+- **CRIT-03**: AUTOCOMPACT threshold above lockout ceiling (95% → 70%)
+- **CRIT-04**: `.compression-in-progress` never cleaned on startup
+- **HIGH-05**: Emergency compact firing during active compression
+
+#### Changed
+- **AC-04-jicm.md** — Full rewrite from v3.0.0 to v5.6.2
+- **session-start.sh** — CRIT-04 fix, session_start for --continue sessions
+- **launch-jarvis-tmux.sh** — CRIT-03 fix (AUTOCOMPACT alignment)
+
+### Command-to-Skills Migration (v4.1.0, 2026-01-23)
+
+#### Changed
+- Deleted 4 conflicting commands (help, status, compact, clear) — native commands restored
+- Deleted 17 auto-* wrapper commands — consolidated into autonomous-commands skill
+- Created 5 skills: context-management, self-improvement, validation, ralph-loop, jarvis-status
+- Documentation sweep: 10 files updated
+
+### AIfred Integration Milestones 1-4 (2026-01-22 → 2026-01-23)
+
+#### Added
+- **M1**: 6 security hooks ported (credential-guard, branch-protection, etc.)
+- **M2**: 3 analytics hooks (file-access-tracker, session-tracker, memory-maintenance)
+- **M3**: /context-analyze, /context-loss, /capture, /history commands
+- **M4**: 5 core patterns ported (capability-layering, code-before-prompts, etc.)
+- **Milestone documentation enforcement** — milestone-doc-enforcer.js hook
+- **Organization Architecture** — 8-phase restructuring complete
+
+### Key Commits (12 JICM + multiple integration)
+- `d79857d` feat(jicm): Complete v5.6.2 critical analysis + 4 critical fixes
+- `22c8778` fix(jicm): Run AC-01 session_start for all session types
+- `855b6ed` feat(jicm): JICM v5.6.1 — comprehensive rewrite
+- `21043ad` refactor: Migrate commands to skills architecture
+
+---
+
 ## [2.2.2] - 2026-01-20
 
 **PRD-V1 Session Continuity Test Complete: AC-01 Validated**

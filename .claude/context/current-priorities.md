@@ -9,16 +9,19 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## In Progress
 
 ### PR-12.3: Independent Milestone Review
-**Status**: Ready to Begin
-**Priority**: HIGH -- next Phase 6 roadmap item
+**Status**: Finalizing — validation test pending
+**Priority**: HIGH -- closing out Phase 6 roadmap item
 
-Implement two-level review system for PR milestones:
-- [ ] Create `code-review` agent (detailed code analysis)
-- [ ] Create `project-manager` agent (high-level progress review)
-- [ ] Design review criteria files (`review-criteria/` directory)
-- [ ] Implement large review segmentation
-- [ ] Create report generation templates
-- [ ] Integrate remediation workflow with Wiggum Loop
+Two-level review system for PR milestones:
+- [x] Create `code-review` agent (`.claude/agents/code-review.md`)
+- [x] Create `project-manager` agent (`.claude/agents/project-manager.md`)
+- [x] Design review criteria files (`review-criteria/defaults.yaml`, `milestone-completion-gate.yaml`)
+- [x] Implement large review segmentation (in `milestone-review-pattern.md` Section 4.3)
+- [x] Create report generation templates (`context/templates/review-report-template.md`)
+- [x] `/review-milestone` command (`.claude/commands/review-milestone.md`)
+- [x] AC-03 component spec (`.claude/context/components/AC-03-milestone-review.md`)
+- [x] Live validation test (PR-12.4 review: CONDITIONAL verdict, report at `reports/reviews/PR-12.4-review-2026-02-06.md`)
+- [ ] Integration with AC-02 remediation workflow (deferred — needs rejected verdict scenario)
 
 **Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md` (PR-12.3)
 
@@ -62,19 +65,8 @@ Implement two-level review system for PR milestones:
 
 **Commits:** `21043ad` (migration), `13a48ca` (partial docs), `f360e4c` (doc sweep)
 
-### PR-12.3: Independent Milestone Review (2026-01-21)
-**Status**: ⏸️ Paused (AIfred Integration priority)
-
-Implement two-level review system for PR milestones:
-- [ ] Create `code-review` agent (detailed code analysis)
-- [ ] Create `project-manager` agent (high-level progress review)
-- [ ] Design review criteria files (`review-criteria/` directory)
-- [ ] Implement large review segmentation
-- [ ] Create report generation templates
-- [ ] Integrate remediation workflow with Wiggum Loop
-
-**Blocking**: None
-**Design Reference**: `projects/project-aion/ideas/phase-6-autonomy-design.md` → PR-12.3
+### PR-12.3: Independent Milestone Review (2026-01-21 → 2026-02-06)
+**Status**: Finalizing — moved to In Progress section above
 
 ---
 
