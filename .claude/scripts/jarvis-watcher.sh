@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.6.1
+# JARVIS UNIFIED WATCHER — JICM v5.6.2
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -19,6 +19,11 @@
 # Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
+#
+# Changelog v5.6.2 (2026-02-06):
+#   - Removed --continue skip for session_start idle-hands
+#   - AC-01 protocol now runs for ALL session types (fresh and continue)
+#   - Continued sessions need Mechanism 2 (keystroke injection) same as fresh
 #
 # Changelog v5.6.1 (2026-02-06):
 #   - Fixed command delivery: wait_for_idle_brief() polls before send_command/send_text
@@ -196,7 +201,7 @@ while [[ $# -gt 0 ]]; do
         --interval) INTERVAL="$2"; shift 2 ;;
         --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.6.1 — JICM v5 with event-driven state machine"
+            echo "JARVIS WATCHER v5.6.2 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -1289,14 +1294,10 @@ check_idle_hands() {
             return $?
             ;;
         session_start)
-            # D2: For --continue sessions, skip session_start injection.
-            # Continued sessions already have context; injecting AC-01 prompts
-            # could interfere with the user's continued conversation.
-            if [[ "$SESSION_TYPE" == "continue" ]]; then
-                log INFO "IDLE-HANDS: Skipping session_start for --continue session"
-                rm -f "$IDLE_HANDS_FLAG"
-                return 0
-            fi
+            # AC-01 session_start runs for ALL session types (including --continue).
+            # The hook injects context (Mechanism 1) but Jarvis won't respond without
+            # idle-hands keystroke injection (Mechanism 2). Previous sessions provide
+            # context via session-state.md which AC-01 reads during briefing.
             idle_hands_session_start
             return $?
             ;;
@@ -1323,8 +1324,8 @@ check_idle_hands() {
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.6.1 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.6.1 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.6.2 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.6.2 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1359,7 +1360,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.6.1, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
+    log INFO "Watcher started (JICM v5.6.2, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
