@@ -41,7 +41,7 @@ Examples:
   $(basename "$0") --logs 20
 
 Environment:
-  UDM_HOST            UDM Pro hostname (default: udm-pro)
+  UDM_HOST            Gateway hostname (default: gateway)
 
 EOF
     exit 0

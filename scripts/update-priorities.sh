@@ -43,7 +43,7 @@ Examples:
   $(basename "$0") --git-history 7
   $(basename "$0") --parse-priorities
   $(basename "$0") --search "SSH"
-  $(basename "$0") --evidence "MediaServer SSH"
+  $(basename "$0") --evidence "Server SSH"
 
 EOF
     exit 0

@@ -93,7 +93,7 @@ Manual backup: ~/Scripts/restic-backup.sh
 ## Script Details
 
 **Location**: `~/Scripts/backup-status.sh`
-**Repository**: `sftp:MediaServer:D:/Restic/AIServer-Backups`
+**Repository**: `sftp:BackupServer:/path/to/backups`
 **Exit Codes**:
 - 0: Backups healthy
 - 1: Configuration issue
