@@ -166,6 +166,14 @@ EOF
         rm -f "$COMPACTION_FLAG"
         echo "$TIMESTAMP | SessionStart | JICM: Cleared compaction-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
+
+    # Clear v5 compression-in-progress flag if exists (CRIT-04 fix)
+    # Prevents permanent compression blockage after crash
+    COMPRESSION_FLAG_V5="$CLAUDE_PROJECT_DIR/.claude/context/.compression-in-progress"
+    if [[ -f "$COMPRESSION_FLAG_V5" ]]; then
+        rm -f "$COMPRESSION_FLAG_V5"
+        echo "$TIMESTAMP | SessionStart | JICM: Cleared compression-in-progress flag (v5)" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
 fi
 
 # ============================================================================

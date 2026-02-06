@@ -146,8 +146,6 @@ MCPs & Skills
 - ClaudeCode Plugins: (https://github.com/anthropics/claude-code/blob/main
 - /plugins/README.md) Install all of these, analyze them against any already existing agents.  Merge or replace where agent functions significantly overlap.  Document all agents with descriptions and explanations of how and when they are best used (this is mostly already done in the got repo readme files, so pull info from there and add anything novel from your own analysis and assessment). Pay special attention to Ralph Wiggum and think about how to revise design patterns in ways that will improve autonomy and tend towards task and project completion with little or no need for user aprovals. See also: https://awesomeclaude.ai/ralph-wiggum
 
-
-
 References for research, comparison and iterative evolution:
 
 - Roo Commander (https://github.com/jezweb/roo-commander)
@@ -194,8 +192,6 @@ Explore the tips and best practices found at https://github.com/hesreallyhim/awe
 - https://github.com/hesreallyhim/awesome-claude-code
 - https://github.com/hesreallyhim/awesome-claude-code#official-documentation-%EF%B8%8F
 - https://github.com/ericbuess/claude-code-docs
-
-
 
 DwarfFortress GitHubs to review
 

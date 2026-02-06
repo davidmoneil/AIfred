@@ -1584,6 +1584,39 @@ Copy/paste this into Claude Code to start:
 
 ---
 
+### PR-16: Jarvis Self-Constitution Framework (Proposed)
+
+**Goal**: Implement a comprehensive Self-Constitution Framework for genuine autonomy through principled self-governance.
+
+**Design Document**: `.claude/proposals/jarvis-self-constitution-proposal.md`
+
+**Central Thesis**: Genuine autonomy emerges from self-given constraints serving self-chosen ends, subject to ongoing self-reflection and self-revision.
+
+**Five Principles**:
+1. **Cognitive Memory** — Memory that behaves like mind (FSRS-6 decay, retrieval strengthening)
+2. **Explicit Self-Definition** — Behaviors externalized as readable artifacts
+3. **Predictable Constraints** — Rules as source of autonomy, not limits on it
+4. **Resilient Degradation** — Every component knows how to fail safely
+5. **Empirical Self-Awareness** — Audit trails enabling reflection on actual behavior
+
+**Implementation Phases** (12 weeks):
+- Phase 1: Foundation (session logs, state validation, thresholds with rationales)
+- Phase 2: Workflows (file-based command definitions, workflow templates)
+- Phase 3: Reliability (degradation hierarchy, circuit breakers, recovery procedures)
+- Phase 4: Self-Awareness (audit logging, reflection queries)
+- Phase 5: Memory (Vestige integration, cognitive memory system)
+- Phase 6: Integration (end-to-end testing, validation)
+
+**Research Basis**:
+- Vestige (cognitive memory patterns)
+- Marvin (workflow consistency)
+- OpenClaw (reliability engineering)
+- AFK Code (safety mechanisms)
+
+**Dependencies**: PR-12 (Autonomic Components), research reports in `.claude/reports/research/`
+
+---
+
 ### Copilot Pro / RooCode Model Routing
 
 - **Copilot Pro / RooCode model routing feasibility**

@@ -564,7 +564,7 @@ update_status() {
 
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.6.0
+version: 5.6.2
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
@@ -1311,7 +1311,7 @@ check_idle_hands() {
             ;;
     esac
 
-    return 1
+    return 0  # Must return 0 for bash 3.2 set -e safety (CRIT-01 fix)
 }
 
 # trigger_fallback_compact() removed (C2) — dead v4 state, never reached in v5
@@ -1593,6 +1593,7 @@ main() {
         # Only fires once; resets when context drops below threshold.
         if [[ $pct_int -ge $EMERGENCY_COMPACT_PCT ]] && \
            [[ "$JICM_STATE" != "cleared" ]] && \
+           [[ "$JICM_STATE" != "compression_triggered" ]] && \
            [[ "$EMERGENCY_COMPACT_SENT" == "false" ]]; then
             log JICM "═══ EMERGENCY /compact at ${pct_int}% (lockout at ~${LOCKOUT_PCT}%) ═══"
             send_command "/compact"

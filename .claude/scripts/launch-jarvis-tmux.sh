@@ -110,10 +110,10 @@ echo "Starting Jarvis..."
 export TERM=xterm-256color
 
 # Context management environment variables
-# - CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: Delay native auto-compact to 95% (JICM v5 handles at 80%)
+# - CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: Native auto-compact at 70% (below 78.5% lockout ceiling)
 # - ENABLE_TOOL_SEARCH: Enable MCP tool search to reduce context usage
 # - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 15K (affects effective context budget)
-CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=95 ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000"
+CLAUDE_ENV="CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
