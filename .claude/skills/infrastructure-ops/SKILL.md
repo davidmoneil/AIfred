@@ -43,6 +43,7 @@ This skill consolidates infrastructure operations including:
 | Check Docker health | `/health-report` | @.claude/commands/health-report.md |
 | Discover new container | Manual inspection | See workflow below |
 | Troubleshoot service | `/agent service-troubleshooter` | @.claude/agents/service-troubleshooter.md |
+| Query task metrics | `/metrics <command>` | @.claude/commands/metrics.md |
 
 ---
 
@@ -197,6 +198,22 @@ mcp__mcp-gateway__create_relations([{
 3. Create context file if complex service
 4. Add to monitoring rotation
 ```
+
+---
+
+## Task Metrics
+
+Track token usage, tool counts, and performance for all Task tool (agent/subagent) executions.
+
+**Data source**: `.claude/logs/task-metrics.jsonl` (populated by `metrics-collector.js` SubagentStop hook)
+
+**Commands**:
+- `/metrics summary` - Overview: total runs, tokens, success rate
+- `/metrics by-agent [name]` - Per-agent stats or single agent detail
+- `/metrics by-session [name]` - Current or named session breakdown
+- `/metrics recent [count]` - Last N executions table
+- `/metrics top-tokens [limit]` - Agents ranked by token consumption
+- `/metrics cost` - Estimated API cost based on token usage
 
 ---
 

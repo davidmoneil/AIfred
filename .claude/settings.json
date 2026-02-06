@@ -179,6 +179,10 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent-stop.js\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/metrics-collector.js\""
           }
         ]
       }
@@ -246,6 +250,10 @@
       "Bash(uniq:*)",
       "Bash(jq:*)",
       "Bash(yq:*)",
+
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(npx tsx:*)",
 
       "Bash(systemctl status:*)",
       "Bash(systemctl is-active:*)",
