@@ -1,8 +1,33 @@
 # AIfred-Jarvis Comprehensive Integration Roadmap
 
 **Generated**: 2026-01-21
-**Version**: 2.0 (Revised based on feedback)
+**Version**: 3.0 (Revised 2026-02-06 — status audit + JICM v5.6.2 alignment)
 **Scope**: Complete analysis, corrections, and phased integration plan
+
+---
+
+## STATUS SUMMARY (2026-02-06)
+
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| M1: Security Foundation | **COMPLETE** | All 6 hooks ported (2026-01-22) |
+| M2: Analytics & Tracking | **COMPLETE** | 3 hooks + unified logging design (2026-01-23) |
+| M3: JICM Complements | **COMPLETE** | /context-analyze, /context-loss, /capture, /history (2026-01-23) |
+| M4: Documentation & Patterns | **COMPLETE** | 5 patterns + /analyze-codebase (2026-01-23) |
+| M5: Auto-* Refactoring | **SUPERSEDED** | v4.1.0 skills migration deleted 17 auto-* commands, created autonomous-commands skill (2026-01-23) |
+| M6: Command Consolidation | **PARTIALLY SUPERSEDED** | /smart-checkpoint deprecated → /checkpoint. JICM v5.6.2 automates compaction. Manual commands remain but are secondary. |
+| M7: Parallel-Dev | NOT STARTED | Deferred — evaluate against Phase 6 roadmap priority |
+| M8: Structured Planning | NOT STARTED | Deferred |
+| M9: TELOS Framework | NOT STARTED | Deferred |
+| M10: Self-Improvement Unification | NOT STARTED | Deferred |
+| M11: Final Integration | NOT STARTED | Deferred |
+
+**Key Architecture Changes Since v2.0**:
+- `auto-command-watcher.sh` DELETED — `jarvis-watcher.sh` (v5.6.2) is the sole watcher
+- JICM v5.6.2: Event-driven state machine with dual-mechanism resume, lockout ceiling at ~78.5%
+- `signal-helper.sh` + `autonomous-commands` skill replace the universal wrapper concept
+- PR-12 COMPLETE (all 10 sub-PRs including AC-03 Milestone Review)
+- Version 2.3.0
 
 ---
 
@@ -32,13 +57,14 @@ This roadmap supersedes the initial analysis documents with:
 
 ### Jarvis Session Startup Architecture
 
-Jarvis uses a **shell script** (`session-start.sh`) for AC-01 Self-Launch Protocol:
+Jarvis uses a **shell script** (`session-start.sh`, ~732 lines) for AC-01 Self-Launch Protocol:
 
 - Weather integration
 - AIfred baseline sync check
 - Environment validation
-- JICM reset on startup/clear
-- Checkpoint/compressed context restoration
+- JICM v5.6.2 integration (signal file cleanup, two-mechanism resume)
+- Checkpoint/compressed context restoration (v5 `.compressed-context-ready.md`)
+- `.compression-in-progress` cleanup on startup (CRIT-04 fix)
 - MCP suggestions
 
 **AIfred** uses a **JavaScript hook** (`session-start.js`) with simpler functionality:
@@ -333,23 +359,25 @@ Analyzes Claude Code context usage patterns using:
 
 ### Key Difference from JICM
 
-| Aspect              | /context-analyze            | JICM (Jarvis)                |
-| ------------------- | --------------------------- | ---------------------------- |
-| **Purpose**   | Weekly maintenance analysis | Real-time context management |
-| **Trigger**   | Scheduled (cron) or manual  | Automatic on threshold       |
-| **Reduction** | Ollama-based summarization  | Claude-based compression     |
-| **Scope**     | File-level analysis         | Session-level tracking       |
+| Aspect              | /context-analyze            | JICM v5.6.2 (Jarvis)                      |
+| ------------------- | --------------------------- | ------------------------------------------ |
+| **Purpose**   | Weekly maintenance analysis | Real-time context management               |
+| **Trigger**   | Scheduled (cron) or manual  | Automatic at 65% threshold                 |
+| **Reduction** | Ollama-based summarization  | Claude-based compression agent             |
+| **Scope**     | File-level analysis         | Session-level (event-driven state machine) |
 
 ### Integration
 
-**Complement to JICM**, not replacement:
+**Complement to JICM v5.6.2**, not replacement:
 
 - Run weekly for file-level optimization
 - Identify context growth patterns
 - Generate reports for manual review
 - Ollama handles reduction (cost-free)
 
-**Effort**: 1-2 hours (adapt script paths)
+**Status**: `/context-analyze` command ported (M3, 2026-01-23). Ollama integration deferred.
+
+> **2026-02-06 Note**: JICM v5.6.2 now uses a full event-driven state machine (monitoring → compression_triggered → cleared → post_clear_restore → monitoring) with dual-mechanism resume and lockout ceiling awareness at ~78.5%. The `/context-analyze` command remains useful for periodic file-level analysis but real-time context management is fully automated.
 
 ---
 
@@ -728,116 +756,111 @@ LAYER 5 (User Request): Natural language triggers prompt
 
 # PART 6: PHASED INTEGRATION ROADMAP
 
-## Phase 1: Security & Observability (Week 1)
+## Phase 1: Security & Observability (Week 1) — COMPLETE ✅
 
-### 1.1 Critical Security Hooks
+*Completed 2026-01-22 as AIfred Integration Milestone 1*
 
-| Component                | Action                      | Effort |
+### 1.1 Critical Security Hooks — DONE
+
+| Component                | Action                      | Status |
 | ------------------------ | --------------------------- | ------ |
-| `credential-guard.js`  | Port with Jarvis exclusions | 30 min |
-| `branch-protection.js` | Port directly               | 15 min |
-| `amend-validator.js`   | Port directly               | 15 min |
+| `credential-guard.js`  | Port with Jarvis exclusions | ✅ Done |
+| `branch-protection.js` | Port directly               | ✅ Done |
+| `amend-validator.js`   | Port directly               | ✅ Done |
 
-### 1.2 Docker Observability
+### 1.2 Docker Observability — DONE
 
-| Component                           | Action          | Effort |
+| Component                           | Action          | Status |
 | ----------------------------------- | --------------- | ------ |
-| `docker-health-monitor.js`        | Port and rename | 20 min |
-| `docker-restart-loop-detector.js` | Port and rename | 20 min |
-| `docker-post-op-health.js`        | Port and rename | 20 min |
+| `docker-health-monitor.js`        | Port and rename | ✅ Done |
+| `docker-restart-loop-detector.js` | Port and rename | ✅ Done |
+| `docker-post-op-health.js`        | Port and rename | ✅ Done |
 
-### 1.3 File Access Tracking
+### 1.3 File Access Tracking — DONE (in M2)
 
-| Component                        | Action                    | Effort |
+| Component                        | Action                    | Status |
 | -------------------------------- | ------------------------- | ------ |
-| `file-access-tracker.js`       | Port directly             | 15 min |
-| Integration with selection-audit | Configure unified logging | 30 min |
+| `file-access-tracker.js`       | Port directly             | ✅ Done |
+| Integration with selection-audit | Configure unified logging | ✅ Done |
 
-**Total Phase 1 Effort**: ~3 hours
-
----
-
-## Phase 2: Commands & Patterns (Week 2)
-
-### 2.1 JICM Complement Commands
-
-| Component            | Action                 | Effort |
-| -------------------- | ---------------------- | ------ |
-| `/context-analyze` | Port with path updates | 30 min |
-| `/context-loss`    | Port directly          | 15 min |
-
-### 2.2 Knowledge Capture
-
-| Component    | Action        | Effort |
-| ------------ | ------------- | ------ |
-| `/capture` | Port directly | 20 min |
-| `/history` | Port directly | 20 min |
-
-### 2.3 Codebase Analysis
-
-| Component             | Action                 | Effort |
-| --------------------- | ---------------------- | ------ |
-| `/analyze-codebase` | Port with Jarvis paths | 45 min |
-
-### 2.4 Documentation Patterns
-
-| Pattern                     | Action        | Effort |
-| --------------------------- | ------------- | ------ |
-| capability-layering-pattern | Port directly | 10 min |
-| code-before-prompts-pattern | Port directly | 10 min |
-| command-invocation-pattern  | Port directly | 10 min |
-| agent-invocation-pattern    | Port directly | 10 min |
-
-**Total Phase 2 Effort**: ~3 hours
+**Phase 1 Complete**: All 9 hooks ported and registered.
 
 ---
 
-## Phase 3: Auto-* Wrapper Refactoring (Week 2-3)
+## Phase 2: Commands & Patterns (Week 2) — COMPLETE ✅
 
-### 3.1 Implementation
+*Completed 2026-01-23 as AIfred Integration Milestones 3 & 4*
 
-| Task                                     | Effort |
-| ---------------------------------------- | ------ |
-| Create universal signal_command function | 1 hour |
-| Update auto-command-watcher.sh           | 1 hour |
-| Create blocklist configuration           | 30 min |
-| Test with various commands               | 1 hour |
+### 2.1 JICM Complement Commands — DONE (M3)
 
-### 3.2 Migration
+| Component            | Status |
+| -------------------- | ------ |
+| `/context-analyze` | ✅ Done |
+| `/context-loss`    | ✅ Done |
 
-| Task                              | Effort |
-| --------------------------------- | ------ |
-| Document new approach             | 30 min |
-| Deprecation notices on old auto-* | 15 min |
-| Monitoring period                 | 1 week |
-| Archive old auto-*                | 15 min |
+### 2.2 Knowledge Capture — DONE (M3)
 
-**Total Phase 3 Effort**: ~4-5 hours
+| Component    | Status |
+| ------------ | ------ |
+| `/capture` | ✅ Done (4 capture types) |
+| `/history` | ✅ Done (7 subcommands) |
 
----
+### 2.3 Codebase Analysis — DONE (M4)
 
-## Phase 4: Utility Consolidation (Week 3)
+| Component             | Status |
+| --------------------- | ------ |
+| `/analyze-codebase` | ✅ Done |
 
-### 4.1 Command Consolidation
+### 2.4 Documentation Patterns — DONE (M4)
 
-| Consolidation       | From                                                 | To                          |
-| ------------------- | ---------------------------------------------------- | --------------------------- |
-| Checkpoint commands | /checkpoint, /smart-checkpoint, /context-checkpoint  | `/checkpoint [--mode simple |
-| Compaction commands | /jicm-compact, /smart-compact, /intelligent-compress | `/compact [--mode jicm      |
+| Pattern                       | Status |
+| ----------------------------- | ------ |
+| capability-layering-pattern   | ✅ Done |
+| code-before-prompts-pattern   | ✅ Done |
+| command-invocation-pattern    | ✅ Done |
+| agent-invocation-pattern      | ✅ Done |
+| autonomous-execution-pattern  | ✅ Done |
 
-### 4.2 Redundancy Cleanup
-
-| Action                 | Components                       |
-| ---------------------- | -------------------------------- |
-| Review all commands    | 56 commands                      |
-| Identify overlaps      | Document in redundancy-report.md |
-| Propose consolidations | Create migration plan            |
-
-**Total Phase 4 Effort**: ~4 hours
+**Phase 2 Complete**: All commands and patterns ported.
 
 ---
 
-## Phase 5: Major Feature Evaluation (Week 4)
+## Phase 3: Auto-* Wrapper Refactoring (Week 2-3) — SUPERSEDED ✅
+
+*Superseded by v4.1.0 Skills Migration (2026-01-23)*
+
+**What happened instead**: Rather than implementing the universal wrapper approach described here, the v4.1.0 skills migration took a cleaner approach:
+- Deleted all 17 auto-* commands
+- Created `autonomous-commands` skill with `signal-helper.sh`
+- `signal-helper.sh` provides the `signal_command()` function with blocklist
+- `auto-command-watcher.sh` was deleted — `jarvis-watcher.sh` (v5.6.2) handles all command delivery via tmux `send-keys`
+
+**Result**: Same outcome (universal command execution) but implemented as a skill rather than a standalone watcher. The JICM watcher handles signal-based delivery.
+
+---
+
+## Phase 4: Utility Consolidation (Week 3) — PARTIALLY SUPERSEDED
+
+### 4.1 Command Consolidation — PARTIALLY DONE
+
+| Consolidation | Status | Notes |
+| ------------- | ------ | ----- |
+| Checkpoint commands | **Partial** | `/smart-checkpoint` deprecated → `/checkpoint`. `/context-checkpoint` still exists. |
+| Compaction commands | **Superseded** | JICM v5.6.2 automates compaction. `/intelligent-compress` is manual trigger. `/jicm-compact` deleted. |
+
+**JICM v5.6.2 Impact**: The watcher's event-driven state machine handles the full compaction lifecycle automatically. Manual commands are fallbacks only.
+
+### 4.2 Redundancy Cleanup — DEFERRED
+
+Command count reduced from 56 to ~35 by v4.1.0 migration (deleted 21 commands). Full consolidation audit deferred.
+
+**Remaining**: Merge `/checkpoint` + `/context-checkpoint`. Low priority.
+
+---
+
+## Phase 5: Major Feature Evaluation (Week 4) — NOT STARTED / NEEDS REASSESSMENT
+
+> **2026-02-06 Note**: Phases 5-7 have not been started. With PR-12 now complete and the Phase 6 roadmap (PR-13 Monitoring, PR-14 SOTA Catalog) as the primary development track, these AIfred integration items should be evaluated for priority against Phase 6 work. Parallel-dev and structured planning may be valuable but are not prerequisites for PR-13/14.
 
 ### 5.1 Parallel-Dev Prototype
 
@@ -868,7 +891,7 @@ LAYER 5 (User Request): Natural language triggers prompt
 
 ---
 
-## Phase 6: Self-Improvement Unification (Week 5)
+## Phase 6: Self-Improvement Unification (Week 5) — NOT STARTED
 
 ### 6.1 Upgrade Integration
 
@@ -890,7 +913,7 @@ LAYER 5 (User Request): Natural language triggers prompt
 
 ---
 
-## Phase 7: Final Integration & Inventory (Week 6)
+## Phase 7: Final Integration & Inventory (Week 6) — NOT STARTED
 
 ### 7.1 Complete Component Inventory
 
@@ -922,16 +945,17 @@ LAYER 5 (User Request): Natural language triggers prompt
 
 ## Summary Timeline
 
-| Phase           | Description              | Effort               | Week              |
-| --------------- | ------------------------ | -------------------- | ----------------- |
-| 1               | Security & Observability | 3 hrs                | 1                 |
-| 2               | Commands & Patterns      | 3 hrs                | 2                 |
-| 3               | Auto-* Refactoring       | 4-5 hrs              | 2-3               |
-| 4               | Utility Consolidation    | 4 hrs                | 3                 |
-| 5               | Major Features           | 19 hrs               | 4                 |
-| 6               | Self-Improvement         | 11 hrs               | 5                 |
-| 7               | Final Integration        | 9 hrs                | 6                 |
-| **TOTAL** |                          | **~53-54 hrs** | **6 weeks** |
+| Phase | Description | Effort | Status |
+| ----- | ----------- | ------ | ------ |
+| 1 | Security & Observability | 3 hrs | **COMPLETE** ✅ (2026-01-22) |
+| 2 | Commands & Patterns | 3 hrs | **COMPLETE** ✅ (2026-01-23) |
+| 3 | Auto-* Refactoring | 4-5 hrs | **SUPERSEDED** ✅ (v4.1.0 skills migration) |
+| 4 | Utility Consolidation | 4 hrs | **PARTIAL** (compaction superseded by JICM v5.6.2) |
+| 5 | Major Features | 19 hrs | NOT STARTED — needs reassessment |
+| 6 | Self-Improvement | 11 hrs | NOT STARTED — needs reassessment |
+| 7 | Final Integration | 9 hrs | NOT STARTED |
+| | **Completed** | **~10-12 hrs** | **Phases 1-4** |
+| | **Remaining** | **~39 hrs** | **Phases 5-7 (if pursued)** |
 
 ---
 
@@ -1297,10 +1321,11 @@ Total estimated effort: ~53 hours → ~27 sessions at 2 hours each
 
 ---
 
-### Milestone 5: Auto-* Wrapper Refactoring (Sessions 9-11)
+### Milestone 5: Auto-* Wrapper Refactoring (Sessions 9-11) — SUPERSEDED ✅
 
 **Prerequisite**: Milestone 4 complete
 **Deliverable**: Universal autonomous command wrapper replacing 17 auto-* commands
+**Status**: SUPERSEDED by v4.1.0 Skills Migration (2026-01-23). All 17 auto-* commands deleted. autonomous-commands skill + signal-helper.sh provides equivalent functionality.
 
 #### Session 5.1: Universal Signal Implementation
 
@@ -1361,10 +1386,11 @@ Total estimated effort: ~53 hours → ~27 sessions at 2 hours each
 
 ---
 
-### Milestone 6: Command Consolidation (Sessions 12-13)
+### Milestone 6: Command Consolidation (Sessions 12-13) — PARTIALLY SUPERSEDED
 
 **Prerequisite**: Milestone 5 complete
 **Deliverable**: Consolidated checkpoint and compaction commands
+**Status**: Compaction consolidation superseded by JICM v5.6.2 automatic handling. Checkpoint consolidation (/checkpoint + /context-checkpoint merge) remains as low-priority cleanup.
 
 #### Session 6.1: Checkpoint Consolidation
 
@@ -1710,20 +1736,21 @@ Total estimated effort: ~53 hours → ~27 sessions at 2 hours each
 
 ## Session Summary
 
-| Milestone         | Sessions              | Total Hours      | Cumulative |
-| ----------------- | --------------------- | ---------------- | ---------- |
-| M1: Security      | 1.1, 1.2              | 3 hrs            | 3 hrs      |
-| M2: Analytics     | 2.1, 2.2              | 3 hrs            | 6 hrs      |
-| M3: JICM          | 3.1, 3.2              | 3.5 hrs          | 9.5 hrs    |
-| M4: Patterns      | 4.1, 4.2              | 3.5 hrs          | 13 hrs     |
-| M5: Auto-*        | 5.1, 5.2, 5.3         | 5 hrs            | 18 hrs     |
-| M6: Consolidation | 6.1, 6.2              | 4 hrs            | 22 hrs     |
-| M7: Parallel-Dev  | 7.1, 7.2, 7.3, 7.4    | 8 hrs            | 30 hrs     |
-| M8: Planning      | 8.1, 8.2              | 4 hrs            | 34 hrs     |
-| M9: TELOS         | 9.1, 9.2              | 4 hrs            | 38 hrs     |
-| M10: Self-Improve | 10.1, 10.2, 10.3      | 6 hrs            | 44 hrs     |
-| M11: Final        | 11.1, 11.2, 11.3      | 6 hrs            | 50 hrs     |
-| **TOTAL**   | **27 sessions** | **50 hrs** |            |
+| Milestone | Sessions | Hours | Status |
+| --------- | -------- | ----- | ------ |
+| M1: Security | 1.1, 1.2 | 3 hrs | **COMPLETE** ✅ |
+| M2: Analytics | 2.1, 2.2 | 3 hrs | **COMPLETE** ✅ |
+| M3: JICM | 3.1, 3.2 | 3.5 hrs | **COMPLETE** ✅ |
+| M4: Patterns | 4.1, 4.2 | 3.5 hrs | **COMPLETE** ✅ |
+| M5: Auto-* | 5.1, 5.2, 5.3 | 5 hrs | **SUPERSEDED** ✅ |
+| M6: Consolidation | 6.1, 6.2 | 4 hrs | **PARTIAL** (compaction automated) |
+| M7: Parallel-Dev | 7.1-7.4 | 8 hrs | Not started |
+| M8: Planning | 8.1, 8.2 | 4 hrs | Not started |
+| M9: TELOS | 9.1, 9.2 | 4 hrs | Not started |
+| M10: Self-Improve | 10.1-10.3 | 6 hrs | Not started |
+| M11: Final | 11.1-11.3 | 6 hrs | Not started |
+| **Done** | **~12 sessions** | **~22 hrs** | **M1-M6** |
+| **Remaining** | **~15 sessions** | **~28 hrs** | **M7-M11 (if pursued)** |
 
 ---
 
@@ -1745,6 +1772,7 @@ At each milestone boundary:
 
 ---
 
-*Integration Roadmap v2.1 — Updated 2026-01-21*
-*Added: Wiggum + Parallel-Dev architecture analysis, Session-based breakdown*
+*Integration Roadmap v3.0 — Updated 2026-02-06*
+*v3.0: Status audit, JICM v5.6.2 alignment, mark Phases 1-4 complete, Phase 3 superseded*
+*v2.1: Wiggum + Parallel-Dev architecture analysis, Session-based breakdown (2026-01-21)*
 *Supersedes: adhoc-assessment, code-comparison, comprehensive-analysis, integration-recommendations*
