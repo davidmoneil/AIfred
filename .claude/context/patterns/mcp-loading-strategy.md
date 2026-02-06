@@ -272,12 +272,9 @@ When Claude needs an unavailable On-Demand MCP:
 
 ## Related Documentation
 
-- @.claude/context/integrations/mcp-servers.md - Current MCP inventory
-- @.claude/context/workflows/dynamic-mcp-management.md - Historical context
-- @knowledge/docs/architecture-overview.md - Architecture overview
-- @.claude/commands/browser.md - Example isolated MCP implementation
 - @.claude/commands/checkpoint.md - Checkpoint command for MCP transitions
-- @.claude/context/workflows/session-exit-procedure.md - Session exit with MCP auto-disable
+- @.claude/context/workflows/session-exit.md - Session exit with MCP auto-disable
+- @profiles/README.md - Environment profiles (may affect MCP configuration)
 
 ---
 

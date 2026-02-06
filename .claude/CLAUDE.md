@@ -85,8 +85,8 @@ Clarify name/type, then:
 
 ### Related Commands
 
-- `/create-project <name>` - Create new code project
-- `/register-project <path-or-url>` - Register existing project
+- `/consolidate-project` - Consolidate project knowledge and create commit
+- `/analyze-codebase` - Analyze a codebase and generate context documentation
 
 ---
 
@@ -270,22 +270,52 @@ Check current profile: `/profile` or `node scripts/profile-loader.js --current`
 
 ---
 
-## Available Commands
+## Available Commands (48 total)
 
-| Command | Description |
-|---------|-------------|
-| `/setup` | Initial configuration wizard |
-| `/profile` | Manage environment profile layers |
-| `/end-session` | Clean session exit |
-| `/checkpoint` | Save state for MCP-required restart |
-| `/design-review` | PARC pattern design review |
-| `/discover <target>` | Discover and document services |
-| `/health-check` | Verify system health |
-| `/context-loss` | Report forgotten context (after compaction) |
+| Category | Command | Description |
+|----------|---------|-------------|
+| **Setup** | `/setup` | Initial configuration wizard |
+| | `/profile` | Manage environment profile layers |
+| **Session** | `/checkpoint` | Save state for MCP-required restart |
+| | `/end-session` | Clean session exit with documentation |
+| | `/context-loss` | Report forgotten context (after compaction) |
+| | `/audit-log` | Query and manage audit logs |
+| | `/capture` | Capture learnings, decisions, research to history |
+| | `/history` | Search and browse structured history |
+| **Infrastructure** | `/health-report` | Verify system and Docker health |
+| | `/docker-restart` | Weekly Docker restart with health verification |
+| | `/backup-status` | Show Restic backup system status |
+| **Projects** | `/consolidate-project` | Consolidate project knowledge and context |
+| | `/analyze-codebase` | Analyze codebase and generate context documentation |
+| | `/agent` | Launch specialized agents (docker-deployer, etc.) |
+| **Git** | `/sync-git` | Synchronize git across projects |
+| | `/commits:push-all` | Push all unpushed commits across tracked projects |
+| | `/commits:status` | Show cross-project commit status |
+| | `/commits:summary` | Generate markdown summary of commits |
+| **Planning** | `/design-review` | PARC pattern design review |
+| | `/plan` | Guided conversational planning |
+| | `/plan:new` | New design planning session |
+| | `/plan:review` | System review planning session |
+| | `/plan:feature` | Feature planning session |
+| **Orchestration** | `/orchestration:plan` | Break complex task into phases |
+| | `/orchestration:status` | Show progress tree |
+| | `/orchestration:resume` | Restore context after break |
+| | `/orchestration:commit` | Link commit to orchestration task |
+| **Development** | `/parallel-dev:plan` | Plan autonomous parallel development |
+| | `/parallel-dev:start` | Begin execution of decomposed plan |
+| | `/parallel-dev:validate` | Run QA validation on completed work |
+| | `/parallel-dev:merge` | Merge completed work to main |
+| **Utilities** | `/link-external` | Create symlink in external-sources |
+| | `/upgrade` | Self-improvement and update discovery |
+| | `/telos` | Strategic goal alignment system |
+| | `/metrics` | Query task metrics |
+| | `/context-analyze` | Analyze context usage and suggest optimizations |
+
+Full command list: `.claude/commands/` (includes 13 additional parallel-dev subcommands)
 
 ---
 
-## Agents
+## Agents (11 total)
 
 Specialized agents available via `/agent`:
 
@@ -293,7 +323,15 @@ Specialized agents available via `/agent`:
 |-------|---------|
 | `docker-deployer` | Deploy and configure Docker services |
 | `service-troubleshooter` | Diagnose infrastructure issues |
-| `deep-research` | In-depth topic investigation |
+| `deep-research` | In-depth topic investigation with citations |
+| `memory-bank-synchronizer` | Sync docs with code changes (preserves user content) |
+| `code-analyzer` | Analyze codebase structure and patterns |
+| `code-implementer` | Write, modify, and refactor code |
+| `code-tester` | Validate changes through tests and screenshots |
+| `parallel-dev-implementer` | Focused implementation in parallel workflow |
+| `parallel-dev-tester` | Focused testing in parallel workflow |
+| `parallel-dev-documenter` | Focused documentation in parallel workflow |
+| `parallel-dev-validator` | QA validation in parallel workflow |
 
 ---
 
@@ -303,21 +341,18 @@ All Claude Code tool executions are **automatically logged** via the hooks syste
 
 ### How It Works
 
-The `.claude/hooks/` directory contains JavaScript hooks:
+The `.claude/hooks/` directory contains 38 JavaScript hooks organized by lifecycle event:
 
-| Hook | Event | Purpose |
-|------|-------|---------|
-| `audit-logger.js` | PreToolUse | Logs all tool executions |
-| `context-usage-tracker.js` | PreToolUse | Tracks context/token usage |
-| `compose-validator.js` | PreToolUse (Bash) | Validates docker-compose files |
-| `session-tracker.js` | Notification | Tracks session lifecycle |
-| `docker-health-check.js` | PostToolUse | Verifies Docker after changes |
-| `priority-validator.js` | PostToolUse | Tracks evidence for priority completion |
-| `index-sync.js` | PostToolUse | Keeps _index.md files in sync |
-| `project-detector.js` | UserPromptSubmit | Auto-detects GitHub URLs and "new project" requests |
-| `skill-router.js` | UserPromptSubmit | Routes slash commands to parent skills |
-| `planning-mode-detector.js` | UserPromptSubmit | Auto-detects when planning is needed |
-| `doc-sync-trigger.js` | PostToolUse | Tracks code changes, suggests doc sync |
+| Category | Hooks | Event |
+|----------|-------|-------|
+| **Session Lifecycle** | `session-start.js`, `session-tracker.js`, `session-stop.js`, `session-exit-enforcer.js`, `subagent-stop.js` | SessionStart / Stop / Notification |
+| **Audit & Logging** | `audit-logger.js`, `file-access-tracker.js`, `cross-project-commit-tracker.js`, `metrics-collector.js` | PreToolUse / PostToolUse |
+| **Security** | `secret-scanner.js`, `credential-guard.js`, `branch-protection.js`, `amend-validator.js` | PreToolUse |
+| **Docker & Infra** | `docker-health-check.js`, `docker-validator.js`, `compose-validator.js`, `port-conflict-detector.js`, `restart-loop-detector.js`, `health-monitor.js` | PreToolUse / PostToolUse |
+| **Prompt Enhancement** | `prompt-enhancer.js`, `lsp-redirector.js`, `planning-mode-detector.js`, `orchestration-detector.js`, `project-detector.js` | UserPromptSubmit / PreToolUse |
+| **Workflow** | `skill-router.js`, `context-usage-tracker.js`, `priority-validator.js`, `index-sync.js`, `doc-sync-trigger.js`, `memory-maintenance.js`, `self-correction-capture.js` | Various |
+| **Profile & Config** | `_profile-check.js`, `mcp-enforcer.js`, `paths-registry-sync.js`, `service-registration-detector.js`, `worktree-manager.js` | Various |
+| **Context** | `pre-compact.js` | PreCompact |
 
 ### Log Format
 

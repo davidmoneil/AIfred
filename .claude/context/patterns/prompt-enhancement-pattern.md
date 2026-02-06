@@ -300,8 +300,6 @@ Deferred - Current hardcoded rules work well for LSP. Will implement if more rul
 
 ## Related
 
-- @.claude/context/tools/lsp-integration.md - LSP setup
-- @.claude/context/integrations/mcp-servers.md - MCP tools
 - @.claude/hooks/README.md - Hooks documentation
 - @.claude/hooks/prompt-enhancer.js - Phase 1: UserPromptSubmit soft guidance
 - @.claude/hooks/lsp-redirector.js - Phase 2: PreToolUse hard redirect

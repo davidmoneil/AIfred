@@ -389,7 +389,6 @@ For each command, verify:
 - @.claude/context/patterns/capability-layering-pattern.md - The layering philosophy
 - @.claude/context/patterns/skill-architecture-pattern.md - Skill structure
 - @.claude/context/patterns/agent-invocation-pattern.md - Agent launching
-- @.claude/context/audits/skill-system-audit.md - Current compliance status
 
 ---
 
