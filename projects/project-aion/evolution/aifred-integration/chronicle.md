@@ -9,6 +9,7 @@
 ## Chronicle Structure
 
 Each milestone entry captures:
+
 1. **What was done** — Deliverables and outcomes
 2. **How it was approached** — Methodology and sequence
 3. **Why decisions were made** — Reasoning and trade-offs
@@ -27,22 +28,25 @@ Each milestone entry captures:
 ### 1.1 What Was Done
 
 **Security Hooks Ported (Session 1.1):**
-| Hook | Purpose | Adaptation |
-|------|---------|------------|
-| `credential-guard.js` | Block reads of credential files (.ssh, .aws, .env, etc.) | Added Jarvis exclusions for `.claude/` paths |
-| `branch-protection.js` | Block force push/hard reset on protected branches | Direct port with stdin/stdout handler |
-| `amend-validator.js` | Validate git amend safety (author, push status) | Added `CannonCoPilot` to expected authors |
+
+| Hook                     | Purpose                                                  | Adaptation                                     |
+| ------------------------ | -------------------------------------------------------- | ---------------------------------------------- |
+| `credential-guard.js`  | Block reads of credential files (.ssh, .aws, .env, etc.) | Added Jarvis exclusions for `.claude/` paths |
+| `branch-protection.js` | Block force push/hard reset on protected branches        | Direct port with stdin/stdout handler          |
+| `amend-validator.js`   | Validate git amend safety (author, push status)          | Added `CannonCoPilot` to expected authors    |
 
 **Docker Hooks Ported (Session 1.2):**
-| Hook | Purpose | Adaptation |
-|------|---------|------------|
-| `docker-health-monitor.js` | Track container health changes | Renamed with `docker-` prefix |
-| `docker-restart-loop-detector.js` | Detect restart loops | Renamed with `docker-` prefix |
-| `docker-post-op-health.js` | Verify health after docker ops | Renamed from `docker-health-check.js` |
+
+| Hook                                | Purpose                        | Adaptation                              |
+| ----------------------------------- | ------------------------------ | --------------------------------------- |
+| `docker-health-monitor.js`        | Track container health changes | Renamed with `docker-` prefix         |
+| `docker-restart-loop-detector.js` | Detect restart loops           | Renamed with `docker-` prefix         |
+| `docker-post-op-health.js`        | Verify health after docker ops | Renamed from `docker-health-check.js` |
 
 ### 1.2 How It Was Approached
 
 **Sequence:**
+
 1. Read source files from AIfred baseline
 2. Analyze existing Jarvis hook format (checked `dangerous-op-guard.js` as reference)
 3. Port with adaptations:
@@ -54,28 +58,31 @@ Each milestone entry captures:
 6. Commit with milestone reference
 
 **Format Decisions:**
+
 - All hooks use dual export pattern: `module.exports` for require() + stdin/stdout for Claude Code
 - Console output uses `console.error()` for user-visible messages (stderr), `console.log()` only for JSON result
 - Hooks follow fail-open principle for parse errors (allow, don't block on malformed input)
 
 ### 1.3 Why Decisions Were Made
 
-| Decision | Reasoning |
-|----------|-----------|
-| **Jarvis exclusions in credential-guard** | Without exclusions, Jarvis couldn't read its own config. Added `.claude/config/`, `.claude/state/`, `.claude/context/`, `paths-registry.yaml` |
-| **Docker prefix renaming** | Original names (`health-monitor.js`, `restart-loop-detector.js`) were ambiguous — could apply to any service. `docker-*` prefix makes purpose clear |
-| **CannonCoPilot in amend-validator** | Initial test blocked because commit author wasn't in allowed list. Added GitHub account name |
-| **PostToolUse for Docker hooks** | Docker monitoring happens AFTER docker commands run, not before. Matches AIfred design |
-| **PreToolUse for security hooks** | Security blocking must happen BEFORE file reads/git ops, not after |
+| Decision                                        | Reasoning                                                                                                                                                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jarvis exclusions in credential-guard** | Without exclusions, Jarvis couldn't read its own config. Added `.claude/config/`, `.claude/state/`, `.claude/context/`, `paths-registry.yaml`      |
+| **Docker prefix renaming**                | Original names (`health-monitor.js`, `restart-loop-detector.js`) were ambiguous — could apply to any service. `docker-*` prefix makes purpose clear |
+| **CannonCoPilot in amend-validator**      | Initial test blocked because commit author wasn't in allowed list. Added GitHub account name                                                               |
+| **PostToolUse for Docker hooks**          | Docker monitoring happens AFTER docker commands run, not before. Matches AIfred design                                                                     |
+| **PreToolUse for security hooks**         | Security blocking must happen BEFORE file reads/git ops, not after                                                                                         |
 
 ### 1.4 What Was Learned
 
 **Technical Insights:**
+
 - Jarvis already had `dangerous-op-guard.js` covering some branch protection (force push to main), but not the broader protections in `branch-protection.js`
 - The secret-scanner.js in both AIfred and Jarvis are identical — no port needed
 - Docker hooks use state tracking (Maps) that persists across invocations in the same session — good for detecting changes over time
 
 **Pattern Discovered:**
+
 - Hook port template:
   1. Copy source
   2. Add/fix stdin/stdout handler
@@ -85,27 +92,28 @@ Each milestone entry captures:
   6. Commit with milestone reference
 
 **Surprises:**
+
 - `branch-protection.js` regex for target branch extraction has edge case issues (didn't correctly parse `git push -f origin main` in one test). Not blocking, but noted for future fix.
 - Docker hooks silently succeed when Docker isn't running — no error, just empty container list. This is correct behavior (fail-open).
 
 ### 1.5 What to Watch
 
-| Item | Type | Priority |
-|------|------|----------|
-| branch-protection regex bug | Technical debt | Low (works for most cases) |
-| CRITICAL_CONTAINERS env var | Configuration | Medium (should document how to customize) |
-| Docker hooks without Docker | Edge case | Low (handled gracefully) |
-| Hook execution order | Architecture | Medium (security hooks should run first in PreToolUse) |
+| Item                        | Type           | Priority                                               |
+| --------------------------- | -------------- | ------------------------------------------------------ |
+| branch-protection regex bug | Technical debt | Low (works for most cases)                             |
+| CRITICAL_CONTAINERS env var | Configuration  | Medium (should document how to customize)              |
+| Docker hooks without Docker | Edge case      | Low (handled gracefully)                               |
+| Hook execution order        | Architecture   | Medium (security hooks should run first in PreToolUse) |
 
 ### 1.6 Metrics
 
-| Metric | Value |
-|--------|-------|
-| Files created | 6 hooks |
-| Lines added | 1,287 |
-| Tests run | 6 manual tests |
-| Issues found | 1 (branch-protection regex) |
-| Issues resolved | 1 (CannonCoPilot author) |
+| Metric          | Value                       |
+| --------------- | --------------------------- |
+| Files created   | 6 hooks                     |
+| Lines added     | 1,287                       |
+| Tests run       | 6 manual tests              |
+| Issues found    | 1 (branch-protection regex) |
+| Issues resolved | 1 (CannonCoPilot author)    |
 
 ---
 
@@ -120,23 +128,26 @@ Each milestone entry captures:
 ### 2.1 What Was Done
 
 **Analytics Hooks Ported (Session 2.1):**
-| Hook | Purpose | Adaptation |
-|------|---------|------------|
-| `file-access-tracker.js` | Tracks Read calls to context files | Direct port with stdin/stdout handler |
-| `session-tracker.js` | Logs session lifecycle events | Direct port, logs to session-events.json |
-| `memory-maintenance.js` | Tracks Memory MCP entity access | Direct port for entity usage analytics |
+
+| Hook                       | Purpose                            | Adaptation                               |
+| -------------------------- | ---------------------------------- | ---------------------------------------- |
+| `file-access-tracker.js` | Tracks Read calls to context files | Direct port with stdin/stdout handler    |
+| `session-tracker.js`     | Logs session lifecycle events      | Direct port, logs to session-events.json |
+| `memory-maintenance.js`  | Tracks Memory MCP entity access    | Direct port for entity usage analytics   |
 
 **Unified Logging Architecture (Session 2.2):**
-| Deliverable | Description |
-|-------------|-------------|
-| `unified-logging-architecture.md` | Design document for consolidated logging |
-| Event schema | Canonical format for all log sources |
-| Data flow diagram | Visual showing 7 sources → unified stream |
-| Integration points | Connection to self-reflection (AC-05) |
+
+| Deliverable                         | Description                                |
+| ----------------------------------- | ------------------------------------------ |
+| `unified-logging-architecture.md` | Design document for consolidated logging   |
+| Event schema                        | Canonical format for all log sources       |
+| Data flow diagram                   | Visual showing 7 sources → unified stream |
+| Integration points                  | Connection to self-reflection (AC-05)      |
 
 ### 2.2 How It Was Approached
 
 **Sequence:**
+
 1. Analyzed AIfred analytics hooks for applicable patterns
 2. Ported hooks using template from M1 (stdin/stdout handler pattern)
 3. Registered hooks in `settings.json` (PostToolUse, Notification events)
@@ -145,44 +156,47 @@ Each milestone entry captures:
 6. Updated `logs/README.md` with new structure
 
 **Key Design Decision:**
+
 - Chose to document architecture before implementation — understanding the full picture before building allows better decisions about event schemas and storage
 
 ### 2.3 Why Decisions Were Made
 
-| Decision | Reasoning |
-|----------|-----------|
-| **Document architecture first** | 7 logging sources needed coherent schema before more hooks add more formats |
-| **Canonical event schema** | Common format enables cross-source analysis and AC-05 self-reflection input |
-| **PostToolUse for file-access-tracker** | Track reads AFTER they happen, not before (observation, not blocking) |
-| **Notification event for session-tracker** | Session lifecycle events are notifications, not tool executions |
+| Decision                                         | Reasoning                                                                   |
+| ------------------------------------------------ | --------------------------------------------------------------------------- |
+| **Document architecture first**            | 7 logging sources needed coherent schema before more hooks add more formats |
+| **Canonical event schema**                 | Common format enables cross-source analysis and AC-05 self-reflection input |
+| **PostToolUse for file-access-tracker**    | Track reads AFTER they happen, not before (observation, not blocking)       |
+| **Notification event for session-tracker** | Session lifecycle events are notifications, not tool executions             |
 
 ### 2.4 What Was Learned
 
 **Technical Insights:**
+
 - Jarvis has 7+ logging sources that were previously uncoordinated
 - Event-driven architecture scales better than polling for analytics
 - PostToolUse hooks see the full result, including any errors
 
 **Architecture Pattern Discovered:**
+
 - Unified logging requires: source → transformer → canonical format → unified store → consumers
 - Each log source needs its own transformer to canonical format
 
 ### 2.5 What to Watch
 
-| Item | Type | Priority |
-|------|------|----------|
+| Item                                | Type        | Priority                                  |
+| ----------------------------------- | ----------- | ----------------------------------------- |
 | Unified event stream implementation | Future work | Medium (architecture designed, not built) |
-| Log rotation/archival | Operations | Medium (will grow over time) |
-| AC-05 integration | Integration | High (primary consumer of unified logs) |
+| Log rotation/archival               | Operations  | Medium (will grow over time)              |
+| AC-05 integration                   | Integration | High (primary consumer of unified logs)   |
 
 ### 2.6 Metrics
 
-| Metric | Value |
-|--------|-------|
-| Files created | 3 hooks + 1 design doc |
-| Lines added | ~950 |
-| Log sources documented | 7 |
-| Event schema fields | 12 canonical fields |
+| Metric                 | Value                  |
+| ---------------------- | ---------------------- |
+| Files created          | 3 hooks + 1 design doc |
+| Lines added            | ~950                   |
+| Log sources documented | 7                      |
+| Event schema fields    | 12 canonical fields    |
 
 ---
 
@@ -197,25 +211,28 @@ Each milestone entry captures:
 ### 3.1 What Was Done
 
 **Session 3.1: Context Analysis Commands**
-| Deliverable | Description |
-|-------------|-------------|
-| `/context-analyze` | Command wrapper for weekly-context-analysis.sh |
-| `/context-loss` | Report forgotten context after compaction (JSONL logging) |
-| `compaction-essentials.md` | Jarvis-specific essential context for post-compaction |
-| Script update | weekly-context-analysis.sh adapted for Jarvis log sources |
+
+| Deliverable                  | Description                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| `/context-analyze`         | Command wrapper for weekly-context-analysis.sh            |
+| `/context-loss`            | Report forgotten context after compaction (JSONL logging) |
+| `compaction-essentials.md` | Jarvis-specific essential context for post-compaction     |
+| Script update                | weekly-context-analysis.sh adapted for Jarvis log sources |
 
 **Session 3.2: Knowledge Capture Commands**
-| Deliverable | Description |
-|-------------|-------------|
-| `/capture` | Knowledge capture command (4 types: learning, decision, session, research) |
-| `/history` | History search/browse command (7 subcommands + promote) |
-| Templates | 4 templates (learning.md, decision.md, session.md, research.md) |
-| Directory structure | `.claude/history/` with categories and READMEs |
-| `index.md` | Master searchable history index |
+
+| Deliverable         | Description                                                                |
+| ------------------- | -------------------------------------------------------------------------- |
+| `/capture`        | Knowledge capture command (4 types: learning, decision, session, research) |
+| `/history`        | History search/browse command (7 subcommands + promote)                    |
+| Templates           | 4 templates (learning.md, decision.md, session.md, research.md)            |
+| Directory structure | `.claude/history/` with categories and READMEs                           |
+| `index.md`        | Master searchable history index                                            |
 
 ### 3.2 How It Was Approached
 
 **Sequence**:
+
 1. Analyzed AIfred source commands for context-analyze, context-loss, capture, history
 2. Identified adaptations needed for Jarvis environment
 3. Created Session 3.1 commands first (context-analyze, context-loss)
@@ -226,32 +243,36 @@ Each milestone entry captures:
 8. Updated documentation (logs/README.md, unified-logging-architecture.md)
 
 **Key Adaptation**:
+
 - Skipped Ollama integration per user request (CONTEXT_REDUCE=false by default)
 - Used CLAUDE_SESSION_ID instead of AIfred's .current-session file
 - Added Jarvis-specific categories (archon, orchestration, security, integration, aifred-porting)
 
 ### 3.3 Why Decisions Were Made
 
-| Decision | Reasoning |
-|----------|-----------|
-| **Skip Ollama integration** | User requested — will add local models later |
+| Decision                                         | Reasoning                                             |
+| ------------------------------------------------ | ----------------------------------------------------- |
+| **Skip Ollama integration**                | User requested — will add local models later         |
 | **CLAUDE_SESSION_ID for session tracking** | Jarvis standard, already used by telemetry-emitter.js |
-| **Added archon/orchestration categories** | Jarvis-specific concepts that need dedicated capture |
-| **Memory MCP promote command** | Bridges file-based history with cross-session recall |
-| **Comprehensive templates** | Ensures consistent capture format |
+| **Added archon/orchestration categories**  | Jarvis-specific concepts that need dedicated capture  |
+| **Memory MCP promote command**             | Bridges file-based history with cross-session recall  |
+| **Comprehensive templates**                | Ensures consistent capture format                     |
 
 ### 3.4 What Was Learned
 
 **Technical Insights**:
+
 - Jarvis has 7+ log sources requiring aggregation vs AIfred's single audit.jsonl
 - File-based history complements (not replaces) Memory MCP
 - Pattern detection (3+ similar reports) provides actionable improvement signals
 
 **Architecture Pattern**:
+
 - JICM complement commands form a knowledge lifecycle: Capture → Search → Analyze → Feedback
 - /context-loss → compaction-essentials.md creates a feedback loop for context preservation
 
 **Documentation Pattern** (discovered post-M3):
+
 - Any document with `- [ ]` checkboxes is a tracking document, regardless of stated status
 - "Superseded" docs may still have active checklists (recommendations.md case)
 - Session plans (.claude/plans/) should show completion status
@@ -259,22 +280,22 @@ Each milestone entry captures:
 
 ### 3.5 What to Watch
 
-| Item | Type | Priority |
-|------|------|----------|
-| Index auto-update | Implementation | Medium (currently manual) |
-| Ollama integration | Future work | Low (deferred by design) |
-| Memory MCP promote | Integration | Medium (requires Memory MCP) |
-| compaction-essentials injection | Integration | High (needs pre-compact hook) |
+| Item                            | Type           | Priority                      |
+| ------------------------------- | -------------- | ----------------------------- |
+| Index auto-update               | Implementation | Medium (currently manual)     |
+| Ollama integration              | Future work    | Low (deferred by design)      |
+| Memory MCP promote              | Integration    | Medium (requires Memory MCP)  |
+| compaction-essentials injection | Integration    | High (needs pre-compact hook) |
 
 ### 3.6 Metrics
 
-| Metric | Value |
-|--------|-------|
-| Commands created | 4 |
-| Templates created | 4 |
-| READMEs created | 5 |
-| Directories created | 15 |
-| Files modified | 3 |
+| Metric              | Value |
+| ------------------- | ----- |
+| Commands created    | 4     |
+| Templates created   | 4     |
+| READMEs created     | 5     |
+| Directories created | 15    |
+| Files modified      | 3     |
 
 ---
 
@@ -289,23 +310,26 @@ Each milestone entry captures:
 ### 4.1 What Was Done
 
 **Session 4.1: Core Patterns**
-| Pattern | Purpose |
-|---------|---------|
-| `capability-layering-pattern.md` | 5-layer stack for automated capabilities |
-| `code-before-prompts-pattern.md` | Deterministic code over AI inference |
-| `command-invocation-pattern.md` | CLI/Agent/Skill command routing |
-| `agent-invocation-pattern.md` | Agent definition and invocation standards |
+
+| Pattern                            | Purpose                                   |
+| ---------------------------------- | ----------------------------------------- |
+| `capability-layering-pattern.md` | 5-layer stack for automated capabilities  |
+| `code-before-prompts-pattern.md` | Deterministic code over AI inference      |
+| `command-invocation-pattern.md`  | CLI/Agent/Skill command routing           |
+| `agent-invocation-pattern.md`    | Agent definition and invocation standards |
 
 **Session 4.2: Autonomous Execution**
-| Deliverable | Description |
-|-------------|-------------|
-| `autonomous-execution-pattern.md` | Scheduled headless Claude Code execution |
-| `/analyze-codebase` | Codebase analysis with Mermaid diagram generation |
-| Pattern index update | Added new "Capability Architecture" section |
+
+| Deliverable                         | Description                                       |
+| ----------------------------------- | ------------------------------------------------- |
+| `autonomous-execution-pattern.md` | Scheduled headless Claude Code execution          |
+| `/analyze-codebase`               | Codebase analysis with Mermaid diagram generation |
+| Pattern index update                | Added new "Capability Architecture" section       |
 
 ### 4.2 How It Was Approached
 
 **Sequence**:
+
 1. Read all 5 AIfred source patterns
 2. Ported 4 core patterns with Jarvis-specific adaptations (paths, references)
 3. Updated pattern index with new "Capability Architecture (AIfred Ported)" section
@@ -313,6 +337,7 @@ Each milestone entry captures:
 5. Created /analyze-codebase command for systematic codebase documentation
 
 **Adaptations**:
+
 - Updated paths from AIfred (Scripts/) to Jarvis (scripts/)
 - Removed TELOS references (Jarvis doesn't have TELOS yet)
 - Simplified autonomous execution to focus on core concepts
@@ -320,40 +345,42 @@ Each milestone entry captures:
 
 ### 4.3 Why Decisions Were Made
 
-| Decision | Reasoning |
-|----------|-----------|
-| **New index section** | "Capability Architecture" groups related AIfred patterns |
-| **Simplified wrapper script** | Full template available in pattern; command shows concept |
-| **Cross-references preserved** | Patterns reference each other for cohesive documentation |
-| **Permission tiers kept** | 3-tier model (Discovery/Analyze/Implement) provides clear safety boundaries |
+| Decision                             | Reasoning                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------- |
+| **New index section**          | "Capability Architecture" groups related AIfred patterns                    |
+| **Simplified wrapper script**  | Full template available in pattern; command shows concept                   |
+| **Cross-references preserved** | Patterns reference each other for cohesive documentation                    |
+| **Permission tiers kept**      | 3-tier model (Discovery/Analyze/Implement) provides clear safety boundaries |
 
 ### 4.4 What Was Learned
 
 **Documentation Patterns**:
+
 - AIfred patterns are well-structured with consistent format
 - Pattern cross-references create a cohesive knowledge network
 - Capability layering philosophy applies broadly to Jarvis
 
 **Architecture Insight**:
+
 - The 5-layer capability stack (Idea → Code → CLI → Prompt → User) is a powerful design principle
 - "Code Before Prompts" aligns with Jarvis's existing Wiggum Loop philosophy
 
 ### 4.5 What to Watch
 
-| Item | Type | Priority |
-|------|------|----------|
-| Pattern adoption | Process | Medium (need to apply patterns to existing commands) |
-| /analyze-codebase testing | Validation | Low (optional feature) |
-| Scheduled execution setup | Infrastructure | Low (requires cron/systemd config) |
+| Item                      | Type           | Priority                                             |
+| ------------------------- | -------------- | ---------------------------------------------------- |
+| Pattern adoption          | Process        | Medium (need to apply patterns to existing commands) |
+| /analyze-codebase testing | Validation     | Low (optional feature)                               |
+| Scheduled execution setup | Infrastructure | Low (requires cron/systemd config)                   |
 
 ### 4.6 Metrics
 
-| Metric | Value |
-|--------|-------|
-| Patterns ported | 5 |
-| Commands created | 1 |
-| Pattern index sections added | 1 |
-| Total pattern count | 46 (was 42) |
+| Metric                       | Value       |
+| ---------------------------- | ----------- |
+| Patterns ported              | 5           |
+| Commands created             | 1           |
+| Pattern index sections added | 1           |
+| Total pattern count          | 46 (was 42) |
 
 ---
 
@@ -368,17 +395,19 @@ Each milestone entry captures:
 ### 5.1 What Was Done
 
 **Session 5.1: Universal Signal Implementation**
-| Deliverable | Description |
-|-------------|-------------|
-| `signal_command()` | Universal function for any slash command |
-| Autonomy-first design | Auto-resume is DEFAULT, --pause to opt-out |
-| Blocklist validation | Block interactive commands (/settings, /config, etc.) |
-| Watcher auto-resume | Parse and act on auto_resume, resume_delay, resume_message |
-| CLI entry point | `signal-helper.sh cmd /status` |
+
+| Deliverable           | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| `signal_command()`  | Universal function for any slash command                   |
+| Autonomy-first design | Auto-resume is DEFAULT, --pause to opt-out                 |
+| Blocklist validation  | Block interactive commands (/settings, /config, etc.)      |
+| Watcher auto-resume   | Parse and act on auto_resume, resume_delay, resume_message |
+| CLI entry point       | `signal-helper.sh cmd /status`                           |
 
 ### 5.2 How It Was Approached
 
 **Sequence**:
+
 1. Analyzed existing signal-helper.sh shorthand functions (17 functions)
 2. Identified gap: watcher didn't implement auto-resume despite signal support
 3. Designed universal signal_command() with autonomy-first principle
@@ -388,48 +417,51 @@ Each milestone entry captures:
 7. Tested all scenarios (valid, blocked, args, --pause)
 
 **Key Design Decision**:
+
 - Autonomy is DEFAULT (per CLAUDE.md), pausing is the exception
 - Blocklist approach: block known-bad commands, allow everything else
 - This enables future Claude Code commands to work automatically
 
 ### 5.3 Why Decisions Were Made
 
-| Decision | Reasoning |
-|----------|-----------|
+| Decision                                   | Reasoning                                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------------------------- |
 | **Autonomy-first (--pause opt-out)** | CLAUDE.md: "Jarvis operates autonomously by default. Do not wait for instructions." |
-| **Blocklist vs allowlist** | New Claude Code commands auto-supported; only block interactive ones |
-| **Fix watcher auto-resume** | Signal fields were designed but never implemented in watcher |
-| **3-second resume delay** | Allow command output to display before sending resume message |
+| **Blocklist vs allowlist**           | New Claude Code commands auto-supported; only block interactive ones                |
+| **Fix watcher auto-resume**          | Signal fields were designed but never implemented in watcher                        |
+| **3-second resume delay**            | Allow command output to display before sending resume message                       |
 
 ### 5.4 What Was Learned
 
 **Technical Insights**:
+
 - The auto-resume mechanism was designed in signal-helper.sh but never implemented in watcher
 - Autonomy-first is a design principle, not just a preference
 - Blocklist approach scales better than allowlist for evolving command sets
 
 **Pattern Discovered**:
+
 - Design principle alignment check: when implementing features, verify they align with documented principles (CLAUDE.md)
 - The user caught the --resume vs --pause inversion — design review matters
 
 ### 5.5 What to Watch
 
-| Item | Type | Priority |
-|------|------|----------|
-| Session 5.2: Migration | Implementation | Next (test all 17 auto-* via universal) |
-| Session 5.3: Cleanup | Maintenance | After 5.2 (archive deprecated commands) |
-| AppleScript auto-resume | Edge case | Low (requires manual Enter) |
+| Item                    | Type           | Priority                                |
+| ----------------------- | -------------- | --------------------------------------- |
+| Session 5.2: Migration  | Implementation | Next (test all 17 auto-* via universal) |
+| Session 5.3: Cleanup    | Maintenance    | After 5.2 (archive deprecated commands) |
+| AppleScript auto-resume | Edge case      | Low (requires manual Enter)             |
 
 ### 5.6 Metrics
 
-| Metric | Value |
-|--------|-------|
-| Functions added | 2 (signal_command, is_blocked_command) |
-| Watcher enhancements | 3 (parse, delay, resume injection) |
-| Lines added | 194 |
-| Tests run | 6 manual tests |
-| Issues found | 1 (watcher missing auto-resume) |
-| Issues resolved | 1 |
+| Metric               | Value                                  |
+| -------------------- | -------------------------------------- |
+| Functions added      | 2 (signal_command, is_blocked_command) |
+| Watcher enhancements | 3 (parse, delay, resume injection)     |
+| Lines added          | 194                                    |
+| Tests run            | 6 manual tests                         |
+| Issues found         | 1 (watcher missing auto-resume)        |
+| Issues resolved      | 1                                      |
 
 ---
 
@@ -438,29 +470,32 @@ Each milestone entry captures:
 *[Patterns that emerge across multiple milestones — to be populated as work progresses]*
 
 ### Recurring Decisions
+
 - Port with minimal adaptation — keep AIfred patterns intact where possible
 - Update paths and references but preserve structure
 - Add Jarvis-specific categories where needed
 
 ### Escalating Concerns
+
 - None identified
 
 ### Validated Approaches
+
 - **Hook porting template** (validated M1): source → stdin/stdout → adaptations → test → register → commit
 
 ---
 
 ## Appendix: Decision Log
 
-| Date | Decision | Rationale | Milestone |
-|------|----------|-----------|-----------|
-| 2026-01-22 | Add Jarvis exclusions to credential-guard | Self-config access required | M1 |
-| 2026-01-22 | Rename docker hooks with docker-* prefix | Clarity, avoid ambiguity | M1 |
-| 2026-01-22 | Add CannonCoPilot to expected authors | Test failure revealed omission | M1 |
-| 2026-01-22 | Create integration-chronicle.md | Capture reasoning for future reference | M1 |
-| 2026-01-23 | Autonomy-first: --pause opt-out, not --resume opt-in | Aligns with CLAUDE.md autonomy principle | M5 |
-| 2026-01-23 | Blocklist approach for signal_command() | New commands auto-supported, only block interactive | M5 |
-| 2026-01-23 | Fix watcher auto-resume implementation | Signal fields existed but watcher didn't use them | M5 |
+| Date       | Decision                                             | Rationale                                           | Milestone |
+| ---------- | ---------------------------------------------------- | --------------------------------------------------- | --------- |
+| 2026-01-22 | Add Jarvis exclusions to credential-guard            | Self-config access required                         | M1        |
+| 2026-01-22 | Rename docker hooks with docker-* prefix             | Clarity, avoid ambiguity                            | M1        |
+| 2026-01-22 | Add CannonCoPilot to expected authors                | Test failure revealed omission                      | M1        |
+| 2026-01-22 | Create integration-chronicle.md                      | Capture reasoning for future reference              | M1        |
+| 2026-01-23 | Autonomy-first: --pause opt-out, not --resume opt-in | Aligns with CLAUDE.md autonomy principle            | M5        |
+| 2026-01-23 | Blocklist approach for signal_command()              | New commands auto-supported, only block interactive | M5        |
+| 2026-01-23 | Fix watcher auto-resume implementation               | Signal fields existed but watcher didn't use them   | M5        |
 
 ---
 

@@ -1,0 +1,234 @@
+Jarvis_Living_Soul
+In LDS Theology we have a term that we use to refer to a person as being the combined attributes of a spirit and a body: living soul.  I like the idea of Principle 1 being related to a 'soul' or 'spirit' concept.  Mind, behaviors, habits, standards, persona, and being.  Principle 2 then would be like the 'body' which helps make the 'soul' into a 'living soul' which can act, interact, operate, influence, and create outside of itself.  It forms the bridge between the 'soul' and the 'other', and gives the 'soul' a sense of place and environment.
+
+Do you alreadt have a detailed folder-level review of everything indise of 'Jarvis/.claude/context'?  This is the one place within /.claude that is as complex as /.claude itself.  Please do a review of all of the spaces in here too.  We might think of this as the first of three Principles, or depths within Jarvis.  There is intelligence or mind within 'Jarvis/.claude/context'.  There is spirit and being within the remainder of spaces in 'Jarvis/.claude'.  There is body and agency within the remaining spaces inside of 'Jarvis/'.  The three together are Jarvis as a whole.
+
+Principle 3: /projects/project-aion = The Meta-Project (ALL Development Work)
+  Everything related to developing and improving Jarvis
+ OK, so what about Jarvis' self-evolution patterns and the places that these would be stored?  'Jarvis/.claude/reports/evolutions' or 'Jarvis/.claude/reports/reflections' for example.  Can we make these places the space for important long-term memory like templates?  Do we then put all of the Jarvis-driven self-evolution dev work over in Project Aion?
+
+
+Improving Project Aion spaces 'Jarvis/projects/project-aion'
+Within this space there is currently experiments, ideas, plans, reports, and at the top-level some of the more broadly applicable and general documents.  I think we could add a 'progress' so that 'reports' can be a place for major surevey and review development work, and 'progress' can be a place for keeping development record documents.  Of course 'progress' might also be tracked by updating checkboxes in 'planning' docs, and this is something that has raised this larger question for me.  Perhaps 'planning' docs get a fast review upon completion of PRs, Milestones, or Sessions and updated.  Major deviations to planning docs that occur during development should be noted in the 'planning' docs, with links to the 'progress' docs where these deviations are detailed.  So, then within these five spaces inside of project-aion we also need another organizational level so each folder isn't jsut a dumping ground.  Eoither organized by time with 'current' and 'archive' which is really simple, or organized by some sort of categorical grouping.  Also, on review I am seeing the value of having a '/design' folder here; so, experiments, ideas, plans, reports, designs, and progress.
+
+
+Burden of project development documentation:
+'Jarvis/projects/project-aion' implies that future projects would also keep their five dev doc spaces within a subfolder of 'Jarvis/projects/'.  The only concern that I have with that is that this could increase the burden of Jarvis as a codebase.  On the other hand, in a way these are memories and records of Jarvis' own creative efforts, and as such chould be seen as a part of Jarvis.  I am thinking perhaps more in terms of the increased burden on self-maintenance, and also what to push to Jarvis' Project Aion branch.  For pushing updates to Jarvis 'the Aion', as an entity, we don't want to also push all of the history of project development (except perhaps one or a few purposeful examples from toy project demo development).  Essentially, each person who might pull and use Jarvis doesn't want all of my own personal project plans and progress docs.  Also, we don't want jarvis to have to review these project-specific spaces when doing a self-review.  But we would want Jarvis to review 'Jarvis/docs/reports' as part of self-review, to make sure his reports about himself are organized and complete.  Incidentally, 'Jarvis/docs/reports' is curerntly full of stuff that looks more like it belongs inside a project-aion space.
+
+Maybe 'projects/project-aion/aifred-integration/' and a parallel 'self-improvement' dir are both placed within a shared folder, like 'evolution' or 'growth' or something.  So, the 'ability' to evolve should reside in Jarvis' self, but the records and dev work of that evolution should be in project-aion.
+
+Principle 4: External Projects = Deliverables Only
+"/Users/aircannon/Claude/<ProjectName>/ contains only the project codebase" yes and "/Users/aircannon/Claude/Jarvis/projects" should contain the develpment workspaces for that project.  As you put, "alternatively, a lighter touch" which I prefer.  Projects inside of projects is a little too Inception for me.
+
+Lastly, I want an assessment of the purpose of every folder location within: '/Users/aircannon/Claude/Jarvis' at one level deep, '/Users/aircannon/Claude/Jarvis/.claude' at two levels deep, and '/Users/aircannon/Claude/Jarvis/.claude/context' at two levels deep.  If there is any folder that you don't see a clear purpose for keep a list.  We want to keep the spaces of Jarvis' definition of self clean and efficient, and also want to keep sut enough subfolder organization for Jarvis to tuck things away which have very niche uses.
+
+Your Proposed Changes are pretty good, as far as the analysis has gone to this point.  Refactor these after you have reviewed and address all of my other thoughts above, and updated your discoveries from the /.claude/context space.
+
+
+
+
+
+Let's move into Phase 7. I think the most complex part of all the reorganization happens here.  The task "fix broken references" is far more involved thatn it may sound.  In fact, not only do we need to
+  "fix" references we also need to make sure that there are, if perhaps not perfectly optimized, at least heuristically sufficient organizing threads that can lead Jarvis from top-layer thought patters down
+  to the "best", or at least "sufficient" patterns, scripts, standars, lessons, etc, and also that Jarvis understands to work through autonomic sytem components as an overarching approach to work. Jarvis needs clear instructions for shifting from generalist problem-solver to orchestration state and to find its design philosophies for architecting, orchestrating agents, recursively looping over work, parallelizing when effective, and so on.  Jarvis needs pointers and links to navigate and find this info without re-reading whole directories, and indices or glossaries that connect tools and utilities to purposes.  So as we go through fixing "broken" references, in reality we need to strengthen the referencing system that connects all of these things together.  Hanzel and Gretle's bread crumbs, so to speak.
+
+Also, let's replace the phrase "Living Soul" with "Aion" in all Jarvis documentation and files.  We will adopt this as the model for how other Aions are designed.  Additionally, rename things like "mind", "soul", "body", "spirit" and so on to Greek equivalents.
+
+
+Context token counting seems to be off, can we investigate and fix?  This is from the status bar ad the end of the previous session.
+ Jarvis (Project_Aion) | 40448 tokens [███████████████████░] 93% | Msgs: 0                                                                    Context low (0% remaining) · Run /compact to compact & continue
+  0 | Time: 09:22:24 | Session: 12h0m
+  ⏵⏵ bypass permissions on (shift+tab to cycle) · 10 files +166 -13
+
+  This is the status line after running /clear
+    Jarvis (Project_Aion) | 40458 tokens [░░░░░░░░░░░░░░░░░░░░] 0% | Msgs: 0
+  0 | Time: 09:29:12 | Session: 0m
+  ⏵⏵ bypass permissions on (shift+tab to cycle)
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯
+
+  Jarvis (Project_Aion) | 341241 tokens [████████████████████] 171% | Msgs: 0
+  0 | Time: 09:49:00 | Session: 6m
+  ⏵⏵ bypass permissions on (shift+tab to cycle)
+
+   Jarvis (Project_Aion) | 341241 tokens [████████████████████] 171% | Msgs: 0
+  0 | Time: 09:49:17 | Session: 6m
+  ⏵⏵ bypass permissions on (shift+tab to cycle)
+
+
+  OK so can we use the following values in the statusline, and in the progress bar of context window usage, but a red dash at the % that the Watcher is configured to send the /intelligent-compact and the /clear signals?
+
+  │ context_window.used_percentage                           │ int  │ Current context usage % ⭐          │
+  ├──────────────────────────────────────────────────────────┼──────┼─────────────────────────────────────┤
+  │ context_window.remaining_percentage                      │ int  │ Remaining context %                 │
+ context_window.current_usage.input_tokens                │ int  │ Last call input tokens              │
+  ├──────────────────────────────────────────────────────────┼──────┼─────────────────────────────────────┤
+  │ context_window.current_usage.output_tokens               │ int  │ Last call output tokens
+
+  Let's also add Rate Limit Reset: Time remaining (e.g., "Resets in 2h 15m") before my 5-hour message limits reset and Usage Burn Rate: Metrics showing how quickly I am consuming my plan's tokens.
+
+  And then also, can we add a colored Segmented Bar Chart (aka Stacked Bar Chart) that is generated by reading from a json that gets created by a subagent periodically pulling data from the output of /context (run with the auto-wrapper of course).  This might be a bit involved, but let's tackle it.
+  Additionally we're going to want to double check that the auto-wrapping for slash-commands is really working, because we've changed all of that, and all of JICM hinges on Jarvis being able to resume work without promting and with no interruptions or idling after context is cleared by /clear from the watcher script.
+
+
+  OK, so with --debug and --verbose on I can see the actual token output, and see that our statusline token count is an estimate only, based on back-calculating from the percent used.  However, because --debug can show the exact token count, can you find out where this paraeter is being stored by ClaudeCode, and tap into that instead of using a back-calculation to get an estimate of context windo usage?
+  Also I still want to see ontext_window.current_usage.input_tokens and context_window.current_usage.output_tokens, and I also want a Stacked Bar Chart (aka Segmented Bar Chart) that shows the categorical breakdowns of the values given by the /context command.  Surely if the /context command can display the categorical breakdown of context window usage then it must be pulling htem from somewhere that you should have access to and can utilize for the statusline info.  I'm also noticing Msgs stays at '0' so we need to figure out a way to count the total prompts submitted by the user from the CLI.  Also there is a leading '0' before the Time section and I have no idea what it is supposed to represent. OK, let's make all of this happen.  
+
+  Here's what Im seeing right now in the statusline:
+
+  Jarvis (Project_Aion) | 30000 tokens [███░░░░░░░░░░░░░░░░░] 15% | Msgs: 0                                                                                                                         Debug mode
+  0 | Time: 10:51:48 | Session: 0m                                                                                                                                                                30300 tokens
+  ⏵⏵ bypass permissions on (shift+tab to cycle)                                                                                                                               current: 2.1.17 · latest: 2.1.17
+
+
+Hypothetical /context-jarvis Skill:
+tmux kill-session -t test-session 2>/dev/null
+tmux new-session -d -s test-session
+tmux send-keys -t test-session 'claude' Enter
+sleep 2
+tmux send-keys -t test-session '/context' Enter
+sleep 1
+tmux capture-pane -t test-session -p 
+
+
+Watcher & JICM - Just not working, and completely killing the CPU
+
+21:06:07 ◐ Tokens: 152038 (76.0%) [monitoring]
+21:07:08 ◐ Tokens: 158507 (79.2%) [monitoring]
+21:08:38 ◐ Tokens: 158863 (79.4%) [monitoring]
+21:10:08 ◐ Tokens: 159123 (79.5%) [monitoring]
+21:11:08 ◐ Tokens: 159426 (79.7%) [monitoring]
+21:12:08 ⚠ Tokens: 162045 (81.0%) [monitoring]
+[JICM] ═══ JICM TRIGGERED: 81.0% (162045 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+21:13:42 ⚠ Tokens: 162409 (81.2%) [resumed]
+[INFO] Resetting JICM trigger (cooldown elapsed: 124s)
+21:14:42 ⚠ Tokens: 162678 (81.3%) [monitoring]
+[JICM] ═══ JICM TRIGGERED: 81.3% (162678 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+21:16:16 ⚠ Tokens: 162934 (81.4%) [resumed]
+21:16:46 ⚠ Tokens: 163290 (81.6%) [resumed]
+[INFO] Resetting JICM trigger (cooldown elapsed: 124s)
+...
+21:36:47 ⚠ Tokens: 173175 (86.5%) [resumed]
+[JICM] Step 2: Waiting for compression (max 60s)...                                                                                                                                            21:37:47 [45/272]
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+21:31:39 ⚠ Tokens: 169574 (84.7%) [resumed]
+[INFO] Resetting JICM trigger (cooldown elapsed: 124s)
+[JICM] ═══ JICM TRIGGERED: 84.7% (169574 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+21:34:13 ⚠ Tokens: 170060 (85.0%) [resumed]
+21:34:43 ⚠ Tokens: 170353 (85.1%) [resumed]
+[INFO] Resetting JICM trigger (cooldown elapsed: 124s)
+[JICM] ═══ JICM TRIGGERED: 85.1% (170353 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+21:36:47 ⚠ Tokens: 173175 (86.5%) [resumed]
+21:37:17 ⚠ Tokens: 173486 (86.7%) [resumed]
+[INFO] Resetting JICM trigger (cooldown elapsed: 124s)
+[JICM] ═══ JICM TRIGGERED: 86.7% (173486 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+[INFO] Resetting JICM trigger (cooldown elapsed: 133s)
+21:40:30 ⚠ Tokens: 174005 (87.0%) [monitoring]
+[JICM] ═══ JICM TRIGGERED: 87.0% (174005 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+[INFO] Resetting JICM trigger (cooldown elapsed: 163s)
+[JICM] ═══ JICM TRIGGERED: 87.0% (174005 tokens) ═══
+[JICM] Step 1: /intelligent-compress (AI compression)
+[CMD] Sending: /intelligent-compress
+[JICM] Step 2: Waiting for compression (max 60s)...
+[JICM]   Still waiting for compression... (10s)
+[JICM]   Still waiting for compression... (20s)
+[JICM]   Still waiting for compression... (30s)
+[JICM]   Still waiting for compression... (40s)
+[JICM]   Still waiting for compression... (50s)
+[JICM]   Still waiting for compression... (60s)
+[JICM] Step 3: Compression timeout, falling back to simple checkpoint
+[CMD] Sending: /clear
+[JICM] Step 4: Triggering work continuation (fallback)
+[CMD] Sending: Resume work from checkpoint. Read session-state.md and current-priorities.md, then continue the task that was in progress.
+
+
+
