@@ -951,7 +951,7 @@ DUMP
             # Invalidate TUI cache and send /clear
             invalidate_tui_cache
             send_command "/clear"
-            echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
+            date +%s > "$CLEAR_SENT_SIGNAL"
 
             # STATE TRANSITION: Move to "cleared" state
             # This prevents re-triggering context_exhausted on next iteration
@@ -971,7 +971,7 @@ DUMP
             # IMPORTANT: Single-line prompt only. Multi-line -l strings cause newlines
             # in the input buffer that can corrupt or prematurely submit commands.
             # See: Section 6.4.1 Submission Pattern Requirements
-            local restore_prompt='[JICM-EMERGENCY] Hooks failed. Read .claude/context/.compressed-context-ready.md and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
+            local restore_prompt='[JICM-EMERGENCY] Hooks failed. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$restore_prompt" 2>/dev/null || true
             sleep 0.1
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
@@ -1007,7 +1007,7 @@ send_prompt_by_type() {
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
             ;;
         "jicm_resume:SIMPLE")
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Read .claude/context/.compressed-context-ready.md and continue work.'
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Read .claude/context/.compressed-context-ready.md and .claude/context/.in-progress-ready.md — continue work.'
             ;;
         "jicm_resume:MINIMAL")
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Continue.'
@@ -1468,11 +1468,9 @@ main() {
 
             # Check if /clear was already sent recently (avoid duplicate)
             if [[ -f "$CLEAR_SENT_SIGNAL" ]]; then
-                local clear_ts
-                clear_ts=$(cat "$CLEAR_SENT_SIGNAL" 2>/dev/null)
-                if [[ -n "$clear_ts" ]]; then
-                    local clear_epoch
-                    clear_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clear_ts" +%s 2>/dev/null || echo "0")
+                local clear_epoch
+                clear_epoch=$(cat "$CLEAR_SENT_SIGNAL" 2>/dev/null)
+                if [[ -n "$clear_epoch" ]] && [[ "$clear_epoch" =~ ^[0-9]+$ ]]; then
                     local now_epoch
                     now_epoch=$(date +%s)
                     local clear_age=$((now_epoch - clear_epoch))
@@ -1486,6 +1484,32 @@ main() {
                 fi
             fi
 
+            # ── .in-progress-ready.md gating (Item C) ──────────────────
+            # Before /clear, ask Jarvis to write a brief work summary.
+            # No idle-wait — send immediately, gate on file presence.
+            rm -f "$IN_PROGRESS_FILE"  # Remove stale copies
+            local ipr_prompt='[JICM-DUMP] Write your current work state to .claude/context/.in-progress-ready.md — include: current task, files modified, decisions made, active todos, blockers, next steps. Keep under 2000 tokens. Write the file immediately, no other output.'
+            log JICM "Requesting .in-progress-ready.md from Jarvis (no idle-wait)"
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$ipr_prompt"
+            sleep 0.1
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+
+            # Poll for .in-progress-ready.md (2s interval, 45s timeout)
+            local ipr_wait=0
+            local ipr_max=45
+            while [[ $ipr_wait -lt $ipr_max ]]; do
+                if [[ -f "$IN_PROGRESS_FILE" ]]; then
+                    log JICM "Got .in-progress-ready.md (${ipr_wait}s wait)"
+                    break
+                fi
+                sleep 2
+                ipr_wait=$((ipr_wait + 2))
+            done
+            if [[ ! -f "$IN_PROGRESS_FILE" ]]; then
+                log JICM "WARN: .in-progress-ready.md not received after ${ipr_max}s — proceeding with /clear anyway"
+            fi
+            # ── end .in-progress-ready.md gating ─────────────────────────
+
             # Send /clear (compressed context is ready for post-clear hook to inject)
             if [[ "$was_watcher_triggered" == "true" ]]; then
                 log JICM "═══ COMPRESSION SUCCESS: Sending /clear (watcher-triggered) ═══"
@@ -1494,7 +1518,7 @@ main() {
             fi
 
             send_command "/clear"
-            echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$CLEAR_SENT_SIGNAL"
+            date +%s > "$CLEAR_SENT_SIGNAL"
             invalidate_tui_cache
 
             # Transition to "cleared" — section 4 handles cleared→monitoring

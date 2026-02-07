@@ -899,7 +899,7 @@ The compression agent assembles context from **multiple sources** — both ephem
 
 | Location | Contains | Priority |
 |----------|----------|----------|
-| `.claude/CLAUDE.md` | Project instructions, persona | **HIGH** |
+| `CLAUDE.md` (project root) | Project instructions, persona | **HIGH** |
 | `.claude/jarvis-identity.md` | Identity, tone, safety posture | **HIGH** |
 | `.claude/context/compaction-essentials.md` | Essential context to preserve | **HIGH** |
 
@@ -995,7 +995,7 @@ transcript_sources:
   - .claude/context/.context-captured-escaped.txt
 
 foundation_docs:
-  - .claude/CLAUDE.md
+  - CLAUDE.md  # project root (canonical)
   - .claude/jarvis-identity.md
   - .claude/context/compaction-essentials.md
 

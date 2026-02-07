@@ -222,7 +222,7 @@ ls -la .claude/reports/maintenance/maintenance-$(date +%Y-%m-%d)*.md 2>/dev/null
 
 # 3. Update version references if needed:
 #    - README.md
-#    - .claude/CLAUDE.md (header + footer)
+#    - CLAUDE.md (header + footer)
 #    - projects/project-aion/archon-identity.md
 ```
 

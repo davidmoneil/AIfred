@@ -106,7 +106,7 @@ The compression agent assembles context from multiple sources (see jicm-v5-desig
 - `.claude/context/.context-captured*.txt` — pre-processed captures
 
 **Foundation Docs** (durable):
-- `.claude/CLAUDE.md` — project instructions
+- `CLAUDE.md` (project root) — project instructions
 - `.claude/jarvis-identity.md` — identity and tone
 - `.claude/context/compaction-essentials.md` — must-preserve items
 

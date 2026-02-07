@@ -176,8 +176,15 @@ echo "## Context File Sizes" >> "$REPORT_FILE"
 echo "" >> "$REPORT_FILE"
 
 # CLAUDE.md size
-if [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
-    CLAUDE_SIZE=$(wc -c < "$PROJECT_DIR/.claude/CLAUDE.md" | tr -d ' ')
+# Check root CLAUDE.md first (canonical), fall back to .claude/CLAUDE.md
+CLAUDE_MD_PATH=""
+if [[ -f "$PROJECT_DIR/CLAUDE.md" ]]; then
+    CLAUDE_MD_PATH="$PROJECT_DIR/CLAUDE.md"
+elif [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
+    CLAUDE_MD_PATH="$PROJECT_DIR/.claude/CLAUDE.md"
+fi
+if [[ -n "$CLAUDE_MD_PATH" ]]; then
+    CLAUDE_SIZE=$(wc -c < "$CLAUDE_MD_PATH" | tr -d ' ')
     CLAUDE_TOKENS=$((CLAUDE_SIZE / 4))
     echo "- **CLAUDE.md**: $CLAUDE_SIZE bytes (~$CLAUDE_TOKENS tokens)" >> "$REPORT_FILE"
 fi
@@ -450,8 +457,15 @@ echo "" >> "$REPORT_FILE"
 RECOMMENDATIONS=0
 
 # Check CLAUDE.md size
-if [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
-    CLAUDE_TOKENS=$(($(wc -c < "$PROJECT_DIR/.claude/CLAUDE.md" | tr -d ' ') / 4))
+# Check root CLAUDE.md first (canonical), fall back to .claude/CLAUDE.md
+CLAUDE_MD_CHECK=""
+if [[ -f "$PROJECT_DIR/CLAUDE.md" ]]; then
+    CLAUDE_MD_CHECK="$PROJECT_DIR/CLAUDE.md"
+elif [[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]]; then
+    CLAUDE_MD_CHECK="$PROJECT_DIR/.claude/CLAUDE.md"
+fi
+if [[ -n "$CLAUDE_MD_CHECK" ]]; then
+    CLAUDE_TOKENS=$(($(wc -c < "$CLAUDE_MD_CHECK" | tr -d ' ') / 4))
     if [[ $CLAUDE_TOKENS -gt 3000 ]]; then
         echo "- [ ] **CLAUDE.md is large** (~$CLAUDE_TOKENS tokens). Consider moving detailed docs to knowledge/ and linking." >> "$REPORT_FILE"
         ((RECOMMENDATIONS++))

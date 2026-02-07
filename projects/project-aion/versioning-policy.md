@@ -181,7 +181,7 @@ This file:
 
 The following files should reference the current version:
 - `README.md` — In the header or status section
-- `.claude/CLAUDE.md` — In the footer
+- `CLAUDE.md` (project root) — In the footer
 - `docs/project-aion/archon-identity.md` — In the Archon table
 
 ---

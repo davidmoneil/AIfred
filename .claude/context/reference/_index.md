@@ -29,7 +29,7 @@ Load these references when:
 ## Related Quick-Access
 
 For always-on context, prefer:
-- @.claude/CLAUDE.md — Core instructions
+- @CLAUDE.md — Core instructions (project root)
 - @.claude/context/_index.md — Navigation index
 - @.claude/context/patterns/ — Operational patterns
 

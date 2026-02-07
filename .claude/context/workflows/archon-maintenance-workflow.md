@@ -260,7 +260,7 @@ After reference fixes, update navigation indices:
 - `.claude/context/_index.md`
 - `.claude/context/patterns/_index.md`
 - `.claude/context/psyche/_index.md`
-- `.claude/CLAUDE.md` (essential links section)
+- `CLAUDE.md` (essential links section, project root)
 
 ### Step 3.5: Verify Neuro Integrity
 

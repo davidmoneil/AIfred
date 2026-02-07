@@ -268,7 +268,7 @@ Jarvis capabilities:
 - Test 9 Results: `projects/project-aion/reports/Test9_results.md`
 - Component Specs: `.claude/context/components/AC-*.md`
 - State Files: `.claude/state/components/AC-*.json`
-- CLAUDE.md: `.claude/CLAUDE.md` (includes Wiggum Loop injection)
+- CLAUDE.md: `CLAUDE.md` (project root, includes Wiggum Loop injection)
 
 **RLE-001 Experiment Artifacts**:
 - Research Report: `projects/project-aion/reports/ralph-loop-experiment/RESEARCH-REPORT.md`

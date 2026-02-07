@@ -120,10 +120,9 @@ V5_CLEAR_SENT_CHECK="$CLAUDE_PROJECT_DIR/.claude/context/.clear-sent.signal"
 DEBOUNCE_WINDOW=30
 
 if [[ "$SOURCE" == "clear" ]] && [[ -f "$V5_CLEAR_SENT_CHECK" ]]; then
-    CLEAR_TIMESTAMP=$(cat "$V5_CLEAR_SENT_CHECK" 2>/dev/null)
-    if [[ -n "$CLEAR_TIMESTAMP" ]]; then
-        # Convert ISO timestamp to epoch for comparison
-        CLEAR_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$CLEAR_TIMESTAMP" +%s 2>/dev/null || echo "0")
+    CLEAR_EPOCH=$(cat "$V5_CLEAR_SENT_CHECK" 2>/dev/null)
+    if [[ -n "$CLEAR_EPOCH" ]] && [[ "$CLEAR_EPOCH" =~ ^[0-9]+$ ]]; then
+        # Signal file contains epoch seconds (timezone-safe)
         NOW_EPOCH=$(date +%s)
         ELAPSED=$((NOW_EPOCH - CLEAR_EPOCH))
 

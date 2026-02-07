@@ -34,7 +34,7 @@ Create a new project with proper structure and register it with Jarvis.
 │ 1. Validate name (normalize to lowercase-with-dashes)          │
 │ 2. Create project at /Users/aircannon/Claude/<name>/           │
 │ 3. Initialize project structure                                 │
-│ 4. Create project's own .claude/CLAUDE.md                       │
+│ 4. Create project's own CLAUDE.md (project root)                │
 │ 5. Update paths-registry.yaml                                   │
 │ 6. Create project summary in Jarvis/projects/                   │
 │ 7. Optionally create GitHub repo and push                       │
@@ -138,7 +138,7 @@ Per the workspace-path-policy:
 | What | Where |
 |------|-------|
 | Project code | `/Users/aircannon/Claude/<project-name>/` |
-| Project's CLAUDE.md | `/Users/aircannon/Claude/<project-name>/.claude/CLAUDE.md` |
+| Project's CLAUDE.md | `/Users/aircannon/Claude/<project-name>/CLAUDE.md` |
 | Project summary (in Jarvis) | `/Users/aircannon/Claude/Jarvis/projects/<project-name>.md` |
 | Registry | `paths-registry.yaml` → `development.projects` |
 
@@ -166,14 +166,14 @@ Project names are normalized:
 After creation, verify:
 1. Project directory exists at `/Users/aircannon/Claude/<name>/`
 2. Project has `.git/` initialized
-3. Project has `.claude/CLAUDE.md`
+3. Project has `CLAUDE.md` (project root)
 4. Project appears in `paths-registry.yaml`
 5. Summary exists at `Jarvis/projects/<name>.md`
 
 ```bash
 # Quick validation
 ls -la /Users/aircannon/Claude/my-new-project/
-cat /Users/aircannon/Claude/my-new-project/.claude/CLAUDE.md
+cat /Users/aircannon/Claude/my-new-project/CLAUDE.md
 cat paths-registry.yaml | grep -A5 "my-new-project"
 ls projects/my-new-project.md
 ```

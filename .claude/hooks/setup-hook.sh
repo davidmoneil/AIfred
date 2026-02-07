@@ -56,7 +56,7 @@ done
 # ============== REQUIRED FILES CHECK ==============
 REQUIRED_FILES=(
     ".claude/settings.json"
-    ".claude/CLAUDE.md"
+    "CLAUDE.md"
     ".claude/context/session-state.md"
     ".claude/jarvis-identity.md"
 )

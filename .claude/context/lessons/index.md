@@ -71,6 +71,13 @@ Recurring patterns discovered through reflection and R&D.
   - **Solution**: Designate single authoritative launcher; others request/verify, don't launch
   - **Affects**: Watcher management, future agent spawning, any background process coordination
 
+### Session Insights (Persistent)
+- **Full log**: `lessons/insights.md`
+- **Purpose**: Captures `★ Insight` blocks that would otherwise vanish after /clear or session end
+- **Updated**: During sessions as insights are generated; reviewed during AC-05 reflection
+- **Current count**: 7 insights (INS-001 through INS-007)
+- **Categories**: Git, Context Management, YAML/Tooling, Authentication, Project Management, Self-Improvement
+
 ### Documentation
 *None yet*
 
@@ -114,4 +121,4 @@ See `.claude/evolution/evolution-queue.yaml` for full proposal details.
 
 ---
 
-*Index maintained by AC-05 Self-Reflection — Updated 2026-02-05*
+*Index maintained by AC-05 Self-Reflection — Updated 2026-02-06*

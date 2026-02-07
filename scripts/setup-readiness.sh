@@ -227,7 +227,7 @@ else
 fi
 
 # C3: CLAUDE.md exists
-if [ -f "$JARVIS_PATH/.claude/CLAUDE.md" ]; then
+if [ -f "$JARVIS_PATH/CLAUDE.md" ] || [ -f "$JARVIS_PATH/.claude/CLAUDE.md" ]; then
   echo "║  ✅ CLAUDE.md configuration exists                        ║"
   ((MEDIUM_PASS++))
 else

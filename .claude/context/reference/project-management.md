@@ -48,7 +48,7 @@ When an unregistered project is detected:
 ```
 /create-project <name>
 ```
-Creates in `projects_root` with proper initialization (git, README, `.claude/CLAUDE.md`).
+Creates in `projects_root` with proper initialization (git, README, `CLAUDE.md`).
 
 ### Existing Project
 ```

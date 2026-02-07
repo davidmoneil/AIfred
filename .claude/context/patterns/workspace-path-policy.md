@@ -166,7 +166,7 @@ User: "Create a new project called DataPipeline"
 
 Action:
 1. Create at: /Users/aircannon/Claude/DataPipeline/
-2. Initialize: git, README, .claude/CLAUDE.md
+2. Initialize: git, README, CLAUDE.md
 3. Create summary: /Users/aircannon/Claude/Jarvis/projects/DataPipeline.md
 4. Register in: paths-registry.yaml
 ```

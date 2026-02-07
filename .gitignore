@@ -28,6 +28,7 @@
 # Compressed context (restored on /clear, not persisted)
 .claude/context/.compressed-context-ready.md
 .claude/context/.in-progress-ready.md
+.claude/context/.active-tasks.txt
 
 # State files (runtime only)
 .claude/state/components/*.json

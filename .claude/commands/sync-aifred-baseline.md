@@ -77,7 +77,7 @@ For each changed file, categorize by type:
 | **Commands** | `.claude/commands/*.md` |
 | **Patterns** | `.claude/context/patterns/*.md` |
 | **Agents** | `.claude/agents/*.md` |
-| **Core Config** | `.claude/CLAUDE.md`, `settings.json` |
+| **Core Config** | `CLAUDE.md`, `settings.json` |
 | **Documentation** | `docs/**/*.md`, `README.md` |
 | **Scripts** | `scripts/**/*` |
 | **Other** | Everything else |
