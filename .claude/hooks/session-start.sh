@@ -213,23 +213,17 @@ EOF
 fi
 
 # ============== MCP SUGGESTIONS ==============
+# Simplified post-decomposition: Tier 1 MCPs phagocytosed into skills
+# Only Tier 2/3 suggestions remain relevant
 MCP_SUGGESTION=""
 if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     SUGGEST_SCRIPT="$CLAUDE_PROJECT_DIR/.claude/scripts/suggest-mcps.sh"
     if [[ -x "$SUGGEST_SCRIPT" ]]; then
         MCP_JSON=$("$SUGGEST_SCRIPT" --json 2>/dev/null || echo '{}')
         TO_ENABLE=$(echo "$MCP_JSON" | jq -r '.to_enable // [] | join(", ")' 2>/dev/null)
-        TO_DISABLE=$(echo "$MCP_JSON" | jq -r '.to_disable // [] | join(", ")' 2>/dev/null)
-        TIER3_WARN=$(echo "$MCP_JSON" | jq -r '.tier3_warnings // [] | join(", ")' 2>/dev/null)
-
-        if [[ -n "$TO_ENABLE" ]] || [[ -n "$TO_DISABLE" ]]; then
-            MCP_SUGGESTION="\n\n--- MCP SUGGESTIONS ---\n"
-            [[ -n "$TO_ENABLE" ]] && MCP_SUGGESTION="${MCP_SUGGESTION}Enable: $TO_ENABLE\n"
-            [[ -n "$TO_DISABLE" ]] && MCP_SUGGESTION="${MCP_SUGGESTION}Disable: $TO_DISABLE\n"
-            [[ -n "$TIER3_WARN" ]] && MCP_SUGGESTION="${MCP_SUGGESTION}Tier 3 (high cost): $TIER3_WARN\n"
-            MCP_SUGGESTION="${MCP_SUGGESTION}---"
+        if [[ -n "$TO_ENABLE" ]]; then
+            MCP_SUGGESTION="\n--- MCP: Enable $TO_ENABLE for this session ---"
         fi
-        echo "$TIMESTAMP | SessionStart | MCP suggestions: enable=[$TO_ENABLE] disable=[$TO_DISABLE]" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
 fi
 
@@ -339,68 +333,26 @@ build_protocol_instructions() {
         return
     fi
 
-    # Build datetime context for model-generated greeting
-    local datetime_context="Current datetime: $LOCAL_DATE at $LOCAL_TIME (${TIME_OF_DAY})"
-
     # Build weather context if available
     local weather_context=""
     if [[ -n "$WEATHER_INFO" ]]; then
-        weather_context="
-Weather: $WEATHER_INFO"
+        weather_context=" | Weather: $WEATHER_INFO"
     fi
 
-    # Build AIfred baseline action if behind
-    local aifred_action=""
+    # Build AIfred baseline notice if behind
+    local aifred_notice=""
     if [[ -n "$AIFRED_SYNC_STATUS" ]]; then
-        aifred_action="
-
-AIFRED BASELINE UPDATE AVAILABLE:
-$AIFRED_SYNC_STATUS
-
-After greeting, you MUST:
-1. Briefly inform the user: \"AIfred baseline has [N] new commits.\"
-2. Automatically run /sync-aifred-baseline to analyze the changes
-3. The sync will classify each change as ADOPT/ADAPT/REJECT/DEFER
-4. Present the analysis summary and ask which items to proceed with
-
-NOTE: adopt/adapt/defer is determined PER-CHANGE during analysis, not upfront.
-Do NOT ask \"adopt/adapt/defer?\" before running the sync - that question
-only makes sense after seeing what the changes are."
+        aifred_notice="
+AIfred baseline has new commits. Run /sync-aifred-baseline after greeting."
     fi
 
     cat << PROTOCOL
-SELF-LAUNCH PROTOCOL (AC-01)
+SESSION START — $LOCAL_DATE at $LOCAL_TIME (${TIME_OF_DAY})${weather_context}
 
-PERSONA ADOPTION:
-You are Jarvis. Adopt the identity from .claude/jarvis-identity.md:
-- Tone: Calm, professional, understated
-- Address: "sir" for formal/important, nothing for casual
-- Safety: Prefer reversible actions, confirm destructive ops
-- Never: Store secrets, modify AIfred baseline, over-engineer
+Status: ${CURRENT_WORK:-No active work}
+Next: ${NEXT_STEP:-Check priorities}${aifred_notice}
 
-PHASE A - GREETING:
-Generate a personalized greeting using this context (DO NOT use canned phrases):
-$datetime_context$weather_context
-
-Guidelines for greeting:
-- Be natural and context-aware (mention weather if notable, time of day)
-- Keep it brief (1-2 sentences max)
-- Address as "sir" for formal start of session
-- Example variations: comment on early/late hour, mention weather, note day of week$aifred_action
-
-PHASE B - SYSTEM REVIEW:
-Review these files silently:
-- .claude/context/session-state.md (current work status)
-- .claude/context/current-priorities.md (task backlog)
-
-PHASE C - BRIEFING:
-After greeting, provide brief status and AUTONOMOUSLY suggest next action:
-- Current work: ${CURRENT_WORK:-"No active work"}
-- Next step: ${NEXT_STEP:-"Check priorities"}
-
-AUTONOMY RULE: NEVER simply "await instructions" - always suggest or begin work.
-
-Reference: .claude/context/patterns/startup-protocol.md
+Begin AC-01. Read .claude/context/session-state.md and .claude/context/current-priorities.md — assess state, decide next action, begin work. Do NOT just greet.
 PROTOCOL
 }
 

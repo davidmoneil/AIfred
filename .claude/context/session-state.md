@@ -8,13 +8,13 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle — Session ended 2026-02-06
+**Status**: 🟡 Active — JICM v5.8.0 committed, session in progress
 
-**Last Completed**: v2.3.0 release + git housekeeping + self-improvement cycle
+**Last Completed**: JICM v5.8.0 compression redesign (62cb798)
 
 **Current Blocker**: None
 
-**Current Work**: None — ready for next session
+**Current Work**: Post-commit — ready for next priority
 
 ---
 
@@ -48,7 +48,18 @@ Previous session histories have been archived. For full details, see:
 
 ## Current Session
 
-*No active session.*
+**Date**: 2026-02-07 (overnight from Feb 6)
+**Focus**: MCP Decomposition + Session Start Redesign (5 milestones)
+**Mode**: Fully autonomous, unattended operation
+
+**Completed Work**:
+- M1: MCP Discovery + Registry (DONE — registry created)
+- M2: Create 4 replacement skills (DONE — filesystem-ops, git-ops, web-fetch, weather)
+- M3: Validate + Remove MCPs (DONE — filesystem removed from .mcp.json, fetch removed from settings)
+- M4: Session Start Redesign (DONE — lean injection, --fresh flag, session types)
+- M5: JICM Review + Emergency Resolution (DONE — cleanup fix, v5.8.1, emergency documented)
+
+**Pending**: Commit all changes
 
 ---
 

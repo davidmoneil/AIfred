@@ -30,8 +30,8 @@ This document maps task types to preferred tools, providing clear selection guid
 | Edit file | `Edit` (built-in) | `Bash(sed)` | Built-in has context awareness |
 | Search files by name | `Glob` (built-in) | `Bash(find)` | Glob is optimized |
 | Search file contents | `Grep` (built-in) | `Bash(rg/grep)` | Grep is integrated |
-| List directory | `Bash(ls)` | Filesystem MCP | Built-in sufficient |
-| External file access | Filesystem MCP | N/A | When outside workspace |
+| List directory | `Bash(ls)` | N/A | Built-in sufficient |
+| External file access | `Read`/`Bash(ls)` with absolute path | N/A | Built-in works anywhere |
 
 ### Git Operations
 
@@ -189,9 +189,11 @@ This document maps task types to preferred tools, providing clear selection guid
 | Server | Purpose | Token Cost | Tools |
 |--------|---------|------------|-------|
 | Memory | Knowledge graph | ~1.8K | 9 |
-| Filesystem | File operations | ~2.8K | 13 |
-| Fetch | Web content | ~0.5K | 1 |
-| Git | Git operations | ~2.5K | 12 |
+| ~~Filesystem~~ | ~~File operations~~ | ~~2.8K~~ | Replaced by `filesystem-ops` skill |
+| ~~Fetch~~ | ~~Web content~~ | ~~0.5K~~ | Replaced by `web-fetch` skill |
+| ~~Git~~ | ~~Git operations~~ | ~~2.5K~~ | Replaced by `git-ops` skill |
+
+**Note**: Filesystem, Fetch, and Git MCPs phagocytosed into skills (2026-02-07). See `.claude/context/reference/mcp-decomposition-registry.md`.
 
 **Tier 2 — Task-Scoped**:
 | Server | Purpose | Token Cost | Tools |
@@ -369,12 +371,11 @@ RISK NOTE: browser-automation has higher risk profile:
 Need to accomplish a task?
 │
 ├── Is it a file operation?
-│   ├── Inside workspace → Use built-in (Read/Write/Edit/Glob/Grep)
-│   └── Outside workspace → Use Filesystem MCP
+│   └── Use built-in tools (Read/Write/Edit/Glob/Grep/Bash)
+│       See: filesystem-ops skill
 │
 ├── Is it a git operation?
-│   ├── Simple (status/log/diff) → Use Bash(git)
-│   ├── Natural language ("commit and push") → engineering-workflow-skills:git-pushing
+│   ├── Any git command → Use Bash(git) — see git-ops skill
 │   └── GitHub automation → Use gh CLI or GitHub MCP
 │
 ├── Is it research/exploration?
@@ -418,10 +419,10 @@ Need to accomplish a task?
 
 ### On-Demand (Enable per-session)
 
-- Filesystem MCP
-- Fetch MCP
+- ~~Filesystem MCP~~ → Replaced by `filesystem-ops` skill
+- ~~Fetch MCP~~ → Replaced by `web-fetch` skill
+- ~~Git MCP~~ → Replaced by `git-ops` skill
 - Time MCP
-- Git MCP
 - GitHub MCP
 - Sequential Thinking MCP
 

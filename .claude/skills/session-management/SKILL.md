@@ -159,6 +159,19 @@ session: ${CLAUDE_SESSION_ID}
 
 **Reference**: @.claude/context/patterns/startup-protocol.md
 
+### Session Launch Modes
+
+The tmux launcher supports two modes:
+
+| Mode | Command | Behavior |
+|------|---------|----------|
+| `--continue` (default) | `launch-jarvis-tmux.sh` | Resumes previous session, auto-continues work |
+| `--fresh` | `launch-jarvis-tmux.sh --fresh` | Starts new session, presents options menu |
+
+**Continue mode**: Claude starts with `--continue` flag. Session-start hook reads previous session state and suggests resuming work.
+
+**Fresh mode**: Claude starts without `--continue`. Session-start hook presents a fresh start with options to review priorities or begin new work. No auto-continue timer.
+
 ### During a Session
 
 **Automatic behaviors**:

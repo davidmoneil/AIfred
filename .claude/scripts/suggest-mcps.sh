@@ -108,7 +108,8 @@ declare -a MCP_KEYWORDS=(
 )
 
 # Tier 1 MCPs (always on, don't suggest)
-TIER1_MCPS="memory filesystem fetch git"
+# Post-decomposition: filesystem/git/fetch phagocytosed into skills (2026-02-07)
+TIER1_MCPS="memory"
 
 # Tier 3 MCPs (warn, not auto-suggest)
 TIER3_MCPS="playwright lotus-wisdom"

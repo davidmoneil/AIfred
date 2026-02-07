@@ -57,18 +57,21 @@ MCP servers consume context tokens when loaded. This pattern defines three loadi
 
 ---
 
-## Tier 1: Always-On (~8K tokens)
+## Tier 1: Always-On (~1.8K tokens)
 
 **Definition**: Core MCPs loaded at every session start. Essential for base functionality.
 
-| MCP | Tokens | Purpose | Tools |
-|-----|--------|---------|-------|
-| memory | ~1.8K | Persistent knowledge graph | 9 tools |
-| filesystem | ~2.8K | External file operations | 13 tools |
-| fetch | ~0.5K | Web content retrieval | 1 tool |
-| git | ~2.5K | Repository operations | 12 tools |
+| MCP | Tokens | Purpose | Tools | Status |
+|-----|--------|---------|-------|--------|
+| memory | ~1.8K | Persistent knowledge graph | 9 tools | Active |
+| ~~filesystem~~ | ~~2.8K~~ | ~~File operations~~ | ~~13~~ | Replaced by `filesystem-ops` skill |
+| ~~fetch~~ | ~~0.5K~~ | ~~Web content~~ | ~~1~~ | Replaced by `web-fetch` skill |
+| ~~git~~ | ~~2.5K~~ | ~~Git operations~~ | ~~12~~ | Replaced by `git-ops` skill |
 
-**Total Tier 1**: ~7.6K tokens
+**Total Tier 1**: ~1.8K tokens (down from ~7.6K — saved ~5.8K)
+
+**Decomposition Note (2026-02-07)**: Filesystem, fetch, and git MCPs phagocytosed into skills.
+See `.claude/context/reference/mcp-decomposition-registry.md` for details.
 
 **Characteristics**:
 - Loaded automatically every session

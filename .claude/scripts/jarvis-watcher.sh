@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.6.2
+# JARVIS UNIFIED WATCHER — JICM v5.8.1
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -19,6 +19,11 @@
 # Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
+#
+# Changelog v5.8.1 (2026-02-07):
+#   - Added .compression-in-progress cleanup to cleanup_jicm_signals_only() and cleanup_jicm_files()
+#   - Prevents stale compression flag from blocking future JICM cycles after agent crash
+#   - Documented JICM-EMERGENCY as expected B2 FIX behavior in design addendum
 #
 # Changelog v5.6.2 (2026-02-06):
 #   - Removed --continue skip for session_start idle-hands
@@ -159,6 +164,7 @@ CONTINUATION_INJECTED_SIGNAL="$PROJECT_DIR/.claude/context/.continuation-injecte
 JICM_COMPLETE_SIGNAL="$PROJECT_DIR/.claude/context/.jicm-complete.signal"
 STANDDOWN_FILE="$PROJECT_DIR/.claude/context/.jicm-standdown"
 IDLE_HANDS_FLAG="$PROJECT_DIR/.claude/context/.idle-hands-active"
+COMPRESSION_IN_PROGRESS="$PROJECT_DIR/.claude/context/.compression-in-progress"
 PRE_CLEAR_TOKENS_FILE="$PROJECT_DIR/.claude/context/.pre-clear-tokens"
 JICM_CONFIG_FILE="$PROJECT_DIR/.claude/context/.jicm-config"
 
@@ -779,6 +785,7 @@ cleanup_jicm_signals_only() {
     rm -f "$CLEAR_SENT_SIGNAL"
     rm -f "$CONTINUATION_INJECTED_SIGNAL"
     rm -f "$JICM_COMPLETE_SIGNAL"
+    rm -f "$COMPRESSION_IN_PROGRESS"
 }
 
 # v4 functions removed (C3):
@@ -1117,6 +1124,9 @@ cleanup_jicm_files() {
 
     # Delete idle-hands flag
     rm -f "$IDLE_HANDS_FLAG"
+
+    # Delete stale compression flag
+    rm -f "$COMPRESSION_IN_PROGRESS"
 
     # Mark JICM complete
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$JICM_COMPLETE_SIGNAL"

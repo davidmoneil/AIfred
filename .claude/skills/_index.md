@@ -4,7 +4,7 @@ Skills are comprehensive workflow guides that consolidate related commands, hook
 Unlike commands (single actions), skills provide end-to-end guidance for complex workflows.
 
 **Created**: 2026-01-06
-**Last Updated**: 2026-01-23
+**Last Updated**: 2026-02-07
 **Source**: AIfred baseline af66364 (ported from AIProjects)
 
 ---
@@ -29,6 +29,10 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [context-management](context-management/SKILL.md) | JICM context monitoring, analysis, and optimization | /context-budget, /context-checkpoint, /smart-compact |
 | [self-improvement](self-improvement/SKILL.md) | AC-05/06/07/08 orchestration for continuous improvement | /self-improve, /reflect, /evolve, /research, /maintain |
 | [validation](validation/SKILL.md) | Tooling, infrastructure, and design validation | /tooling-health, /health-report, /validate-selection, /design-review |
+| [filesystem-ops](filesystem-ops/SKILL.md) | File/directory operations via built-in tools (replaces filesystem MCP) | N/A |
+| [git-ops](git-ops/SKILL.md) | Git operations via Bash commands (replaces git MCP) | N/A |
+| [web-fetch](web-fetch/SKILL.md) | Web content retrieval via WebFetch/WebSearch (replaces fetch MCP) | N/A |
+| [weather](weather/SKILL.md) | Weather information via wttr.in API | N/A |
 
 ---
 

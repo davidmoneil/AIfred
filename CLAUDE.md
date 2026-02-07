@@ -102,7 +102,7 @@ Full lists: `.claude/commands/README.md`, `.claude/skills/_index.md`
 ### JICM (Context Management)
 | File | Purpose |
 |------|---------|
-| `.claude/scripts/jarvis-watcher.sh` | Context monitor (v5.8.0), runs in tmux `jarvis:1` |
+| `.claude/scripts/jarvis-watcher.sh` | Context monitor (v5.8.1), runs in tmux `jarvis:1` |
 | `.claude/agents/compression-agent.md` | Compression instructions (v5.8.0) |
 | `.claude/commands/intelligent-compress.md` | Compression orchestration |
 | `.claude/hooks/session-start.sh` | Session restoration, debounce, idle-hands |
@@ -167,4 +167,4 @@ Detailed docs load from subdirectories when needed:
 
 ---
 
-*Jarvis v5.8.0 — Autonomous Archon (JICM Redesign)*
+*Jarvis v5.8.1 — Autonomous Archon (MCP Decomposition + Session Start Redesign)*

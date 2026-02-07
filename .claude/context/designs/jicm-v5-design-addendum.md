@@ -1352,4 +1352,48 @@ This constraint was validated on 2026-02-04:
 - **jicm-v5-resume-mechanisms.md** (detailed submission handling)
 - **lessons/tmux-self-injection-limitation.md** (critical constraint documentation)
 
-*JICM v5 Design Addendum — Created 2026-02-01 | Revised 2026-02-04*
+---
+
+## JICM-EMERGENCY: Expected Behavior Documentation
+
+**Added**: 2026-02-07
+
+The `[JICM-EMERGENCY]` log entry fires when the B2 FIX (`post_clear_unhandled`) activates. This is the **intended safety net**, not a bug.
+
+### When It Fires
+
+The emergency triggers when the watcher detects that:
+1. A `/clear` was successfully sent (state transitioned to `cleared`)
+2. Context percentage dropped below 30% (clear confirmed)
+3. State moved to `monitoring`
+4. BUT the session-start hook failed to create an `.idle-hands-active` flag
+5. AND Jarvis appears idle (not generating a response)
+
+### Why It's Self-Resolving
+
+The emergency handler sends a direct wake-up prompt to Jarvis. Jarvis then:
+1. Reads the compressed context files (`.compressed-context-ready.md`)
+2. Reads session-state.md for work continuity
+3. Resumes work from the preserved state
+
+No manual intervention is needed. The log entry is informational.
+
+### Log Pattern
+
+```
+[JICM-EMERGENCY] post_clear_unhandled: Hook failed to create idle-hands flag
+[JICM-EMERGENCY] Sending direct wake-up prompt
+```
+
+### Prevention
+
+The emergency fires less frequently when:
+- The session-start hook runs successfully after `/clear`
+- The hook creates `.idle-hands-active` with `mode: jicm_resume`
+- The watcher's idle-hands handler picks up the flag before the critical-state detector
+
+The B2 FIX is the correct fallback when hooks fail. It should NOT be suppressed.
+
+---
+
+*JICM v5 Design Addendum — Created 2026-02-01 | Revised 2026-02-07*

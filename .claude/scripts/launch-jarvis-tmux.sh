@@ -30,9 +30,11 @@ WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jarvis-watcher.sh"
 
 # Parse arguments
 ITERM2_MODE=false
+FRESH_MODE=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --iterm2|-i) ITERM2_MODE=true; shift ;;
+        --fresh|-f) FRESH_MODE=true; shift ;;
         *) shift ;;
     esac
 done
@@ -114,12 +116,24 @@ export TERM=xterm-256color
 # - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 15K (affects effective context budget)
 # Note: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE left at default (~95%, effective ~85%)
 #       JICM triggers at 55% with 30% headroom before auto-compact
-CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000"
+# Determine session type
+if [[ "$FRESH_MODE" == "true" ]]; then
+    JARVIS_SESSION_TYPE="fresh"
+else
+    JARVIS_SESSION_TYPE="continue"
+fi
+
+CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
+CLAUDE_CMD="claude --dangerously-skip-permissions --verbose --debug --debug-file /Users/aircannon/Claude/Jarvis/.claude/logs/debug.log"
+if [[ "$FRESH_MODE" != "true" ]]; then
+    CLAUDE_CMD="$CLAUDE_CMD --continue"
+fi
+
 "$TMUX_BIN" new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" \
-    "export $CLAUDE_ENV && claude --dangerously-skip-permissions --verbose --debug --debug-file /Users/aircannon/Claude/Jarvis/.claude/logs/debug.log --continue" 
+    "export $CLAUDE_ENV && $CLAUDE_CMD"
 
 # Give Claude a moment to start
 sleep 2
@@ -134,9 +148,9 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     export CLAUDE_PROJECT_DIR="$PROJECT_DIR"
 
     # Create watcher window (window 1, detached so we stay on window 0)
-    # JICM v5.7.0: threshold=55 (accounts for queuing delay before compression starts)
+    # JICM v5.7.0: threshold=70 (accounts for queuing delay before compression starts)
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5 --session-type continue; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 70 --interval 10 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience

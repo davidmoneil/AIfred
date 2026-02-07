@@ -763,8 +763,9 @@ Example guidance document (.claude/context/patterns/built-in-tool-selection.md):
 - DON'T use Write when Edit would work — loses undo context
 
 ## Bash vs Specialized Tools
-- Git operations: Prefer mcp__git tools over Bash git commands
-- File operations: Prefer Read/Write/Edit over cat/echo/sed
+- Git operations: Prefer Bash(git) commands — see `git-ops` skill (git MCP decomposed)
+- File operations: Prefer Read/Write/Edit over cat/echo/sed — see `filesystem-ops` skill
+- Web content: Prefer WebFetch/WebSearch — see `web-fetch` skill (fetch MCP decomposed)
 - Bash: Reserved for actual terminal operations, builds, tests
 
 ## Task Tool Selection
