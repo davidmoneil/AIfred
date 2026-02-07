@@ -23,6 +23,7 @@
 .claude/context/.idle-hands-*
 .claude/context/.clear-sent.signal
 .claude/context/.continuation-injected.signal
+.claude/context/.compression-in-progress
 
 # Compressed context (restored on /clear, not persisted)
 .claude/context/.compressed-context-ready.md
@@ -70,3 +71,8 @@ scripts/config.sh
 *.credentials
 *.secret
 .claude/ralph-loop.local.md
+
+# Screenshots (large binary files — use external storage for images)
+docs/reports/*.png
+projects/mtg-card-sales/*.png
+projects/mtg-card-sales/archived/*.png
