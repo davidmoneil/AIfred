@@ -8,6 +8,78 @@
 
 ## 2026
 
+### February
+
+### 2026-02-06 — tmux send-keys Multi-Line String Corruption
+
+**What I Did Wrong**: Used multi-line strings with `tmux send-keys -l`, which injected literal newlines into the TUI input buffer, causing partial command submission.
+
+**How I Noticed**: `/clear` command was sitting in the input buffer with embedded newlines instead of executing.
+
+**Correction Applied**: All `-l` strings must be single-line. Canonical pattern: `send-keys -l 'single line'` + `sleep 0.1` + `send-keys C-m`.
+
+**Prevention**: Never use multi-line strings with tmux `-l` flag. Condense to single-line with em dashes or semicolons.
+
+**Related**: jarvis-watcher.sh v5.6.1, MEMORY.md
+
+---
+
+### 2026-02-06 — tmux Command Delivery During Active Generation
+
+**What I Did Wrong**: Sent commands via `tmux send-keys` while Claude Code was actively generating a response — commands were lost.
+
+**How I Noticed**: Watcher-sent `/clear` and `/compact` commands disappeared without effect.
+
+**Correction Applied**: Added `wait_for_idle_brief(30)` — polls `is_claude_busy()` every 2s, max 30s wait before sending.
+
+**Prevention**: Always check if TUI is idle before injecting commands via tmux.
+
+**Related**: jarvis-watcher.sh v5.6.1, MEMORY.md
+
+---
+
+### 2026-02-05 — Claude Code Lockout Ceiling at 78.5%
+
+**What I Did Wrong**: Set JICM threshold at 80%, above Claude Code's internal lockout ceiling where it refuses ALL operations including /compact.
+
+**How I Noticed**: "Context limit reached" at ~79%, `/compact` failed with "Conversation too long".
+
+**Correction Applied**: Lockout% = (200K - 15K - 28K) / 200K = 78.5%. All thresholds set below this: JICM at 55%, emergency at 73%.
+
+**Prevention**: Calculate lockout ceiling first: `1 - (output_reserve + compact_buffer) / context_window`.
+
+**Related**: jarvis-watcher.sh v5.5.0, MEMORY.md
+
+---
+
+### 2026-02-05 — TUI Token Extraction Pane Buffer Bug
+
+**What I Did Wrong**: Searched entire tmux pane buffer (including scroll history) for token count patterns, matching stale output from old commands.
+
+**How I Noticed**: Log showed "Data inconsistency detected: 181417 tokens at 2%" — old token count from bash output, not current statusline.
+
+**Correction Applied**: Restrict search to last 3 lines of pane (`tail -3` before grep) to capture only the statusline area.
+
+**Prevention**: When parsing TUI content, always restrict to relevant area before pattern matching.
+
+**Related**: jarvis-watcher.sh v5.4.3, MEMORY.md
+
+---
+
+### 2026-02-05 — Bash 3.2 `set -e` Exit on Command Substitution
+
+**What I Did Wrong**: `detect_critical_state()` returned non-zero, causing `set -e` to kill the script when called via `result=$(detect_critical_state)`.
+
+**How I Noticed**: Watcher crashed after first iteration with no error message.
+
+**Correction Applied**: All functions called via `$(...)` must always `return 0`. Use output string to indicate status.
+
+**Prevention**: In bash 3.2 (macOS default), command substitution triggers `set -e` on non-zero return. Always return 0 from functions used in `$(...)`.
+
+**Related**: jarvis-watcher.sh v5.3.2, MEMORY.md
+
+---
+
 ### January
 
 ### 2026-01-20 — PRD-V5 Self-Improvement Validation (4 Corrections)

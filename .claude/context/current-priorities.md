@@ -82,7 +82,7 @@ Two-level review system for PR milestones:
 ### Phase 6: Autonomy, Self-Evolution & Benchmark Gates (PR-11 → PR-14)
 **Status**: Design Complete — Ready for Implementation
 
-**Design Document**: `projects/project-aion/ideas/phase-6-autonomy-design.md`
+**Design Document**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
 
 All specifications created (PR-11 through PR-14):
 - PR-11: Autonomic Component Framework (6 sub-PRs) ✅
