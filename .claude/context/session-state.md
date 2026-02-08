@@ -8,14 +8,14 @@
 
 ## Current Work Status
 
-**Status**: Active — Tool Reconstruction & Marketplace Extraction
+**Status**: Active — Hook Optimization & Backlog Progress
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 4d93315 (pushed to origin/Project_Aion)
+**Last Commit**: a1768b4 (pushed to origin/Project_Aion)
 
 **Current Blocker**: None
 
-**Current Work**: P1 backend validation (6/8 done), marketplace research (P3 #16-17), pattern extraction (observation masking + TDD enforcement). Patterns 48→50.
+**Current Work**: Hook matcher optimization complete (~70% fewer processes). Serena MCP research in progress (background agent). 3/5 marketplace items researched. Patterns 50.
 
 ---
 
@@ -103,6 +103,22 @@ Previous session histories have been archived. For full details, see:
 - Final session state update and commit
 - **Commit**: (this commit)
 
+**Phase 8 — x-ops Consolidation (2026-02-08)**
+- 4 router skills: doc-ops, self-ops, mcp-ops, autonom-ops
+- capability-map.yaml: 21→10 discoverable skills
+- 26 total skill dirs (10 discoverable + 15 absorbed + 1 example)
+- **Commit**: c618123
+
+**Phase 9 — Tool Reconstruction & Marketplace Research (2026-02-08)**
+Context windows 4-5 (post-JICM compression):
+- P1 backend validation: 6/8 done (arXiv URL fixed http→https, Perplexity key confirmed)
+- Marketplace research: 3 of 5 completed (#16 context-engineering, #17 night-market, #18 ai-research-skills)
+- Pattern extraction: observation-masking + TDD enforcement (patterns 48→50)
+- Skill descriptions CSV rewritten (22→26 entries)
+- Hook infrastructure analysis and matcher optimization (~70% fewer hook processes)
+- Serena MCP research in progress
+- **Commits**: 7f1e51c, 4e70caf, 4d93315, 3a11239, a1768b4
+
 ### Key Decisions (This Session)
 1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs
 2. **4-tier memory hierarchy**: dynamic KG / static KG / semantic RAG / documentary
@@ -111,6 +127,8 @@ Previous session histories have been archived. For full details, see:
 5. **Auto-provisioned MCPs**: Cannot unload; shadow via skills, Tool Search mitigates
 6. **Self-constitution**: Conditionally approved, JICM thresholds corrected, directory restructuring deferred
 7. **Pattern audit**: 6 orphaned, 3/5 mandatory gaps fixed in manifest router
+8. **Hook matchers**: Anchored regex matchers on all PreToolUse/PostToolUse hooks → ~70% fewer processes
+9. **ai-research-skills**: Low priority now (needs GPU infra), deferred to Mac Studio phase
 
 ---
 
@@ -123,4 +141,4 @@ Previous session histories have been archived. For full details, see:
 
 ---
 
-*Session state updated 2026-02-08 02:10 MST*
+*Session state updated 2026-02-08 02:45 MST*

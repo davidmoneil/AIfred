@@ -92,12 +92,13 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## Up Next
 
 ### Tool Reconstruction Backlog
-**Status**: 43 items prioritized across 5 tiers
-- P1: 8 in-progress reconstructions (complete current x-ops)
-- P2: 7 high-value MCPs to install
-- P3: 5 marketplace extractions
-- P4: 6 x-ops consolidations
+**Status**: 43 items, significant progress
+- P1: 6/8 DONE (backends validated, arXiv URL fixed, remaining: GPTResearcher + Chroma/db-ops)
+- P2: 7 high-value MCPs (Serena research in progress, claude-code-docs evaluated)
+- P3: 3/5 marketplace extractions researched, 2 patterns extracted (observation-masking, TDD)
+- P4: 4/6 x-ops consolidations DONE (self-ops, doc-ops, mcp-ops, autonom-ops)
 - P5: 5 future (infrastructure needed)
+- **Hook optimization**: Matchers added, ~70% fewer processes per tool call
 - Backlog: `.claude/context/reference/tool-reconstruction-backlog.md`
 
 ### Phase 6: Autonomy, Self-Evolution & Benchmark Gates

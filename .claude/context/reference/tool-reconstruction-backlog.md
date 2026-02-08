@@ -46,7 +46,7 @@ From marketplace report Tier 1 + GitHub assessment. Install → Study → Rebuil
 
 | # | Tool | Source | Target Skill | Value | Effort |
 |---|------|--------|-------------|-------|--------|
-| 9 | Serena | oraios/serena | code-ops | V/E=4.5 (highest) | 30 min install |
+| 9 | Serena | oraios/serena | code-ops | V/E=4.5 (highest) | ⏸ DEFERRED — memory leak (#944), tool decay (#340). Monitor for stability. Report: `research/serena-mcp-analysis.md` |
 | 10 | Vizro + vizro-mcp | mckinsey/vizro | data-sci-ops | V/E=2.67 | 1 hr install |
 | 11 | ElevenLabs MCP | elevenlabs | audio-ops | V/E=3.5 | 20 min |
 | 12 | claude-code-docs | ericbuess | reference | Optimal as-is | 10 min |
