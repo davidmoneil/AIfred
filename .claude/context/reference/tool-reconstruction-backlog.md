@@ -66,12 +66,12 @@ Cherry-pick 5-10 skills from large libraries. Don't wholesale install.
 |---|--------|-------------------|--------|--------|
 | 16 | context-engineering-marketplace (13 skills) | context-compression, context-optimization, memory-systems, context-degradation, filesystem-context | context-management, knowledge-ops | ✅ RESEARCHED — report at `.claude/context/research/context-engineering-marketplace-analysis.md` |
 | 17 | claude-night-market (126 skills, 16 plugins) | imbue (TDD hooks), attune (reversibility-scored decisions), memory-palace (tiered KG), conserve (context optimization), workflow-improvement (self-optimization) | self-ops, code-ops | ✅ RESEARCHED — key patterns documented |
-| 18 | ai-research-skills (83 skills) | 5-10 best architecture/safety/training skills | research-ops | Pending |
+| 18 | ai-research-skills (83 skills) | 5-10 best architecture/safety/training skills | research-ops | ✅ RESEARCHED — report at `.claude/context/research/ai-research-skills-analysis.md`. LOW priority now (needs GPU infra). |
 | 19 | omc patterns (28 agents, 37 skills) | LSP integration, execution modes | Study only | Pending |
 | 20 | supabase-agent-skills | PostgreSQL best practices | db-ops | Pending |
 
-**Status**: 2/5 researched. Key extraction candidates identified.
-**Next**: Extract Observation Masking pattern (#16) and imbue TDD hook (#17) into existing skills.
+**Status**: 3/5 researched. Key extraction candidates identified. Observation Masking + TDD patterns already extracted.
+**Next**: #19 (omc patterns) and #20 (supabase-agent-skills) — study-only, lower priority.
 
 ---
 

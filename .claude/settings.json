@@ -65,7 +65,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -90,7 +90,30 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/secret-scanner.js"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "^Read$|^Write$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/credential-guard.js"
+          }
+        ]
+      },
+      {
+        "matcher": "^Write$|^Edit$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/workspace-guard.js"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/context-injector.js"
@@ -139,20 +162,17 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "",
+        "matcher": "^Bash$|^mcp__git__git_commit$",
         "hooks": [
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/cross-project-commit-tracker.js"
-          },
-          {
-            "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/selection-audit.js"
-          },
-          {
-            "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/milestone-detector.js"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "^Bash$",
+        "hooks": [
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/docker-health-monitor.js"
@@ -164,11 +184,39 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/docker-post-op-health.js"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "^(Task|Skill|WebSearch|WebFetch|EnterPlanMode)$|^mcp__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/selection-audit.js"
+          }
+        ]
+      },
+      {
+        "matcher": "^TodoWrite$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/milestone-detector.js"
+          }
+        ]
+      },
+      {
+        "matcher": "^Read$",
+        "hooks": [
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/file-access-tracker.js"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "^mcp__",
+        "hooks": [
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/memory-maintenance.js"
