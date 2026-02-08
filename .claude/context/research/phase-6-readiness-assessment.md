@@ -18,15 +18,15 @@ Phase 6 is significantly more complete than the PR plan suggests. All 9 AC compo
 
 | AC | Name | State File Status | Spec Completeness | Key Artifacts | Real Status |
 |----|------|-------------------|-------------------|---------------|-------------|
-| AC-01 | Self-Launch | implemented | Full | hooks, config, startup protocol | **ACTIVE** (runs every session) |
+| AC-01 | Self-Launch | ~~implemented~~ → active | Full | hooks, config, startup protocol | **ACTIVE** (state synced 2026-02-08) |
 | AC-02 | Wiggum Loop | implemented | Full | loop-state.json, pattern, drift detector | **ACTIVE** (used extensively) |
 | AC-03 | Milestone Review | ~~implementing~~ → active | Full (7/9 checklist) | 2 agents, criteria, template, live report | **ACTIVE** (state synced this session) |
-| AC-04 | JICM | implemented | Full | v5.8.2 watcher, compression agent, hooks | **ACTIVE** (runs every session) |
+| AC-04 | JICM | ~~implemented~~ → active | Full | v5.8.2 watcher, compression agent, hooks | **ACTIVE** (state synced 2026-02-08) |
 | AC-05 | Self-Reflection | implementing | Full | corrections, lessons dir, /reflect cmd | **NEAR-ACTIVE** (needs trigger test) |
 | AC-06 | Self-Evolution | implementing | Full | evolution queue, /evolve cmd | **NEAR-ACTIVE** (needs trigger test) |
 | AC-07 | R&D Cycles | implementing | Full | research agenda, /research cmd | **NEAR-ACTIVE** (needs trigger test) |
 | AC-08 | Maintenance | implementing | Full | /maintain cmd, reports dir | **NEAR-ACTIVE** (needs trigger test) |
-| AC-09 | Session Completion | implementing | Full | /end-session cmd | **NEAR-ACTIVE** (needs trigger test) |
+| AC-09 | Session Completion | ~~implementing~~ → active | Full | /end-session cmd, telemetry wired | **ACTIVE** (operationalized 2026-02-08) |
 
 ---
 
@@ -47,7 +47,7 @@ Phase 6 is significantly more complete than the PR plan suggests. All 9 AC compo
 | PR | Component | What's Missing | Effort |
 |----|-----------|----------------|--------|
 | PR-12.5 | Self-Reflection | Trigger testing, metrics emission | ~1 hr |
-| PR-12.9 | Session Completion | Trigger testing, metrics emission | ~30 min |
+| PR-12.9 | Session Completion | ~~Trigger testing, metrics emission~~ **DONE** (2026-02-08) | 0 hr |
 
 ### NEEDS IMPLEMENTATION WORK
 

@@ -102,10 +102,11 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 - Backlog: `.claude/context/reference/tool-reconstruction-backlog.md`
 
 ### Phase 6: Autonomy, Self-Evolution & Benchmark Gates
-**Status**: More complete than previously assessed — readiness report created
+**Status**: 6 of 10 PR-12 sub-PRs complete — readiness report updated
 - PR-11 (framework): COMPLETE
-- PR-12.1-12.4: COMPLETE (AC-01, AC-02, AC-03, AC-04 all active)
-- PR-12.5, PR-12.9: NEAR-COMPLETE (need operationalization: trigger testing, metrics wiring)
+- PR-12.1-12.4: COMPLETE (AC-01, AC-02, AC-03, AC-04 all active, state files synced)
+- PR-12.5: NEAR-COMPLETE (need operationalization: trigger testing, metrics wiring ~1 hr)
+- **PR-12.9: COMPLETE** (AC-09 operationalized 2026-02-08: trigger tested, telemetry wired)
 - PR-12.6-12.8, PR-12.10: Need implementation work (~7 hrs total)
 - PR-13: Monitoring/benchmarks — pending (~4-6 hrs)
 - **Assessment**: `.claude/context/research/phase-6-readiness-assessment.md`

@@ -1,6 +1,6 @@
 ---
 description: Clean session exit with documentation
-allowed-tools: Read, Write, Edit, Bash(git:*)
+allowed-tools: Read, Write, Edit, Bash(git:*), Bash(echo:*), Bash(node:*), Bash(rm:*), Bash(date:*), Bash(wc:*), Bash(ls:*), Bash(mkdir:*)
 ---
 
 # End Session
@@ -25,6 +25,16 @@ Available options:
 
 **If user chooses an option**: Run the selected command, then return here to complete exit.
 **If user skips or presses Enter**: Proceed to exit procedure below.
+
+---
+
+## AC-09 Telemetry: Session Completion Start
+
+Emit telemetry event to signal session completion has started:
+
+```bash
+echo '{"component":"AC-09","event_type":"session_end","data":{"phase":"start","trigger":"end-session-command"}}' | node .claude/hooks/telemetry-emitter.js
+```
 
 ---
 
@@ -349,4 +359,29 @@ Next Time:
 
 ---
 
-*Jarvis v2.2.0 — Project Aion Master Archon (Milestone Documentation Gate enforcement added 2026-01-23)*
+## AC-09 Telemetry: Session Completion End
+
+After the closing salutation, emit the completion telemetry and update the AC-09 state file:
+
+```bash
+# Emit session completion telemetry
+echo '{"component":"AC-09","event_type":"session_end","data":{"phase":"complete","steps_completed":12}}' | node .claude/hooks/telemetry-emitter.js
+
+# Update AC-09 state file with session metrics
+node -e "
+const fs = require('fs');
+const state = JSON.parse(fs.readFileSync('.claude/state/components/AC-09-session.json', 'utf8'));
+state.metrics.total_sessions = (state.metrics.total_sessions || 0) + 1;
+state.metrics.clean_exits = (state.metrics.clean_exits || 0) + 1;
+state.current_session.started = null;
+state.current_session.work_completed = [];
+state.current_session.commits_made = 0;
+state.last_modified = new Date().toISOString();
+fs.writeFileSync('.claude/state/components/AC-09-session.json', JSON.stringify(state, null, 2) + '\n');
+console.log('AC-09 state updated: sessions=' + state.metrics.total_sessions + ', clean_exits=' + state.metrics.clean_exits);
+"
+```
+
+---
+
+*Jarvis v5.9.0 — Project Aion Master Archon (AC-09 telemetry wired 2026-02-08)*

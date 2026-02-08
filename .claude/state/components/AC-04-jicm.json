@@ -1,10 +1,10 @@
 {
   "component": "AC-04",
   "name": "jicm",
-  "version": "5.0.0",
-  "status": "implemented",
+  "version": "5.8.2",
+  "status": "active",
   "created": "2026-01-17T00:00:00.000Z",
-  "last_modified": "2026-02-04T00:00:00.000Z",
+  "last_modified": "2026-02-08T10:00:00.000Z",
   "specification": {
     "authoritative_doc": ".claude/context/designs/jicm-v5-design-addendum.md",
     "supporting_docs": [
@@ -18,7 +18,11 @@
     ]
   },
   "v5_design": {
-    "threshold": "50%",
+    "thresholds": {
+      "compress": "65%",
+      "emergency": "73%",
+      "lockout_ceiling": "78.5%"
+    },
     "compression_target": "10k-30k tokens",
     "mechanisms": ["hook_injection", "idle_hands_monitor"],
     "idle_hands_modes": ["jicm_resume", "long_idle", "workflow_chain", "unsubmitted_text"],
@@ -35,8 +39,9 @@
     "hook_changes": true,
     "watcher_changes": true,
     "compression_agent_updated": true,
-    "integration_tested": false,
-    "full_cycle_tested": false
+    "triggers_tested": true,
+    "integration_tested": true,
+    "metrics_emission": true
   },
   "validation_checklist": {
     "v5_spec_complete": true,
@@ -46,7 +51,10 @@
     "hook_implemented": true,
     "watcher_implemented": true,
     "submission_methods_tested": true,
-    "full_cycle_validated": false
+    "full_cycle_validated": true,
+    "triggers_tested": true,
+    "metrics_emission_working": true,
+    "documentation_updated": true
   },
   "dependencies": {
     "session_start_hook": {
@@ -72,15 +80,14 @@
   },
   "current_session": {
     "threshold_status": "HEALTHY",
-    "estimated_tokens": null,
-    "estimated_percent": null,
-    "checkpoints_created": 0,
-    "compression_events": 0
+    "checkpoints_created": 2,
+    "compression_events": 2,
+    "context_windows_used": 7
   },
   "metrics": {
-    "total_checkpoints": 0,
-    "total_compressions": 0,
-    "liftover_success_rate": null,
+    "total_checkpoints": 2,
+    "total_compressions": 2,
+    "liftover_success_rate": 1.0,
     "avg_checkpoint_size_tokens": null
   },
   "testing": {
@@ -89,7 +96,7 @@
     "submission_method_verified": "C-m, Enter, standalone CR (as separate call)",
     "hypothesis_tested": true,
     "external_execution_validated": true,
-    "full_cycle_tested": false,
-    "notes": "Submission patterns fully validated 2026-02-04. Key finding: CR must be separate call, not embedded in -l string. Self-injection fails. Experiment archived: projects/project-aion/experiments/tmux-submission-2026-02-04/"
+    "full_cycle_tested": true,
+    "notes": "Full JICM cycle validated across this session: 7 context windows, 2 compression checkpoints, clean liftover each time. Thresholds 65/73/78.5% confirmed operational. State synced 2026-02-08."
   }
 }

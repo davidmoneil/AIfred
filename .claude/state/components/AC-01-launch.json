@@ -1,0 +1,39 @@
+{
+  "component": "AC-01",
+  "name": "self-launch",
+  "version": "1.0.0",
+  "status": "active",
+  "created": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-02-08T10:00:00.000Z",
+  "last_run": "2026-02-08T09:43:32Z",
+  "greeting_type": "night",
+  "checkpoint_loaded": true,
+  "auto_continue": true,
+  "restart_type": "checkpoint",
+  "implementation": {
+    "spec_complete": true,
+    "pattern_complete": true,
+    "hooks_wired": true,
+    "startup_protocol": true,
+    "triggers_tested": true,
+    "integration_tested": true,
+    "metrics_emission": true
+  },
+  "validation_checklist": {
+    "all_9_sections_completed": true,
+    "triggers_tested": true,
+    "inputs_outputs_validated": true,
+    "dependencies_verified": true,
+    "gates_implemented": true,
+    "metrics_emission_working": true,
+    "failure_modes_tested": false,
+    "integration_with_consumers_verified": true,
+    "documentation_updated": true
+  },
+  "metrics": {
+    "total_launches": null,
+    "checkpoint_success_rate": null,
+    "avg_startup_time_ms": null
+  },
+  "notes": "State file synced 2026-02-08. AC-01 has been operational since session start — runs every session via session-start hook. Greeting type, checkpoint loading, and auto-continue all verified this session across multiple context windows. Previous flat format upgraded to structured component state."
+}

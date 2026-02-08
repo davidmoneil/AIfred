@@ -477,11 +477,11 @@ If user declines:
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (manual command, phrase detection)
-- [ ] Inputs/outputs validated
+- [x] Triggers tested (manual command /end-session verified 2026-02-08)
+- [x] Inputs/outputs validated (session-state.md, git status, todo state)
 - [x] Dependencies verified (git, file system)
-- [ ] Gates implemented (configurable push)
-- [x] Metrics emission working (telemetry-emitter.js integrated)
+- [x] Gates implemented (configurable push via auto_push setting)
+- [x] Metrics emission working (telemetry-emitter.js wired, CLI test passed 2026-02-08)
 - [ ] Failure modes tested (no git, no MCP)
 - [ ] Integration with consumers verified (AC-01 reads checkpoint)
 - [x] Documentation updated
