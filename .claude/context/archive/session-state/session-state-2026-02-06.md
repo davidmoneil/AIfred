@@ -308,4 +308,4 @@ Commits:
 3. **Test validation**: Verify native commands work correctly
 
 ### Plan Reference
-Full migration plan: `.claude/plans/nested-floating-token.md`
+Full migration plan: `.claude/plans/monitoring-benchmarking-plan.md`

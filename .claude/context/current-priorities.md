@@ -60,7 +60,7 @@ Two-level review system for PR milestones:
 
 ### Command-to-Skills Migration (v4.1.0)
 **Status**: COMPLETE
-**Plan**: `.claude/plans/nested-floating-token.md`
+**Plan**: `.claude/plans/monitoring-benchmarking-plan.md`
 
 **Completed:**
 - [x] Phase 1: Delete 4 conflicting commands (help, status, compact, clear)

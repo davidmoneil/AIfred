@@ -33,6 +33,8 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [git-ops](git-ops/SKILL.md) | Git operations via Bash commands (replaces git MCP) | N/A |
 | [web-fetch](web-fetch/SKILL.md) | Web content retrieval via WebFetch/WebSearch (replaces fetch MCP) | N/A |
 | [weather](weather/SKILL.md) | Weather information via wttr.in API | N/A |
+| [research-ops](research-ops/SKILL.md) | Multi-source research — web, academic, financial, AI-augmented | N/A |
+| [knowledge-ops](knowledge-ops/SKILL.md) | Knowledge graph, memory, reflection, vector search | N/A |
 
 ---
 

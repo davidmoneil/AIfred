@@ -82,6 +82,18 @@ skills:
     when: "Validate MCP installation and configuration"
     file: .claude/skills/mcp-validation/SKILL.md
 
+  - id: skill.research-ops
+    when: "Multi-source research — web, academic, financial, AI-augmented"
+    tools: [WebSearch, WebFetch, "Bash(curl)"]
+    replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher MCPs
+    file: .claude/skills/research-ops/SKILL.md
+
+  - id: skill.knowledge-ops
+    when: "Knowledge graph, memory, reflection, vector search"
+    tools: [Read, Write, Grep, "Bash(jq)", ToolSearch]
+    replaces: memory MCP (shadow), lotus-wisdom MCP
+    file: .claude/skills/knowledge-ops/SKILL.md
+
   - id: skill.plugin-decompose
     when: "Analyze and decompose plugins for integration"
     file: .claude/skills/plugin-decompose/SKILL.md
