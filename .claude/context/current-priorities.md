@@ -92,18 +92,24 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 ## Up Next
 
 ### Tool Reconstruction Backlog
-**Status**: 43 items, significant progress
-- P1: 6/8 DONE (backends validated, arXiv URL fixed, remaining: GPTResearcher + Chroma/db-ops)
-- P2: 7 high-value MCPs (Serena research in progress, claude-code-docs evaluated)
-- P3: 3/5 marketplace extractions researched, 2 patterns extracted (observation-masking, TDD)
+**Status**: 43 items, major progress across all tiers
+- P1: 6/8 DONE (remaining: GPTResearcher + Chroma/db-ops — both blocked)
+- P2: 7 high-value MCPs (Serena DEFERRED — stability issues)
+- P3: **5/5 RESEARCHED** (omc patterns + supabase-agent-skills completed, 6 patterns identified)
 - P4: 4/6 x-ops consolidations DONE (self-ops, doc-ops, mcp-ops, autonom-ops)
 - P5: 5 future (infrastructure needed)
 - **Hook optimization**: Matchers added, ~70% fewer processes per tool call
 - Backlog: `.claude/context/reference/tool-reconstruction-backlog.md`
 
 ### Phase 6: Autonomy, Self-Evolution & Benchmark Gates
-**Status**: Design Complete — Ready for Implementation
-**Design**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
+**Status**: More complete than previously assessed — readiness report created
+- PR-11 (framework): COMPLETE
+- PR-12.1-12.4: COMPLETE (AC-01, AC-02, AC-03, AC-04 all active)
+- PR-12.5, PR-12.9: NEAR-COMPLETE (need operationalization: trigger testing, metrics wiring)
+- PR-12.6-12.8, PR-12.10: Need implementation work (~7 hrs total)
+- PR-13: Monitoring/benchmarks — pending (~4-6 hrs)
+- **Assessment**: `.claude/context/research/phase-6-readiness-assessment.md`
+- **Design**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
 
 ---
 

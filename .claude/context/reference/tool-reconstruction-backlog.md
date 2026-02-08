@@ -13,7 +13,7 @@
 |----------|-------|--------|
 | MCP Reconstruction (in-progress) | 8 | 6/8 DONE (templates + keys validated) |
 | New MCP → Skill (planned) | 19 | Planned (MCPs not yet installed) |
-| Marketplace Extraction | 10 | Prioritized for install/study/extract |
+| Marketplace Extraction | 10 | 5/5 RESEARCHED (patterns identified) |
 | x-ops Consolidation | 6 | 4/6 DONE (self-ops, doc-ops, mcp-ops, autonom-ops) |
 | **Total actionable items** | **43** | |
 
@@ -67,11 +67,11 @@ Cherry-pick 5-10 skills from large libraries. Don't wholesale install.
 | 16 | context-engineering-marketplace (13 skills) | context-compression, context-optimization, memory-systems, context-degradation, filesystem-context | context-management, knowledge-ops | ✅ RESEARCHED — report at `.claude/context/research/context-engineering-marketplace-analysis.md` |
 | 17 | claude-night-market (126 skills, 16 plugins) | imbue (TDD hooks), attune (reversibility-scored decisions), memory-palace (tiered KG), conserve (context optimization), workflow-improvement (self-optimization) | self-ops, code-ops | ✅ RESEARCHED — key patterns documented |
 | 18 | ai-research-skills (83 skills) | 5-10 best architecture/safety/training skills | research-ops | ✅ RESEARCHED — report at `.claude/context/research/ai-research-skills-analysis.md`. LOW priority now (needs GPU infra). |
-| 19 | omc patterns (28 agents, 37 skills) | LSP integration, execution modes | Study only | Pending |
-| 20 | supabase-agent-skills | PostgreSQL best practices | db-ops | Pending |
+| 19 | omc patterns (28 agents, 37 skills) | Model tier routing, skill composition, hook consolidation | self-ops, autonom-ops | ✅ RESEARCHED — report at `.claude/context/research/omc-patterns-analysis.md`. 4 patterns extractable (model routing, skill composition, hook clusters, auto-learner). |
+| 20 | supabase-agent-skills | PostgreSQL best practices | db-ops | ✅ RESEARCHED — report at `.claude/context/research/supabase-agent-skills-analysis.md`. Progressive disclosure + DB-specific sub-modules pattern. |
 
-**Status**: 3/5 researched. Key extraction candidates identified. Observation Masking + TDD patterns already extracted.
-**Next**: #19 (omc patterns) and #20 (supabase-agent-skills) — study-only, lower priority.
+**Status**: 5/5 RESEARCHED. All marketplace extractions complete. 2 patterns already extracted (observation-masking, TDD). 4 more identified from OMC (model routing, skill composition, hook clusters, auto-learner).
+**Next**: Extract identified patterns into Jarvis codebase when implementing related features.
 
 ---
 
