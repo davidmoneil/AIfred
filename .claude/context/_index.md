@@ -53,7 +53,7 @@ Core files for session continuity:
 
 ### Patterns (Behavioral Rules)
 
-How Jarvis behaves — 39 patterns organized by category.
+How Jarvis behaves — 48 patterns organized by category.
 
 **Index**: [patterns/_index.md](patterns/_index.md)
 
@@ -87,7 +87,7 @@ How to choose and use tools:
 
 | File | Purpose |
 |------|---------|
-| `capability-matrix.md` | Task → tool selection |
+| `capability-map.yaml` | Manifest router (authoritative tool selection) |
 | `overlap-analysis.md` | Tool conflict resolution |
 | `mcp-installation.md` | MCP setup guide |
 | `memory-usage.md` | Memory MCP guidelines |

@@ -2,191 +2,97 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-08
+**Version**: v5.9.0
 
 ---
 
 ## In Progress
 
-*(No active work items — ready for next priority)*
+### Master Wiggum Loop — Iterations 3-5 (2026-02-08)
+**Status**: IN PROGRESS — Iteration 3 active
+**Branch**: Project_Aion
+**Commits**: c2a8159 (Iteration 2), 4ac6cc5 (Iteration 1)
+
+Verification, tightening, and polish iterations:
+- [ ] IT3: Update current-priorities.md (this file)
+- [ ] IT3: Fix inconsistencies from verification agents
+- [ ] IT3: Tighten psyche topology counts
+- [ ] IT3: Commit Iteration 3
+- [ ] IT4-5: Further refinement passes
 
 ---
 
-## Recently Completed
+## Recently Completed (This Session)
 
-### PR-12.3: Independent Milestone Review + v2.3.0 (2026-02-06)
-**Status**: COMPLETE — committed at `32cb06b`
-**Version**: v2.3.0
+### Lean Core v5.9.0 + MCP Decomposition (2026-02-07/08)
 
-Two-level review system for PR milestones:
-- [x] Create `code-review` agent (`.claude/agents/code-review.md`)
-- [x] Create `project-manager` agent (`.claude/agents/project-manager.md`)
-- [x] Design review criteria files (`review-criteria/defaults.yaml`, `milestone-completion-gate.yaml`)
-- [x] Implement large review segmentation (in `milestone-review-pattern.md` Section 4.3)
-- [x] Create report generation templates (`context/templates/review-report-template.md`)
-- [x] `/review-milestone` command (`.claude/commands/review-milestone.md`)
-- [x] AC-03 component spec (`.claude/context/components/AC-03-milestone-review.md`)
-- [x] Live validation test (PR-12.4 review: CONDITIONAL verdict, report at `reports/reviews/PR-12.4-review-2026-02-06.md`)
-- [ ] Integration with AC-02 remediation workflow (deferred — needs rejected verdict scenario)
+**MCP Decomposition** (13 removed, 5 retained):
+- Retained: memory, local-rag, fetch, git, playwright
+- 4 replacement skills: filesystem-ops, git-ops, web-fetch, weather
+- 14/14 functional tests passed, registry v5.0
+- 9,750 tokens saved from tool definitions
 
-**Additional commits**: `1e63e65` (AIfred roadmap audit), `672d411` (JICM v5.7.0)
+**Lean Core Architecture**:
+- Manifest router: capability-map.yaml (single authoritative selection guide)
+- Pipeline design v4.0 (Decomposition-First paradigm)
+- Marketplace research (45 marketplaces, 400+ skills inventoried)
 
-### JICM v5.7.0 — Threshold Analysis + Compression Trim (2026-02-06)
-**Status**: COMPLETE — committed at `672d411`
-- Threshold analysis and optimization
-- Compression skill trimmed for efficiency
+### Master Wiggum Loop Iteration 1 — 14 Tasks (2026-02-08)
+**Commit**: 4ac6cc5
 
-### JICM v5.6.2 — Production-Ready Context Management (2026-02-06)
-**Status**: COMPLETE -- Operational, parked for maintenance-only
+| Task | Deliverable |
+|------|-------------|
+| Registry v5.0 | Complete rewrite, x-ops architecture |
+| research-ops v2.0 | 14 backends (+Tavily, Serper, SerpAPI, Firecrawl, ScraperAPI, Perplexity) |
+| context-management v4.0 | JICM v5.8.2 aligned (65/73/78.5% thresholds) |
+| knowledge-ops v2.0 | 4-tier memory hierarchy |
+| Marketplace inventory | 45 marketplaces, 10 functional groups |
+| x-ops consolidation design | 22→12 skills (swiss-army-knife pattern) |
+| Skill descriptions CSV | 22 skills cataloged, Progressive Disclosure |
+| Psyche maps v2 | capability-map.yaml updated, _index.md aligned |
+| Self-constitution review | v1.1.0-draft, thresholds/memory annotated |
+| Pattern cross-reference | 48 patterns audited, 5 added to manifest |
+| Agent refactoring | 12 agents, unified frontmatter, README updated |
+| Workflow/Integrations | 3 deprecation notices, READMEs updated |
+| Tool-reconstruction backlog | 43 prioritized items across 5 tiers |
+| SOTA/auto-MCP research | Cannot unload auto-provisioned MCPs |
 
-14-day sprint (Jan 23 - Feb 6) taking JICM from v3 to v5.6.2:
-- [x] v3.0.0: Statusline JSON API integration
-- [x] v4.0.0: Double-clear fix, debounce, cascade verifier
-- [x] v5.0.0: Two-mechanism resume architecture
-- [x] v5.1.0: Robust multi-method token extraction
-- [x] v5.4.2: Bash 3.2 fixes, heartbeat, statusline improvements
-- [x] v5.6.1: 19-issue comprehensive rewrite + command delivery + prompt formatting
-- [x] v5.6.2: session_start for --continue sessions + critical fixes from analysis
-- [x] session_start mode tested and validated (2026-02-06)
-- [x] Critical analysis report completed (2 CRIT, 6 HIGH, 8 MED findings)
-- [x] 4 critical fixes applied in-flight
-- [x] AC-04 component spec rewritten (v3 -> v5.6.2)
-- [x] Future work document created
+### Master Wiggum Loop Iteration 2 — 5 Tasks (2026-02-08)
+**Commit**: c2a8159
 
-**Key commits**: `855b6ed` (v5.6.1 rewrite), `22c8778` (v5.6.2 session_start fix)
-**Reports**: `.claude/reports/jicm/jicm-v5.6.2-critical-analysis.md`
-**Future work**: `.claude/context/designs/jicm-future-work.md`
-**Reorientation**: `.claude/reports/jicm/reorientation-assessment-2026-02-06.md`
-
-### Command-to-Skills Migration (v4.1.0)
-**Status**: COMPLETE
-**Plan**: `.claude/plans/monitoring-benchmarking-plan.md`
-
-**Completed:**
-- [x] Phase 1: Delete 4 conflicting commands (help, status, compact, clear)
-- [x] Phase 2: Create context-management skill
-- [x] Phase 3: Create self-improvement skill
-- [x] Phase 4: Create validation skill
-- [x] Phase 5: Delete 17 auto-* wrapper commands (functionality in autonomous-commands skill)
-- [x] Phase 6: Documentation sweep (10 files updated with jarvis-watcher.sh references)
-
-**Commits:** `21043ad` (migration), `13a48ca` (partial docs), `f360e4c` (doc sweep)
-
-### PR-12.3: Independent Milestone Review (2026-01-21 → 2026-02-06)
-**Status**: COMPLETE — see above
+| Task | Deliverable |
+|------|-------------|
+| Session state update | Full milestone history |
+| Orphaned patterns | 6 patterns cross-referenced |
+| Self-knowledge files | strengths, weaknesses, patterns-observed |
+| Memory KG storage | 6 entities, 6 relations |
+| Quality review | 3 key skills verified (research-ops, knowledge-ops, context-management) |
 
 ---
 
 ## Up Next
 
-### Phase 6: Autonomy, Self-Evolution & Benchmark Gates (PR-11 → PR-14)
+### x-ops Skill Consolidation
+**Status**: Designed — awaiting implementation
+
+Consolidate 22 skills → 12 unified x-ops skills:
+- Planned: self-ops, doc-ops, mcp-ops, autonom-ops, db-ops, web-ops
+- Future: code-ops, flow-ops, data-sci-ops
+- Design: `.claude/context/reference/mcp-decomposition-registry.md`
+
+### Tool Reconstruction Backlog
+**Status**: 43 items prioritized across 5 tiers
+- P1: 8 in-progress reconstructions (complete current x-ops)
+- P2: 7 high-value MCPs to install
+- P3: 5 marketplace extractions
+- P4: 6 x-ops consolidations
+- P5: 5 future (infrastructure needed)
+- Backlog: `.claude/context/reference/tool-reconstruction-backlog.md`
+
+### Phase 6: Autonomy, Self-Evolution & Benchmark Gates
 **Status**: Design Complete — Ready for Implementation
-
-**Design Document**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
-
-All specifications created (PR-11 through PR-14):
-- PR-11: Autonomic Component Framework (6 sub-PRs) ✅
-- PR-12: Autonomic Component Implementation (10 sub-PRs) ✅
-- PR-13: Monitoring, Benchmarking, Scoring (5 sub-PRs) ✅
-- PR-14: Open-Source Catalog & SOTA (5 sub-PRs) ✅
-
-See `projects/project-aion/roadmap.md` for full Phase 6 scope.
-
----
-
-## Recently Completed
-
-### JICM v4.0.0 — Parallel Compression with Cascade Resume (2026-01-31)
-- **Root Cause Fix**: Resolved double-clear stall caused by v2/v3/v4 version mismatch
-- **session-start.sh**: v4 signal detection with priority, 30s debounce protection
-- **jarvis-watcher.sh**: Manual compression detection for `/intelligent-compress` compatibility
-- **New Hook**: `jicm-continuation-verifier.js` for cascade reinforcement
-- **Updated Command**: `/intelligent-compress` migrated to v4 file names
-- **Report**: `.claude/context/reports/jicm-v4-implementation-report.md`
-
-### JICM v3.0.0 — Complete Redesign (2026-01-24)
-- **Solution A**: Statusline-Unified — jarvis-watcher.sh uses official Claude Code JSON API
-- **Solution B**: Hook-Orchestrated — precompact-analyzer.js generates preservation manifest
-- **Solution C**: Agent-Autonomous — jicm-agent.md with velocity prediction (opt-in)
-- Documentation sweep: 5 core JICM files updated to v3.0.0
-- Archived redundant scripts: `auto-clear-watcher.sh`, `auto-command-watcher.sh`
-- Commits: `8d05265`, `dded9e0`, `806a995`
-
-### AIfred Integration Milestone 4: Documentation & Patterns (2026-01-23)
-- Session 4.1: Ported 4 core patterns (capability-layering, code-before-prompts, command-invocation, agent-invocation)
-- Session 4.2: Ported autonomous-execution pattern + /analyze-codebase command
-- Updated pattern index with "Capability Architecture" section (46 patterns total)
-
-### AIfred Integration Milestone 3: JICM Complements (2026-01-23)
-- Session 3.1: Created /context-analyze, /context-loss commands, compaction-essentials.md
-- Session 3.2: Created /capture (4 types), /history (7 subcommands) commands
-- Created history directory structure with templates and index
-- Updated weekly-context-analysis.sh for Jarvis log sources
-- Ollama integration skipped (deferred to later)
-
-### Milestone Documentation Enforcement System (2026-01-23)
-- Implemented enforcement mechanism to prevent documentation drift
-- Created `milestone-completion-gate.yaml` with blocking requirements
-- Created `milestone-doc-enforcer.js` hook (detects milestone signals)
-- Updated `planning-tracker.yaml` v2.0 with enforcement levels
-- Updated `milestone-review-pattern.md` v1.3 (Section 8 MANDATORY)
-- Updated `/end-session` v2.2 with mandatory gate check
-- Root cause: advisory patterns without enforcement → fixed with blocking gates
-
-### AIfred Integration Milestone 2: Analytics & Tracking (2026-01-23)
-- Ported 3 analytics hooks: file-access-tracker, session-tracker, memory-maintenance
-- Created unified-logging-architecture.md design document
-- All hooks registered and logging to .claude/logs/
-
-### Organization Architecture Phases 7-8 (2026-01-23)
-- Phase 7: Verified references, cleaned up orphaned files, confirmed directory structure
-- Phase 8: Created `organization-pattern.md`, updated indexes and state files
-- All 8 phases complete — Organization Architecture finished
-
-### Organization Architecture Phases 1-5 (2026-01-22)
-- Phase 1: 18 directories, ~45 READMEs, readme-standard.md
-- Phase 2: 14 AIfred integration files moved to evolution/aifred-integration/
-- Phase 3: Core identity reorganized (jarvis-identity.md, current-priorities.md elevated)
-- Phase 4: 59 files organized into current/archive structure (ideas, plans, reports)
-- Phase 5: planning-tracker.yaml created, session-exit.md updated
-- Bug fix: Watcher idle-wait blocker removed
-
-### AIfred Integration: Milestone 1 — Security Foundation (2026-01-22)
-- 6 hooks ported: credential-guard, branch-protection, amend-validator, docker-health-monitor, docker-restart-loop-detector, docker-post-op-health
-- Integration Chronicle created for reasoning capture
-- Milestone Review Pattern v1.2.0 (Completion Documentation step)
-- Hook porting template validated
-
-### PR-12.11 & PR-12.12: Auto-Resume & Agent Fixes (2026-01-21)
-- 17 auto-* commands updated with Mode 2 (auto-resume)
-- 6 agents fixed (YAML frontmatter), _archive renamed
-- Self-monitoring workflow validated (chained auto-resume)
-- self-monitoring-commands.md pattern created
-- auto-settings.md created (namespace resolution)
-
-### JICM v2: Intelligent Context Compression (2026-01-20)
-- context-compressor agent (haiku model, configurable)
-- `/intelligent-compress` command orchestration
-- Watcher integration (triggers agent instead of /context)
-- Session-start hook injection of compressed context
-- Fallback to simple checkpoint on timeout
-
-### Autonomous Command Wrapper System (2026-01-20)
-- 4 scripts, 17 command wrappers, 1 skill, 2 guides, 1 pattern
-- All 6 phases complete, all milestones passed
-
-### Comprehensive Autonomic Testing (2026-01-20)
-- 6/6 PRD stress variants validated (V1-V6)
-- Final score: 100% (A+) — All 9 components validated
-- 8 comprehensive reports in `projects/project-aion/reports/`
-
-### PR-10: Jarvis Persona + Setup Upgrade (v2.0.0, 2026-01-13)
-- Persona implementation, reports reorganization, directory cleanup
-- 4 guardrail hooks registered, auto-install scripts created
-
-### PR-9: Selection Intelligence (v1.9.5, 2026-01-09)
-- 90% selection accuracy achieved
-- selection-intelligence-guide.md, selection-validation-tests.md
+**Design**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
 
 ---
 
@@ -194,23 +100,19 @@ See `projects/project-aion/roadmap.md` for full Phase 6 scope.
 
 See `projects/project-aion/roadmap.md` for full roadmap.
 
-### Future Enhancements
-- Auto-restart after rate-limit: Design pattern for automatic session continuation
-
-### Hippocrenae Documentation (from Autopoietic Paradigm v2.0.0)
-- [ ] Create `designs/hippocrenae-design.md` — Unified design philosophy for all nine AC systems
-- [ ] Per-AC design philosophy sections — Purpose and philosophy within autopoietic paradigm
-- [ ] Design schematics for each AC system in `designs/`
-- [ ] Update each AC-## component spec with Hippocrenae framing
-- [ ] Add Jung references to philosophical context (future)
-- [ ] Add theological/philosophical references as appropriate (future)
+### Deferred Items
+- AC-02/AC-03 remediation workflow integration
+- Hippocrenae documentation (from Autopoietic Paradigm v2.0.0)
+- Auto-restart after rate-limit pattern
+- Self-constitution directory restructuring (aspirational)
 
 ---
 
 ## Notes
 
 **Branch**: All work on `Project_Aion` branch (origin/Project_Aion)
-**Baseline**: `main` branch is read-only AIfred baseline
+**Baseline**: `main` branch is read-only AIfred baseline at `2ea4e8b`
+**MCPs**: 5 active (memory, local-rag, fetch, git, playwright)
 
 ---
 
