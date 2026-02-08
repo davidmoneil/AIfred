@@ -26,61 +26,27 @@ skills:
     tools: ["Bash(curl wttr.in)"]
     file: .claude/skills/weather/SKILL.md
 
-  - id: skill.session-management
-    when: "Session lifecycle — start, checkpoint, end, restore"
-    file: .claude/skills/session-management/SKILL.md
+  # ─── x-ops ROUTERS (consolidated skill groups) ───
 
-  - id: skill.context-management
-    when: "JICM v5.8 context monitoring, analysis, compaction, compress"
-    file: .claude/skills/context-management/SKILL.md
+  - id: skill.doc-ops
+    when: "Document operations — Word (.docx), Excel (.xlsx), PDF, PowerPoint (.pptx)"
+    absorbs: [docx, xlsx, pdf, pptx]
+    file: .claude/skills/doc-ops/SKILL.md
 
-  - id: skill.self-improvement
-    when: "Reflection, evolution, research, maintenance (AC-05/06/07/08)"
-    file: .claude/skills/self-improvement/SKILL.md
+  - id: skill.self-ops
+    when: "Self-improvement, status monitoring, validation (AC-05/06/07/08)"
+    absorbs: [self-improvement, jarvis-status, validation]
+    file: .claude/skills/self-ops/SKILL.md
 
-  - id: skill.validation
-    when: "Tooling health, infrastructure validation, design review"
-    file: .claude/skills/validation/SKILL.md
+  - id: skill.mcp-ops
+    when: "MCP/skill lifecycle — build, validate, decompose plugins, create skills"
+    absorbs: [mcp-builder, mcp-validation, plugin-decompose, skill-creator]
+    file: .claude/skills/mcp-ops/SKILL.md
 
-  - id: skill.autonomous-commands
-    when: "Execute Claude Code native commands via signal automation"
-    file: .claude/skills/autonomous-commands/SKILL.md
-
-  - id: skill.ralph-loop
-    when: "Iterative development via Ralph Wiggum technique"
-    file: .claude/skills/ralph-loop/SKILL.md
-
-  - id: skill.jarvis-status
-    when: "Show autonomic component status and health grades"
-    file: .claude/skills/jarvis-status/SKILL.md
-
-  - id: skill.docx
-    when: "Create/edit Word documents (.docx)"
-    file: .claude/skills/docx/SKILL.md
-
-  - id: skill.xlsx
-    when: "Create/edit Excel spreadsheets (.xlsx)"
-    file: .claude/skills/xlsx/SKILL.md
-
-  - id: skill.pdf
-    when: "PDF manipulation, extraction, creation, forms"
-    file: .claude/skills/pdf/SKILL.md
-
-  - id: skill.pptx
-    when: "Create/edit PowerPoint presentations (.pptx)"
-    file: .claude/skills/pptx/SKILL.md
-
-  - id: skill.mcp-builder
-    when: "Create MCP servers for external integrations"
-    file: .claude/skills/mcp-builder/SKILL.md
-
-  - id: skill.skill-creator
-    when: "Create new skills for Claude Code"
-    file: .claude/skills/skill-creator/SKILL.md
-
-  - id: skill.mcp-validation
-    when: "Validate MCP installation and configuration"
-    file: .claude/skills/mcp-validation/SKILL.md
+  - id: skill.autonom-ops
+    when: "Session orchestration — commands, lifecycle, JICM context, Ralph loop"
+    absorbs: [autonomous-commands, session-management, context-management, ralph-loop]
+    file: .claude/skills/autonom-ops/SKILL.md
 
   - id: skill.research-ops
     when: "Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping"
@@ -94,15 +60,7 @@ skills:
     replaces: memory MCP (shadow), lotus-wisdom MCP
     file: .claude/skills/knowledge-ops/SKILL.md
 
-  - id: skill.plugin-decompose
-    when: "Analyze and decompose plugins for integration"
-    file: .claude/skills/plugin-decompose/SKILL.md
-
-# ─── PLANNED x-ops CONSOLIDATIONS ───
-# self-ops:    self-improvement + jarvis-status + validation
-# doc-ops:     docx + xlsx + pdf + pptx
-# mcp-ops:     mcp-validation + mcp-builder + plugin-decompose + skill-creator
-# autonom-ops: autonomous-commands + session-management + context-management + ralph-loop
+# ─── FUTURE x-ops CONSOLIDATIONS ───
 # db-ops:      chroma + supabase + mongodb + sqlite + neo4j + mindsdb (new)
 # web-ops:     playwright + browserstack + scraping (new)
 # code-ops:    serena + semgrep + repomix (new)

@@ -7,22 +7,6 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ---
 
-## In Progress
-
-### Master Wiggum Loop — Iterations 3-5 (2026-02-08)
-**Status**: IN PROGRESS — Iteration 3 active
-**Branch**: Project_Aion
-**Commits**: c2a8159 (Iteration 2), 4ac6cc5 (Iteration 1)
-
-Verification, tightening, and polish iterations:
-- [ ] IT3: Update current-priorities.md (this file)
-- [ ] IT3: Fix inconsistencies from verification agents
-- [ ] IT3: Tighten psyche topology counts
-- [ ] IT3: Commit Iteration 3
-- [ ] IT4-5: Further refinement passes
-
----
-
 ## Recently Completed (This Session)
 
 ### Lean Core v5.9.0 + MCP Decomposition (2026-02-07/08)
@@ -68,6 +52,33 @@ Verification, tightening, and polish iterations:
 | Self-knowledge files | strengths, weaknesses, patterns-observed |
 | Memory KG storage | 6 entities, 6 relations |
 | Quality review | 3 key skills verified (research-ops, knowledge-ops, context-management) |
+
+### Master Wiggum Loop Iteration 3 — 4 Tasks (2026-02-08)
+**Commit**: 1e34159
+
+- current-priorities.md rewritten for v5.9.0
+- Pattern count 39→48 in 3 files
+- capability-matrix.md → capability-map.yaml stale references fixed
+- Psyche topology counts corrected (skills 11→22, hooks 14→28, agents 14→12)
+
+### Master Wiggum Loop Iteration 4 — 3 Tasks (2026-02-08)
+**Commit**: eb29b7b
+
+- Capability-map.yaml verification: 21/22 skills, 12/12 agents — all consistent
+- Session state updated through Iteration 4
+
+### Master Wiggum Loop Iteration 5 (final) — 2 Tasks (2026-02-08)
+**Commit**: 9f24a4e
+
+- CLAUDE.md root-of-trust: pattern count 41→48, capability-matrix→capability-map.yaml
+
+### Post-Loop Polish (2026-02-08)
+**Commits**: 9eaf2ad, a14ed12, 6ed47ea
+
+- Stray context-snapshot.md moved to context-management/references/
+- Session reflection report (AC-05)
+- MEMORY.md + restructuring-lessons.md
+- All 3 topology maps (nous, pneuma, soma) aligned with v5.9.0
 
 ---
 
