@@ -1,9 +1,16 @@
 # MCP-to-Skill & Plugin-to-Skill Pipeline Design
 ## Context Token Overhead Reduction Plan
 
-**Version**: 2.0
+**Version**: 2.0 (SUPERSEDED)
 **Date**: 2026-02-07
-**Status**: Plan — awaiting approval
+**Status**: SUPERSEDED by pipeline-design-v3.md (v4.0)
+
+> **This document is superseded.** The authoritative pipeline design is now:
+> **`.claude/plans/pipeline-design-v3.md`** (v4.0, 2026-02-08)
+>
+> This file is retained for historical reference only. All active decision trees,
+> MCP evaluations, intervention tracking, and implementation phases are in the
+> newer document.
 
 ---
 

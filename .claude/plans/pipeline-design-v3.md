@@ -1,10 +1,10 @@
 # Decomposition & Reconstruction Pipeline Design v3.1
 ## Context Token Overhead Reduction + Capability Transformation
 
-**Version**: 3.1 (paradigm corrections + marketplace evaluation)
-**Date**: 2026-02-07
+**Version**: 4.0 (GitHub repos + doc alignment + terminology fixes)
+**Date**: 2026-02-08
 **Status**: Plan — awaiting approval
-**Supersedes**: pipeline-design-v3.md (v3.0), clever-dazzling-breeze.md (v2.0)
+**Supersedes**: clever-dazzling-breeze.md (v2.0), mcp-decision-map.md (v1.0)
 
 ---
 
@@ -999,6 +999,114 @@ The Anthropic Agent Skills format defines:
 | csv-data-summarizer | coffeefuelbump | INTEGRATE — data analysis skill |
 | developer-growth-analysis | ComposioHQ | INTEGRATE — crucial for self-evolution (AC-05/06) |
 
+### 8.3 GitHub Repos Evaluation (15 repos — Decomposition Assessment)
+
+These repos were researched in the marketplace evaluation. Each is assessed through the
+Decomposition-First lens: can the valuable capability be reconstructed natively?
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│              GITHUB REPOS — DECOMPOSITION ASSESSMENT (15 repos)              │
+├──────────────────┬──────────┬──────────────────────────────────────────────┤
+│ Repo             │ Verdict  │ Reconstruction Plan                          │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TIER 1: INSTALL & RECONSTRUCT                                               │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Serena           │ DECOMPOSE│ MCP only → add, study API patterns,          │
+│ (oraios/serena)  │          │ reconstruct as code-ops skill. LSP-based     │
+│                  │          │ code intelligence = high value.              │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Vizro            │ INSTALL  │ Python package. `pip install vizro`.          │
+│ (mckinsey/vizro) │          │ Dashboard creation. High value, keep as      │
+│                  │          │ library — no MCP needed, skill wraps import. │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ ElevenLabs       │ DECOMPOSE│ MCP only → add, decompose to audio-ops skill│
+│ (elevenlabs-mcp) │          │ with Bash(curl) API wrapper + API key.       │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Claude-Code-Docs │ INSTALL  │ Install → add skills/commands directly.      │
+│ (ericbuess)      │          │ Documentation reference — minimal overhead.  │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TIER 2: DECOMPOSE (Extract Patterns)                                        │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Deep Research    │ STUDY    │ npm + localhost UI. Study the dashboard       │
+│ (u14app)         │          │ pattern — useful for future Jarvis UI.       │
+│                  │          │ Reconstruct research workflow as skill.       │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Get-Shit-Done    │ INSTALL  │ npm install. Productivity methodology        │
+│ (glittercowboy)  │          │ wrapper. Prefer running as CLI tool.         │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TIER 3: INFRASTRUCTURE (Setup Required)                                     │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Archon           │ DEFER    │ Full package + localhost dashboard + UI.      │
+│ (coleam00)       │          │ Much larger than MCP. Install when ready     │
+│                  │          │ for agent framework evaluation.              │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Cua              │ INSTALL  │ High value computer-use automation.           │
+│ (trycua)         │          │ Package install when ready for evaluation.   │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Next-AI-Draw-IO  │ INSTALL  │ Local install. High value for architecture   │
+│ (dayuanjiang)    │          │ diagrams and visual planning.                │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TIER 4: CONDITIONAL                                                         │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ BioRxiv          │ DECOMPOSE│ MCP only. Niche academic use. Add then       │
+│ (deepsense.ai)   │          │ decompose to research-ops (biology papers).  │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ GhidraMCP+Ghidra │ INSTALL  │ MCP + Ghidra package. High value for         │
+│ (lauriewired)    │          │ reverse engineering. Requires Ghidra install.│
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Claude-Context   │ DECOMPOSE│ Idea: point at local embeddings + vector DB. │
+│ (zilliztech)     │          │ Reconstruct with Chroma/local-rag backend.   │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ UltraRAG         │ STUDY    │ Localhost dashboard RAG system. High value    │
+│ (openbmb)        │          │ but significant install. Study architecture. │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TIER 5: STRATEGIC/LOW PRIORITY                                              │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ TrendRadar       │ DEFER    │ In Chinese. Needs translation review.        │
+│ (sansan0)        │          │ Low priority until assessed.                 │
+├──────────────────┼──────────┼──────────────────────────────────────────────┤
+│ Claude-Flow      │ DEFER    │ Full package + MCP. Lower priority than      │
+│ (ruvnet)         │          │ Archon/Serena for multi-agent patterns.      │
+└──────────────────┴──────────┴──────────────────────────────────────────────┘
+```
+
+### 8.4 Recommendation Triage (Unimplemented — Prioritized)
+
+All items from evaluation that haven't been started yet, ordered by value:
+
+```
+IMMEDIATE (next 1-2 sessions):
+  1. Run Intervention 5 (Skill Listing Impact Test) — gates all skill optimization work
+  2. Apply Format Standard v2.0 to 4 MCP-replacement skills (Intervention 4)
+  3. Build memory-ops shadow skill (Intervention 7)
+  4. Install claude-code-docs (Tier 1, minimal overhead)
+
+SHORT-TERM (next 3-5 sessions):
+  5. Build research-ops swiss-army-knife skill
+     └── Reconstruct: Perplexity, GPTResearcher, Context7, arXiv, Brave, Wikipedia
+  6. Build knowledge-ops swiss-army-knife skill
+     └── Reconstruct: Memory shadow, Lotus Wisdom, Obsidian integration
+  7. Build database-ops swiss-army-knife skill
+     └── Reconstruct: Chroma (default), SQLite, MongoDB, Supabase, Neo4j
+  8. Install Vizro (pip install) + create visualization skill wrapper
+  9. Install Serena MCP → decompose → code-ops skill
+
+MEDIUM-TERM (next 5-10 sessions):
+  10. Build n8n-ops skill (USER OVERRIDE — Mac Studio setup)
+  11. Build code-security skill (Semgrep CLI wrapper)
+  12. Install Cua, Next-AI-Draw-IO when infrastructure ready
+  13. Evaluate ElevenLabs → audio-ops skill
+  14. Evaluate community skills (developer-growth-analysis, youtube-transcript, etc.)
+  15. Phase 7: Architectural revision (dead MCP reference scan + cleanup)
+
+DEFERRED (blocked on external):
+  16. GoogleDrive, GoogleMaps (billing decision)
+  17. Slack (no workspace)
+  18. Graphiti, Cognee (Neo4j + embeddings server setup)
+  19. Archon, UltraRAG, Deep Research (localhost dashboard study)
+```
+
 ---
 
 ## Part 9: Context Token Overhead Interventions
@@ -1431,5 +1539,5 @@ Additional benefits:
 
 ---
 
-*Decomposition & Reconstruction Pipeline Design v3.0 — 2026-02-07*
+*Decomposition & Reconstruction Pipeline Design v4.0 — 2026-02-08*
 *Paradigm: Decompose Everything. Reconstruct Natively. Only Retain Server-Dependent MCPs.*

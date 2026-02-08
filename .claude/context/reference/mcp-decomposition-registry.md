@@ -1,8 +1,8 @@
 # MCP Decomposition Registry
 
-**Purpose**: Master tracking of all MCP servers analyzed and/or phagocytosed into skills.
+**Purpose**: Master tracking of all MCP servers analyzed, decomposed, and reconstructed into skills.
 **Created**: 2026-02-07
-**Updated**: 2026-02-07 (v2.0 — actual removal completed)
+**Updated**: 2026-02-08 (v4.0 — Decomposition-First paradigm alignment + To-Do Notes MCPs)
 
 ---
 
@@ -59,7 +59,7 @@ From `.claude/settings.json`:
 
 ## Decomposition Status
 
-### Phagocytosed (Skill Replacements)
+### Decomposed (Skill Replacements)
 
 | MCP | Status | Replacement | Skill File |
 |-----|--------|-------------|-----------|
@@ -68,13 +68,13 @@ From `.claude/settings.json`:
 | `fetch` | SHADOWED (auto-provisioned) | `web-fetch` skill | `.claude/skills/web-fetch/SKILL.md` |
 | `weather` (curl) | SKILL-IFIED | `weather` skill | `.claude/skills/weather/SKILL.md` |
 
-### Retained
+### Retained (Server-Dependent — Only Valid Retention Reason)
 
 | MCP | Status | Rationale |
 |-----|--------|-----------|
-| `memory` | RETAINED | Unique knowledge graph — no built-in equivalent, used by hooks |
-| `local-rag` | RETAINED (dormant) | Unique vector DB/embeddings — deferred, near-zero cost |
-| `playwright` | RETAINED (deferred) | Unique browser automation — no built-in equivalent |
+| `memory` | SHADOW (planned) | Auto-provisioned, JSON file ops — decomposable via jq. Will shadow with knowledge-ops skill. |
+| `local-rag` | RETAIN | Server-dependent: requires persistent embedding service for vector ops |
+| `playwright` | RETAIN | Server-dependent: requires persistent browser instance with stateful session |
 
 ### Removed (Tier 2 — No Skill Needed)
 
@@ -244,5 +244,105 @@ requires the plugin packaging format (e.g., stop hooks with `continue`).
 
 ---
 
-*MCP Decomposition Registry v3.1 — Decomposition-First Paradigm (2026-02-07)*
+---
+
+## To-Do Notes MCP Evaluation (from Jarvis_To_Do_Notes)
+
+MCPs from user's development notes not already covered above.
+
+### Thought/Memory
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| Cognee | EVALUATE | RAG pipeline + knowledge graph. If server-dependent for embeddings → RETAIN alongside local-rag. If API wrapper → DECOMPOSE. |
+| Graphiti | RETAIN IF running | Requires persistent Neo4j graph DB. If Neo4j not running → DEFER. |
+
+### Dev/Code
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| Semgrep | RECONSTRUCT → code-security skill | CLI tool (`Bash(semgrep ...)`), no server needed |
+| Notion | DECOMPOSE | Stateless REST API. Skill + `Bash(curl)` + API key. No workspace currently active. |
+| Obsidian | RECONSTRUCT → knowledge-ops | USER OVERRIDE: native skills for Obsidian vault access |
+| TaskMaster | SKIP | TodoWrite + agents already cover this |
+| n8n | RECONSTRUCT → n8n-ops | USER OVERRIDE: full n8n capability, Mac Studio incoming |
+| Repomix | DECOMPOSE | Glob + Read + Write for context assembly |
+
+### UI Dev
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| ChromeDevTools | SKIP | Playwright covers browser automation |
+| BrowserStack | DECOMPOSE | Skill + `Bash(curl)` + API key |
+| MagicUI | DECOMPOSE | WebFetch on component docs + skill patterns |
+
+### Communications
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| Slack | DEFER | Skill + `Bash(curl)` + API token. No workspace yet. |
+
+### Databases → database-ops swiss-army-knife
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| MongoDB | RECONSTRUCT → database-ops | mongosh CLI + scripts |
+| Supabase | RECONSTRUCT → database-ops | REST API + supabase CLI |
+| SQLite-bun | RECONSTRUCT → database-ops | sqlite3 CLI |
+| MindsDB | RECONSTRUCT → database-ops | REST API for federated queries |
+
+### Docs
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| Markdownify | SKIP | WebFetch already converts HTML to markdown |
+| GoogleDrive | DEFER | Skill + OAuth. Waiting for user billing decision. |
+| GoogleMaps | DEFER | Skill + API key. Waiting for user billing decision. |
+
+### Other
+| MCP | Verdict | Rationale |
+|-----|---------|-----------|
+| DuckDuckGo | DECOMPOSE → research-ops | `Bash(curl)` or WebSearch. Bot detection issues noted. |
+| Puppeteer | SKIP | Playwright already retained for browser automation |
+| Alpha Vantage | DECOMPOSE | Skill + `Bash(curl)` + API key. Pure REST API. |
+| DesktopCommander | SKIP | All capabilities covered by existing skills + Bash |
+
+---
+
+## GitHub Repos Evaluation (from marketplace research)
+
+15 repos evaluated for decomposition and reconstruction potential.
+
+### Tier 1: Install & Reconstruct (High Value)
+| Repo | Type | Action |
+|------|------|--------|
+| Serena (oraios/serena) | MCP only | Add MCP → decompose → code-ops skill |
+| Vizro (mckinsey/vizro) | Python package | Install locally. High value for dashboards. |
+| ElevenLabs (elevenlabs/elevenlabs-mcp) | MCP only | Add MCP → decompose → audio-ops skill |
+| Claude-Code-Docs (ericbuess/claude-code-docs) | Skill/commands | Install → add skills/commands or decompose |
+
+### Tier 2: Decompose (Extract Patterns)
+| Repo | Type | Action |
+|------|------|--------|
+| Deep Research (u14app/deep-research) | npm + localhost UI | Install → study localhost dashboard pattern → reconstruct |
+| Get-Shit-Done (glittercowboy/get-shit-done) | npm install | Prefer regular npm install + running/update command |
+
+### Tier 3: Infrastructure (Requires Setup)
+| Repo | Type | Action |
+|------|------|--------|
+| Archon (coleam00/archon) | Full package + UI | Much larger than MCP. Has localhost dashboard. Install when ready. |
+| Cua (trycua/cua) | Package install | High value computer-use automation. Install when ready. |
+| Next-AI-Draw-IO (dayuanjiang/next-ai-draw-io) | Local install | High value for diagrams. Needs local or MCP installation. |
+
+### Tier 4: Conditional (Dependency/Review Needed)
+| Repo | Type | Action |
+|------|------|--------|
+| BioRxiv (mcp.deepsense.ai/biorxiv) | MCP only | Add MCP → decompose. Niche academic use. |
+| GhidraMCP + Ghidra (lauriewired/ghidramcp) | MCP + package | High value for reverse engineering. Requires Ghidra install. |
+| Claude-Context (zilliztech/claude-context) | Idea for local embeddings | Decompose to point at local embeddings + vector DB |
+| UltraRAG (openbmb/ultrarag) | localhost dashboard | High value RAG. Needs install and decomposition. |
+
+### Tier 5: Strategic/Low Priority
+| Repo | Type | Action |
+|------|------|--------|
+| TrendRadar (sansan0/trendradar) | In Chinese | Needs review. Low priority until assessed. |
+| Claude-Flow (ruvnet/claude-flow) | Full package + MCP | Add → decompose. Lower priority than Archon/Serena. |
+
+---
+
+*MCP Decomposition Registry v4.0 — Decomposition-First Paradigm (2026-02-08)*
 *See also: .claude/plans/pipeline-design-v3.md for full pipeline design*

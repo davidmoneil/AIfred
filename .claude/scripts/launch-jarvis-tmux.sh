@@ -123,7 +123,7 @@ else
     JARVIS_SESSION_TYPE="continue"
 fi
 
-CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=10000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
+CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=25000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
