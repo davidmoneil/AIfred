@@ -320,6 +320,7 @@ This will launch Claude in tmux with the watcher in a split pane.
 ## Related
 
 - Signal Protocol: @.claude/context/patterns/command-signal-protocol.md
+- Autonomous Execution Pattern: @.claude/context/patterns/autonomous-execution-pattern.md (scheduled/headless Claude Code execution via cron/systemd)
 - Signal Helper: @.claude/scripts/signal-helper.sh
 - Watcher Script: @.claude/scripts/jarvis-watcher.sh
 - tmux Launcher: @.claude/scripts/launch-jarvis-tmux.sh

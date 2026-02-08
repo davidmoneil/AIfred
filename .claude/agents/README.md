@@ -44,6 +44,8 @@
 3. Define agent behavior
 4. Test agent invocation
 
+**Pattern reference**: See `.claude/context/patterns/agent-invocation-pattern.md` for invocation standards.
+
 ## Memory System
 
 Agents store learnings in `memory/<agent-name>/learnings.json`.

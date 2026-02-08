@@ -1,8 +1,12 @@
 # Batch MCP Validation Pattern
 
 **Created**: 2026-01-08
-**Status**: Active
+**Status**: LEGACY (v5.9.0 — only 5 MCPs remain, batching rarely needed)
 **Related**: mcp-validation-harness.md, context-budget-management.md
+
+> **v5.9.0 NOTE**: This pattern was created when 17 MCPs were active. After the MCP
+> decomposition milestone (13 removed, Feb 2026), only 5 remain. The batching concept
+> is still valid if MCPs grow again, but the specific batch definitions below are obsolete.
 
 ---
 

@@ -78,12 +78,13 @@ The complete structural map of Jarvis as an Archon.
 
 | Directory | Purpose | Key Files |
 |-----------|---------|-----------|
-| patterns/ | Behavioral rules | 39 patterns, wiggum-loop, selection-intelligence |
+| patterns/ | Behavioral rules | 48 patterns, wiggum-loop, selection-intelligence |
 | standards/ | Conventions | readme-standard, model-selection |
 | components/ | AC specs | AC-01 through AC-09 |
 | integrations/ | Tool knowledge | capability-matrix, mcp-installation |
 | reference/ | On-demand docs | glossary, mcp-decision-map |
 | psyche/ | Topology maps | This document |
+| psyche/self-knowledge/ | Operational introspection | strengths, weaknesses, patterns-observed |
 
 **Detail**: [nous-map.md](nous-map.md)
 

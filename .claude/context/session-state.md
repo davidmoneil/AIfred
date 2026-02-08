@@ -8,13 +8,14 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Active — v5.9.0 pipeline design in progress
-
-**Last Completed**: Pipeline Design v3.0 plan written (Decomposition & Reconstruction)
+**Status**: Active — Master Wiggum Loop Iteration 2 in progress
+**Version**: v5.9.0
+**Branch**: Project_Aion
+**Last Commit**: 4ac6cc5 (pushed to origin/Project_Aion)
 
 **Current Blocker**: None
 
-**Current Work**: Pipeline Design v3.0 plan complete, awaiting user review. Decision trees updated to Decomposition-First paradigm. 6 interventions tracked (4 done, 2 TODO). Uncommitted changes from this session.
+**Current Work**: Master Wiggum Loop Iteration 2 — quality review, orphaned patterns, self-knowledge files. All 14 Iteration 1 tasks complete and committed.
 
 ---
 
@@ -29,54 +30,77 @@ Previous session histories have been archived. For full details, see:
 
 **Date**: 2026-02-06
 **Version**: v2.3.0
-**Commits**: 9 total (22c8778, d79857d, 32cb06b, 1e63e65, 672d411, 855b6ed, 6549ccf, d2091d8, +session-end)
-
-**Key accomplishments**:
-- JICM v5.6.2 session_start fix + critical analysis (4 agents, 4 critical fixes)
-- PR-12.3 completion (Independent Milestone Review) + v2.3.0 release
-- AIfred roadmap audit (M1-M6 marked complete/superseded)
-- JICM v5.7.0 threshold analysis
-- Git housekeeping: 15 runtime files untracked, .gitignore updated, screenshots gitignored
-- Self-improvement cycle: 3 low-risk fixes, 3 medium-risk queued
-
-**Next session priorities**:
-1. PR-13: Monitoring, Benchmarking, Scoring (next Phase 6 roadmap item)
-2. Medium-risk queued proposals: stale docs review, JICM agent/hook archival
-3. Research: RD-001 (idle detection), rd-031 (background agents)
+**Commits**: 9 total
+**Key accomplishments**: JICM v5.6.2 session_start fix, PR-12.3, AIfred roadmap audit, v2.3.0 release
 
 ---
 
 ## Current Session
 
-**Date**: 2026-02-07 (overnight from Feb 6)
-**Focus**: MCP Decomposition + Session Start Redesign (5 milestones)
+**Date**: 2026-02-07/08 (overnight, multi-context-window)
+**Focus**: MCP Decomposition → Lean Core v5.9.0 → Master Restructuring
 **Mode**: Fully autonomous, unattended operation
 
-**Completed Work**:
-- M1: MCP Discovery + Registry (DONE — registry created)
-- M2: Create 4 replacement skills (DONE — filesystem-ops, git-ops, web-fetch, weather)
-- M3: Validate + Remove MCPs (DONE — filesystem removed from .mcp.json, fetch removed from settings)
-- M4: Session Start Redesign (DONE — lean injection, --fresh flag, session types)
-- M5: JICM Review + Emergency Resolution (DONE — cleanup fix, v5.8.1, emergency documented)
-- M6: MCP Actual Removal + Empirical Validation (IN PROGRESS)
-  - 14/14 functional tests passed (built-in tools replace MCPs)
-  - 13 MCPs removed via `claude mcp remove` (18 → 5)
-  - Registry updated to v2.0, permissions cleaned, docs updated
-  - Pending: restart for token measurement comparison
-- Aion Script designs complete: Virgil, Watcher, Ennoia (awaiting review)
+### Completed Milestones
 
-**Pending**:
-- Push commits to remote (62cb798, ca4bdef + new work)
-- Post-restart token measurement (Phase 4 of decomposition)
-- JICM watcher failsafe race condition fix (double trigger at 73%)
+**Phase 1 — MCP Decomposition (2026-02-07)**
+- M1-M6: MCP decomposition complete (18→5 MCPs, 13 removed)
+- 4 replacement skills created (filesystem-ops, git-ops, web-fetch, weather)
+- 14/14 functional tests passed, registry v2.0
+
+**Phase 2 — Lean Core v5.9.0 (2026-02-07/08)**
+- JICM watcher v5.8.2 fixes
+- Lean core architecture with manifest router (capability-map.yaml)
+- Pipeline design v4.0 (Decomposition-First paradigm)
+- Marketplace research (45 marketplaces, 400+ skills)
+
+**Phase 3 — Master Wiggum Loop Iteration 1 (2026-02-08)**
+14 tasks completed (#6-#19):
+
+| Task | Deliverable |
+|------|-------------|
+| #6 Registry v5.0 | Complete rewrite, x-ops architecture |
+| #7 research-ops v2.0 | 14 backends (+Tavily, Serper, SerpAPI, Firecrawl, ScraperAPI, Perplexity) |
+| #8 context-management v4.0 | JICM v5.8.2 aligned (65/73/78.5% thresholds) |
+| #9 knowledge-ops v2.0 | 4-tier memory hierarchy |
+| #10 Marketplace inventory | 45 marketplaces, 10 functional groups |
+| #11 x-ops consolidation design | 22→12 skills (swiss-army-knife pattern) |
+| #12 Skill descriptions CSV | 22 skills cataloged, Progressive Disclosure |
+| #13 Psyche maps v2 | capability-map.yaml updated, _index.md aligned |
+| #14 Self-constitution review | v1.1.0-draft, thresholds/memory annotated |
+| #15 Pattern cross-reference | 48 patterns audited, 5 added to manifest |
+| #16 Agent refactoring | 12 agents, unified frontmatter, README updated |
+| #17 Workflow/Integrations | 3 deprecation notices, READMEs updated |
+| #18 Tool-reconstruction backlog | 43 prioritized items across 5 tiers |
+| #19 SOTA/auto-MCP research | Cannot unload auto-provisioned MCPs |
+
+**Commits**: 8618cf1 (skills v2.0) → 4ac6cc5 (Master Loop Iter 1) — both pushed
+
+### Phase 4 — Master Wiggum Loop Iteration 2 (in progress)
+- #20: Session state update (this file)
+- #21: Orphaned patterns (6 patterns, 4 from AIfred port)
+- #22: Self-knowledge files (strengths/weaknesses/patterns-observed)
+- #23: Memory KG decision storage
+- #24: Quality review of 3 key skills
+
+### Key Decisions (This Session)
+1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs
+2. **4-tier memory hierarchy**: dynamic KG / static KG / semantic RAG / documentary
+3. **x-ops consolidation**: 22→12 skills (self-ops, doc-ops, mcp-ops, autonom-ops + new)
+4. **Perplexity key**: `.llm.perplexity` (not `.search`), 4 sonar models
+5. **Auto-provisioned MCPs**: Cannot unload; shadow via skills, Tool Search mitigates
+6. **Self-constitution**: Conditionally approved, JICM thresholds corrected, directory restructuring deferred
+7. **Pattern audit**: 6 orphaned, 3/5 mandatory gaps fixed in manifest router
 
 ---
 
 ## Notes
 
+**Mandate**: Cannot exit before 4:00 AM Feb 8 2026
 **Branch**: Project_Aion
-**Baseline**: main (read-only AIfred baseline)
+**Baseline**: main (read-only AIfred baseline at 2ea4e8b)
+**MCPs**: 5 active (memory, local-rag, fetch, git, playwright)
 
 ---
 
-*Session state initialized. Detailed history archived.*
+*Session state updated 2026-02-08 01:40 MST*

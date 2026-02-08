@@ -32,6 +32,10 @@ license: Complete terms in LICENSE.txt
 
 **Complements**: mcp-builder (for tool integration), plugin-dev (for full plugins)
 
+**Design Patterns**:
+- `capability-layering-pattern.md` — 5-layer deterministic stack for automated capabilities
+- `code-before-prompts-pattern.md` — Deterministic code over AI inference for routine operations
+
 ---
 
 # Skill Creator
