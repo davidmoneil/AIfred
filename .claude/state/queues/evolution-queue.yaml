@@ -100,4 +100,72 @@ proposals:
       - "PAT-006: Single authority for process launch"
       - ".claude/reports/reflections/reflection-2026-02-05.md"
 
-# Queue maintained by AC-05/AC-06 — Updated 2026-02-05
+  - id: EVO-2026-02-002
+    date: "2026-02-08"
+    source: reflection
+    priority: medium
+    status: queued
+    summary: "Auto-Sync State Files After Validation"
+    problem: |
+      AC component state JSON files diverge from spec markdown validation checklists.
+      AC-03 showed triggers_tested: false when spec confirmed live test on PR-12.4.
+    proposal: |
+      Add post-validation state sync to milestone review workflow:
+      1. After validation checklist updates, prompt for state file update
+      2. Or add hook that detects spec checkbox changes and syncs state file
+    implementation:
+      - Modify milestone-review-pattern.md to include state sync step
+      - Consider automated sync via /review-milestone command
+    estimated_effort: low
+    related:
+      - ".claude/state/components/AC-03-review.json"
+      - ".claude/context/components/AC-03-milestone-review.md"
+      - ".claude/reports/reflections/reflection-2026-02-08.md"
+
+  - id: EVO-2026-02-003
+    date: "2026-02-08"
+    source: reflection-omc
+    priority: medium
+    status: queued
+    summary: "Model Tier Routing in Capability Map"
+    problem: |
+      Jarvis uses ad-hoc model selection per task. OMC demonstrates 30-50% cost savings
+      via explicit Haiku/Sonnet/Opus tier routing by task complexity.
+    proposal: |
+      Add model recommendation field to capability-map.yaml entries:
+      - haiku: quick lookups, simple research, status checks
+      - sonnet: standard implementation, research, analysis
+      - opus: complex architecture, multi-file changes, critical decisions
+    implementation:
+      - Add `recommended_model` field to capability-map.yaml skill entries
+      - Update manifest router to surface model recommendation
+    estimated_effort: low
+    related:
+      - ".claude/context/psyche/capability-map.yaml"
+      - ".claude/context/research/omc-patterns-analysis.md"
+      - ".claude/reports/reflections/reflection-2026-02-08.md"
+
+  - id: EVO-2026-02-004
+    date: "2026-02-08"
+    source: reflection
+    priority: low
+    status: queued
+    summary: "Computed State Over Maintained State Pattern"
+    problem: |
+      Hardcoded counts (patterns, skills, agents) drift from actual values.
+      Static boolean flags in state files become stale. Manual maintenance fails at scale.
+    proposal: |
+      Document pattern: prefer computed state over maintained state.
+      - Use glob counts instead of hardcoded numbers
+      - Use file existence checks instead of boolean flags
+      - Reserve state files for values that genuinely need persistence (counters, timestamps)
+    implementation:
+      - Create pattern: computed-state-pattern.md
+      - Audit existing state files for candidates to convert
+    estimated_effort: low
+    related:
+      - "MEMORY.md (hardcoded counts drift gotcha)"
+      - ".claude/state/components/"
+      - ".claude/reports/reflections/reflection-2026-02-08.md"
+
+# Queue maintained by AC-05/AC-06 — Updated 2026-02-08

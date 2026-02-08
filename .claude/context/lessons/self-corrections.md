@@ -10,6 +10,34 @@
 
 ### February
 
+### 2026-02-08 — Hook Matcher Regex Substring Matching
+
+**What I Did Wrong**: Used bare `"Write"` as hook matcher regex, which matched `"TodoWrite"` as a substring — causing write-related hooks to fire unnecessarily on TodoWrite tool calls.
+
+**How I Noticed**: During post-implementation review of hook matcher optimization, realized that regex `Write` would match anywhere in the tool name string.
+
+**Correction Applied**: Anchored all matchers with `^` and `$` where needed: `^Write$|^Edit$` instead of `Write|Edit`. For prefix matches (like `^Bash` matching `Bash` but not `FlashBash`), used `^` anchor without `$`.
+
+**Prevention**: Hook matchers are regex — always anchor with `^` for tool name matching. Use `$` for exact matches, omit `$` only for intentional prefix matching.
+
+**Related**: `.claude/settings.json` hook configuration, MEMORY.md
+
+---
+
+### 2026-02-08 — AC-03 State File Drift from Spec
+
+**What I Did Wrong**: Never updated the AC-03 state JSON (`AC-03-review.json`) after successfully testing the milestone review on PR-12.4 (2026-02-06). State showed `triggers_tested: false` while the spec checklist correctly showed `triggers_tested: true`.
+
+**How I Noticed**: During Phase 6 readiness assessment, compared state files against spec files and found contradictions.
+
+**Correction Applied**: Synced AC-03 state file with spec evidence. Status: `implementing` → `active`, version: `1.0.0` → `1.2.0`, all tested fields updated.
+
+**Prevention**: State files should be updated at the same time as spec validation checklists. Consider adding a post-review hook that prompts for state file update.
+
+**Related**: AC-03 Milestone Review, `.claude/state/components/AC-03-review.json`
+
+---
+
 ### 2026-02-06 — tmux send-keys Multi-Line String Corruption
 
 **What I Did Wrong**: Used multi-line strings with `tmux send-keys -l`, which injected literal newlines into the TUI input buffer, causing partial command submission.
