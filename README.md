@@ -83,7 +83,7 @@ node scripts/profile-loader.js --layers general,homelab,development
 
 ### Hooks Automate the Repetitive
 
-26 JavaScript hooks run automatically at key moments -- before tool calls, after edits, on session start. They handle audit logging, security checks, Docker health validation, skill routing, planning detection, and documentation reminders. You don't invoke them; they just work.
+27 JavaScript hooks run automatically at key moments -- before tool calls, after edits, on session start. They handle audit logging, security checks, document protection, Docker health validation, skill routing, planning detection, and documentation reminders. You don't invoke them; they just work.
 
 ### Commands Give You Shortcuts
 
@@ -114,11 +114,12 @@ Composable YAML layers that configure your entire AIfred installation:
 
 See [`profiles/README.md`](profiles/README.md) for full documentation.
 
-### Automation Hooks (26)
+### Automation Hooks (27)
 
 | Category | Examples |
 |----------|---------|
 | **Security** | Branch protection, credential guard, compose validation |
+| **Document Protection** | Document guard with 4-tier protection, credential scanning, structural checks |
 | **Operations** | Docker health checks, port conflict detection, restart loop detection |
 | **Workflow** | Skill routing, planning detection, orchestration, context tracking |
 | **Observability** | Audit logging, session tracking, documentation sync triggers |
@@ -236,7 +237,7 @@ AIfred/
 │   ├── context/            # Knowledge base (37 files)
 │   ├── commands/           # Slash commands (49)
 │   ├── agents/             # Agent definitions
-│   ├── hooks/              # Automation hooks (26)
+│   ├── hooks/              # Automation hooks (27)
 │   ├── skills/             # Workflow skills (8)
 │   └── orchestration/      # Task orchestration configs
 ├── .opencode/              # OpenCode-specific configs
@@ -260,6 +261,15 @@ AIfred/
 ---
 
 ## Changelog
+
+### v2.3.0 (2026-02-08) -- Document Guard
+
+- Document Guard V1: 4-tier file protection with pattern-based rules (critical/high/medium/low)
+- 7 check types: no_write, credential scanning, key deletion, section/heading preservation, frontmatter protection, shebang preservation
+- Document Guard V2: Optional semantic relevance validation via local Ollama (off by default)
+- Feature registry for discoverability of configurable features
+- Time-limited single-use override mechanism for approved exceptions
+- Full audit logging to `.claude/logs/document-guard.jsonl`
 
 ### v2.2.0 (2026-02-05) -- Environment Profiles
 

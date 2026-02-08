@@ -71,6 +71,42 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/lsp-redirector.js\""
           }
         ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/document-guard.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/document-guard.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__filesystem__edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/document-guard.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__filesystem__write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/document-guard.js\""
+          }
+        ]
       }
     ],
     "PostToolUse": [

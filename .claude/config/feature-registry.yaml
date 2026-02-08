@@ -1,0 +1,45 @@
+# Feature Registry
+# Master reference for configurable features in AIfred.
+# Each feature owns its own config file (source of truth).
+# This file is a discoverability index - update when adding/changing features.
+#
+# Protected by document-guard: key_deletion_protection
+
+last_updated: "2026-02-08"
+
+features:
+  document_guard:
+    config: .claude/hooks/document-guard.config.js
+    enabled: true
+    version: "2.0.0"
+    description: >
+      File protection hook with structural checks (V1) and
+      semantic relevance validation via Ollama (V2).
+    toggles:
+      - settings.enabled (master kill switch)
+      - settings.v1.enabled (all structural checks)
+      - settings.v2.enabled (semantic checks, default OFF)
+      - env: DOCUMENT_GUARD_ENABLED
+
+  audit_logging:
+    config: .claude/hooks/audit-logger.js
+    enabled: true
+    version: "1.0.0"
+    description: Tool execution audit trail (JSONL format)
+    toggles:
+      - env: CLAUDE_AUDIT_VERBOSITY (minimal|standard|full)
+
+  orchestration:
+    config: .claude/orchestration/README.md
+    enabled: true
+    description: Multi-phase task orchestration with dependency tracking
+    toggles:
+      - Auto-triggered by orchestration-detector hook (score threshold)
+
+  environment_profiles:
+    config: profiles/README.md
+    enabled: true
+    version: "1.0.0"
+    description: Composable environment layers (general, homelab, development, production)
+    toggles:
+      - .claude/config/active-profile.yaml

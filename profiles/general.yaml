@@ -125,6 +125,14 @@ hooks:
     priority: recommended
     description: Suggest LSP over grep for code navigation
 
+  # --- Document Protection ---
+  document-guard:
+    enabled: true
+    event: PreToolUse
+    matcher: "Edit,Write,mcp__filesystem__edit_file,mcp__filesystem__write_file"
+    priority: core
+    description: Validate edits against protection policies (V1 structural + V2 semantic)
+
   # --- MCP Enforcement ---
   mcp-enforcer:
     enabled: true

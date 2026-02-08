@@ -78,7 +78,7 @@ Profiles stack: `general` (always) + selected layers (`homelab`, `development`, 
 
 | Profile | What It Adds |
 |---------|-------------|
-| **general** | Audit logging, security hooks, session management |
+| **general** | Audit logging, security hooks, document guard, session management |
 | **homelab** | Docker validation, port conflict detection, health monitoring |
 | **development** | Project detection, orchestration, parallel-dev, branch protection |
 | **production** | Strict security, deployment gates, destructive command blocking |
@@ -208,7 +208,7 @@ AIfred/
 │   ├── context/            # Knowledge base (37 files)
 │   ├── commands/           # Slash commands (48)
 │   ├── agents/             # Agent definitions (11)
-│   ├── hooks/              # Automation hooks (38)
+│   ├── hooks/              # Automation hooks (39)
 │   ├── skills/             # Workflow skills (8)
 │   ├── jobs/               # Cron jobs
 │   └── logs/               # Audit logs
