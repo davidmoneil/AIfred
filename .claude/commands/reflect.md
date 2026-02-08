@@ -56,6 +56,14 @@ The `/reflect` command triggers Jarvis' self-reflection process, analyzing corre
 /reflect --dry-run
 ```
 
+## AC-05 Telemetry: Reflection Start
+
+Emit telemetry event at reflection start:
+
+```bash
+echo '{"component":"AC-05","event_type":"component_start","data":{"trigger":"reflect-command","depth":"standard"}}' | node .claude/hooks/telemetry-emitter.js
+```
+
 ## Workflow
 
 1. **Data Collection**
@@ -160,6 +168,16 @@ mkdir -p .claude/reports/reflections
 - **AC-05**: This command is the manual trigger for AC-05 Self-Reflection
 - **AC-06**: Proposals are queued for AC-06 Self-Evolution
 - **AC-09**: Called automatically during `/end-session`
+
+## AC-05 Telemetry: Reflection Complete
+
+After writing the report, emit completion telemetry:
+
+```bash
+echo '{"component":"AC-05","event_type":"component_end","data":{"corrections_analyzed":0,"problems_identified":0,"proposals_generated":0}}' | node .claude/hooks/telemetry-emitter.js
+```
+
+**Note**: Replace the `0` values with actual counts from the reflection analysis.
 
 ---
 

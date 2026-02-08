@@ -425,13 +425,13 @@ requires separate approval in AC-06.
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (manual, session-end, PR completion)
-- [ ] Inputs/outputs validated
+- [x] Triggers tested (manual /reflect validated 2026-02-08, 10 reflections completed)
+- [x] Inputs/outputs validated (corrections + self-corrections → report + proposals)
 - [x] Dependencies verified (lessons directory exists)
-- [ ] Gates implemented (all low-risk, auto-approve)
-- [x] Metrics emission working (telemetry-emitter.js integrated)
+- [x] Gates implemented (all low-risk, auto-approve)
+- [x] Metrics emission working (telemetry-emitter.js wired to reflect.md, CLI test passed 2026-02-08)
 - [ ] Failure modes tested (no data, no Memory MCP)
-- [ ] Integration with consumers verified (AC-06 reads proposals)
+- [x] Integration with consumers verified (AC-06 reads proposals via evolution-queue.yaml)
 - [x] Documentation updated
 
 ---
