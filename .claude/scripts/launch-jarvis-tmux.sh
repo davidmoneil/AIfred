@@ -123,7 +123,7 @@ else
     JARVIS_SESSION_TYPE="continue"
 fi
 
-CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
+CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=10000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
@@ -150,7 +150,7 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     # Create watcher window (window 1, detached so we stay on window 0)
     # JICM v5.7.0: threshold=70 (accounts for queuing delay before compression starts)
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 70 --interval 10 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 70 --interval 3 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience

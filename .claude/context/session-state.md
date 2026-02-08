@@ -8,13 +8,13 @@
 
 ## Current Work Status
 
-**Status**: 🟡 Active — JICM v5.8.0 committed, session in progress
+**Status**: 🟢 Active — v5.9.0 pipeline design in progress
 
-**Last Completed**: JICM v5.8.0 compression redesign (62cb798)
+**Last Completed**: Pipeline Design v3.0 plan written (Decomposition & Reconstruction)
 
 **Current Blocker**: None
 
-**Current Work**: Post-commit — ready for next priority
+**Current Work**: Pipeline Design v3.0 plan complete, awaiting user review. Decision trees updated to Decomposition-First paradigm. 6 interventions tracked (4 done, 2 TODO). Uncommitted changes from this session.
 
 ---
 
@@ -58,8 +58,17 @@ Previous session histories have been archived. For full details, see:
 - M3: Validate + Remove MCPs (DONE — filesystem removed from .mcp.json, fetch removed from settings)
 - M4: Session Start Redesign (DONE — lean injection, --fresh flag, session types)
 - M5: JICM Review + Emergency Resolution (DONE — cleanup fix, v5.8.1, emergency documented)
+- M6: MCP Actual Removal + Empirical Validation (IN PROGRESS)
+  - 14/14 functional tests passed (built-in tools replace MCPs)
+  - 13 MCPs removed via `claude mcp remove` (18 → 5)
+  - Registry updated to v2.0, permissions cleaned, docs updated
+  - Pending: restart for token measurement comparison
+- Aion Script designs complete: Virgil, Watcher, Ennoia (awaiting review)
 
-**Pending**: Commit all changes
+**Pending**:
+- Push commits to remote (62cb798, ca4bdef + new work)
+- Post-restart token measurement (Phase 4 of decomposition)
+- JICM watcher failsafe race condition fix (double trigger at 73%)
 
 ---
 

@@ -213,19 +213,9 @@ EOF
 fi
 
 # ============== MCP SUGGESTIONS ==============
-# Simplified post-decomposition: Tier 1 MCPs phagocytosed into skills
-# Only Tier 2/3 suggestions remain relevant
+# Post-decomposition (v5.9.0): All Tier 1 MCPs phagocytosed into skills.
+# Only 5 MCPs remain (memory, local-rag, fetch, git, playwright) — no suggestions needed.
 MCP_SUGGESTION=""
-if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
-    SUGGEST_SCRIPT="$CLAUDE_PROJECT_DIR/.claude/scripts/suggest-mcps.sh"
-    if [[ -x "$SUGGEST_SCRIPT" ]]; then
-        MCP_JSON=$("$SUGGEST_SCRIPT" --json 2>/dev/null || echo '{}')
-        TO_ENABLE=$(echo "$MCP_JSON" | jq -r '.to_enable // [] | join(", ")' 2>/dev/null)
-        if [[ -n "$TO_ENABLE" ]]; then
-            MCP_SUGGESTION="\n--- MCP: Enable $TO_ENABLE for this session ---"
-        fi
-    fi
-fi
 
 # ============== PHASE B ENHANCEMENTS (evo-2026-01-018, evo-2026-01-019) ==============
 
@@ -348,11 +338,8 @@ AIfred baseline has new commits. Run /sync-aifred-baseline after greeting."
 
     cat << PROTOCOL
 SESSION START — $LOCAL_DATE at $LOCAL_TIME (${TIME_OF_DAY})${weather_context}
-
-Status: ${CURRENT_WORK:-No active work}
-Next: ${NEXT_STEP:-Check priorities}${aifred_notice}
-
-Begin AC-01. Read .claude/context/session-state.md and .claude/context/current-priorities.md — assess state, decide next action, begin work. Do NOT just greet.
+Status: ${CURRENT_WORK:-No active work} | Next: ${NEXT_STEP:-Check priorities}${aifred_notice}
+Read session-state.md + current-priorities.md, then begin work. Do NOT just greet.
 PROTOCOL
 }
 
@@ -421,37 +408,19 @@ success: false
 IDLE_HANDS_EOF
     echo "$TIMESTAMP | SessionStart | JICM v5: Created .idle-hands-active flag (mode: jicm_resume)" >> "$LOG_DIR/session-start-diagnostic.log"
 
-    # Build continuation context using v5 template
-    MESSAGE="JICM v5: Context Restored\n\nIntelligent compression completed. Resume work immediately.$MCP_SUGGESTION$ENV_STATUS"
+    # Build continuation context using v5 template (lean)
+    MESSAGE="JICM v5: Context Restored. Resume immediately.$ENV_STATUS"
 
-    CONTEXT="## JICM CONTEXT CONTINUATION
+    CONTEXT="JICM CONTEXT CONTINUATION — NOT a new session. Resume work immediately.
+Do NOT greet. Do NOT ask what to work on. Announce what you're continuing (1 line), then proceed.
 
-**Status**: This is NOT a new session. Context was optimized mid-work. Resume immediately.
-
-### CRITICAL INSTRUCTIONS
-
-1. **DO NOT** greet the user or say hello
-2. **DO NOT** ask what they'd like to work on
-3. **DO NOT** offer assistance or wait for instructions
-4. **DO** resume work IMMEDIATELY from where you left off
-5. **DO** announce what you're continuing with (1 line), then proceed
-
-### Your Preserved State
-
-**Compressed Context:**
+Compressed Context:
 $V5_COMPRESSED_CONTENT
 
-**Work In Progress:**
+Work In Progress:
 $V5_IN_PROGRESS_CONTENT
 
-### Resume Protocol
-
-1. Parse the compressed context above to understand current task
-2. Continue from the exact point of interruption
-3. Brief status: \"Context restored. Continuing with [task]...\"
-4. Proceed with the work immediately
-
-Do NOT say hello. Do NOT ask how to help. Resume work NOW."
+Resume: Parse above, continue from interruption point. Say \"Context restored. Continuing with [task]...\" then proceed."
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"jicm_v5\", \"restart_type\": \"v5_idle_hands\"}" > "$STATE_DIR/AC-01-launch.json"
@@ -494,26 +463,13 @@ if [[ -f "$COMPRESSED_CONTEXT_FILE" ]]; then
     # Also remove any old checkpoint file to avoid confusion
     rm -f "$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
 
-    MESSAGE="CONTEXT RESTORED (Intelligent Compression)\n\nThe context was intelligently compressed using AI analysis.$MCP_SUGGESTION$ENV_STATUS"
-    CONTEXT="COMPRESSED CONTEXT RESTORATION (JICM v2):
-You are Jarvis. The context was intelligently compressed before /clear.
-
-Current datetime: $LOCAL_DATE at $LOCAL_TIME
-
-The following is the compressed context prepared by the context-compressor agent.
-It contains the essential information from the previous session.
+    MESSAGE="CONTEXT RESTORED (Intelligent Compression)$ENV_STATUS"
+    CONTEXT="JICM v2 RESTORATION — $LOCAL_DATE at $LOCAL_TIME
+Acknowledge \"Context restored, sir.\" then review and continue work.
 
 === COMPRESSED CONTEXT ===
 $COMPRESSED_CONTENT
-=== END COMPRESSED CONTEXT ===
-
-Your response should:
-1. Briefly acknowledge: \"Context restored, sir.\"
-2. Review the compressed context above
-3. Summarize the key work state (1-2 sentences)
-4. Continue with the work described in the compressed context
-
-This is a continuation - proceed efficiently without excessive preamble."
+=== END COMPRESSED CONTEXT ==="
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"intelligent\", \"restart_type\": \"compressed_context\"}" > "$STATE_DIR/AC-01-launch.json"
@@ -552,7 +508,7 @@ if [[ -f "$CHECKPOINT_FILE" ]]; then
         NEXT_PRIORITY=$(grep -A 2 "^\s*-\s*\[" "$PRIORITIES_FILE" 2>/dev/null | head -3)
     fi
 
-    MESSAGE="CONTEXT RESTORED ($SOURCE)\n\n$CHECKPOINT_CONTENT$MCP_SUGGESTION$ENV_STATUS"
+    MESSAGE="CONTEXT RESTORED ($SOURCE)$ENV_STATUS"
     CONTEXT="CONTEXT RESTART PROTOCOL:
 You are Jarvis. The context has been compressed or cleared and is now being restored.
 
@@ -591,20 +547,11 @@ You MUST immediately resume the work described above. Do NOT just summarize - ac
       }'
 
 elif [[ "$SOURCE" == "clear" ]]; then
-    # Clear without checkpoint - warn and offer fresh start
-    MESSAGE="CONTEXT CLEARED\n\nNo checkpoint found.$MCP_SUGGESTION$ENV_STATUS"
-    CONTEXT="CONTEXT CLEARED PROTOCOL:
-You are Jarvis. The context was cleared but no checkpoint was found.
-
-Current datetime: $LOCAL_DATE at $LOCAL_TIME
-
-Your response should:
-1. Acknowledge: \"Context cleared, sir. It's $LOCAL_TIME on $LOCAL_DATE.\"
-2. Note that no checkpoint was found to restore
-3. Check session-state.md to understand what was being worked on
-4. Offer to continue previous work OR start fresh
-
-Tip: Suggest using /checkpoint before /clear next time to preserve context."
+    # Clear without checkpoint
+    MESSAGE="CONTEXT CLEARED — No checkpoint found.$ENV_STATUS"
+    CONTEXT="Context cleared, $LOCAL_DATE at $LOCAL_TIME. No checkpoint found.
+Read session-state.md, offer to continue previous work or start fresh.
+Tip: Suggest /checkpoint before /clear next time."
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": false, \"restart_type\": \"clear_no_checkpoint\"}" > "$STATE_DIR/AC-01-launch.json"
@@ -625,19 +572,14 @@ elif [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     PROTOCOL_INSTRUCTIONS=$(build_protocol_instructions "$SOURCE" "false")
 
     if [[ "$AUTO_CONTINUE" == "true" ]] && [[ -n "$NEXT_STEP" ]]; then
-        # Autonomous initiation
         CONTEXT="$PROTOCOL_INSTRUCTIONS
-
-AUTONOMOUS INITIATION: After greeting and brief status, proceed with: $NEXT_STEP
-Do not wait for user confirmation unless the task requires it."
+AUTO: Proceed with $NEXT_STEP without waiting for confirmation."
     else
-        # Present options
         CONTEXT="$PROTOCOL_INSTRUCTIONS
-
-Present status and offer to continue with pending work or suggest alternatives."
+Present status and offer to continue with pending work."
     fi
 
-    MESSAGE="Session started ($SOURCE)$MCP_SUGGESTION$ENV_STATUS"
+    MESSAGE="Session started ($SOURCE)$ENV_STATUS"
 
     # ═══ SESSION START IDLE-HANDS FLAG ═══
     # Create idle-hands flag for automatic session wake-up

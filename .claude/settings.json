@@ -275,8 +275,7 @@
 
       "mcp__mcp-gateway__read_graph",
       "mcp__mcp-gateway__search_nodes",
-      "mcp__mcp-gateway__open_nodes",
-      "mcp__mcp-gateway__fetch"
+      "mcp__mcp-gateway__open_nodes"
     ],
 
     "deny": [

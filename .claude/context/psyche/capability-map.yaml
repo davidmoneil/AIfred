@@ -1,0 +1,221 @@
+version: 1
+updated: 2026-02-07
+
+# ─── SKILLS (multi-step workflows) ───
+skills:
+  - id: skill.filesystem-ops
+    when: "File read/write/search/create/move/stat operations"
+    tools: [Read, Write, Edit, Glob, Grep, "Bash(ls|stat|mkdir|mv|cp|rm)"]
+    replaces: mcp__filesystem (15 tools)
+    file: .claude/skills/filesystem-ops/SKILL.md
+
+  - id: skill.git-ops
+    when: "Git status, log, diff, branch, commit, push, stash"
+    tools: ["Bash(git *)"]
+    replaces: mcp__git (12 tools)
+    file: .claude/skills/git-ops/SKILL.md
+
+  - id: skill.web-fetch
+    when: "Fetch URL content, web search, API calls"
+    tools: [WebFetch, WebSearch, "Bash(curl)"]
+    replaces: mcp__fetch
+    file: .claude/skills/web-fetch/SKILL.md
+
+  - id: skill.weather
+    when: "Weather information for greeting or user request"
+    tools: ["Bash(curl wttr.in)"]
+    file: .claude/skills/weather/SKILL.md
+
+  - id: skill.session-management
+    when: "Session lifecycle — start, checkpoint, end, restore"
+    file: .claude/skills/session-management/SKILL.md
+
+  - id: skill.context-management
+    when: "JICM context monitoring, analysis, optimization, compaction"
+    file: .claude/skills/context-management/SKILL.md
+
+  - id: skill.self-improvement
+    when: "Reflection, evolution, research, maintenance (AC-05/06/07/08)"
+    file: .claude/skills/self-improvement/SKILL.md
+
+  - id: skill.validation
+    when: "Tooling health, infrastructure validation, design review"
+    file: .claude/skills/validation/SKILL.md
+
+  - id: skill.autonomous-commands
+    when: "Execute Claude Code native commands via signal automation"
+    file: .claude/skills/autonomous-commands/SKILL.md
+
+  - id: skill.ralph-loop
+    when: "Iterative development via Ralph Wiggum technique"
+    file: .claude/skills/ralph-loop/SKILL.md
+
+  - id: skill.jarvis-status
+    when: "Show autonomic component status and health grades"
+    file: .claude/skills/jarvis-status/SKILL.md
+
+  - id: skill.docx
+    when: "Create/edit Word documents (.docx)"
+    file: .claude/skills/docx/SKILL.md
+
+  - id: skill.xlsx
+    when: "Create/edit Excel spreadsheets (.xlsx)"
+    file: .claude/skills/xlsx/SKILL.md
+
+  - id: skill.pdf
+    when: "PDF manipulation, extraction, creation, forms"
+    file: .claude/skills/pdf/SKILL.md
+
+  - id: skill.pptx
+    when: "Create/edit PowerPoint presentations (.pptx)"
+    file: .claude/skills/pptx/SKILL.md
+
+  - id: skill.mcp-builder
+    when: "Create MCP servers for external integrations"
+    file: .claude/skills/mcp-builder/SKILL.md
+
+  - id: skill.skill-creator
+    when: "Create new skills for Claude Code"
+    file: .claude/skills/skill-creator/SKILL.md
+
+  - id: skill.mcp-validation
+    when: "Validate MCP installation and configuration"
+    file: .claude/skills/mcp-validation/SKILL.md
+
+  - id: skill.plugin-decompose
+    when: "Analyze and decompose plugins for integration"
+    file: .claude/skills/plugin-decompose/SKILL.md
+
+# ─── AGENTS (autonomous execution) ───
+agents:
+  - id: agent.deep-research
+    when: "Thorough technical research with citations and multi-source validation"
+    file: .claude/agents/deep-research.md
+
+  - id: agent.code-review
+    when: "Technical quality review of code changes"
+    file: .claude/agents/code-review.md
+
+  - id: agent.project-manager
+    when: "Progress and alignment review for milestone/PR validation"
+    file: .claude/agents/project-manager.md
+
+  - id: agent.code-analyzer
+    when: "Understand codebase structure, identify tech stack, find patterns"
+    file: .claude/agents/code-analyzer.md
+
+  - id: agent.code-implementer
+    when: "Write, modify, refactor code with full git workflow"
+    file: .claude/agents/code-implementer.md
+
+  - id: agent.code-tester
+    when: "Run automated tests, Playwright flows, screenshot capture"
+    file: .claude/agents/code-tester.md
+
+  - id: agent.docker-deployer
+    when: "Deploy/configure Docker services with health verification"
+    file: .claude/agents/docker-deployer.md
+
+  - id: agent.service-troubleshooter
+    when: "Diagnose infrastructure/service issues with root cause analysis"
+    file: .claude/agents/service-troubleshooter.md
+
+  - id: agent.compression-agent
+    when: "JICM v5 compression — compress context before /clear"
+    file: .claude/agents/compression-agent.md
+
+  - id: agent.context-compressor
+    when: "Compress conversation context before /clear"
+    file: .claude/agents/context-compressor.md
+
+  - id: agent.memory-bank-synchronizer
+    when: "Sync documentation with code changes"
+    file: .claude/agents/memory-bank-synchronizer.md
+
+  - id: agent.jicm-agent
+    when: "Autonomous JICM monitoring — runs in background"
+    file: .claude/agents/jicm-agent.md
+
+# ─── KEY PATTERNS (behavioral rules, load on demand) ───
+patterns:
+  - id: pattern.agent-selection
+    when: "Choosing between tools, skills, agents"
+    file: .claude/context/patterns/agent-selection-pattern.md
+
+  - id: pattern.selection-intelligence
+    when: "Quick tool selection guidance"
+    file: .claude/context/patterns/selection-intelligence-guide.md
+
+  - id: pattern.mcp-loading
+    when: "MCP tool loading strategy"
+    file: .claude/context/patterns/mcp-loading-strategy.md
+
+  - id: pattern.wiggum-loop
+    when: "Iterative execution loop (AC-02 default)"
+    file: .claude/context/patterns/wiggum-loop-pattern.md
+
+# ─── WORKFLOWS (multi-phase processes) ───
+workflows:
+  - id: flow.jicm-compression
+    when: "Context approaching threshold — intelligent compression"
+    file: .claude/commands/intelligent-compress.md
+
+  - id: flow.end-session
+    when: "Clean session exit with documentation"
+    file: .claude/commands/end-session.md
+
+  - id: flow.checkpoint
+    when: "Save state before /clear"
+    file: .claude/commands/checkpoint.md
+
+  - id: flow.setup
+    when: "Initial project configuration"
+    file: .claude/commands/setup.md
+
+# ─── AUTONOMIC COMPONENTS (AC signals) ───
+components:
+  - id: ac.01-self-launch
+    signal: "SessionStart"
+    file: .claude/context/components/AC-01-self-launch.md
+
+  - id: ac.02-wiggum-loop
+    signal: "Always (default execution loop)"
+    file: .claude/context/components/AC-02-wiggum-loop.md
+
+  - id: ac.03-milestone-review
+    signal: "Work completion"
+    file: .claude/context/components/AC-03-milestone-review.md
+
+  - id: ac.04-jicm
+    signal: "Context >= threshold"
+    file: .claude/context/components/AC-04-jicm.md
+
+  - id: ac.05-self-reflection
+    signal: "Session end, /reflect"
+    file: .claude/context/components/AC-05-self-reflection.md
+
+  - id: ac.06-self-evolution
+    signal: "/evolve, idle time"
+    file: .claude/context/components/AC-06-self-evolution.md
+
+  - id: ac.07-research
+    signal: "/research"
+    file: .claude/context/components/AC-07-research.md
+
+  - id: ac.08-maintenance
+    signal: "/maintain, quarterly"
+    file: .claude/context/components/AC-08-maintenance.md
+
+  - id: ac.09-session-completion
+    signal: "/end-session"
+    file: .claude/context/components/AC-09-session-completion.md
+
+# ─── MCP-TO-SKILL PIPELINE ───
+# When evaluating a new MCP for decomposition:
+# 1. Check mcp-decomposition-registry.md — already analyzed?
+# 2. ToolSearch "+<mcp-name>" — inventory all tools
+# 3. Map each tool to built-in equivalent (Read/Write/Edit/Glob/Grep/Bash/WebFetch/WebSearch)
+# 4. If ALL mapped → create skill, validate, register here, remove MCP
+# 5. If ANY unique → RETAIN MCP
+# 6. Measure token delta via statusline-input.json
+# See: .claude/context/reference/mcp-decomposition-registry.md

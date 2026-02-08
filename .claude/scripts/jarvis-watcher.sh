@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.8.1
+# JARVIS UNIFIED WATCHER — JICM v5.8.2
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -20,12 +20,33 @@
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
 #
+# Changelog v5.8.2 (2026-02-08):
+#   - FIX: Section 1.5 JICM-DUMP now uses send_text() (includes wait_for_idle_brief)
+#     instead of raw send-keys, preventing prompt text from getting stuck in TUI input
+#   - FIX: Section 1.5 checks if .in-progress-ready.md already exists and is recent
+#     (<120s old) before deleting and requesting a fresh dump. Prevents race with
+#     Jarvis who may have already written the file before watcher reaches section 1.5
+#   - FIX: Section 4 B2 check now also checks for JICM_COMPLETE_SIGNAL before
+#     firing emergency restore. Previously, idle-hands would clean up its flag,
+#     then B2 would see "no flag" and fire emergency even though resume succeeded
+#   - FIX: handle_critical_state "post_clear_unhandled" now uses send_text()
+#     instead of raw send-keys (same idle-wait fix as section 1.5)
+#
+# Changelog v5.8.2 (2026-02-08):
+#   - FIX: Section 1.5 JICM-DUMP now uses send_text() (includes wait_for_idle_brief)
+#     instead of raw send-keys, preventing prompt text stuck in TUI during generation
+#   - FIX: Section 1.5 checks .in-progress-ready.md age before deleting — if <120s
+#     old, skips dump request (Jarvis may have already written it)
+#   - FIX: Section 4 B2 now checks JICM_COMPLETE_SIGNAL before firing emergency
+#     restore. Idle-hands cleanup was deleting its flag, making B2 think hooks failed
+#   - FIX: handle_critical_state post_clear_unhandled uses send_text() (idle-wait)
+#
 # Changelog v5.8.1 (2026-02-07):
 #   - Added .compression-in-progress cleanup to cleanup_jicm_signals_only() and cleanup_jicm_files()
 #   - Prevents stale compression flag from blocking future JICM cycles after agent crash
 #   - Documented JICM-EMERGENCY as expected B2 FIX behavior in design addendum
 #
-# Changelog v5.6.2 (2026-02-06):
+# Changelog v5.8.2 (2026-02-06):
 #   - Removed --continue skip for session_start idle-hands
 #   - AC-01 protocol now runs for ALL session types (fresh and continue)
 #   - Continued sessions need Mechanism 2 (keystroke injection) same as fresh
@@ -210,7 +231,7 @@ while [[ $# -gt 0 ]]; do
         --interval) INTERVAL="$2"; shift 2 ;;
         --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.6.2 — JICM v5 with event-driven state machine"
+            echo "JARVIS WATCHER v5.8.2 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -975,13 +996,11 @@ DUMP
             # Fires when: (a) detect_critical_state finds state==cleared + no idle-hands
             #             (b) section 4 transitions cleared→monitoring without idle-hands
             #
-            # IMPORTANT: Single-line prompt only. Multi-line -l strings cause newlines
-            # in the input buffer that can corrupt or prematurely submit commands.
-            # See: Section 6.4.1 Submission Pattern Requirements
+            # v5.8.2 FIX: Use send_text() which includes wait_for_idle_brief()
+            # to prevent restore prompt from getting stuck in TUI input.
+            # Previously used raw send-keys without idle check.
             local restore_prompt='[JICM-EMERGENCY] Hooks failed. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$restore_prompt" 2>/dev/null || true
-            sleep 0.1
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m 2>/dev/null || true
+            send_text "$restore_prompt"
             # Transition back to monitoring — we've done what we can
             JICM_STATE="monitoring"
             GRACE_RESUME_UNTIL=$(($(date +%s) + 20))  # Protect new monitoring state (A4)
@@ -1337,8 +1356,8 @@ check_idle_hands() {
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.6.2 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.6.2 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.2 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.2 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1373,7 +1392,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.6.2, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
+    log INFO "Watcher started (JICM v5.8.2, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
@@ -1495,28 +1514,51 @@ main() {
             fi
 
             # ── .in-progress-ready.md gating (Item C) ──────────────────
-            # Before /clear, ask Jarvis to write a brief work summary.
-            # No idle-wait — send immediately, gate on file presence.
-            rm -f "$IN_PROGRESS_FILE"  # Remove stale copies
-            local ipr_prompt='[JICM-DUMP] Write your current work state to .claude/context/.in-progress-ready.md — include: current task, files modified, decisions made, active todos, blockers, next steps. Keep under 2000 tokens. Write the file immediately, no other output.'
-            log JICM "Requesting .in-progress-ready.md from Jarvis (no idle-wait)"
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$ipr_prompt"
-            sleep 0.1
-            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
-
-            # Poll for .in-progress-ready.md (2s interval, 45s timeout)
-            local ipr_wait=0
-            local ipr_max=45
-            while [[ $ipr_wait -lt $ipr_max ]]; do
-                if [[ -f "$IN_PROGRESS_FILE" ]]; then
-                    log JICM "Got .in-progress-ready.md (${ipr_wait}s wait)"
-                    break
+            # Before /clear, check if Jarvis already wrote a work summary.
+            # If recent file exists, skip the dump request entirely.
+            # Otherwise, ask via send_text (which includes idle-wait).
+            #
+            # v5.8.2 FIX: Previously used raw send-keys without idle check,
+            # causing prompt text to get stuck in TUI input during generation.
+            # Also previously deleted existing file unconditionally.
+            local ipr_skip=false
+            if [[ -f "$IN_PROGRESS_FILE" ]]; then
+                # Check file age — if written in last 120s, it's current
+                local ipr_mtime
+                ipr_mtime=$(stat -f %m "$IN_PROGRESS_FILE" 2>/dev/null || echo "0")
+                local ipr_now
+                ipr_now=$(date +%s)
+                local ipr_age=$((ipr_now - ipr_mtime))
+                if [[ $ipr_age -lt 120 ]]; then
+                    log JICM "Got recent .in-progress-ready.md (${ipr_age}s old) — skipping dump request"
+                    ipr_skip=true
+                else
+                    log JICM "Stale .in-progress-ready.md (${ipr_age}s old) — requesting fresh dump"
+                    rm -f "$IN_PROGRESS_FILE"
                 fi
-                sleep 2
-                ipr_wait=$((ipr_wait + 2))
-            done
-            if [[ ! -f "$IN_PROGRESS_FILE" ]]; then
-                log JICM "WARN: .in-progress-ready.md not received after ${ipr_max}s — proceeding with /clear anyway"
+            fi
+
+            if [[ "$ipr_skip" == "false" ]]; then
+                local ipr_prompt='[JICM-DUMP] Write your current work state to .claude/context/.in-progress-ready.md — include: current task, files modified, decisions made, active todos, blockers, next steps. Keep under 2000 tokens. Write the file immediately, no other output.'
+                log JICM "Requesting .in-progress-ready.md from Jarvis"
+                # v5.8.2: Use send_text() which includes wait_for_idle_brief()
+                # to prevent prompt getting stuck in TUI input during generation
+                send_text "$ipr_prompt"
+
+                # Poll for .in-progress-ready.md (2s interval, 45s timeout)
+                local ipr_wait=0
+                local ipr_max=45
+                while [[ $ipr_wait -lt $ipr_max ]]; do
+                    if [[ -f "$IN_PROGRESS_FILE" ]]; then
+                        log JICM "Got .in-progress-ready.md (${ipr_wait}s wait)"
+                        break
+                    fi
+                    sleep 2
+                    ipr_wait=$((ipr_wait + 2))
+                done
+                if [[ ! -f "$IN_PROGRESS_FILE" ]]; then
+                    log JICM "WARN: .in-progress-ready.md not received after ${ipr_max}s — proceeding with /clear anyway"
+                fi
             fi
             # ── end .in-progress-ready.md gating ─────────────────────────
 
@@ -1699,9 +1741,18 @@ main() {
                 # fire emergency restore NOW. Without this, post_clear_unhandled
                 # can never fire because it requires state==cleared, but we just
                 # transitioned to monitoring.
-                if [[ ! -f "$IDLE_HANDS_FLAG" ]]; then
+                #
+                # v5.8.2 FIX: Also check for JICM_COMPLETE_SIGNAL which is
+                # written by cleanup_jicm_files() when idle-hands succeeds.
+                # Previously, idle-hands would clean up the flag, then this
+                # check would see "no flag" and fire emergency restore even
+                # though idle-hands already handled the resume successfully.
+                if [[ ! -f "$IDLE_HANDS_FLAG" ]] && [[ ! -f "$JICM_COMPLETE_SIGNAL" ]]; then
                     log JICM "No idle-hands flag after clear — hooks may have failed. Emergency restore."
                     handle_critical_state "post_clear_unhandled"
+                elif [[ -f "$JICM_COMPLETE_SIGNAL" ]]; then
+                    log JICM "Idle-hands already completed (JICM complete signal present) — no emergency needed."
+                    rm -f "$JICM_COMPLETE_SIGNAL"
                 fi
             else
                 # FAILSAFE ONLY: If /clear somehow didn't reduce context after 60s
