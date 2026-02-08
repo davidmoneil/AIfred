@@ -18,7 +18,7 @@ replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher MC
 | Serper (Google SERP) | `curl -s -X POST "https://google.serper.dev/search" -H "X-API-KEY: $KEY" -d '{"q":"QUERY"}'` | `.search.serper` |
 | SerpAPI | `curl -s "https://serpapi.com/search.json?q=QUERY&api_key=$KEY"` | `.search.serpapi` |
 | Perplexity (AI search) | `curl -s -X POST "https://api.perplexity.ai/chat/completions" -H "Authorization: Bearer $KEY" -d '{"model":"sonar","messages":[{"role":"user","content":"QUERY"}]}'` | `.llm.perplexity` |
-| arXiv papers | `curl -s "http://export.arxiv.org/api/query?search_query=QUERY&max_results=5"` | None (public) |
+| arXiv papers | `curl -s "https://export.arxiv.org/api/query?search_query=QUERY&max_results=5"` | None (public) |
 | Wikipedia | `curl -s "https://en.wikipedia.org/api/rest_v1/page/summary/TITLE"` | None (public) |
 | PubMed | `curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=QUERY&retmode=json&api_key=$KEY"` | `.research.ncbi_pubmed` |
 | Firecrawl (scrape) | `curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer $KEY" -d '{"url":"URL"}'` | `.search.firecrawl` |
@@ -63,4 +63,5 @@ PPLX=$(yq -r '.llm.perplexity' .claude/secrets/credentials.yaml | head -1 | tr -
 | `sonar-reasoning` | Analysis requiring chain-of-thought |
 | `sonar-deep-research` | Autonomous deep investigation (slow, thorough) |
 
+**Validated 2026-02-08**: arXiv, Wikipedia, Brave, Perplexity all tested OK.
 Pending: GPTResearcher (autonomous multi-source). Key not yet provisioned.

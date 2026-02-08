@@ -11,10 +11,10 @@
 
 | Category | Items | Status |
 |----------|-------|--------|
-| MCP Reconstruction (in-progress) | 8 | Planned (skills exist, backends not yet wired) |
+| MCP Reconstruction (in-progress) | 8 | 6/8 DONE (templates + keys validated) |
 | New MCP → Skill (planned) | 19 | Planned (MCPs not yet installed) |
 | Marketplace Extraction | 10 | Prioritized for install/study/extract |
-| x-ops Consolidation | 6 | Planned (skill merges, 22→12) |
+| x-ops Consolidation | 6 | 4/6 DONE (self-ops, doc-ops, mcp-ops, autonom-ops) |
 | **Total actionable items** | **43** | |
 
 ---
@@ -24,19 +24,19 @@
 These MCPs were removed but their unique capabilities need native skill integration.
 Target skills already exist (research-ops v2.0, knowledge-ops v2.0).
 
-| # | MCP | Target Skill | Work Required | API Key |
-|---|-----|-------------|---------------|---------|
-| 1 | context7 | research-ops | Add curl template for versioned lib docs | `.rag.context7` |
-| 2 | arxiv | research-ops | Add curl template for paper search | None (public) |
-| 3 | brave-search | research-ops | Add curl template for local/video/news | `.search.brave` |
-| 4 | wikipedia | research-ops | Add curl template for structured sections | None (public) |
-| 5 | perplexity | research-ops | curl template exists — validate with API key | `.llm.perplexity` (TO PROVISION) |
-| 6 | gptresearcher | research-ops | Add deep research workflow | API key TBD |
-| 7 | lotus-wisdom | knowledge-ops | Extract contemplative patterns for AC-05/06 | N/A (prompt-only) |
-| 8 | chroma | db-ops (NEW) | Create db-ops skill with Docker Chroma client | N/A (local Docker) |
+| # | MCP | Target Skill | Status | API Key |
+|---|-----|-------------|--------|---------|
+| 1 | context7 | research-ops | ✅ Template + key exist (`.rag.context7`) | `.rag.context7` |
+| 2 | arxiv | research-ops | ✅ Template exists, URL fixed (http→https) | None (public) |
+| 3 | brave-search | research-ops | ✅ Template + key exist, tested OK | `.search.brave` |
+| 4 | wikipedia | research-ops | ✅ Template exists, tested OK | None (public) |
+| 5 | perplexity | research-ops | ✅ Template + key exist, tested OK | `.llm.perplexity` |
+| 6 | gptresearcher | research-ops | ⏳ Workflow documented, needs agent impl | API key TBD |
+| 7 | lotus-wisdom | knowledge-ops | ✅ Patterns in knowledge-ops lines 81-89 | N/A (prompt-only) |
+| 8 | chroma | db-ops (NEW) | ⏳ Create db-ops skill with Docker Chroma client | N/A (local Docker) |
 
-**Effort**: Each backend wiring = ~15 min (curl template + key path). Total: ~2 hours.
-**Blocker**: Perplexity and GPTResearcher API keys need provisioning.
+**Status**: 6/8 DONE. Remaining: #6 (GPTResearcher agent), #8 (Chroma/db-ops).
+**Blocker**: #8 needs Docker Chroma running. #6 needs API key provisioning.
 
 ---
 
@@ -80,10 +80,10 @@ Merge existing skills into unified x-ops skills. See registry for full architect
 
 | # | New Skill | Absorbs | Current Skills | Effort |
 |---|-----------|---------|---------------|--------|
-| 21 | self-ops | 3 skills | self-improvement + jarvis-status + validation | 2 hrs |
-| 22 | doc-ops | 4 skills | docx + xlsx + pdf + pptx | 1.5 hrs |
-| 23 | mcp-ops | 4 skills | mcp-validation + mcp-builder + plugin-decompose + skill-creator | 2 hrs |
-| 24 | autonom-ops | 4 skills | autonomous-commands + session-management + context-management + ralph-loop | 3 hrs |
+| 21 | self-ops | 3 skills | self-improvement + jarvis-status + validation | ✅ DONE (c618123) |
+| 22 | doc-ops | 4 skills | docx + xlsx + pdf + pptx | ✅ DONE (c618123) |
+| 23 | mcp-ops | 4 skills | mcp-validation + mcp-builder + plugin-decompose + skill-creator | ✅ DONE (c618123) |
+| 24 | autonom-ops | 4 skills | autonomous-commands + session-management + context-management + ralph-loop | ✅ DONE (c618123) |
 | 25 | db-ops | NEW | chroma + supabase + mongodb + sqlite + neo4j + mindsdb | 4 hrs |
 | 26 | web-ops | NEW | playwright + browserstack + scraping patterns | 2 hrs |
 

@@ -16,7 +16,7 @@ On-demand reference materials — consult when needed, not always-loaded.
 | [commands-quick-ref.md](commands-quick-ref.md) | All commands by category | Command lookup |
 | [mcp-decomposition-registry.md](mcp-decomposition-registry.md) | MCP decomposition tracking (v5.0) | MCP decisions, skill pipeline |
 | [tool-reconstruction-backlog.md](tool-reconstruction-backlog.md) | Prioritized reconstruction work items | Planning next skill builds |
-| [skill-descriptions.csv](skill-descriptions.csv) | All 22 skills cataloged | Skill inventory, Progressive Disclosure |
+| [skill-descriptions.csv](skill-descriptions.csv) | All 26 skills cataloged (10 discoverable + 15 absorbed + 1 example) | Skill inventory, Progressive Disclosure |
 | [glossary.md](glossary.md) | Project terminology | Term lookup |
 | [mcp-decision-map.md](mcp-decision-map.md) | MCP evaluation decision tree | Evaluating new MCPs |
 

@@ -80,17 +80,16 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 - MEMORY.md + restructuring-lessons.md
 - All 3 topology maps (nous, pneuma, soma) aligned with v5.9.0
 
+### X-ops Skill Consolidation (2026-02-08)
+**Commit**: c618123
+
+- 4 Swiss-Army-Knife router skills: doc-ops, self-ops, mcp-ops, autonom-ops
+- capability-map.yaml: 21→10 discoverable skills
+- 26 total skill dirs (10 discoverable + 15 absorbed subordinates + 1 example)
+
 ---
 
 ## Up Next
-
-### x-ops Skill Consolidation
-**Status**: Designed — awaiting implementation
-
-Consolidate 22 skills → 12 unified x-ops skills:
-- Planned: self-ops, doc-ops, mcp-ops, autonom-ops, db-ops, web-ops
-- Future: code-ops, flow-ops, data-sci-ops
-- Design: `.claude/context/reference/mcp-decomposition-registry.md`
 
 ### Tool Reconstruction Backlog
 **Status**: 43 items prioritized across 5 tiers
