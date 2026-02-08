@@ -2,7 +2,7 @@
 
 Detailed map of the Soma (infrastructure) layer — `/Jarvis/`.
 
-**Version**: 1.0.0
+**Version**: 1.1.0
 
 ---
 
@@ -21,7 +21,8 @@ Soma is how Jarvis INTERACTS — the bridge between self and the external world.
 ├── docs/                     # User documentation
 │
 ├── projects/                 # Development workspaces
-│   └── project-aion/         # Jarvis meta-project
+│   ├── project-aion/         # Jarvis meta-project
+│   └── mtg-card-sales/       # External project workspace
 │
 ├── paths-registry.yaml       # Infrastructure paths
 ├── CHANGELOG.md              # Version history
@@ -55,6 +56,9 @@ docker/
 | weekly-docker-restart.sh | Docker maintenance |
 | weekly-context-analysis.sh | Context review |
 | update-priorities-health.sh | Priority monitoring |
+| config.sh.template | Configuration template |
+
+**Subdirectory**: `systemd/` — systemd timer/service files for scheduled tasks
 
 **Note**: These are SYSTEM scripts, not session scripts (which live in `/.claude/scripts/`)
 
@@ -81,6 +85,7 @@ lancedb/
 ```
 docs/
 ├── user-guide.md             # Main user documentation
+├── reports/                  # Operational reports (JICM, validation)
 └── archive/                  # Historical documentation
 ```
 
@@ -98,7 +103,9 @@ Jarvis working on himself — the self-improvement project.
 projects/project-aion/
 ├── roadmap.md                # Master development roadmap
 ├── versioning-policy.md      # Version bumping rules
+├── archon-identity.md        # Archon identity specification
 │
+├── analysis/                 # Analytical work
 ├── designs/                  # Architecture documents
 │   ├── current/              # Active designs
 │   └── archive/              # Historical designs
@@ -211,7 +218,7 @@ models/ ◄───────────────────────
 | models/ | Variable (downloaded models) |
 | lancedb/ | Vector database files |
 | docs/ | User documentation |
-| projects/ | 1 meta-project (project-aion) |
+| projects/ | 2 projects (project-aion, mtg-card-sales) |
 
 ---
 
