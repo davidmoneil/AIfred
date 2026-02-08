@@ -49,3 +49,7 @@ jarvis-watcher.sh polls every 30s
 ## Infrastructure
 
 Watcher: `jarvis-watcher.sh` (v5.8.2, state machine). Agent: `compression-agent` (sonnet, background). Hook: `precompact-analyzer.js`. Essentials: `compaction-essentials.md`.
+
+## References
+
+- **Context Snapshot**: See [references/context-snapshot.md](references/context-snapshot.md) for reading statusline-captured context data programmatically (bypasses TUI scraping).
