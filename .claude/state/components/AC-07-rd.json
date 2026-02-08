@@ -12,7 +12,7 @@
     "research_agenda": true,
     "triggers_tested": false,
     "integration_tested": false,
-    "metrics_emission": false
+    "metrics_emission": true
   },
   "validation_checklist": {
     "all_9_sections_completed": true,
@@ -20,7 +20,7 @@
     "inputs_outputs_validated": false,
     "dependencies_verified": true,
     "gates_implemented": false,
-    "metrics_emission_working": false,
+    "metrics_emission_working": true,
     "failure_modes_tested": false,
     "integration_with_consumers_verified": false,
     "documentation_updated": true

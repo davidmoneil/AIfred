@@ -19,6 +19,14 @@ The `/maintain` command triggers Jarvis' maintenance workflows, performing clean
 | `--dry-run` | flag | false | Show what would be done |
 | `--quick` | flag | false | Health checks only |
 
+## AC-08 Telemetry: Maintenance Start
+
+Emit telemetry event at maintenance workflow start:
+
+```bash
+echo '{"component":"AC-08","event_type":"component_start","data":{"trigger":"maintain-command"}}' | node .claude/hooks/telemetry-emitter.js
+```
+
 ## Maintenance Tasks
 
 ### 1. Cleanup
@@ -186,6 +194,16 @@ Maintenance is **non-destructive by default**:
 - **AC-07**: Stale patterns flagged for R&D review
 - **AC-01**: Health checks at session start
 - **AC-09**: Cleanup at session end
+
+## AC-08 Telemetry: Maintenance Complete
+
+Emit telemetry event at maintenance workflow completion:
+
+```bash
+echo '{"component":"AC-08","event_type":"component_end","data":{"checks_run":0,"issues_found":0}}' | node .claude/hooks/telemetry-emitter.js
+```
+
+**Note**: Replace `0` values with actual counts from the maintenance run.
 
 ---
 

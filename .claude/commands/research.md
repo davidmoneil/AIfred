@@ -55,6 +55,14 @@ The `/research` command triggers Jarvis' R&D cycles, investigating external inno
 /research --quick
 ```
 
+## AC-07 Telemetry: R&D Cycles Start
+
+Emit telemetry event at R&D workflow start:
+
+```bash
+echo '{"component":"AC-07","event_type":"component_start","data":{"trigger":"research-command"}}' | node .claude/hooks/telemetry-emitter.js
+```
+
 ## Five-Step Process
 
 ### Step 1: Discovery
@@ -169,6 +177,16 @@ R&D proposals **always require user approval** before implementation:
 - External discoveries could introduce bloat
 - Internal changes could affect stability
 - User should validate research conclusions
+
+## AC-07 Telemetry: R&D Cycles Complete
+
+Emit telemetry event at R&D workflow completion:
+
+```bash
+echo '{"component":"AC-07","event_type":"component_end","data":{"topics_researched":0,"findings":0}}' | node .claude/hooks/telemetry-emitter.js
+```
+
+**Note**: Replace `0` values with actual counts from the research run.
 
 ---
 

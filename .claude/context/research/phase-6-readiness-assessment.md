@@ -23,9 +23,9 @@ Phase 6 is significantly more complete than the PR plan suggests. All 9 AC compo
 | AC-03 | Milestone Review | ~~implementing~~ → active | Full (7/9 checklist) | 2 agents, criteria, template, live report | **ACTIVE** (state synced this session) |
 | AC-04 | JICM | ~~implemented~~ → active | Full | v5.8.2 watcher, compression agent, hooks | **ACTIVE** (state synced 2026-02-08) |
 | AC-05 | Self-Reflection | ~~implementing~~ → active | Full | corrections, lessons dir, /reflect cmd, telemetry wired | **ACTIVE** (10 reflections, telemetry wired 2026-02-08) |
-| AC-06 | Self-Evolution | implementing | Full | evolution queue, /evolve cmd | **NEAR-ACTIVE** (needs trigger test) |
-| AC-07 | R&D Cycles | implementing | Full | research agenda, /research cmd | **NEAR-ACTIVE** (needs trigger test) |
-| AC-08 | Maintenance | implementing | Full | /maintain cmd, reports dir | **NEAR-ACTIVE** (needs trigger test) |
+| AC-06 | Self-Evolution | implementing | Full | evolution queue, /evolve cmd, telemetry wired | **IMPLEMENTING** (needs trigger test + downtime detector) |
+| AC-07 | R&D Cycles | implementing | Full | research agenda, /research cmd, telemetry wired | **IMPLEMENTING** (needs trigger test + file tracker) |
+| AC-08 | Maintenance | implementing | Full | /maintain cmd, reports dir, telemetry wired | **IMPLEMENTING** (needs trigger test + freshness auditor) |
 | AC-09 | Session Completion | ~~implementing~~ → active | Full | /end-session cmd, telemetry wired | **ACTIVE** (operationalized 2026-02-08) |
 
 ---
@@ -63,13 +63,13 @@ Phase 6 is significantly more complete than the PR plan suggests. All 9 AC compo
 
 ## Common Gap Pattern
 
-All "implementing" components share the same gap:
+Remaining "implementing" components (AC-06, AC-07, AC-08) share these gaps:
 1. `triggers_tested: false` — Need to manually invoke each trigger
-2. `metrics_emission: false` — Need to wire telemetry-emitter.js
+2. ~~`metrics_emission: false`~~ **DONE** — telemetry-emitter.js wired to all commands (2026-02-08)
 3. `integration_tested: false` — Need to verify downstream consumers receive data
 4. `gates_implemented: false` — Need to verify approval checkpoints work
 
-These are **repeatable tasks** — once the pattern is established for one component (AC-03 did this), the remaining can be operationalized quickly.
+Metrics emission is no longer a gap — all 9 AC commands now have telemetry wired. The remaining work is feature implementation (downtime detector, file tracker, freshness auditor) + trigger/integration testing.
 
 ---
 

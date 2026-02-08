@@ -38,6 +38,14 @@ The `/evolve` command triggers Jarvis' self-evolution process, implementing appr
 /evolve --risk medium
 ```
 
+## AC-06 Telemetry: Self-Evolution Start
+
+Emit telemetry event at evolution workflow start:
+
+```bash
+echo '{"component":"AC-06","event_type":"component_start","data":{"trigger":"evolve-command"}}' | node .claude/hooks/telemetry-emitter.js
+```
+
 ## Seven-Step Pipeline
 
 ### Step 1: Queue Review
@@ -147,6 +155,16 @@ Self-evolution NEVER modifies the AIfred baseline (read-only rule enforced).
 - **AC-07**: Receives proposals from R&D Cycles
 - **AC-08**: Receives proposals from Maintenance
 - **PR-13**: Uses benchmarks for validation
+
+## AC-06 Telemetry: Self-Evolution Complete
+
+Emit telemetry event at evolution workflow completion:
+
+```bash
+echo '{"component":"AC-06","event_type":"component_end","data":{"proposals_evaluated":0,"implementations":0}}' | node .claude/hooks/telemetry-emitter.js
+```
+
+**Note**: Replace `0` values with actual counts from the evolution run.
 
 ---
 
