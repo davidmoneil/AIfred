@@ -56,7 +56,7 @@ Phase 6 is significantly more complete than the PR plan suggests. All 9 AC compo
 | PR-12.6 | Self-Evolution | Downtime detector, rollback capability | ~2-3 hrs |
 | PR-12.7 | R&D Cycles | File usage tracker hook, external research integration | ~2 hrs |
 | PR-12.8 | Maintenance | Freshness auditor, organization auditor | ~2 hrs |
-| PR-12.10 | Self-Improvement | `/self-improve` orchestration command | ~1 hr |
+| PR-12.10 | Self-Improvement | ~~`/self-improve` orchestration~~ **DONE** (2 prior runs 2026-02-04/06, 4/4 phases) | 0 hr |
 | PR-13 | Monitoring/Benchmarking | Telemetry system, benchmark suite, scoring | ~4-6 hrs |
 
 ---

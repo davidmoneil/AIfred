@@ -129,15 +129,17 @@ Context window 6 (post-JICM compression):
 - P3: 5/5 COMPLETE
 - **Commits**: 90c7d63, 11e8eb1
 
-**Phase 11 — AC State Sync + AC-09 Operationalization (2026-02-08)**
+**Phase 11 — AC Operationalization Sweep (2026-02-08)**
 Context window 7 (post-JICM compression):
 - AC-01 state file: flat format → structured, status "active" (runs every session)
 - AC-04 state file: "implemented" → "active" v5.8.2 (7 context windows, 2 compression cycles this session)
-- AC-09 operationalized: telemetry-emitter.js wired into end-session.md, CLI test passed
-- AC-09 state file: "implementing" → "active", triggers_tested/metrics_emission → true
-- Phase 6 readiness: PR-12.9 moved from NEAR-COMPLETE to COMPLETE
+- AC-09 operationalized: telemetry wired, triggers tested, state → "active" (PR-12.9 COMPLETE)
+- AC-05 operationalized: telemetry wired to /reflect command, state updated (PR-12.5 COMPLETE)
+- AC-06/07/08: telemetry-emitter.js wired into /evolve, /research, /maintain commands
+- All 9 AC components now have telemetry emission — metrics_emission gap CLOSED
+- Phase 6 readiness: 7/10 PR-12 sub-PRs complete
 - Session reports directory created (.claude/reports/sessions/)
-- **Commits**: (this commit)
+- **Commits**: c72508c, 9ddac95, 41b73ee
 
 ### Key Decisions (This Session)
 1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs
