@@ -1,0 +1,155 @@
+CONTEXT-ENGINEERING-MARKETPLACE RESEARCH SUMMARY
+=================================================
+
+Repository URL:
+https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
+
+ALL 13 SKILLS AVAILABLE:
+========================
+Foundational (3):
+  1. context-fundamentals
+  2. context-degradation
+  3. context-compression
+
+Architectural (5):
+  4. multi-agent-patterns
+  5. memory-systems
+  6. tool-design
+  7. filesystem-context
+  8. hosted-agents
+
+Operational (3):
+  9. context-optimization
+  10. evaluation
+  11. advanced-evaluation
+
+Development (1):
+  12. project-development
+
+Cognitive (1):
+  13. bdi-mental-states
+
+
+TOP 5 FOR JICM (Ranked by Value):
+==================================
+
+#1. CONTEXT-COMPRESSION ★★★★★
+    Most directly applicable to JICM's 65% compression target
+    - Anchored Iterative Summarization: structured summaries (intent, modifications, decisions, next steps)
+    - Opaque Compression: >99% compression ratio
+    - Regenerative Full Summary: readable but lossy
+    KEY: Use Anchored approach—merge new summaries into persistent sections
+
+#2. MEMORY-SYSTEMS ★★★★★
+    Essential for session continuity
+    - Layered: Working → Short-term → Long-term → Entity → Temporal Knowledge Graphs
+    - File-system-as-memory pattern (simple, debuggable)
+    - Just-in-time loading at attention-favored positions
+    KEY: Session-scoped short-term + cross-session long-term storage
+
+#3. CONTEXT-OPTIMIZATION ★★★★★
+    Extends effective capacity
+    - Observation Masking: 60-80% reduction in tool outputs (they consume 80%+ of context!)
+    - Compaction: 50-70% reduction in old turns/documents
+    - KV-Cache Optimization: order stable content first for prefix hits
+    - Context Partitioning: isolate sub-agent contexts
+    KEY: Combine masking + compaction for multiplicative effect
+
+#4. CONTEXT-DEGRADATION ★★★★
+    Robustness foundation
+    - Lost-in-middle: U-shaped attention, 10-40% lower recall in middle
+    - Context poisoning: errors compound through repeated reference
+    - Threshold validation: 70-80% utilization is empirically justified
+    KEY: Justify compression triggers scientifically; detect poisoning
+
+#5. FILESYSTEM-CONTEXT ★★★★
+    Memory storage strategy
+    - Static context (system prompts) vs. dynamic context (on-demand)
+    - Search tools: ls, glob, grep, read_file with line ranges
+    - Tool output offloading: write >2000 tokens to files
+    KEY: Store memories in /Jarvis/.claude/context/jicm/sessions/{id}/ with YAML/JSON
+
+
+KEY TECHNIQUES EXTRACTABLE:
+===========================
+
+Compression:
+  • Anchored Iterative Summarization (persistent sections)
+  • Tokens-per-task metric (not tokens-per-request)
+  • Progressive disclosure (load on-demand)
+
+Memory:
+  • Layered architecture (working/short-term/long-term)
+  • Just-in-time loading (retrieve when needed)
+  • File-system-as-memory (simple hierarchy)
+
+Optimization:
+  • Observation Masking (compress tool outputs)
+  • KV-Cache ordering (stable content first)
+  • Context Partitioning (isolate sub-agents)
+
+Session Continuity:
+  • Progressive retrieval layers (4-tier model)
+  • State archival at session boundaries
+  • Degradation thresholds (70-80%)
+
+Robustness:
+  • Lost-in-middle avoidance (place critical info at edges)
+  • Context poisoning detection (verify before re-injection)
+  • Confidence scores + timestamps
+
+
+IMMEDIATE ACTION ITEMS FOR JICM:
+================================
+
+Phase 1 (Foundation):
+  □ Adopt Anchored Iterative Summarization structure
+  □ Test at 65% compression trigger
+  □ Validate reconstruction quality
+
+Phase 2 (Memory):
+  □ Implement file-system-as-memory in /jicm/sessions/{id}/
+  □ Add session state archival at session end
+  □ Build just-in-time retrieval index
+
+Phase 3 (Optimization):
+  □ Implement Observation Masking for tool outputs
+  □ Validate 60-80% reduction targets
+  □ Combine with Phase 1 compaction
+
+Phase 4 (Robustness):
+  □ Add poisoning detection (verify + confidence scores)
+  □ Degradation testing suite
+  □ Task-specific threshold calibration
+
+
+CORE INSIGHTS:
+==============
+
+1. Context limitations stem from ATTENTION MECHANICS, not token capacity alone
+   - U-shaped attention curve exists empirically
+   - Middle content receives 10-40% lower attention
+   - Lost-in-the-middle is structural, not a bug
+
+2. Tool outputs consume 80%+ of context in agent workflows
+   - Observation Masking directly targets this
+   - Can achieve 60-80% reduction with file references
+
+3. Compression should optimize for TOKENS-PER-TASK, not tokens-per-request
+   - Losing file paths costs more in re-fetching than tokens saved
+   - Structured summaries enable reconstruction
+
+4. Session continuity requires layered memory, not just compression
+   - Short-term: session-scoped (fast access, volatile)
+   - Long-term: persistent (slower access, cross-session)
+   - Progressive retrieval (on-demand, not all-in-context)
+
+5. Thresholds are empirically justified
+   - 70-80% compression trigger matches attention degradation onset
+   - Safe operating window: 50-70% for most workflows
+   - Different task types may need different thresholds
+
+
+FULL REPORT LOCATION:
+=====================
+/Users/aircannon/Claude/Jarvis/.claude/context/research/context-engineering-marketplace-analysis.md

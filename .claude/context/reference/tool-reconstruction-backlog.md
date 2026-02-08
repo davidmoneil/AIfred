@@ -62,15 +62,16 @@ From marketplace report Tier 1 + GitHub assessment. Install → Study → Rebuil
 
 Cherry-pick 5-10 skills from large libraries. Don't wholesale install.
 
-| # | Source | Skills to Extract | Target |
-|---|--------|-------------------|--------|
-| 16 | context-engineering-marketplace (11 skills) | Context compression, memory patterns | context-management, knowledge-ops |
-| 17 | claude-night-market (126 skills) | imbue (TDD), attune (decisions), sanctum (security) | self-ops, code-ops |
-| 18 | ai-research-skills (83 skills) | 5-10 best architecture/safety/training skills | research-ops |
-| 19 | omc patterns (28 agents, 37 skills) | LSP integration, execution modes | Study only |
-| 20 | supabase-agent-skills | PostgreSQL best practices | db-ops |
+| # | Source | Skills to Extract | Target | Status |
+|---|--------|-------------------|--------|--------|
+| 16 | context-engineering-marketplace (13 skills) | context-compression, context-optimization, memory-systems, context-degradation, filesystem-context | context-management, knowledge-ops | ✅ RESEARCHED — report at `.claude/context/research/context-engineering-marketplace-analysis.md` |
+| 17 | claude-night-market (126 skills, 16 plugins) | imbue (TDD hooks), attune (reversibility-scored decisions), memory-palace (tiered KG), conserve (context optimization), workflow-improvement (self-optimization) | self-ops, code-ops | ✅ RESEARCHED — key patterns documented |
+| 18 | ai-research-skills (83 skills) | 5-10 best architecture/safety/training skills | research-ops | Pending |
+| 19 | omc patterns (28 agents, 37 skills) | LSP integration, execution modes | Study only | Pending |
+| 20 | supabase-agent-skills | PostgreSQL best practices | db-ops | Pending |
 
-**Effort**: Each extraction = ~30 min review + ~15 min integration. Total: ~5-8 hours.
+**Status**: 2/5 researched. Key extraction candidates identified.
+**Next**: Extract Observation Masking pattern (#16) and imbue TDD hook (#17) into existing skills.
 
 ---
 
