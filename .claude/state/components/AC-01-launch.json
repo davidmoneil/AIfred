@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "status": "active",
   "created": "2026-01-17T00:00:00.000Z",
-  "last_modified": "2026-02-08T10:00:00.000Z",
-  "last_run": "2026-02-08T09:43:32Z",
-  "greeting_type": "night",
+  "last_modified": "2026-02-08T12:09:01Z",
+  "last_run": "2026-02-08T12:09:01Z",
+  "greeting_type": "morning",
   "checkpoint_loaded": true,
   "auto_continue": true,
-  "restart_type": "checkpoint",
+  "restart_type": "v5_idle_hands",
+  "compression_type": "jicm_v5",
   "implementation": {
     "spec_complete": true,
     "pattern_complete": true,
@@ -35,5 +36,5 @@
     "checkpoint_success_rate": null,
     "avg_startup_time_ms": null
   },
-  "notes": "State file synced 2026-02-08. AC-01 has been operational since session start — runs every session via session-start hook. Greeting type, checkpoint loading, and auto-continue all verified this session across multiple context windows. Previous flat format upgraded to structured component state."
+  "notes": "State file synced 2026-02-08. AC-01 operational since project inception. Hook overwrites this file on each session start — needs merge-update fix (EVO-2026-02-005). Runtime fields (greeting_type, restart_type, compression_type) updated from hook data."
 }
