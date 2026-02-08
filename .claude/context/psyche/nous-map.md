@@ -94,8 +94,11 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 |----------|---------|
 | glossary.md | All terminology definitions |
 | mcp-decision-map.md | Consolidated MCP selection |
+| mcp-decomposition-registry.md | MCP→skill decomposition history (v5.0) |
+| tool-reconstruction-backlog.md | 43 prioritized reconstruction items |
 | commands-quick-ref.md | All commands by category |
 | workflow-patterns.md | PARC, DDLA, COSA |
+| project-management.md | Project management reference |
 
 ### psyche/ — Topology Maps
 
@@ -105,6 +108,9 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 | nous-map.md | This document |
 | pneuma-map.md | Capabilities layer |
 | soma-map.md | Infrastructure layer |
+| capability-map.yaml | Manifest router (tool/skill/agent selection) |
+| autopoietic-paradigm.md | Self-organizing system philosophy |
+| self-knowledge/ | Operational introspection (strengths, weaknesses, patterns) |
 
 ### troubleshooting/ — Problem Solutions
 

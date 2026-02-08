@@ -19,10 +19,10 @@ Pneuma is what Jarvis CAN DO — capabilities and character that enable action.
 │
 ├── context/                  # → Nous layer (see nous-map.md)
 │
-├── agents/                   # Custom agent definitions (14)
-├── commands/                 # Slash commands (30+)
-├── skills/                   # On-demand skills (16)
-├── hooks/                    # Event automation (14)
+├── agents/                   # Custom agent definitions (12)
+├── commands/                 # Slash commands (35)
+├── skills/                   # On-demand skills (22)
+├── hooks/                    # Event automation (28)
 ├── scripts/                  # Session scripts (~20)
 ├── plugins/                  # Plugin definitions
 │
@@ -52,12 +52,14 @@ Pneuma is what Jarvis CAN DO — capabilities and character that enable action.
 | code-implementer | Code writing with git | Default |
 | code-review | Technical quality review | Default |
 | code-tester | Testing + Playwright | Default |
-| context-compressor | Context compression | Haiku |
-| deep-research | Multi-source research | Default |
-| docker-deployer | Docker deployment | Default |
-| memory-bank-synchronizer | Doc sync | Default |
+| compression-agent | JICM v5.8 context compression | Sonnet |
+| context-compressor | Generic context compression | Opus |
+| deep-research | Multi-source research | Sonnet |
+| docker-deployer | Docker deployment | Sonnet |
+| jicm-agent | Autonomous JICM monitoring | Haiku |
+| memory-bank-synchronizer | Doc sync | Sonnet |
 | project-manager | Progress review | Default |
-| service-troubleshooter | Issue diagnosis | Default |
+| service-troubleshooter | Issue diagnosis | Sonnet |
 
 **Structure**:
 ```
@@ -92,6 +94,19 @@ commands/
 
 | Skill | Purpose |
 |-------|---------|
+| filesystem-ops | File/directory operations (replaces filesystem MCP) |
+| git-ops | Git operations via Bash (replaces git MCP) |
+| web-fetch | Web content retrieval (replaces fetch MCP) |
+| weather | Weather via wttr.in API |
+| research-ops | Multi-source research — 14 backends |
+| knowledge-ops | 4-tier memory hierarchy |
+| context-management | JICM context orchestration |
+| session-management | Session lifecycle |
+| self-improvement | AC-05/06/07/08 orchestration |
+| validation | System validation workflows |
+| autonomous-commands | Signal-based native command execution |
+| jarvis-status | AC component status display |
+| ralph-loop | Iterative development |
 | docx | Word document manipulation |
 | xlsx | Spreadsheet with formulas |
 | pdf | PDF manipulation |
@@ -99,13 +114,8 @@ commands/
 | mcp-builder | MCP server development |
 | mcp-validation | MCP testing |
 | skill-creator | Skill development |
-| session-management | Session lifecycle |
-| autonomous-commands | Signal-based native command execution |
-| context-management | JICM context orchestration |
-| self-improvement | AC-05/06/07/08 orchestration |
-| validation | System validation workflows |
-| ralph-loop | Iterative development |
-| jarvis-status | AC component status display |
+| plugin-decompose | Plugin analysis and decomposition |
+| example-skill | Skill template reference |
 
 **Structure**:
 ```
@@ -230,10 +240,10 @@ state/ ────────────────► reports/ (state→rep
 
 | Type | Count |
 |------|-------|
-| Agents | 14 active |
-| Commands | 30+ |
-| Skills | 16 |
-| Hooks | 14 registered |
+| Agents | 12 active |
+| Commands | 35 |
+| Skills | 22 |
+| Hooks | 28 registered |
 | Scripts | ~20 session scripts |
 
 ---
