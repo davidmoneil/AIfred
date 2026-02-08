@@ -68,7 +68,7 @@ Fallback: search `.claude/skills/_index.md`, `.claude/agents/README.md`, `.claud
 | Current work | `.claude/context/session-state.md` |
 | Task queue | `.claude/context/current-priorities.md` |
 | Identity/persona | `.claude/jarvis-identity.md` |
-| All patterns (48) | `.claude/context/patterns/_index.md` |
+| All patterns (50) | `.claude/context/patterns/_index.md` |
 | AC components (9) | `.claude/context/components/orchestration-overview.md` |
 | Tool selection | `.claude/context/psyche/capability-map.yaml` |
 | JICM design | `.claude/context/designs/jicm-v5-design-addendum.md` |
