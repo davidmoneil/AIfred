@@ -1,0 +1,49 @@
+Pattern,Status,High_Level_Refs,Behavioral_Refs,Category,Mandatory,Priority
+agent-invocation-pattern,ORPHAN,0,0,Capability Architecture,No,Low
+agent-selection-pattern,WELL_REFERENCED,2,12,Selection & Routing,No,High
+archon-architecture-pattern,PARTIAL_BEHAV,0,1,Architecture,No,Low
+automated-context-management,PARTIAL_BEHAV,0,7,Automation & Integration,No,Medium
+autonomic-testing-framework,PARTIAL_BEHAV,0,1,Testing & Validation,No,Low
+autonomous-execution-pattern,ORPHAN,0,0,Capability Architecture,No,Low
+batch-mcp-validation,ORPHAN,0,0,MCP Management,No,Low
+branching-strategy,PARTIAL_BEHAV,0,2,Development & Git,No,Low
+capability-layering-pattern,ORPHAN,0,0,Capability Architecture,No,Low
+code-before-prompts-pattern,ORPHAN,0,0,Capability Architecture,No,Low
+command-invocation-pattern,PARTIAL_BEHAV,0,1,Capability Architecture,No,Low
+command-signal-protocol,PARTIAL_BEHAV,0,5,Automation & Integration,No,Low
+component-interaction-protocol,PARTIAL_BEHAV,0,1,Automation & Integration,No,Low
+context-budget-management,PARTIAL_BEHAV,0,9,MCP Management,No,Medium
+cross-project-commit-tracking,PARTIAL_BEHAV,0,1,Development & Git,No,Low
+hook-consolidation-assessment,PARTIAL_BEHAV,0,1,Reference,No,Low
+jicm-continuation-prompt,PARTIAL_BEHAV,0,2,Automation & Integration,No,Low
+jicm-pattern,PARTIAL_BEHAV,0,6,Core Behaviors,Yes,High
+maintenance-pattern,PARTIAL_BEHAV,0,3,Self-Improvement,No,Medium
+mcp-design-patterns,PARTIAL_BEHAV,0,7,MCP Management,No,Medium
+mcp-loading-strategy,WELL_REFERENCED,1,12,MCP Management,No,High
+mcp-validation-harness,PARTIAL_BEHAV,0,5,MCP Management,No,Low
+memory-storage-pattern,PARTIAL_BEHAV,0,4,Design & Planning,No,Low
+milestone-review-pattern,PARTIAL_BEHAV,0,9,Development & Git,Yes,High
+multi-repo-credential-pattern,PARTIAL_BEHAV,0,1,Infrastructure,No,Low
+organization-pattern,PARTIAL_BEHAV,0,4,Architecture,No,Low
+override-disable-pattern,PARTIAL_BEHAV,0,1,Automation & Integration,No,Low
+parallelization-strategy,ORPHAN,0,0,Core Behaviors,No,High
+plugin-decomposition-pattern,PARTIAL_BEHAV,0,1,Plugin & Skill Management,No,Low
+project-reporting-pattern,PARTIAL_BEHAV,0,2,Infrastructure,No,Low
+prompt-design-review,PARTIAL_BEHAV,0,5,Design & Planning,No,Low
+rd-cycles-pattern,PARTIAL_BEHAV,0,3,Self-Improvement,No,Medium
+selection-intelligence-guide,WELL_REFERENCED,2,11,Selection & Routing,Yes,High
+selection-validation-tests,PARTIAL_BEHAV,0,5,Selection & Routing,No,Low
+self-evolution-pattern,PARTIAL_BEHAV,0,4,Self-Improvement,No,Medium
+self-improvement-pattern,PARTIAL_BEHAV,0,1,Self-Improvement,No,Medium
+self-interruption-prevention,PARTIAL_BEHAV,0,1,Core Behaviors,No,Low
+self-monitoring-commands,PARTIAL_BEHAV,0,2,Reference,No,Low
+self-reflection-pattern,PARTIAL_BEHAV,0,4,Self-Improvement,No,Medium
+service-lifecycle-pattern,PARTIAL_BEHAV,0,2,Infrastructure,No,Low
+session-completion-pattern,PARTIAL_BEHAV,0,3,Session Lifecycle,No,Low
+session-start-checklist,PARTIAL_BEHAV,0,4,Session Lifecycle,No,Low
+setup-validation,PARTIAL_BEHAV,0,2,Testing & Validation,No,Low
+startup-protocol,PARTIAL_BEHAV,0,4,Session Lifecycle,Yes,High
+tool-selection-intelligence,PARTIAL_BEHAV,0,3,Selection & Routing,No,Low
+wiggum-loop-pattern,WELL_REFERENCED,1,6,Core Behaviors,Yes,High
+workspace-path-policy,PARTIAL_BEHAV,0,3,Design & Planning,No,Low
+worktree-shell-functions,PARTIAL_BEHAV,0,1,Reference,No,Low

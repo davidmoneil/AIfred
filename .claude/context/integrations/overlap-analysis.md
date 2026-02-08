@@ -4,7 +4,13 @@
 **Updated**: 2026-01-09 (PR-9.5)
 **Version**: 1.2
 **PR Reference**: PR-5 (Core Tooling), PR-8.5 (Research MCPs), PR-9 (Selection Intelligence)
-**Status**: Active
+**Status**: PARTIALLY OUTDATED
+
+> **v5.9.0 NOTE (2026-02-08)**: Most overlaps documented here have been RESOLVED
+> by the MCP decomposition milestone. Filesystem MCP, Git MCP, and most research
+> MCPs have been removed. Built-in tools are now the sole mechanism for file/git ops.
+> The overlap analysis for remaining MCPs (memory, local-rag, playwright) is still
+> valid. **Current selection guide**: `.claude/context/psyche/capability-map.yaml`.
 
 ---
 

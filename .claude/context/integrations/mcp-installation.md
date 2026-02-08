@@ -2,7 +2,14 @@
 
 **Created**: 2026-01-06
 **PR Reference**: PR-5 (Core Tooling Baseline)
-**Status**: Active
+**Status**: LARGELY OUTDATED
+
+> **v5.9.0 NOTE (2026-02-08)**: This guide documents the original 18-MCP installation.
+> 13 MCPs have been decomposed into skills (Feb 2026). Only 5 remain:
+> memory, local-rag, fetch (auto-provisioned), git (auto-provisioned), playwright.
+> Auto-provisioned MCPs (fetch, git, memory) cannot be unloaded.
+> **Current reference**: `.claude/context/reference/mcp-decomposition-registry.md` v5.0.
+> The Memory MCP installation section below remains accurate.
 
 ---
 

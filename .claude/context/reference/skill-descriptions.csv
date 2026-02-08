@@ -1,0 +1,23 @@
+skill_id,name,version,description,status,target_consolidation
+autonomous-commands,autonomous-commands,1.0.0,"Execute Claude Code built-in commands via signal-based automation",active,autonom-ops
+context-management,context-management,4.0.0,"JICM v5.8 context monitoring, analysis, and compaction",active,autonom-ops
+docx,docx,1.0.0,"Word document creation, editing, tracked changes, formatting",active,doc-ops
+example-skill,example-skill,1.0.0,"Skill template reference for creating new skills",active,mcp-ops
+filesystem-ops,filesystem-ops,2.0.0,"File/directory operations via built-in tools (Read/Write/Glob/Grep/Bash)",standalone,standalone
+git-ops,git-ops,2.0.0,"Git operations via Bash commands (status/log/diff/commit/push)",standalone,standalone
+jarvis-status,jarvis-status,1.0.0,"Autonomic component status display with health grades (AC-01 through AC-09)",active,self-ops
+knowledge-ops,knowledge-ops,2.0.0,"4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding",active,standalone
+mcp-builder,mcp-builder,1.0.0,"Guide for creating MCP servers for external integrations",active,mcp-ops
+mcp-validation,mcp-validation,1.0.0,"Validate MCP installation, configuration, and functionality",active,mcp-ops
+pdf,pdf,1.0.0,"PDF manipulation: extraction, creation, merging, splitting, forms",active,doc-ops
+plugin-decompose,plugin-decompose,1.0.0,"Analyze and decompose plugins for Jarvis integration",active,mcp-ops
+pptx,pptx,1.0.0,"PowerPoint presentation creation, editing, layouts, notes",active,doc-ops
+ralph-loop,ralph-loop,1.0.0,"Iterative development via Ralph Wiggum technique",active,autonom-ops
+research-ops,research-ops,2.0.0,"Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping",active,standalone
+self-improvement,self-improvement,1.0.0,"AC-05/06/07/08 orchestration: reflect, evolve, research, maintain",active,self-ops
+session-management,session-management,2.0.0,"Session lifecycle — start, checkpoint, exit with context preservation",active,autonom-ops
+skill-creator,skill-creator,1.0.0,"Guide for creating new skills following Format Standard v2.0",active,mcp-ops
+validation,validation,1.0.0,"Tooling health, infrastructure validation, design review (PARC)",active,self-ops
+weather,weather,2.0.0,"Weather via wttr.in API — no key required",standalone,standalone
+web-fetch,web-fetch,2.0.0,"Web content retrieval via WebFetch/WebSearch/curl",active,research-ops
+xlsx,xlsx,1.0.0,"Excel spreadsheet creation, editing, formulas, data visualization",active,doc-ops

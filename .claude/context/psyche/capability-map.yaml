@@ -1,5 +1,5 @@
-version: 1
-updated: 2026-02-07
+version: 2
+updated: 2026-02-08
 
 # ─── SKILLS (multi-step workflows) ───
 skills:
@@ -31,7 +31,7 @@ skills:
     file: .claude/skills/session-management/SKILL.md
 
   - id: skill.context-management
-    when: "JICM context monitoring, analysis, optimization, compaction"
+    when: "JICM v5.8 context monitoring, analysis, compaction, compress"
     file: .claude/skills/context-management/SKILL.md
 
   - id: skill.self-improvement
@@ -83,13 +83,13 @@ skills:
     file: .claude/skills/mcp-validation/SKILL.md
 
   - id: skill.research-ops
-    when: "Multi-source research — web, academic, financial, AI-augmented"
+    when: "Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping"
     tools: [WebSearch, WebFetch, "Bash(curl)"]
-    replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher MCPs
+    replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher, tavily, serper, serpapi, firecrawl MCPs
     file: .claude/skills/research-ops/SKILL.md
 
   - id: skill.knowledge-ops
-    when: "Knowledge graph, memory, reflection, vector search"
+    when: "4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding"
     tools: [Read, Write, Grep, "Bash(jq)", ToolSearch]
     replaces: memory MCP (shadow), lotus-wisdom MCP
     file: .claude/skills/knowledge-ops/SKILL.md
@@ -97,6 +97,18 @@ skills:
   - id: skill.plugin-decompose
     when: "Analyze and decompose plugins for integration"
     file: .claude/skills/plugin-decompose/SKILL.md
+
+# ─── PLANNED x-ops CONSOLIDATIONS ───
+# self-ops:    self-improvement + jarvis-status + validation
+# doc-ops:     docx + xlsx + pdf + pptx
+# mcp-ops:     mcp-validation + mcp-builder + plugin-decompose + skill-creator
+# autonom-ops: autonomous-commands + session-management + context-management + ralph-loop
+# db-ops:      chroma + supabase + mongodb + sqlite + neo4j + mindsdb (new)
+# web-ops:     playwright + browserstack + scraping (new)
+# code-ops:    serena + semgrep + repomix (new)
+# flow-ops:    n8n + orchestration (new)
+# data-sci-ops: vizro + analysis + visualization (new)
+# See: .claude/context/reference/mcp-decomposition-registry.md
 
 # ─── AGENTS (autonomous execution) ───
 agents:
@@ -165,6 +177,26 @@ patterns:
   - id: pattern.wiggum-loop
     when: "Iterative execution loop (AC-02 default)"
     file: .claude/context/patterns/wiggum-loop-pattern.md
+
+  - id: pattern.jicm
+    when: "JICM context management thresholds and flow (AC-04 MANDATORY)"
+    file: .claude/context/patterns/jicm-pattern.md
+
+  - id: pattern.startup-protocol
+    when: "Session start three-phase protocol (AC-01 MANDATORY)"
+    file: .claude/context/patterns/startup-protocol.md
+
+  - id: pattern.milestone-review
+    when: "Milestone/PR completion validation (AC-03 MANDATORY)"
+    file: .claude/context/patterns/milestone-review-pattern.md
+
+  - id: pattern.context-budget
+    when: "Token budgets, MCP tiers, context optimization"
+    file: .claude/context/patterns/context-budget-management.md
+
+  - id: pattern.parallelization
+    when: "Parallel vs sequential execution decisions"
+    file: .claude/context/patterns/parallelization-strategy.md
 
 # ─── WORKFLOWS (multi-phase processes) ───
 workflows:

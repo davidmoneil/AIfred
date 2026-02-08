@@ -2,8 +2,9 @@
 
 Reusable implementation patterns organized by category. Consult before implementing significant tasks.
 
-**Last Updated**: 2026-01-23 (M4 Pattern Porting)
+**Last Updated**: 2026-02-08 (Cross-reference audit)
 **Total Patterns**: 48
+**Audit Report**: `.claude/reports/pattern-cross-reference-audit-2026-02-08.md`
 
 ---
 
@@ -146,6 +147,7 @@ Patterns for automation and component integration.
 | [component-interaction-protocol](component-interaction-protocol.md) | AC component communication | Component development |
 | [override-disable-pattern](override-disable-pattern.md) | Suppress behaviors when needed | Troubleshooting |
 | [automated-context-management](automated-context-management.md) | Smart checkpoint workflow | Context optimization |
+| [jicm-continuation-prompt](jicm-continuation-prompt.md) | JICM post-clear continuation prompt | After /clear restore |
 
 ---
 

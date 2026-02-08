@@ -4,7 +4,16 @@
 **Updated**: 2026-01-09 (PR-9.5)
 **Version**: 1.5
 **PR Reference**: PR-5 (Core Tooling), PR-9 (Selection Intelligence)
-**Status**: Active
+**Status**: PARTIALLY OUTDATED
+
+> **v5.9.0 NOTE (2026-02-08)**: This matrix predates the MCP decomposition milestone.
+> 13 MCPs were removed (Filesystem, Brave Search, arXiv, Wikipedia, etc.).
+> **Current authoritative source**: `.claude/context/psyche/capability-map.yaml`
+> (manifest router) and `.claude/context/reference/mcp-decomposition-registry.md`.
+> File operations, git operations, and web operations now use skills, not MCPs.
+> The File Operations and Git Operations tables below remain correct (built-in tools
+> are still primary). The Research Tool Selection table is superseded by
+> `.claude/skills/research-ops/SKILL.md` v2.0 (14 backends).
 
 ---
 

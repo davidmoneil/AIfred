@@ -4,7 +4,7 @@ Skills are comprehensive workflow guides that consolidate related commands, hook
 Unlike commands (single actions), skills provide end-to-end guidance for complex workflows.
 
 **Created**: 2026-01-06
-**Last Updated**: 2026-02-07
+**Last Updated**: 2026-02-08
 **Source**: AIfred baseline af66364 (ported from AIProjects)
 
 ---
@@ -26,15 +26,15 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [example-skill](example-skill/SKILL.md) | Skill template reference | N/A |
 | [ralph-loop](ralph-loop/SKILL.md) | Iterative development via Ralph Wiggum technique | /ralph-loop, /cancel-ralph |
 | [jarvis-status](jarvis-status/SKILL.md) | Jarvis autonomic system status (AC-01 through AC-09) | N/A (replaces old /status) |
-| [context-management](context-management/SKILL.md) | JICM context monitoring, analysis, and optimization | /context-budget, /context-checkpoint, /smart-compact |
+| [context-management](context-management/SKILL.md) | JICM v5.8 context monitoring, analysis, and compaction | /context-budget, /context-checkpoint, /smart-compact, /intelligent-compress |
 | [self-improvement](self-improvement/SKILL.md) | AC-05/06/07/08 orchestration for continuous improvement | /self-improve, /reflect, /evolve, /research, /maintain |
 | [validation](validation/SKILL.md) | Tooling, infrastructure, and design validation | /tooling-health, /health-report, /validate-selection, /design-review |
 | [filesystem-ops](filesystem-ops/SKILL.md) | File/directory operations via built-in tools (replaces filesystem MCP) | N/A |
 | [git-ops](git-ops/SKILL.md) | Git operations via Bash commands (replaces git MCP) | N/A |
 | [web-fetch](web-fetch/SKILL.md) | Web content retrieval via WebFetch/WebSearch (replaces fetch MCP) | N/A |
 | [weather](weather/SKILL.md) | Weather information via wttr.in API | N/A |
-| [research-ops](research-ops/SKILL.md) | Multi-source research — web, academic, financial, AI-augmented | N/A |
-| [knowledge-ops](knowledge-ops/SKILL.md) | Knowledge graph, memory, reflection, vector search | N/A |
+| [research-ops](research-ops/SKILL.md) | Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping | N/A |
+| [knowledge-ops](knowledge-ops/SKILL.md) | 4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding | N/A |
 
 ---
 

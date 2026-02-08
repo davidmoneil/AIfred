@@ -1,6 +1,7 @@
 ---
 name: code-analyzer
 description: Understand codebase structure, identify tech stack, find patterns, and prepare for implementation tasks
+tools: All tools
 ---
 
 # Agent: Code Analyzer

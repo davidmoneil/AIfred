@@ -1,9 +1,10 @@
 # Jarvis Self-Constitution Proposal
 
-**Version**: 1.0.0-draft
-**Date**: 2026-02-05
+**Version**: 1.1.0-draft
+**Date**: 2026-02-05 (revised 2026-02-08)
 **Author**: Jarvis (with user collaboration)
 **Status**: DRAFT — Awaiting Review
+**Review**: See `self-constitution-review-2026-02-08.md` for technical alignment review
 
 ---
 
@@ -307,6 +308,13 @@ The layers don't merely stack — they **interpenetrate** and **co-constitute**:
 
 ### 5.1 Directory Structure
 
+> **v5.9.0 NOTE**: The current architecture already embodies Nous/Pneuma/Soma
+> through `.claude/context/` (Nous), `.claude/` (Pneuma), `/Jarvis/` (Soma).
+> The structure below is an ASPIRATIONAL target. Immediate restructuring is
+> deferred due to high reference-breakage cost across CLAUDE.md, 49 patterns,
+> 22 skills, and capability-map.yaml. Incremental adoption recommended —
+> e.g., add `psyche/self-knowledge/` under existing structure.
+
 ```
 .claude/
 ├── identity/                          # NOUS: Who Jarvis is
@@ -376,6 +384,13 @@ The layers don't merely stack — they **interpenetrate** and **co-constitute**:
 ```
 
 ### 5.2 Cognitive Memory Configuration
+
+> **v5.9.0 NOTE**: The knowledge-ops v2.0 skill implements a pragmatic 4-tier
+> memory hierarchy using existing tools: Tier 1 (Dynamic KG via Memory MCP),
+> Tier 2 (Static KG via auto memory files), Tier 3 (Semantic RAG via local-rag),
+> Tier 4 (Documentary grounding via Read/Glob/Grep). The configuration below
+> represents a FUTURE enhancement (Vestige-based cognitive memory) that builds
+> on top of the current 4-tier foundation.
 
 ```yaml
 # .claude/memory/cognitive-memory-config.yaml
@@ -736,25 +751,36 @@ version: "1.0.0"
 description: "All numerical thresholds with documented rationales"
 
 context_management:
-  jicm_trigger_pct:
-    value: 50
+  jicm_compress_pct:
+    value: 65
     rationale: |
-      50% threshold chosen because:
-      1. Leaves sufficient room for response generation (~15K tokens reserved)
-      2. Allows compression to capture meaningful context (not too early)
-      3. Documented in JICM v5 design specification
-      4. Balances between context quality and preservation
-    source: "designs/jicm-v5-design.md"
+      65% compress trigger (revised from 50% in v5.0 to v5.8.2):
+      1. Operational experience showed 50% was too early — wasted compression cycles
+      2. 65% leaves ~35% for response generation + continued work
+      3. Watcher spawns /intelligent-compress at this threshold
+      4. Aligned with JICM v5.8.2 watcher state machine
+    source: "JICM v5.8.2 watcher + MEMORY.md"
     adjustable_by: [user_override, evolution_proposal]
 
-  critical_pct:
-    value: 80
+  jicm_emergency_pct:
+    value: 73
     rationale: |
-      80% triggers aggressive action because:
-      1. Context quality degrades with heavy compression
-      2. Research shows retrieval accuracy drops above this point
-      3. Leaves minimal headroom for response
+      73% triggers emergency protocol:
+      1. If compression hasn't completed by this point, watcher sends native /compact
+      2. Acts as safety net for slow or failed compression
+      3. Known issue: can double-trigger (race condition in watcher)
+    source: "JICM v5.8.2 watcher"
     adjustable_by: [user_override]
+
+  jicm_lockout_pct:
+    value: 78.5
+    rationale: |
+      78.5% is the lockout ceiling (Claude Code auto-compacts):
+      1. Beyond this, Claude Code's own compaction kicks in (unrecoverable)
+      2. Formula: ~78.5% derived from input+output token ratio analysis
+      3. All Jarvis operations must complete before this threshold
+    source: "jicm-thresholds.md (auto memory)"
+    adjustable_by: [not adjustable — Claude Code hard limit]
 
   reserved_output_tokens:
     value: 15000
@@ -1056,6 +1082,7 @@ Full analysis reports available in `.claude/reports/research/`.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0.0-draft | 2026-02-05 | Jarvis | Initial proposal |
+| 1.1.0-draft | 2026-02-08 | Jarvis | JICM thresholds updated to v5.8.2 (65/73/78.5%), added v5.9.0 alignment notes for memory (4-tier hierarchy) and directory structure (deferred restructuring), added companion review document |
 
 ---
 

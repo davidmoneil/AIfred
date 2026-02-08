@@ -1,6 +1,7 @@
 ---
 name: code-review
 description: Technical quality review of code changes for milestone/PR validation
+tools: All tools
 ---
 
 # Agent: Code Review

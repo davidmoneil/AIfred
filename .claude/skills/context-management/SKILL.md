@@ -1,9 +1,9 @@
 ---
 name: context-management
-version: 3.0.0
+version: 4.0.0
 description: >
-  JICM context monitoring, analysis, and compaction.
-  Use when: context budget, JICM, smart compact, token usage, compaction.
+  JICM v5.8 context monitoring, analysis, and compaction.
+  Use when: context budget, JICM, smart compact, token usage, compaction, compress.
 ---
 
 ## Quick Actions
@@ -11,30 +11,41 @@ description: >
 | Need | Command |
 |------|---------|
 | Check context usage | Native `/context` |
-| Detailed budget | `/context-budget` |
-| Weekly analysis | `/context-analyze` |
-| Manual JICM trigger | `/smart-compact` |
-| Full checkpoint + clear | `/context-checkpoint` |
-| Set threshold | `/autocompact-threshold <tokens>` |
+| Detailed budget breakdown | `/context-budget` |
+| Weekly analysis + archival | `/context-analyze` |
+| Manual compression trigger | `/intelligent-compress` |
+| Manual compact assessment | `/smart-compact` (assess) / `--full` (immediate) |
+| Full checkpoint + MCP shed | `/context-checkpoint` → `/clear` |
+| Set auto-trigger threshold | `/autocompact-threshold <tokens>` |
 | Report forgotten context | `/context-loss "desc"` |
 
-## Thresholds (AC-04 JICM)
+## Thresholds (AC-04 JICM v5.8.2)
 
 | Usage | Status | Action |
 |-------|--------|--------|
 | <50% | Healthy | Continue normally |
-| 50-74% | Moderate | Checkpoint before heavy work |
-| 75-84% | Warning | Run `/smart-compact` |
-| 85%+ | Critical | `/context-checkpoint` then `/clear` |
+| 50-64% | Caution | Log warning |
+| 65% | Compress trigger | Watcher spawns `/intelligent-compress` |
+| 73% | Emergency | Watcher sends native `/compact` fallback |
+| 78.5% | Lockout ceiling | Claude Code auto-compacts (unrecoverable) |
 
-## Decision Flow
+## Automatic Flow (Watcher-Managed)
 
 ```
-Context high?
-├── <50% → Continue
-├── 50-74% → /checkpoint (optional)
-├── 75-84% → /smart-compact
-└── 85%+ → /context-checkpoint → /clear
+jarvis-watcher.sh polls every 30s
+├── <65% → monitoring (no action)
+├── 65% → /intelligent-compress → compression-agent (background)
+│   └── agent writes .compressed-context-ready.md + signal
+│       └── watcher detects → requests state dump → sends /clear
+│           └── session-start hook injects checkpoint → resume
+├── 73% → emergency /compact (native fallback)
+└── 78.5% → Claude auto-compacts (avoid — data loss risk)
 ```
 
-JICM infrastructure: `jarvis-watcher.sh` (monitoring), `precompact-analyzer.js` (preservation), `context-compressor` agent (compression). See `compaction-essentials.md` for core patterns.
+## Circuit Breakers
+
+- Debounce: 300s between triggers | Max 5/session | 3 failures → standdown
+
+## Infrastructure
+
+Watcher: `jarvis-watcher.sh` (v5.8.2, state machine). Agent: `compression-agent` (sonnet, background). Hook: `precompact-analyzer.js`. Essentials: `compaction-essentials.md`.

@@ -14,6 +14,11 @@ On-demand reference materials — consult when needed, not always-loaded.
 | [workflow-patterns.md](workflow-patterns.md) | PARC, DDLA, COSA patterns | Before significant tasks |
 | [project-management.md](project-management.md) | Auto-detection, registration | Working with code projects |
 | [commands-quick-ref.md](commands-quick-ref.md) | All commands by category | Command lookup |
+| [mcp-decomposition-registry.md](mcp-decomposition-registry.md) | MCP decomposition tracking (v5.0) | MCP decisions, skill pipeline |
+| [tool-reconstruction-backlog.md](tool-reconstruction-backlog.md) | Prioritized reconstruction work items | Planning next skill builds |
+| [skill-descriptions.csv](skill-descriptions.csv) | All 22 skills cataloged | Skill inventory, Progressive Disclosure |
+| [glossary.md](glossary.md) | Project terminology | Term lookup |
+| [mcp-decision-map.md](mcp-decision-map.md) | MCP evaluation decision tree | Evaluating new MCPs |
 
 ---
 

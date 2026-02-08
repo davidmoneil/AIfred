@@ -1,58 +1,101 @@
 ---
 name: knowledge-ops
-version: 1.0.0
+version: 2.0.0
 description: >
-  Knowledge graph, memory, reflection, and vector search.
-  Use when: memory, remember, knowledge graph, reflect, lotus, obsidian, RAG.
+  4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding.
+  Use when: memory, remember, knowledge graph, reflect, lotus, obsidian, RAG, recall.
 replaces: memory MCP (shadow), lotus-wisdom MCP
 ---
 
-## Quick Reference
+## 4-Tier Memory Architecture
 
-| Backend | Method | Notes |
-|---------|--------|-------|
-| Memory graph (read) | `Read ~/.claude/memory/memory.json` then `jq` | Entities, relations, observations |
-| Memory graph (write) | `Bash(jq)` + `Write` on memory.json | Add/update/delete entities |
-| Memory search | `Grep "pattern" ~/.claude/memory/memory.json` | Fast text search |
-| Memory MCP (fallback) | `ToolSearch "+memory"` then use tools | 9 tools, deferred |
-| Local RAG query | `ToolSearch "+local-rag"` then query_documents | Vector similarity search |
-| Local RAG ingest | `ToolSearch "+local-rag"` then ingest_file | Add docs to vector DB |
+Each tier serves a distinct purpose. None is a "fallback" — choose by need.
 
-## Memory JSON Operations
+### Tier 1: Short-Term / Working Memory (Dynamic KG)
+*Quick store-and-recall of session facts, entities, relations.*
 
-```bash
-# List all entities
-jq '.entities[].name' ~/.claude/memory/memory.json
+| Operation | Method |
+|-----------|--------|
+| Search entities | `ToolSearch "+memory"` → `mcp__memory__search_nodes(query)` |
+| Read full graph | `mcp__memory__read_graph()` |
+| Create entities | `mcp__memory__create_entities([{name, entityType, observations}])` |
+| Add observations | `mcp__memory__add_observations([{entityName, contents}])` |
+| Create relations | `mcp__memory__create_relations([{from, to, relationType}])` |
+| Open specific nodes | `mcp__memory__open_nodes([names])` |
 
-# Find entity by name
-jq '.entities[] | select(.name == "NAME")' ~/.claude/memory/memory.json
+**Scope**: Session-scoped (Memory MCP, 9 tools). Not persisted across restarts.
 
-# Add observation (use Write after jq transform)
-jq '.entities[] |= if .name == "NAME" then .observations += ["new fact"] else . end' \
-  ~/.claude/memory/memory.json > /tmp/mem.json && mv /tmp/mem.json ~/.claude/memory/memory.json
+### Tier 2: Long-Term Memory (Static KG / Files)
+*Persistent facts, gotchas, patterns that survive across sessions.*
+
+| Store | Path | Method |
+|-------|------|--------|
+| Global memory | `~/.claude/projects/.../memory/MEMORY.md` | Read/Edit (auto-loaded) |
+| Topic files | `~/.claude/projects/.../memory/*.md` | Read/Edit (linked from MEMORY.md) |
+| Session state | `.claude/context/session-state.md` | Read/Edit |
+| Compaction essentials | `.claude/context/compaction-essentials.md` | Read (survives /clear) |
+| Patterns (41) | `.claude/context/patterns/*.md` | Read/Glob |
+
+**Scope**: Persistent, file-based. Survives sessions, restarts, and compaction.
+
+### Tier 3: Intuitive Recollection (Semantic RAG)
+*Vector similarity search over ingested documents.*
+
+| Operation | Method |
+|-----------|--------|
+| Query documents | `ToolSearch "+local-rag"` → `query_documents(query)` |
+| Ingest file | `ingest_file(path)` |
+| Ingest text | `ingest_data(content, metadata)` |
+| List indexed files | `list_files()` |
+| Check status | `status()` |
+
+**Scope**: local-rag MCP (retained, server-dependent). Persistent embeddings.
+
+### Tier 4: Documentary Grounding (Static Reference)
+*Authoritative source files — designs, plans, configs, identity.*
+
+| Document | Path |
+|----------|------|
+| Identity | `.claude/jarvis-identity.md` |
+| Architecture | `.claude/context/psyche/_index.md` |
+| AC components | `.claude/context/components/orchestration-overview.md` |
+| JICM design | `.claude/context/designs/jicm-v5-design-addendum.md` |
+| Pipeline design | `.claude/plans/pipeline-design-v3.md` |
+| Capability map | `.claude/context/psyche/capability-map.yaml` |
+
+**Scope**: Read-only reference. Use `Read`, `Glob`, `Grep`.
+
+## Search Approaches
+
+```
+What do I need to know?
+├── "What did I just learn?" → Tier 1: search_nodes (dynamic KG)
+├── "What do I always need to know?" → Tier 2: MEMORY.md + topic files
+├── "What document discusses X?" → Tier 3: local-rag query_documents
+├── "What is the authoritative design?" → Tier 4: Read specific file
+├── Multiple approaches (broad recall):
+│   ├── Sequential: Tier 1 → Tier 2 → Tier 3 (widen until found)
+│   └── Targeted: Pick tier by knowledge type, search directly
 ```
 
-## Lotus Wisdom Patterns (AC-05/06)
+## Lotus Wisdom (AC-05/06)
 
-Contemplative reflection for self-improvement cycles:
+| Pattern | Use | Invocation |
+|---------|-----|------------|
+| examine | Analyze decision/outcome | `/reflect` |
+| reflect | End-of-session assessment | `/reflect` |
+| verify | Validate assumptions | `/self-improve` |
+| transform | Change behavior from learning | `/evolve` |
+| integrate | Combine cross-session insights | `/self-improve` |
 
-| Pattern | Use When |
-|---------|----------|
-| `examine` | Analyzing a decision or outcome |
-| `reflect` | End-of-session self-assessment |
-| `verify` | Validating assumptions or approaches |
-| `transform` | Changing behavior based on learning |
-| `integrate` | Combining insights across sessions |
+## Future Integrations
 
-Invoke via `/reflect` or `/self-improve` commands (self-improvement skill).
-
-## Selection Rules
-
-```
-Knowledge needed?
-├── Store/recall facts → Memory JSON (direct jq)
-├── Semantic search → local-rag (ToolSearch)
-├── Self-reflection → Lotus patterns via /reflect
-├── Session lessons → self-correction-capture hook (auto)
-└── Obsidian vault → Read/Glob on vault path (future)
-```
+| Backend | Target | Status |
+|---------|--------|--------|
+| Obsidian vault | Tier 2 (Read/Glob on vault) | Planned |
+| Chroma (vector DB) | Tier 3 (replaces local-rag) | Planned (Docker) |
+| Graphiti (Neo4j) | Tier 1 (graph DB KG) | Deferred (Neo4j needed) |
+| Cognee | Tier 3 (RAG + KG pipeline) | Evaluate |
+| claude-context (zilliztech) | Tier 3 (semantic code search) | Planned |
+| ultrarag (openbmb) | Tier 3 (RAG pipeline patterns) | Study |
+| claude-code-docs (ericbuess) | Tier 4 (reference docs) | Install or ingest |

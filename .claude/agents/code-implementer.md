@@ -1,6 +1,7 @@
 ---
 name: code-implementer
 description: Write, modify, and refactor code following established patterns with full git workflow
+tools: All tools
 ---
 
 # Agent: Code Implementer

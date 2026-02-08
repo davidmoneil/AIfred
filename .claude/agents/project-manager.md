@@ -1,6 +1,7 @@
 ---
 name: project-manager
 description: Progress and alignment review for milestone/PR validation
+tools: All tools
 ---
 
 # Agent: Project Manager
