@@ -42,6 +42,31 @@ jarvis-watcher.sh polls every 30s
 └── 78.5% → Claude auto-compacts (avoid — data loss risk)
 ```
 
+## Proactive Context Reduction
+
+### Observation Masking (tool output compression)
+Tool outputs consume **80%+ of context** in agent workflows. Replace verbose outputs with compact references:
+
+```
+Large tool output (>2000 tokens)?
+├── Write full output to temp file: /tmp/jarvis-{operation}-{epoch}.md
+├── Inject compact summary (100-200 tokens) into conversation
+├── Include file reference for on-demand re-read
+└── Net savings: 60-80% of masked observation tokens
+```
+
+**When to apply**: Glob results >50 files, Grep results >100 lines, Bash output >2000 chars, Read of >500 line files when only needing summary.
+
+### Context Ordering (KV-Cache optimization)
+Place stable content first in context for prefix cache reuse:
+1. System prompt + CLAUDE.md (stable, rarely changes)
+2. Capability-map.yaml + patterns (semi-stable)
+3. Session state + task context (dynamic, changes frequently)
+4. Tool outputs + conversation history (most volatile)
+
+### Context Partitioning
+For multi-phase tasks, isolate sub-agent contexts via Task tool — each agent gets a clean context focused on its subtask, preventing accumulation.
+
 ## Circuit Breakers
 
 - Debounce: 300s between triggers | Max 5/session | 3 failures → standdown

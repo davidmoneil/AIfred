@@ -152,6 +152,10 @@ patterns:
     when: "Token budgets, MCP tiers, context optimization"
     file: .claude/context/patterns/context-budget-management.md
 
+  - id: pattern.observation-masking
+    when: "Large tool outputs consuming context (80%+ of tokens)"
+    file: .claude/context/patterns/observation-masking-pattern.md
+
   - id: pattern.parallelization
     when: "Parallel vs sequential execution decisions"
     file: .claude/context/patterns/parallelization-strategy.md
