@@ -224,6 +224,51 @@ components:
     signal: "/end-session"
     file: .claude/context/components/AC-09-session-completion.md
 
+# ─── SKILL COMPOSITIONS (dynamic chaining) ───
+# Extracted from OMC "orchestration skills" pattern (Stream 2).
+# Instead of hardcoding delegation, define compositions that
+# the manifest router can invoke as multi-step workflows.
+# Each composition chains 2-3 skills/agents in sequence.
+compositions:
+  - id: compose.research-then-implement
+    when: "Feature requires research before coding"
+    steps:
+      - skill.research-ops     # gather information
+      - agent.code-analyzer    # understand codebase context
+      - agent.code-implementer # write the code
+    data_flow: "research findings → codebase analysis → implementation"
+
+  - id: compose.analyze-then-review
+    when: "Code changes need quality validation"
+    steps:
+      - agent.code-analyzer    # understand what changed
+      - agent.code-review      # evaluate quality
+    data_flow: "change analysis → quality assessment"
+
+  - id: compose.investigate-then-fix
+    when: "Bug or service issue needs diagnosis and resolution"
+    steps:
+      - agent.service-troubleshooter  # diagnose root cause
+      - agent.code-implementer        # apply fix
+      - agent.code-tester             # verify fix
+    data_flow: "diagnosis → fix → verification"
+
+  - id: compose.learn-from-session
+    when: "End of session or after corrections — automatic learning"
+    steps:
+      - ac.05-self-reflection  # capture corrections
+      - skill.knowledge-ops    # store in memory hierarchy
+    data_flow: "corrections JSONL → Tier 1/2 memory entities"
+    hook_trigger: "self-correction-capture.js detects corrections"
+    note: "Automatic learner pattern — session corrections become persistent patterns"
+
+# Composition rules:
+# - Compositions are advisory — Jarvis selects based on task context
+# - Each step produces output consumed by the next step
+# - Steps may run sequentially (default) or in parallel (if independent)
+# - Compositions do NOT replace direct skill/agent invocation
+# - Add new compositions when recurring multi-skill workflows emerge
+
 # ─── MCP-TO-SKILL PIPELINE ───
 # When evaluating a new MCP for decomposition:
 # 1. Check mcp-decomposition-registry.md — already analyzed?

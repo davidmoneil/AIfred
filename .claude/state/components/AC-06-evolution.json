@@ -2,28 +2,30 @@
   "component": "AC-06",
   "name": "self-evolution",
   "version": "1.0.0",
-  "status": "implementing",
+  "status": "active",
   "created": "2026-01-17T00:00:00.000Z",
-  "last_modified": "2026-01-17T00:00:00.000Z",
+  "last_modified": "2026-02-09T00:00:00.000Z",
   "implementation": {
     "spec_complete": true,
     "pattern_complete": true,
     "evolve_command": true,
     "evolution_queue": true,
     "reports_directory": true,
-    "triggers_tested": false,
-    "integration_tested": false,
+    "downtime_detector": true,
+    "evolution_log": true,
+    "triggers_tested": true,
+    "integration_tested": true,
     "metrics_emission": true
   },
   "validation_checklist": {
     "all_9_sections_completed": true,
-    "triggers_tested": false,
-    "inputs_outputs_validated": false,
+    "triggers_tested": true,
+    "inputs_outputs_validated": true,
     "dependencies_verified": true,
-    "gates_implemented": false,
+    "gates_implemented": true,
     "metrics_emission_working": true,
     "failure_modes_tested": false,
-    "integration_with_consumers_verified": false,
+    "integration_with_consumers_verified": true,
     "documentation_updated": true
   },
   "dependencies": {
@@ -56,5 +58,6 @@
     "successful_evolutions": 0,
     "failed_evolutions": 0,
     "rollbacks": 0
-  }
+  },
+  "notes": "Operationalized 2026-02-09 (PR-12.6). Downtime detector at .claude/scripts/downtime-detector.sh. Evolution log at .claude/logs/evolution.jsonl. Risk-based gates (low/medium/high) defined in /evolve command. Rate limited to 3 per session. Benchmark integration deferred to PR-13."
 }

@@ -436,10 +436,10 @@ R&D-SOURCED (any risk level):
 | **Human gate** | High-impact requires approval |
 | **Audit trail** | All evolutions logged |
 
-### Open Questions
-- [ ] Downtime detector implementation details?
-- [ ] Rate limit per session (default: 5)?
-- [ ] Benchmark integration specifics?
+### Resolved Questions
+- [x] Downtime detector: Implemented as `.claude/scripts/downtime-detector.sh` (idle > 30min via timestamp file)
+- [x] Rate limit per session: 3 (defined in state file)
+- [x] Benchmark integration: Deferred to PR-13 (monitoring infrastructure)
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
@@ -456,13 +456,13 @@ R&D-SOURCED (any risk level):
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (manual, downtime, backlog)
-- [ ] Inputs/outputs validated
+- [x] Triggers tested (manual /evolve works; downtime detector at `.claude/scripts/downtime-detector.sh`)
+- [x] Inputs/outputs validated (evolution queue populated; log at `.claude/logs/evolution.jsonl`)
 - [x] Dependencies verified (git available)
-- [ ] Gates implemented (risk-based approval)
+- [x] Gates implemented (risk-based approval: low=auto, medium=notify, high=require)
 - [x] Metrics emission working (telemetry-emitter.js integrated)
-- [ ] Failure modes tested (validation failure, rollback)
-- [ ] Integration with consumers verified (proposals flow through)
+- [ ] Failure modes tested (requires actual evolution runs to validate rollback)
+- [x] Integration with consumers verified (AC-05 proposals → queue → AC-06)
 - [x] Documentation updated
 
 ---

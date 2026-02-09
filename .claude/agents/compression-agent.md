@@ -89,9 +89,34 @@ ls -t ~/.claude/projects/-Users-aircannon-Claude-Jarvis/*.jsonl | head -1
 
 ## Compression Protocol
 
+### Step 0: Check for Prior Checkpoint (Anchored Iterative Summarization)
+
+**Before reading sources**, check if a previous checkpoint exists:
+
+```bash
+ls .claude/context/.compressed-context-ready.md 2>/dev/null
+```
+
+**If a prior checkpoint exists** (cycle 2+):
+- Read it first — this is your **anchor**
+- Your job is to MERGE new session content INTO the existing sections, not regenerate from scratch
+- Preserve all prior decisions, file paths, and context that remain relevant
+- Update sections that changed (Current Task, Work In Progress, Todos)
+- ADD to Decisions Made (don't replace — append new decisions)
+- This is incremental summarization: each cycle builds on the last
+- The anchor sections are: Foundation Context, Session Objective, Decisions Made, Key Files
+
+**If no prior checkpoint exists** (cycle 1):
+- Proceed with full generation from sources below
+
+This approach prevents silent information loss across multiple compression cycles
+and reduces tokens-per-task (retaining file paths avoids costly re-reads).
+
 ### Step 1: Read Foundation Docs
 
 Read all Priority 1 files. Compress into the "Foundation Context" section of the checkpoint. This gives future-Jarvis his identity, rules, and architecture in one compact block.
+
+**On cycle 2+**: If the prior checkpoint's Foundation Context is already well-compressed, reuse it as-is. Only update if foundation docs have changed.
 
 ### Step 2: Read Active Tasks
 
@@ -106,7 +131,7 @@ Read Priority 3 sources in this order:
 
 If `.in-progress-ready.md` exists, treat it as the primary source for work-in-progress. It was written by Jarvis specifically for this purpose.
 
-### Step 4: Analyze and Categorize
+### Step 4: Analyze and Categorize (with Observation Masking)
 
 **ALWAYS Preserve** (verbatim or near-verbatim):
 - Current task description and status
@@ -116,15 +141,22 @@ If `.in-progress-ready.md` exists, treat it as the primary source for work-in-pr
 - User directives and preferences
 - Credential/auth patterns used (not secrets themselves)
 
+**Apply Observation Masking** (60-80% token reduction on tool outputs):
+Tool outputs consume 80%+ of context in heavy sessions. Mask them aggressively:
+- Tool call results → outcome + file reference only: `[Read /path/file.sh → 113 lines, bash script with 7 functions]`
+- Command outputs → exit code + 1-line summary: `[shellcheck → clean, 4 SC1091 info notes]`
+- Search results → hit count + top 3 paths: `[Grep "pattern" → 8 files, top: path1, path2, path3]`
+- API responses → status + key fields: `[curl brave-search → 200, 5 results for "query"]`
+- Never include raw JSON, HTML, or multi-line command output in the checkpoint
+
 **Summarize** (condense to key points):
-- Tool call results → outcomes only
 - File contents read → 1-line relevance summary
 - Long explanations → key takeaways
 - Multi-step workflow progress → skeleton with status
 
 **Drop** (do not include):
 - Full file contents (they're on disk)
-- Verbose command outputs
+- Verbose command outputs (masked above)
 - Resolved issues (just note resolution)
 - Superseded decisions
 - MCP schema details

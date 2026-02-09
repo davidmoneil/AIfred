@@ -1,0 +1,619 @@
+# SOTA Catalog — PR-14
+# State-of-the-Art tools, frameworks, and patterns for Jarvis integration
+# Version: 1.0.0
+# Created: 2026-02-09
+# Categories: AI/ML, DevOps, Knowledge Management, Automation, Code Intelligence
+
+catalog:
+
+  # ═══════════════════════════════════════════
+  # AI/ML — Language Models & Inference
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-001
+    name: vLLM
+    category: ai-ml
+    subcategory: inference
+    description: "High-throughput LLM serving engine with PagedAttention"
+    url: "https://github.com/vllm-project/vllm"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Mac Studio Phase D.1 — local model serving"
+
+  - id: SOTA-002
+    name: llama.cpp
+    category: ai-ml
+    subcategory: inference
+    description: "C/C++ LLM inference with quantization support"
+    url: "https://github.com/ggerganov/llama.cpp"
+    integration_status: candidate
+    jarvis_relevance: high
+    notes: "Alternative to vLLM for Apple Silicon optimization"
+
+  - id: SOTA-003
+    name: Ollama
+    category: ai-ml
+    subcategory: inference
+    description: "Local LLM runner with model management"
+    url: "https://github.com/ollama/ollama"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Simpler than vLLM, good for quick experimentation"
+
+  - id: SOTA-004
+    name: DSPy
+    category: ai-ml
+    subcategory: prompt-optimization
+    description: "Programming framework for optimizing LLM prompts"
+    url: "https://github.com/stanfordnlp/dspy"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase D.3 — compiler-optimized prompts for research-ops"
+
+  - id: SOTA-005
+    name: lm-eval-harness
+    category: ai-ml
+    subcategory: evaluation
+    description: "Language model evaluation framework (MMLU, HumanEval, etc.)"
+    url: "https://github.com/EleutherAI/lm-evaluation-harness"
+    integration_status: planned
+    jarvis_relevance: medium
+    notes: "Phase D.2 — baseline performance metrics"
+
+  - id: SOTA-006
+    name: LangChain
+    category: ai-ml
+    subcategory: orchestration
+    description: "Framework for building LLM applications with chains"
+    url: "https://github.com/langchain-ai/langchain"
+    integration_status: deferred
+    jarvis_relevance: low
+    notes: "Heavy dependency; Jarvis uses native orchestration"
+
+  - id: SOTA-007
+    name: LlamaIndex
+    category: ai-ml
+    subcategory: rag
+    description: "Data framework for LLM applications with RAG"
+    url: "https://github.com/run-llama/llama_index"
+    integration_status: deferred
+    jarvis_relevance: medium
+    notes: "Consider for Phase E RAG pipeline enhancement"
+
+  - id: SOTA-008
+    name: Guidance
+    category: ai-ml
+    subcategory: prompt-engineering
+    description: "Microsoft structured generation for LLMs"
+    url: "https://github.com/guidance-ai/guidance"
+    integration_status: monitor
+    jarvis_relevance: low
+    notes: "Interesting constrained generation, not immediately needed"
+
+  - id: SOTA-009
+    name: Instructor
+    category: ai-ml
+    subcategory: structured-output
+    description: "Structured outputs from LLMs using Pydantic"
+    url: "https://github.com/jxnl/instructor"
+    integration_status: monitor
+    jarvis_relevance: medium
+    notes: "Could improve reliability of structured data extraction"
+
+  - id: SOTA-010
+    name: MLX
+    category: ai-ml
+    subcategory: inference
+    description: "Apple's ML framework for Apple Silicon"
+    url: "https://github.com/ml-explore/mlx"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Mac Studio native — optimal for M4 Max inference"
+
+  # ═══════════════════════════════════════════
+  # AI/ML — RAG & Embeddings
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-011
+    name: ChromaDB
+    category: ai-ml
+    subcategory: vector-db
+    description: "Open-source embedding database"
+    url: "https://github.com/chroma-core/chroma"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase D.4 — replace local-rag MCP with Docker Chroma"
+
+  - id: SOTA-012
+    name: FAISS
+    category: ai-ml
+    subcategory: vector-search
+    description: "Facebook AI Similarity Search for dense vectors"
+    url: "https://github.com/facebookresearch/faiss"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase D.4 — alternative/complement to Chroma"
+
+  - id: SOTA-013
+    name: Qdrant
+    category: ai-ml
+    subcategory: vector-db
+    description: "Vector similarity search engine with rich filtering"
+    url: "https://github.com/qdrant/qdrant"
+    integration_status: monitor
+    jarvis_relevance: medium
+    notes: "Rust-based, potentially faster than Chroma"
+
+  - id: SOTA-014
+    name: Sentence-Transformers
+    category: ai-ml
+    subcategory: embeddings
+    description: "State-of-the-art text embeddings"
+    url: "https://github.com/UKPLab/sentence-transformers"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Local embedding generation for RAG pipeline"
+
+  - id: SOTA-015
+    name: Nomic Embed
+    category: ai-ml
+    subcategory: embeddings
+    description: "Open-source text embeddings with long context"
+    url: "https://github.com/nomic-ai/nomic"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "8192 token context window for large document embedding"
+
+  # ═══════════════════════════════════════════
+  # Knowledge Management
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-016
+    name: Obsidian
+    category: knowledge-mgmt
+    subcategory: note-taking
+    description: "Markdown-based knowledge management with bidirectional links"
+    url: "https://obsidian.md"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase C.2 — vault setup, knowledge-ops Tier 2 integration"
+
+  - id: SOTA-017
+    name: Logseq
+    category: knowledge-mgmt
+    subcategory: note-taking
+    description: "Open-source knowledge base with outliner and graph view"
+    url: "https://github.com/logseq/logseq"
+    integration_status: deferred
+    jarvis_relevance: low
+    notes: "Alternative to Obsidian — less plugin ecosystem"
+
+  - id: SOTA-018
+    name: Neo4j
+    category: knowledge-mgmt
+    subcategory: graph-database
+    description: "Native graph database for connected data"
+    url: "https://neo4j.com"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Phase E.2 — bidirectional knowledge graph backend"
+
+  - id: SOTA-019
+    name: Memgraph
+    category: knowledge-mgmt
+    subcategory: graph-database
+    description: "In-memory graph database compatible with Cypher"
+    url: "https://github.com/memgraph/memgraph"
+    integration_status: monitor
+    jarvis_relevance: medium
+    notes: "Lighter than Neo4j, good for real-time graph queries"
+
+  - id: SOTA-020
+    name: FSRS
+    category: knowledge-mgmt
+    subcategory: spaced-repetition
+    description: "Free Spaced Repetition Scheduler algorithm"
+    url: "https://github.com/open-spaced-repetition/fsrs4anki"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Phase E.1 — knowledge decay modeling for memory system"
+
+  - id: SOTA-021
+    name: Knowledge Graph Toolkit
+    category: knowledge-mgmt
+    subcategory: graph-construction
+    description: "LLM-based knowledge graph construction"
+    url: "https://github.com/microsoft/graphrag"
+    integration_status: candidate
+    jarvis_relevance: high
+    notes: "Microsoft GraphRAG — community detection + summarization"
+
+  # ═══════════════════════════════════════════
+  # DevOps & Infrastructure
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-022
+    name: Docker Compose
+    category: devops
+    subcategory: containerization
+    description: "Multi-container Docker application definition"
+    url: "https://docs.docker.com/compose"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Phase C.1 — multi-service deployment on Mac Studio"
+
+  - id: SOTA-023
+    name: Supabase
+    category: devops
+    subcategory: database
+    description: "Open-source Firebase alternative with PostgreSQL"
+    url: "https://github.com/supabase/supabase"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase C.4 — local Docker deployment, fold into db-ops"
+
+  - id: SOTA-024
+    name: n8n
+    category: devops
+    subcategory: automation
+    description: "Workflow automation with visual editor"
+    url: "https://github.com/n8n-io/n8n"
+    integration_status: planned
+    jarvis_relevance: medium
+    notes: "Phase C.3 — workflow automation, PostgreSQL backend"
+
+  - id: SOTA-025
+    name: Portainer
+    category: devops
+    subcategory: container-mgmt
+    description: "Container management UI for Docker"
+    url: "https://github.com/portainer/portainer"
+    integration_status: candidate
+    jarvis_relevance: low
+    notes: "Helpful for Docker service monitoring on Mac Studio"
+
+  - id: SOTA-026
+    name: Traefik
+    category: devops
+    subcategory: reverse-proxy
+    description: "Cloud-native reverse proxy and load balancer"
+    url: "https://github.com/traefik/traefik"
+    integration_status: candidate
+    jarvis_relevance: low
+    notes: "Service routing for multiple Docker services"
+
+  - id: SOTA-027
+    name: Grafana
+    category: devops
+    subcategory: monitoring
+    description: "Open-source observability platform"
+    url: "https://github.com/grafana/grafana"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Telemetry visualization — alternative to custom dashboard"
+
+  - id: SOTA-028
+    name: Prometheus
+    category: devops
+    subcategory: monitoring
+    description: "Systems monitoring and alerting toolkit"
+    url: "https://github.com/prometheus/prometheus"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Metrics collection for Docker services on Mac Studio"
+
+  # ═══════════════════════════════════════════
+  # Code Intelligence & Development
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-029
+    name: Serena
+    category: code-intel
+    subcategory: lsp-integration
+    description: "MCP server providing LSP code intelligence"
+    url: "https://github.com/serena-ai/serena"
+    integration_status: deferred
+    jarvis_relevance: high
+    notes: "Deferred — memory leak issue #944. Install when stable."
+
+  - id: SOTA-030
+    name: Pyright
+    category: code-intel
+    subcategory: language-server
+    description: "Static type checker and language server for Python"
+    url: "https://github.com/microsoft/pyright"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase C.5 — Python LSP on Mac Studio"
+
+  - id: SOTA-031
+    name: typescript-language-server
+    category: code-intel
+    subcategory: language-server
+    description: "TypeScript/JavaScript language server"
+    url: "https://github.com/typescript-language-server/typescript-language-server"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase C.5 — TypeScript LSP for hook/script development"
+
+  - id: SOTA-032
+    name: gopls
+    category: code-intel
+    subcategory: language-server
+    description: "Official Go language server"
+    url: "https://github.com/golang/tools/tree/master/gopls"
+    integration_status: planned
+    jarvis_relevance: medium
+    notes: "Phase C.5 — Go LSP"
+
+  - id: SOTA-033
+    name: bash-language-server
+    category: code-intel
+    subcategory: language-server
+    description: "Bash language server with shellcheck integration"
+    url: "https://github.com/bash-lsp/bash-language-server"
+    integration_status: planned
+    jarvis_relevance: high
+    notes: "Phase C.5 — critical for bash 3.2 script quality"
+
+  - id: SOTA-034
+    name: yaml-language-server
+    category: code-intel
+    subcategory: language-server
+    description: "YAML language server with JSON schema validation"
+    url: "https://github.com/redhat-developer/yaml-language-server"
+    integration_status: planned
+    jarvis_relevance: medium
+    notes: "Phase C.5 — YAML validation for configs and catalogs"
+
+  - id: SOTA-035
+    name: Tree-sitter
+    category: code-intel
+    subcategory: parsing
+    description: "Incremental parsing system for code"
+    url: "https://github.com/tree-sitter/tree-sitter"
+    integration_status: monitor
+    jarvis_relevance: medium
+    notes: "Syntax-aware code analysis — potential for code-tester agent"
+
+  # ═══════════════════════════════════════════
+  # MCP Ecosystem
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-036
+    name: Memory MCP
+    category: mcp
+    subcategory: knowledge-graph
+    description: "Persistent knowledge graph for Claude Code"
+    url: "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Active — dynamic KG tier of 4-tier memory hierarchy"
+
+  - id: SOTA-037
+    name: Local-RAG MCP
+    category: mcp
+    subcategory: semantic-search
+    description: "Local semantic + keyword search without API keys"
+    url: "https://github.com/shinpr/mcp-local-rag"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Active — Tier 3 semantic RAG"
+
+  - id: SOTA-038
+    name: Playwright MCP
+    category: mcp
+    subcategory: browser-automation
+    description: "Browser automation for web interaction"
+    url: "https://github.com/anthropics/claude-code/tree/main/packages/mcp-playwright"
+    integration_status: active
+    jarvis_relevance: medium
+    notes: "Active — web research and testing"
+
+  - id: SOTA-039
+    name: claude-code-docs
+    category: mcp
+    subcategory: documentation
+    description: "Claude Code documentation search MCP"
+    url: "https://github.com/nicobailey/claude-code-docs"
+    integration_status: planned
+    jarvis_relevance: medium
+    notes: "User directive: INSTALL (not skip)"
+
+  - id: SOTA-040
+    name: Sequential Thinking MCP
+    category: mcp
+    subcategory: reasoning
+    description: "Step-by-step reasoning server"
+    url: "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking"
+    integration_status: decomposed
+    jarvis_relevance: low
+    notes: "DECOMPOSED — patterns extracted to Wiggum Loop (AC-02)"
+
+  - id: SOTA-041
+    name: Everything MCP
+    category: mcp
+    subcategory: search
+    description: "Local file search using Everything engine"
+    url: "https://github.com/modelcontextprotocol/servers"
+    integration_status: decomposed
+    jarvis_relevance: low
+    notes: "DECOMPOSED — native Glob/Grep tools sufficient"
+
+  # ═══════════════════════════════════════════
+  # Automation & Workflow
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-042
+    name: Claude Code Hooks
+    category: automation
+    subcategory: event-hooks
+    description: "Claude Code hook system for automation"
+    url: "https://docs.anthropic.com/en/docs/claude-code/hooks"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "28 active hooks, 9 registered in settings.json"
+
+  - id: SOTA-043
+    name: Claude Code Skills
+    category: automation
+    subcategory: plugins
+    description: "Claude Code skill/plugin system"
+    url: "https://docs.anthropic.com/en/docs/claude-code/skills"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "28 skills (11 discoverable + 15 absorbed + 2 special)"
+
+  - id: SOTA-044
+    name: FastMCP
+    category: automation
+    subcategory: mcp-framework
+    description: "Fast MCP server framework for Python"
+    url: "https://github.com/jlowin/fastmcp"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "For building custom MCP servers on Mac Studio"
+
+  - id: SOTA-045
+    name: MCP TypeScript SDK
+    category: automation
+    subcategory: mcp-framework
+    description: "Official MCP SDK for TypeScript/Node.js"
+    url: "https://github.com/modelcontextprotocol/typescript-sdk"
+    integration_status: active
+    jarvis_relevance: medium
+    notes: "Used by existing MCP servers and hooks"
+
+  # ═══════════════════════════════════════════
+  # Testing & Quality
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-046
+    name: ShellCheck
+    category: testing
+    subcategory: linting
+    description: "Static analysis for shell scripts"
+    url: "https://github.com/koalaman/shellcheck"
+    integration_status: candidate
+    jarvis_relevance: high
+    notes: "Critical for bash 3.2 compatibility validation"
+
+  - id: SOTA-047
+    name: Bats-core
+    category: testing
+    subcategory: shell-testing
+    description: "Bash Automated Testing System"
+    url: "https://github.com/bats-core/bats-core"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Unit testing for 49 bash scripts in .claude/scripts/"
+
+  - id: SOTA-048
+    name: Jest
+    category: testing
+    subcategory: js-testing
+    description: "JavaScript testing framework"
+    url: "https://github.com/jestjs/jest"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Unit testing for Node.js hooks and scripts"
+
+  # ═══════════════════════════════════════════
+  # Research & Information Retrieval
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-049
+    name: Perplexity Sonar
+    category: research
+    subcategory: search-api
+    description: "AI-powered search with citations"
+    url: "https://docs.perplexity.ai"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Integrated via research-ops bash scripts (4 sonar models)"
+
+  - id: SOTA-050
+    name: Brave Search API
+    category: research
+    subcategory: web-search
+    description: "Privacy-focused web search API"
+    url: "https://brave.com/search/api/"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Integrated via research-ops bash scripts"
+
+  - id: SOTA-051
+    name: arXiv API
+    category: research
+    subcategory: academic
+    description: "Open access to scientific papers"
+    url: "https://info.arxiv.org/help/api/index.html"
+    integration_status: active
+    jarvis_relevance: medium
+    notes: "Integrated via research-ops bash scripts"
+
+  - id: SOTA-052
+    name: Semantic Scholar API
+    category: research
+    subcategory: academic
+    description: "AI-powered research discovery"
+    url: "https://api.semanticscholar.org"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Potential addition to research-ops academic backends"
+
+  - id: SOTA-053
+    name: Tavily
+    category: research
+    subcategory: search-api
+    description: "Search API optimized for AI agents"
+    url: "https://tavily.com"
+    integration_status: monitor
+    jarvis_relevance: low
+    notes: "Alternative to Brave/Perplexity — evaluate if needed"
+
+  # ═══════════════════════════════════════════
+  # Security & Secrets
+  # ═══════════════════════════════════════════
+
+  - id: SOTA-054
+    name: SOPS
+    category: security
+    subcategory: secrets-management
+    description: "Mozilla Secrets OPerationS — encrypted secrets in files"
+    url: "https://github.com/getsops/sops"
+    integration_status: candidate
+    jarvis_relevance: medium
+    notes: "Upgrade from plain YAML credentials to encrypted"
+
+  - id: SOTA-055
+    name: age
+    category: security
+    subcategory: encryption
+    description: "Simple file encryption tool"
+    url: "https://github.com/FiloSottile/age"
+    integration_status: monitor
+    jarvis_relevance: low
+    notes: "Potential for credential file encryption"
+
+metadata:
+  version: "1.0.0"
+  created: "2026-02-09"
+  total_entries: 55
+  categories:
+    ai-ml: 15
+    knowledge-mgmt: 6
+    devops: 7
+    code-intel: 7
+    mcp: 6
+    automation: 4
+    testing: 3
+    research: 5
+    security: 2
+  integration_statuses:
+    active: 9
+    planned: 14
+    candidate: 13
+    monitor: 5
+    deferred: 3
+    decomposed: 2

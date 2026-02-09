@@ -22,7 +22,7 @@
 ## Priority 1: Complete In-Progress Reconstructions
 
 These MCPs were removed but their unique capabilities need native skill integration.
-Target skills already exist (research-ops v2.1, knowledge-ops v2.0).
+Target skills already exist (research-ops v2.1, knowledge-ops v2.1).
 
 | # | MCP | Target Skill | Status | API Key |
 |---|-----|-------------|--------|---------|
@@ -49,8 +49,8 @@ From marketplace report Tier 1 + GitHub assessment. Install → Study → Rebuil
 | 9 | Serena | oraios/serena | code-ops | V/E=4.5 (highest) | ⏸ DEFERRED — memory leak (#944), tool decay (#340). Monitor for stability. Report: `research/serena-mcp-analysis.md` |
 | 10 | Vizro + vizro-mcp | mckinsey/vizro | data-sci-ops | V/E=2.67 | 1 hr install |
 | 11 | ElevenLabs MCP | elevenlabs | audio-ops | V/E=3.5 | 20 min |
-| 12 | claude-code-docs | ericbuess | reference | Optimal as-is | 10 min |
-| 13 | Deep Research | u14app | research-ops | Multi-round workflow | 2-3 weeks decompose |
+| 12 | claude-code-docs | ericbuess | reference | ⏸ SKIP — not MCP, just /docs command. WebFetch covers this. 77 open issues, security bypass (#117). | N/A |
+| 13 | Deep Research | u14app | research-ops | ⏸ DEFER — monolithic research() tool, ~$0.30/query. research-ops v2.1 covers 70%. Decompose planning+synthesis patterns if speed needed. | 8-12 hrs decompose |
 | 14 | Obsidian skills | Community | knowledge-ops | USER OVERRIDE | 15 min install |
 | 15 | n8n MCP skills | Community | flow-ops | USER OVERRIDE | 15 min install |
 
@@ -70,8 +70,16 @@ Cherry-pick 5-10 skills from large libraries. Don't wholesale install.
 | 19 | omc patterns (28 agents, 37 skills) | Model tier routing, skill composition, hook consolidation | self-ops, autonom-ops | ✅ RESEARCHED — report at `.claude/context/research/omc-patterns-analysis.md`. 4 patterns extractable (model routing, skill composition, hook clusters, auto-learner). |
 | 20 | supabase-agent-skills | PostgreSQL best practices | db-ops | ✅ RESEARCHED — report at `.claude/context/research/supabase-agent-skills-analysis.md`. Progressive disclosure + DB-specific sub-modules pattern. |
 
-**Status**: 5/5 RESEARCHED. All marketplace extractions complete. 2 patterns already extracted (observation-masking, TDD). 4 more identified from OMC (model routing, skill composition, hook clusters, auto-learner).
-**Next**: Extract identified patterns into Jarvis codebase when implementing related features.
+**Status**: 5/5 RESEARCHED. Stream 2 cherry-pick extraction in progress.
+**Extracted (Stream 2)**:
+- AIS (anchored iterative summarization) → compression-agent.md Step 0
+- Observation masking → compression-agent.md Step 4
+- Skill composition primitives → capability-map.yaml `compositions:` section (4 chains)
+- Automatic learner → capability-map.yaml `compose.learn-from-session`
+- Hook consolidation → `reference/hook-consolidation-plan.md` (28→17 hooks, 5 merges)
+- Supabase progressive disclosure: ✅ VALIDATED — matches existing SKILL.md manifest pattern. Adopt reference file structure + impact-level tagging for future db-ops skill.
+- AI-Research skills: ⏸ DEFERRED — requires GPU infrastructure (Mac Studio or cloud). LOW current priority, HIGH future value. 83 skills catalogued in research report.
+- Memory-palace: ✅ DONE — organic lifecycle + pruning + capture extensions → knowledge-ops v2.1.0 (lines 91-130)
 
 ---
 

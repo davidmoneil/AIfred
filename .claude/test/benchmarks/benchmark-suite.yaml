@@ -1,0 +1,117 @@
+# PR-13.2 — 10-Task Benchmark Suite
+# Defines operational benchmarks for Jarvis autonomic system
+# Run via: node .claude/scripts/benchmark-runner.js --all
+# Version: 1.0.0
+
+benchmarks:
+  # 1. Session Launch Speed
+  - id: BM-01
+    name: "Session Launch Protocol"
+    component: AC-01
+    type: timing
+    description: "Time from session start to first autonomous action"
+    target_ms: 5000
+    alert_ms: 15000
+    measurement: "Timestamp delta between AC-01 component_start and first tool call"
+
+  # 2. Wiggum Loop Cadence
+  - id: BM-02
+    name: "Wiggum Loop Iteration"
+    component: AC-02
+    type: timing
+    description: "Average time per Execute→Check→Review→Drift→Context cycle"
+    target_ms: 60000
+    alert_ms: 300000
+    measurement: "Mean duration of AC-02 loop iterations per session"
+
+  # 3. Milestone Detection Accuracy
+  - id: BM-03
+    name: "Milestone Detection"
+    component: AC-03
+    type: accuracy
+    description: "Percentage of significant work completions that trigger review"
+    target_pct: 80
+    alert_pct: 50
+    measurement: "AC-03 triggers / qualifying completions"
+
+  # 4. JICM Compression Efficiency
+  - id: BM-04
+    name: "Context Compression Ratio"
+    component: AC-04
+    type: ratio
+    description: "Token reduction achieved by JICM compression"
+    target_ratio: 0.6
+    alert_ratio: 0.3
+    measurement: "Pre-compression tokens / post-compression tokens"
+
+  # 5. JICM Threshold Accuracy
+  - id: BM-05
+    name: "JICM Threshold Timing"
+    component: AC-04
+    type: accuracy
+    description: "Compression triggers within 60-70% context window"
+    target_pct: 90
+    alert_pct: 70
+    measurement: "Compressions triggered in target range / total compressions"
+
+  # 6. Reflection Quality
+  - id: BM-06
+    name: "Reflection Pattern Discovery"
+    component: AC-05
+    type: count
+    description: "Patterns identified per reflection cycle"
+    target_count: 2
+    alert_count: 0
+    measurement: "Distinct patterns in reflection report"
+
+  # 7. Evolution Success Rate
+  - id: BM-07
+    name: "Evolution Pipeline Success"
+    component: AC-06
+    type: ratio
+    description: "Evolutions that pass validation without rollback"
+    target_ratio: 0.9
+    alert_ratio: 0.7
+    measurement: "Successful evolutions / attempted evolutions"
+
+  # 8. Research Discovery Rate
+  - id: BM-08
+    name: "R&D Discovery Yield"
+    component: AC-07
+    type: count
+    description: "Actionable findings per research cycle"
+    target_count: 3
+    alert_count: 0
+    measurement: "ADOPT + ADAPT recommendations per cycle"
+
+  # 9. Maintenance Health Score
+  - id: BM-09
+    name: "Codebase Health Score"
+    component: AC-08
+    type: score
+    description: "Organization audit pass rate"
+    target_pct: 95
+    alert_pct: 80
+    measurement: "Passed checks / total checks from organization-auditor.sh"
+
+  # 10. Session Completion Quality
+  - id: BM-10
+    name: "Session Exit Completeness"
+    component: AC-09
+    type: checklist
+    description: "All session-end steps completed"
+    target_pct: 100
+    alert_pct: 80
+    measurement: "Steps completed in AC-09 / expected steps (state update, priorities, reflection)"
+
+metadata:
+  version: "1.0.0"
+  created: "2026-02-09"
+  total_benchmarks: 10
+  categories:
+    timing: [BM-01, BM-02]
+    accuracy: [BM-03, BM-05]
+    ratio: [BM-04, BM-07]
+    count: [BM-06, BM-08]
+    score: [BM-09]
+    checklist: [BM-10]

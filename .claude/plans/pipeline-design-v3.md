@@ -114,6 +114,39 @@ For each MCP tool:
     └── REMOVE entirely (no skill needed)
 ```
 
+### The Cherry-Pick Principle (Marketplace & Plugin Libraries)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    CHERRY-PICK PRINCIPLE                              │
+│                                                                     │
+│  Pattern extraction matters more than wholesale plugin installation. │
+│                                                                     │
+│  Large plugin libraries (OMC: 37 skills, night-market: 126 skills,  │
+│  ai-research: 83 skills) contain mostly generic patterns already    │
+│  covered by Jarvis. The value is in cherry-picking the 3-5 novel    │
+│  patterns from each library that address known gaps.                │
+│                                                                     │
+│  WRONG: "Install the OMC plugin" → 37 skills, 28 agents, 31 hooks  │
+│         → massive overlap, conflicting orchestration models,         │
+│         → bloated context, incompatible with lean-core philosophy    │
+│                                                                     │
+│  RIGHT: Cherry-pick OMC's model-tier routing pattern → integrate    │
+│         into capability-map.yaml weights. One novel pattern,        │
+│         zero bloat. 30-50% API cost reduction.                      │
+│                                                                     │
+│  EVALUATION: For each marketplace/plugin library:                   │
+│  1. Inventory all skills/patterns against Jarvis capabilities       │
+│  2. Identify 3-5 NOVEL patterns that address known gaps             │
+│  3. Extract patterns into Jarvis native skills/hooks/patterns       │
+│  4. If no novel patterns exist, DEFER the marketplace entirely      │
+│  5. If patterns require major infrastructure changes, DEFER          │
+│                                                                     │
+│  The smallest useful extraction is a single pattern file.           │
+│  The largest is a new skill module. Never wholesale install.        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Revised Decision Tree: Plugin Evaluation
 
 ```

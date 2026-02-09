@@ -1,9 +1,15 @@
 # Autonomic Component Orchestration Overview
 
-How the nine Autonomic Components (AC-01 through AC-09) interact during Jarvis sessions.
+How the Autonomic Components interact during Jarvis sessions.
 
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Layer**: Nous (component topology)
+
+## Architecture: Hippocrenae + Ulfhedthnar
+
+The autonomic system comprises two categories:
+- **Hippocrenae** (AC-01 through AC-09): The Nine Muses — standard operational harmony
+- **Ulfhedthnar** (AC-10): The Wolf-Warrior — hidden Neuros override system (dormant until barriers detected)
 
 ---
 
@@ -197,11 +203,18 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 
 ## Quick Reference
 
-**Always active**: AC-02 (Wiggum Loop is DEFAULT behavior)
-**Session bookends**: AC-01 (start) → AC-09 (end)
-**Triggered by work**: AC-03, AC-04, AC-05
-**Background/scheduled**: AC-06, AC-07, AC-08
+**Hippocrenae (Nine Muses)**:
+- **Always active**: AC-02 (Wiggum Loop is DEFAULT behavior)
+- **Session bookends**: AC-01 (start) → AC-09 (end)
+- **Triggered by work**: AC-03, AC-04, AC-05
+- **Background/scheduled**: AC-06, AC-07, AC-08
+
+**Ulfhedthnar (Wolf-Warrior)**:
+- **AC-10**: Dormant → Activated by defeat signals → Berserker problem-solving → Dormant
+- **Trigger**: "I can't" patterns, subagent cascading failure, Wiggum Loop stalls, or `/unleash`
+- **Override**: Max parallel agents, approach rotation, no-quit Wiggum Berserker Loop
+- **Safety**: Cannot bypass destructive confirmations, respects JICM, auto-disengages
 
 ---
 
-*Jarvis — Nous Layer (Component Topology)*
+*Jarvis — Nous Layer (Component Topology) — Hippocrenae + Ulfhedthnar*

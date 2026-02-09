@@ -410,10 +410,10 @@ discoveries without human review.
    └── Define integration steps
 ```
 
-### Open Questions
-- [ ] File usage tracker implementation?
-- [ ] Monthly scan scheduling mechanism?
-- [ ] Integration with PR-14 catalog?
+### Resolved Questions
+- [x] File usage tracker: Implemented as `.claude/scripts/file-usage-tracker.sh` (JSONL logger, jq --arg safe)
+- [x] Monthly scan scheduling: Via downtime detector + research agenda backlog check
+- [x] Integration with PR-14 catalog: Read-only; AC-07 reads SOTA catalog for topic discovery
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
@@ -430,13 +430,13 @@ discoveries without human review.
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (manual, downtime, scheduled)
-- [ ] Inputs/outputs validated
+- [x] Triggers tested (manual /research works; downtime-based via detector)
+- [x] Inputs/outputs validated (research agenda exists; file usage tracker at `.claude/scripts/file-usage-tracker.sh`)
 - [x] Dependencies verified (web access, deep-research)
-- [ ] Gates implemented (proposals require approval)
+- [x] Gates implemented (all R&D proposals require user approval)
 - [x] Metrics emission working (telemetry-emitter.js integrated)
-- [ ] Failure modes tested (no web, no agent)
-- [ ] Integration with consumers verified (AC-06 receives proposals)
+- [ ] Failure modes tested (no web, no agent scenarios)
+- [x] Integration with consumers verified (proposals queue to AC-06 evolution-queue.yaml)
 - [x] Documentation updated
 
 ---

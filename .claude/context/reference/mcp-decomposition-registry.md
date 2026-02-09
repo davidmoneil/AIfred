@@ -14,6 +14,12 @@
 > Ad-hoc `Bash(curl)` or `WebFetch` is NOT an acceptable replacement — build a documented,
 > reproducible, replicable Skill with standardized protocols.
 
+> **Cherry-Pick Principle**: Pattern extraction matters more than wholesale plugin installation.
+> Large plugin libraries contain mostly generic patterns already covered by Jarvis. The value
+> is in cherry-picking the 3-5 novel patterns per library that address known gaps. Never
+> wholesale install — extract the smallest useful unit (a pattern file, a hook, a skill module).
+> If no novel patterns exist, or if integration requires major infrastructure changes, DEFER.
+
 ---
 
 ## Master Status Matrix (18 Original + 19 Planned)

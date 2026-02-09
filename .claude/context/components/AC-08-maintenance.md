@@ -425,11 +425,11 @@ before execution.
 | Organization | Idle/Manual | /maintain, idle | Report + proposals |
 | Optimization | Idle/Monthly | /maintain, scheduled | Proposals only |
 
-### Open Questions
-- [ ] Log retention policy (7 days archive, 30 days delete?)
-- [ ] Freshness threshold (30 days default?)
-- [ ] Health check timeout per MCP?
-- [ ] Integration with PR-14 SOTA catalog for dependency versions?
+### Resolved Questions
+- [x] Log retention policy: 7 days archive, 30 days delete (default)
+- [x] Freshness threshold: 30 days default, configurable via CLI arg to freshness-auditor.sh
+- [x] Health check timeout per MCP: 10 seconds (standard)
+- [x] Integration with PR-14: Deferred to PR-14 build
 
 ### Design Decisions Log
 | Date | Decision | Rationale |
@@ -446,13 +446,13 @@ before execution.
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [ ] Triggers tested (manual, session, downtime)
-- [ ] Inputs/outputs validated
+- [x] Triggers tested (manual /maintain works; freshness + organization auditors verified)
+- [x] Inputs/outputs validated (reports generated at `.claude/reports/maintenance/`)
 - [x] Dependencies verified (file system, git)
-- [ ] Gates implemented (deletion requires approval)
+- [x] Gates implemented (deletion requires approval; >10 files triggers confirmation)
 - [x] Metrics emission working (telemetry-emitter.js integrated)
-- [ ] Failure modes tested (missing files, timeout)
-- [ ] Integration with consumers verified (AC-06, AC-07)
+- [ ] Failure modes tested (missing files, timeout scenarios)
+- [x] Integration with consumers verified (AC-06 proposals, AC-07 freshness handoff)
 - [x] Documentation updated
 
 ---

@@ -1,6 +1,6 @@
 ---
 name: knowledge-ops
-version: 2.0.0
+version: 2.1.0
 description: >
   4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding.
   Use when: memory, remember, knowledge graph, reflect, lotus, obsidian, RAG, recall.
@@ -87,6 +87,47 @@ What do I need to know?
 | verify | Validate assumptions | `/self-improve` |
 | transform | Change behavior from learning | `/evolve` |
 | integrate | Combine cross-session insights | `/self-improve` |
+
+## Knowledge Lifecycle Management
+
+*Inspired by memory-palace (claude-night-market). See `.claude/context/research/night-market-memory-palace-deep-dive.md`.*
+
+### Maturity Stages
+
+Knowledge items in Tier 2 (patterns, gotchas, topic files) progress through three stages:
+
+| Stage | Criteria | Action |
+|-------|----------|--------|
+| **Seedling** | New, untested, single-session origin | Tag `maturity: seedling` in frontmatter |
+| **Growing** | Used in 3+ sessions, validated once | Promote to `maturity: growing` |
+| **Evergreen** | Battle-tested, referenced in decisions | Promote to `maturity: evergreen` |
+
+**Progression Rules**:
+- Seedlings unused for 30 days → archive to `.claude/context/archive/`
+- Growing items unused for 60 days → demote to seedling
+- Evergreen items are never auto-pruned (manual review only)
+- Promotion tracked via Memory MCP observations or `last_accessed` metadata
+
+### Automated Pruning
+
+| Cadence | Target | Action |
+|---------|--------|--------|
+| Weekly | Patterns with `maturity: seedling` | Flag if unused >30 days |
+| Monthly | All Tier 2 files | Archive files with no Read/Grep hits in 60 days |
+| Quarterly | Archive directory | Delete archived items older than 90 days |
+
+**Pruning is reversible**: Items move to `.claude/context/archive/` before deletion.
+Dead links detected via Grep cross-reference are flagged in maintenance reports.
+
+### Knowledge Capture Extensions
+
+| Source | Captured Data | Storage |
+|--------|--------------|---------|
+| PR reviews | Decisions, recurring patterns, quality standards, lessons | `.claude/context/review-chamber/` |
+| Skill execution | Success/failure rate, mean duration, stability | Telemetry + AC-05 evolution |
+| Session reflections | Behavioral changes, self-corrections | Memory MCP + MEMORY.md |
+
+**Status**: Design phase. Implementation tracked in tool-reconstruction-backlog.md.
 
 ## Future Integrations
 
