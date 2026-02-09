@@ -8,14 +8,14 @@
 
 ## Current Work Status
 
-**Status**: Session Complete — Overnight Mandate Fulfilled
+**Status**: Session Complete
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: a1768b4 (pushed to origin/Project_Aion)
+**Last Commit**: 5ae66cb (pushed to origin/Project_Aion)
 
 **Current Blocker**: None
 
-**Current Work**: Session complete. Overnight mandate (4:00 AM MST) fulfilled. Phase 11 + 12 complete. 8/10 PR-12 sub-PRs done. All 9 AC components have telemetry emission. Remaining: PR-12.6 (evolution), PR-12.7 (R&D), PR-12.8 (maintenance) — ~6 hrs implementation work.
+**Current Work**: Session complete. Deck-ops skill v1.2.0 created through 3-iteration test cycle. Self-improvement cycle (AC-05/07/08/06) completed at session end. 8/10 PR-12 sub-PRs done. Remaining: PR-12.6 (evolution), PR-12.7 (R&D), PR-12.8 (maintenance) — ~6 hrs implementation work.
 
 ---
 
@@ -147,6 +147,17 @@ Context window 8 (final, post mandate expiry):
 - Identified hook-driven state file overwrite as evolution proposal EVO-2026-02-005
 - Session completion protocol executed (mandate expired at 04:00, resumed at 05:09)
 - Total session: ~12 hours, 8 context windows, 3 JICM compression cycles, 12 phases
+
+**Phase 13 — Deck-Ops Skill Development (2026-02-08)**
+Context windows 9-11 (afternoon session):
+- Created deck-ops skill v1.2.0 through 3-iteration test cycle
+- 3 skill drafts: pipeline framework → pitfall avoidance → spatial safety (zone model)
+- 3 control prompts: intent-only → quality attributes → implementation constraints
+- 3 generated decks: 26/50 → 37/50 → 38/50 quality score (vs 50/50 reference)
+- Comparative analysis document written
+- Key finding: implementation-level constraints (~85%) >> abstract goals (~40%) for prompt engineering
+- Self-improvement cycle (AC-05/07/08/06) run at session end
+- **Commit**: 5ae66cb (deck-ops skill + control prompts + AC-01 state)
 
 ### Key Decisions (This Session)
 1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs

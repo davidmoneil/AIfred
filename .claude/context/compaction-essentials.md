@@ -61,13 +61,14 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 
 - **TodoWrite**: Use for any task with 2+ steps
 - **Milestone Gate**: Documentation must be updated before completion
-- **Agent Selection**: Check `.claude/context/integrations/capability-matrix.md`
+- **Agent Selection**: Check `.claude/context/psyche/capability-map.yaml`
 
 ## MCP Tools (Always Available)
 
 - **Memory MCP**: Cross-session knowledge storage
 - **Git MCP**: Local repository operations
-- **Filesystem MCP**: File operations
+- **Local RAG MCP**: Semantic codebase search
+- **Fetch MCP**: Web content retrieval
 
 ## Automation Expectations
 

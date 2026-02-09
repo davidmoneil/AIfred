@@ -45,11 +45,11 @@ active:
     source: "RLE-001 FURTHER-PLANS.md"
     objective: "Determine if findings generalize across LLM models"
     models:
-      - name: "Claude Opus 4.5"
+      - name: "Claude Opus 4.6"
         status: DONE (baseline)
-      - name: "Claude Sonnet"
+      - name: "Claude Sonnet 4.5"
         status: pending
-      - name: "Claude Haiku"
+      - name: "Claude Haiku 4.5"
         status: pending
     metrics:
       - lines_of_code_produced
@@ -114,19 +114,20 @@ backlog:
   - id: INFRA-002
     title: "Telemetry System Implementation"
     priority: HIGH
-    status: BACKLOG
+    status: COMPLETE
+    completed_date: "2026-02-08"
     source: "PR-13 Design"
     objective: "Implement telemetry for AC component metrics"
-    dependencies:
-      - AC-02 instrumentation gap (identified 2026-01-17)
+    notes: "All 9 AC components have telemetry emission wired via telemetry-emitter.js (Phase 11)"
 
   - id: EXT-001
     title: "Local RAG MCP Evaluation"
     priority: HIGH
-    status: BACKLOG
+    status: COMPLETE
+    completed_date: "2026-02-08"
     source: "R&D Cycle 2026-01-18"
     objective: "Evaluate shinpr/mcp-local-rag for codebase search"
-    notes: "ADOPT recommendation from R&D cycle"
+    notes: "ADOPTED — local-rag is one of 5 retained MCPs in v5.9.0"
 
   - id: EXT-002
     title: "Zapier MCP Evaluation"

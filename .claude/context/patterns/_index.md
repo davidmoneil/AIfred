@@ -3,7 +3,7 @@
 Reusable implementation patterns organized by category. Consult before implementing significant tasks.
 
 **Last Updated**: 2026-02-08 (Cross-reference audit)
-**Total Patterns**: 50
+**Total Patterns**: 51
 **Audit Report**: `.claude/reports/pattern-cross-reference-audit-2026-02-08.md`
 
 ---
@@ -68,6 +68,7 @@ Patterns for Model Context Protocol server management.
 | [mcp-loading-strategy](mcp-loading-strategy.md) | 3-tier MCP loading approach | Session start, MCP decisions |
 | [context-budget-management](context-budget-management.md) | Token budgets and MCP tiers | Context optimization |
 | [observation-masking-pattern](observation-masking-pattern.md) | Reduce tool output context (80%+ → 60-80% savings) | Large tool outputs, long sessions |
+| [progressive-constraint-encoding](progressive-constraint-encoding.md) | 3-level constraint encoding for artifact generation prompts | Skill development, prompt engineering |
 | [mcp-design-patterns](mcp-design-patterns.md) | Per-MCP best practices | Using specific MCPs |
 | [mcp-validation-harness](mcp-validation-harness.md) | 5-phase MCP validation | Adding new MCPs |
 | [batch-mcp-validation](batch-mcp-validation.md) | Batch testing for token limits | Validating MCP groups |
