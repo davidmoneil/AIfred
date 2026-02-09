@@ -8,14 +8,24 @@
 
 ## Current Work Status
 
-**Status**: Stream 1 COMPLETE — committing
+**Status**: Idle — session ended cleanly via AC-09
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 09e43be (Stream 0 housekeeping — pushed to origin/Project_Aion)
+**Last Commit**: ffe9bf0 (research-ops v2.1.0 — pushed to origin/Project_Aion)
 
 **Current Blocker**: None
 
-**Current Work**: Stream 1 complete. research-ops v2.1.0 — 8 scripts created, 12/12 tests pass, ~3,100 token savings/session. 4 milestones executed (foundation, testing, code review, documentation). Committing now. Next: Stream 2 (plugin assessment), Stream 3 (new MCP evaluation).
+**What Was Accomplished (2026-02-09)**:
+- Stream 0: Housekeeping — 3 Wiggum Loops, 34 files, count harmonization, bulk reference replacement (09e43be)
+- Stream 1: research-ops v2.1.0 — 8 native MCP replacement scripts, 12/12 tests pass, ~3,100 token savings/session (ffe9bf0)
+- Code review completed: 2 CRITICAL security issues found (Python injection in url_encode + search-arxiv.sh), 8 warnings
+- Deep analysis: MCP vs native skill comparison report generated
+
+**Next Session Pickup**:
+1. **CRITICAL**: Fix 2 Python code injection vulnerabilities in research-ops scripts (url_encode, search-arxiv.sh) — see `.claude/reports/reviews/research-ops-code-review-2026-02-08.json`
+2. Stream 2: Plugin discovery & assessment (~2h)
+3. Stream 3: New MCP evaluation (~2h)
+4. Phase 6 completion: PR-12.6/12.7/12.8 (~6h total)
 
 ---
 
@@ -172,7 +182,21 @@ Context windows 12-14 (evening session):
 - Glossary: "Capability Matrix" → "Capability Map", path fixed
 - Deprecation header added to capability-matrix-update-workflow.md
 - **Files modified (33+ total)**: capability-map.yaml, plugin-decompose/SKILL.md, mcp-validation/SKILL.md, CLAUDE.md, _index.md, psyche/_index.md, nous-map.md, pneuma-map.md, skills/_index.md, knowledge-ops/SKILL.md, commands/README.md, hooks/README.md, MEMORY.md, + 19 bulk replacement files (integrations/6, patterns/9, reference/2, commands/1, current-priorities.md)
-- **Status**: COMPLETE — ready to commit + push
+- **Commits**: 09e43be (Stream 0), a6ed590 (self-improvement)
+- **Status**: COMPLETE
+
+**Phase 15 — Stream 1: research-ops v2.1.0 (2026-02-09)**
+Context windows 15-18 (multi-JICM):
+- 8 bash scripts created in `.claude/skills/research-ops/scripts/`
+- 4 core backends: Brave, arXiv, Wikipedia, Perplexity (all tested, 12/12 pass)
+- 2 workflow docs: Context7 (partial), GPTResearcher (blocked)
+- Shared utilities in `_common.sh` (credential extraction, HTTP helpers, error handling)
+- Key fix: `--compressed` curl flag (not manual Accept-Encoding: gzip)
+- Key fix: SC2001 — `${var//pattern/replacement}` over `echo | sed`
+- Code review found 2 CRITICAL Python injection bugs + 8 warnings (TO FIX next session)
+- Deep analysis: ~3,100 token savings/session (91% reduction), capability regressions limited to power-user features
+- SKILL.md updated v2.0.0 → v2.1.0, registry/backlog/capability-map all updated
+- **Commit**: ffe9bf0 (pushed to origin/Project_Aion)
 
 ### Key Decisions (This Session)
 1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs
@@ -197,4 +221,4 @@ Context windows 12-14 (evening session):
 
 ---
 
-*Session state updated 2026-02-08 05:10 MST — Session Complete*
+*Session state updated 2026-02-08 21:50 MST — Session ended via AC-09*
