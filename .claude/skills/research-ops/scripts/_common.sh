@@ -60,7 +60,7 @@ url_encode() {
 require_commands() {
     local missing=0
     for cmd in "$@"; do
-        if ! command -v "$cmd" &>/dev/null; then
+        if ! command -v "$cmd" >/dev/null 2>&1; then
             echo "ERROR: Required command not found: $cmd" >&2
             missing=1
         fi

@@ -51,9 +51,9 @@ if [[ "$SEARCH" == true ]]; then
 
     RESPONSE=$(http_get "$URL" 15) || handle_error "wikipedia" "Search failed"
 
-    echo "$RESPONSE" | jq '{
-        query: "'"$TITLE"'",
-        language: "'"$LANG"'",
+    echo "$RESPONSE" | jq --arg q "$TITLE" --arg lang "$LANG" '{
+        query: $q,
+        language: $lang,
         results: [.pages[:10] | .[] | {
             title: .title,
             description: .description,
@@ -75,11 +75,11 @@ else
         URL="https://${LANG}.wikipedia.org/api/rest_v1/page/summary/${ENCODED_TITLE}"
         RESPONSE=$(http_get "$URL" 15) || handle_error "wikipedia" "Article not found: $TITLE"
 
-        echo "$RESPONSE" | jq '{
+        echo "$RESPONSE" | jq --arg lang "$LANG" '{
             title: .title,
             description: .description,
             extract: .extract,
-            language: "'"$LANG"'",
+            language: $lang,
             url: .content_urls.desktop.page,
             thumbnail: .thumbnail.source,
             last_modified: .timestamp

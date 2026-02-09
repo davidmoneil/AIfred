@@ -82,9 +82,9 @@ RESPONSE=$(http_post \
     "$TIMEOUT") || handle_error "perplexity" "API request failed"
 
 # Format output — extract content and citations
-echo "$RESPONSE" | jq '{
+echo "$RESPONSE" | jq --arg q "$QUERY" '{
     model: .model,
-    query: '"$ESCAPED_QUERY"',
+    query: $q,
     content: .choices[0].message.content,
     citations: .citations,
     usage: {

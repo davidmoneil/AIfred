@@ -66,11 +66,11 @@ if [[ "$HTTP_CODE" -ge 400 ]] 2>/dev/null; then
 fi
 
 # Format output
-echo "$BODY" | jq '{
+echo "$BODY" | jq --arg stype "$TYPE" --argjson cnt "$COUNT" '{
     query: .query.original,
-    type: "'"$TYPE"'",
+    type: $stype,
     result_count: (.web.results // .news.results // .videos.results // [] | length),
-    results: [(.web.results // .news.results // .videos.results // [])[:'"$COUNT"'] | .[] | {
+    results: [(.web.results // .news.results // .videos.results // [])[:$cnt] | .[] | {
         title: .title,
         url: .url,
         description: .description,

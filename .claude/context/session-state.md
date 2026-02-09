@@ -22,7 +22,7 @@
 - Deep analysis: MCP vs native skill comparison report generated
 
 **Next Session Pickup**:
-1. **CRITICAL**: Fix 2 Python code injection vulnerabilities in research-ops scripts (url_encode, search-arxiv.sh) — see `.claude/reports/reviews/research-ops-code-review-2026-02-08.json`
+1. ~~CRITICAL: Python injection~~ — RESOLVED (were false positives from hallucinating code-review agent; real fix was jq --arg for string interpolation)
 2. Stream 2: Plugin discovery & assessment (~2h)
 3. Stream 3: New MCP evaluation (~2h)
 4. Phase 6 completion: PR-12.6/12.7/12.8 (~6h total)
