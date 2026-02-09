@@ -347,7 +347,7 @@ Sources for internal topics:
 │    - Install xyz-mcp via npm                                        │
 │    - Add configuration to mcps.yaml                                 │
 │    - Update setup-mcps.sh                                           │
-│    - Document usage in capability-matrix.md                         │
+│    - Document usage in capability-map.yaml                         │
 │                                                                      │
 │  validation:                                                         │
 │    - MCP responds to test query                                     │
@@ -515,7 +515,7 @@ async function trackFileUsage(input) {
 │     │                                                              │ │
 │     │  Medium-Use Files (loaded most sessions):                    │ │
 │     │  • selection-intelligence-guide.md                           │ │
-│     │  • capability-matrix.md                                      │ │
+│     │  • capability-map.yaml                                      │ │
 │     │                                                              │ │
 │     │  Low-Use Files (rarely loaded):                              │ │
 │     │  • [identify candidates for consolidation]                   │ │

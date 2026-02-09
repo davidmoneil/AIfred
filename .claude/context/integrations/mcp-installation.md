@@ -522,7 +522,7 @@ claude mcp add <name> -- <command>
 
 - @.claude/context/patterns/mcp-loading-strategy.md - Loading strategy details
 - @.claude/context/patterns/mcp-validation-harness.md - Validation harness pattern (PR-8.4)
-- @.claude/context/integrations/capability-matrix.md - When to use which tool
+- @.claude/context/integrations/capability-map.yaml - When to use which tool
 - @.claude/context/integrations/overlap-analysis.md - Conflict resolution
 - @.claude/skills/mcp-validation/SKILL.md - `/validate-mcp` command
 

@@ -105,7 +105,7 @@ Canonical definitions for all terminology used in Jarvis documentation.
 | **Project Aion** | Jarvis development meta-project. Lives in `projects/project-aion/`. |
 | **AIfred** | Upstream baseline project. Read-only reference at commit `2ea4e8b`. |
 | **Integration Chronicle** | Master document tracking AIfred integration decisions and progress. |
-| **Capability Matrix** | Master task-to-tool mapping in `integrations/capability-matrix.md`. |
+| **Capability Map** | Master task-to-tool mapping in `psyche/capability-map.yaml`. |
 
 ---
 

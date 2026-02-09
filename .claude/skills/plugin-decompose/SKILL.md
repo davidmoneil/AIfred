@@ -1,6 +1,11 @@
+---
+name: plugin-decompose
+version: 2.0.0
+description: Analyze and decompose Claude Code plugins for integration
+---
+
 # Plugin Decompose Skill
 
-**Version**: 2.0.0 (Decompose-Native with Execute)
 **Build Method**: Jarvis-native ralph-loop (blind build)
 **Created**: 2026-01-17
 

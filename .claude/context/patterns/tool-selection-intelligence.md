@@ -883,7 +883,7 @@ SKILL.md STRUCTURE FOR PROGRESSIVE DISCLOSURE:
 │  • Expected output format                                       │
 │  • Complementary tools to enable first                          │
 │                                                                 │
-│  Location: agent-selection-pattern.md, capability-matrix.md    │
+│  Location: agent-selection-pattern.md, capability-map.yaml    │
 └─────────────────────────────────────────────────────────────────┘
                               ▼
                (Subagent selected — spawn with context)
@@ -1592,7 +1592,7 @@ When decomposing a plugin, components map to:
 │  PHASE 5: DOCUMENTATION                                          │
 │  ────────────────────                                            │
 │  1. Update skills-selection-guide.md                             │
-│  2. Update capability-matrix.md                                  │
+│  2. Update capability-map.yaml                                  │
 │  3. Update overlap-analysis.md                                   │
 │  4. Add to context index                                         │
 │  5. (Optional) Uninstall source plugin                           │
@@ -2312,7 +2312,7 @@ persona: |
 
 ## Related Documentation
 
-- @.claude/context/integrations/capability-matrix.md — Task→tool mapping
+- @.claude/context/integrations/capability-map.yaml — Task→tool mapping
 - @.claude/context/integrations/overlap-analysis.md — Conflict resolution
 - @.claude/context/patterns/mcp-loading-strategy.md — MCP tier system
 - @.claude/context/patterns/agent-selection-pattern.md — Agent vs subagent

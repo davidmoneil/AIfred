@@ -17,7 +17,7 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 ├── current-priorities.md     # Active task queue [UPDATE ON COMPLETION]
 ├── configuration-summary.md  # Current setup state
 │
-├── patterns/                 # Behavioral rules (48 patterns)
+├── patterns/                 # Behavioral rules (51 patterns)
 ├── standards/                # Conventions (5 standards)
 ├── workflows/                # Large task procedures
 ├── designs/                  # Architecture philosophy
@@ -41,7 +41,7 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 
 ### patterns/ — Behavioral Rules
 
-**48 patterns** organized by category:
+**51 patterns** organized by category:
 
 | Category | Key Patterns |
 |----------|-------------|

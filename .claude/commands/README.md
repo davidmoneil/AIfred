@@ -26,7 +26,7 @@
 - `tooling-health.md`, `design-review.md`, `validate-selection.md`
 
 ### Autonomous Execution
-- `auto-*.md` — 17+ autonomous command wrappers
+- Handled by `autonomous-commands` skill (signal-based automation)
 
 ### Orchestration
 - `orchestration/plan.md`, `orchestration/status.md`, `orchestration/resume.md`

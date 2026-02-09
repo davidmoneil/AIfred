@@ -1012,7 +1012,7 @@ Always maintain MCP state in session-state.md:
 - @.claude/context/patterns/mcp-validation-harness.md - Validation process
 - @.claude/context/patterns/context-budget-management.md - Token budgets
 - @.claude/context/integrations/mcp-installation.md - Installation guide
-- @.claude/context/integrations/capability-matrix.md - Tool selection
+- @.claude/context/integrations/capability-map.yaml - Tool selection
 - @.claude/context/workflows/session-exit.md - Exit procedure
 
 ---

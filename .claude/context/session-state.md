@@ -8,14 +8,14 @@
 
 ## Current Work Status
 
-**Status**: Session Complete
+**Status**: Stream 0 COMPLETE — needs commit + push
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 5ae66cb (pushed to origin/Project_Aion)
+**Last Commit**: 5ae66cb (Stream 0 changes uncommitted, ready to commit)
 
 **Current Blocker**: None
 
-**Current Work**: Session complete. Deck-ops skill v1.2.0 created through 3-iteration test cycle. Self-improvement cycle (AC-05/07/08/06) completed at session end. 8/10 PR-12 sub-PRs done. Remaining: PR-12.6 (evolution), PR-12.7 (R&D), PR-12.8 (maintenance) — ~6 hrs implementation work.
+**Current Work**: Stream 0 Housekeeping complete. 3 Wiggum Loops + 3 code reviews. Bulk replacement re-executed after compaction loss. 33+ files modified total. Ready to commit and push.
 
 ---
 
@@ -158,6 +158,21 @@ Context windows 9-11 (afternoon session):
 - Key finding: implementation-level constraints (~85%) >> abstract goals (~40%) for prompt engineering
 - Self-improvement cycle (AC-05/07/08/06) run at session end
 - **Commit**: 5ae66cb (deck-ops skill + control prompts + AC-01 state)
+
+**Phase 14 — Stream 0 Housekeeping (2026-02-08/09)**
+Context windows 12-14 (evening session):
+- Stream 0: Comprehensive audit of Skills/Plugins/MCPs state
+- 4 parallel audit agents → 5 Critical issues, count drift, stale references
+- Wiggum Loop 1: C1-C5 critical fixes (capability-map.yaml, plugin-decompose, mcp-validation frontmatter/refs)
+- Wiggum Loop 2: Count harmonization across 8+ files (patterns 51, skills 28, commands 40, hooks 28)
+- Wiggum Loop 3: commands/README.md + hooks/README.md updates
+- Code review after each loop caught additional issues (pneuma-map summary table, knowledge-ops count)
+- Loop 3 bulk replacement initially lost during context compaction — re-executed successfully
+- 19 files: capability-matrix.md → capability-map.yaml (26 substitutions)
+- Glossary: "Capability Matrix" → "Capability Map", path fixed
+- Deprecation header added to capability-matrix-update-workflow.md
+- **Files modified (33+ total)**: capability-map.yaml, plugin-decompose/SKILL.md, mcp-validation/SKILL.md, CLAUDE.md, _index.md, psyche/_index.md, nous-map.md, pneuma-map.md, skills/_index.md, knowledge-ops/SKILL.md, commands/README.md, hooks/README.md, MEMORY.md, + 19 bulk replacement files (integrations/6, patterns/9, reference/2, commands/1, current-priorities.md)
+- **Status**: COMPLETE — ready to commit + push
 
 ### Key Decisions (This Session)
 1. **Decomposition-First paradigm**: Default DECOMPOSE, only RETAIN server-dependent MCPs

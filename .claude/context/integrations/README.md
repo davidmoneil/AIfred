@@ -18,7 +18,7 @@
 
 | Document | Status | Notes |
 |----------|--------|-------|
-| `capability-matrix.md` | PARTIALLY OUTDATED | File/Git ops tables still valid; research section superseded by research-ops v2.0 |
+| `capability-map.yaml` | PARTIALLY OUTDATED | File/Git ops tables still valid; research section superseded by research-ops v2.0 |
 | `mcp-installation.md` | LARGELY OUTDATED | Only Memory MCP section remains accurate; 13 MCPs removed |
 | `overlap-analysis.md` | PARTIALLY OUTDATED | Most overlaps resolved by decomposition; remaining MCP overlaps still valid |
 | `skills-selection-guide.md` | CURRENT | Plugin/skill selection for document types, visuals |

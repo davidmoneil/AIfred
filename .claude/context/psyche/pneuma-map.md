@@ -20,9 +20,9 @@ Pneuma is what Jarvis CAN DO — capabilities and character that enable action.
 ├── context/                  # → Nous layer (see nous-map.md)
 │
 ├── agents/                   # Custom agent definitions (12)
-├── commands/                 # Slash commands (35)
-├── skills/                   # On-demand skills (22)
-├── hooks/                    # Event automation (28)
+├── commands/                 # Slash commands (40)
+├── skills/                   # On-demand skills (28)
+├── hooks/                    # Event automation (28 active .js)
 ├── scripts/                  # Session scripts (~20)
 ├── plugins/                  # Plugin definitions
 │
@@ -241,8 +241,8 @@ state/ ────────────────► reports/ (state→rep
 | Type | Count |
 |------|-------|
 | Agents | 12 active |
-| Commands | 35 |
-| Skills | 22 |
+| Commands | 40 |
+| Skills | 28 |
 | Hooks | 28 registered |
 | Scripts | ~20 session scripts |
 

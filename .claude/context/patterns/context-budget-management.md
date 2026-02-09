@@ -356,7 +356,7 @@ If context exceeds 100% and autocompaction triggers:
 ## Related Documentation
 
 - @.claude/context/patterns/mcp-loading-strategy.md - Original MCP tiers
-- @.claude/context/integrations/capability-matrix.md - Tool selection
+- @.claude/context/integrations/capability-map.yaml - Tool selection
 - @.claude/context/integrations/overlap-analysis.md - Conflict resolution
 
 ---

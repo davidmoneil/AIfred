@@ -1,5 +1,5 @@
 ---
-name: validate-mcp
+name: mcp-validation
 description: Validate MCP installation, configuration, and functionality
 user_invocable: true
 arguments:
@@ -93,7 +93,7 @@ Apply tier criteria:
    `.claude/logs/mcp-validation/{mcp_name}-{date}.md`
 
 2. **Update capability matrix** (if validated):
-   Add tools to `.claude/context/integrations/capability-matrix.md`
+   Add tools to `.claude/context/psyche/capability-map.yaml`
 
 3. **Update MCP installation docs** (if new MCP):
    Add entry to `.claude/context/integrations/mcp-installation.md`

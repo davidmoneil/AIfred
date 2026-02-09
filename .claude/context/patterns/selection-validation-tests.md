@@ -258,7 +258,7 @@ Selection decisions are logged to `.claude/logs/selection-audit.jsonl`:
 
 - @selection-intelligence-guide.md — Quick selection reference
 - @agent-selection-pattern.md — Agent decision details
-- @capability-matrix.md — Tool selection matrix
+- @capability-map.yaml — Tool selection matrix
 
 ---
 

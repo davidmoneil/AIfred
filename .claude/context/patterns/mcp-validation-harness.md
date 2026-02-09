@@ -3,7 +3,7 @@
 **Created**: 2026-01-08
 **Updated**: 2026-01-08
 **Status**: Active
-**Related**: PR-8.4, capability-matrix.md, mcp-installation.md, batch-mcp-validation.md
+**Related**: PR-8.4, capability-map.yaml, mcp-installation.md, batch-mcp-validation.md
 
 ---
 
@@ -107,7 +107,7 @@ Installing non-functional or poorly-understood MCPs causes:
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Output**: Tool inventory table for capability-matrix.md
+**Output**: Tool inventory table for capability-map.yaml
 
 ### Phase 4: Functional Testing
 
@@ -208,7 +208,7 @@ Add to `mcp-installation.md`:
 
 ### 2. Capability Matrix Update
 
-Add to `capability-matrix.md`:
+Add to `capability-map.yaml`:
 
 ```markdown
 | Capability | Primary Tool | MCP | Fallback |

@@ -5,7 +5,7 @@
 **Related**:
 - @.claude/reports/pr-7-skills-evaluation.md — Full skill evaluations
 - @.claude/reports/pr-7-skills-overlap-analysis.md — Overlap analysis
-- @.claude/context/integrations/capability-matrix.md — Full tool selection
+- @.claude/context/integrations/capability-map.yaml — Full tool selection
 
 ---
 

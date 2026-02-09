@@ -168,7 +168,7 @@ After completing evaluation:
 
 1. **Evaluation Report**: `.claude/reports/pr-{N}-{type}-evaluation.md`
 2. **Overlap Analysis Update**: `.claude/reports/pr-{N}-overlap-analysis.md`
-3. **Capability Matrix Update**: `.claude/context/integrations/capability-matrix.md`
+3. **Capability Matrix Update**: `.claude/context/integrations/capability-map.yaml`
 4. **CLAUDE.md Update**: If high-value tool, add to Quick Start
 5. **Validation Status**: Track in evaluation report
 

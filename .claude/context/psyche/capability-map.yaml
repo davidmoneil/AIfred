@@ -60,6 +60,12 @@ skills:
     replaces: memory MCP (shadow), lotus-wisdom MCP
     file: .claude/skills/knowledge-ops/SKILL.md
 
+  - id: skill.deck-ops
+    when: "Create slide deck presentations — zone-based layout, iterative refinement"
+    tools: [Bash, Write, Read, Edit, WebSearch, WebFetch, Task]
+    overlaps_with: [pptx, pdf, doc-ops]
+    file: .claude/skills/deck-ops/SKILL.md
+
 # ─── FUTURE x-ops CONSOLIDATIONS ───
 # db-ops:      chroma + supabase + mongodb + sqlite + neo4j + mindsdb (new)
 # web-ops:     playwright + browserstack + scraping (new)
@@ -206,7 +212,7 @@ components:
 
   - id: ac.07-research
     signal: "/research"
-    file: .claude/context/components/AC-07-research.md
+    file: .claude/context/components/AC-07-rd-cycles.md
 
   - id: ac.08-maintenance
     signal: "/maintain, quarterly"

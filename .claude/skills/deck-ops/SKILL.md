@@ -1,20 +1,10 @@
 ---
 name: deck-ops
-description: >
-  End-to-end presentation creation — research, design, generate, iterate.
-  Use when: create presentation, build slides, slide deck, make a deck,
-  presentation from scratch, visual presentation, Sunday school lesson,
-  teaching presentation, persuasive slides, conference talk slides.
+description: Create slide deck presentations
 version: 1.2.0
 category: document
 tags: [presentation, slides, deck, pptx, pdf, design, visual, teaching]
 token_cost: ~18000
-when_to_use: |
-  - User wants a complete presentation created from topic/sources
-  - User needs slides designed for teaching, persuasion, or discussion
-  - User wants visual presentation quality beyond basic bullet points
-  - User has source material (talks, articles, data) to turn into a deck
-  - User needs presentation iteration/refinement guidance
 dependencies: [Bash, Write, Read, Edit, WebSearch, WebFetch, Task]
 overlaps_with: [pptx, pdf, doc-ops]
 complements: [research-ops, web-fetch]

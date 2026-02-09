@@ -35,6 +35,22 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [weather](weather/SKILL.md) | Weather information via wttr.in API | N/A |
 | [research-ops](research-ops/SKILL.md) | Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping | N/A |
 | [knowledge-ops](knowledge-ops/SKILL.md) | 4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding | N/A |
+| [deck-ops](deck-ops/SKILL.md) | Create slide deck presentations — zone-based layout model | N/A |
+
+### x-ops Router Skills
+
+| Router | Absorbs | Description |
+|--------|---------|-------------|
+| [doc-ops](doc-ops/SKILL.md) | docx, xlsx, pdf, pptx | Document format operations |
+| [self-ops](self-ops/SKILL.md) | self-improvement, jarvis-status, validation | Self-improvement and monitoring |
+| [mcp-ops](mcp-ops/SKILL.md) | mcp-builder, mcp-validation, plugin-decompose, skill-creator | MCP/skill lifecycle |
+| [autonom-ops](autonom-ops/SKILL.md) | autonomous-commands, session-management, context-management, ralph-loop | Session orchestration |
+
+### Infrastructure
+
+| Directory | Purpose |
+|-----------|---------|
+| [_shared](_shared/) | Shared utilities for skill implementations |
 
 ---
 

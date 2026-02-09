@@ -316,7 +316,7 @@ Re-evaluate overlap rules when:
 
 ## Related Documentation
 
-- @.claude/context/integrations/capability-matrix.md - Full capability matrix
+- @.claude/context/integrations/capability-map.yaml - Full capability matrix
 - @.claude/context/patterns/mcp-loading-strategy.md - MCP loading strategies
 - @.claude/context/patterns/agent-selection-pattern.md - Agent selection guidance
 - @.claude/context/patterns/memory-storage-pattern.md - Memory vs files

@@ -53,7 +53,7 @@ Core files for session continuity:
 
 ### Patterns (Behavioral Rules)
 
-How Jarvis behaves — 48 patterns organized by category.
+How Jarvis behaves — 51 patterns organized by category.
 
 **Index**: [patterns/_index.md](patterns/_index.md)
 

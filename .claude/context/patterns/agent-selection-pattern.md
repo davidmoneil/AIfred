@@ -139,7 +139,7 @@ During **Assess** phase:
 ## Related Documentation
 
 - @selection-intelligence-guide.md — Quick selection reference
-- @capability-matrix.md — Full task-to-tool mapping
+- @capability-map.yaml — Full task-to-tool mapping
 - @mcp-loading-strategy.md — MCP tier management
 
 ---

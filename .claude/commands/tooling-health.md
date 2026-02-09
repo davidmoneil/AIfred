@@ -413,7 +413,7 @@ For format guidance, see:
 
 ## Related Documentation
 
-- @.claude/context/integrations/capability-matrix.md - Task to tool selection
+- @.claude/context/integrations/capability-map.yaml - Task to tool selection
 - @.claude/context/integrations/mcp-installation.md - MCP installation procedures
 - @.claude/context/integrations/overlap-analysis.md - Tool overlap resolution
 - @.claude/hooks/README.md - Hooks documentation

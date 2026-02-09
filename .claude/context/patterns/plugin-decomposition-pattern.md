@@ -186,7 +186,7 @@ Execute validation tests (see Validation Framework below).
 
 ### Step 6: Update Registries
 - Add to skills-selection-guide.md
-- Update capability-matrix.md
+- Update capability-map.yaml
 - Document overlaps
 
 ---

@@ -4,7 +4,7 @@ Consolidated guide for selecting which MCP(s) to load for a given task.
 
 **Version**: 1.0.0
 **Layer**: Nous (reference)
-**Consolidates**: capability-matrix.md, mcp-loading-strategy.md, context-budget-management.md, mcp-design-patterns.md
+**Consolidates**: capability-map.yaml, mcp-loading-strategy.md, context-budget-management.md, mcp-design-patterns.md
 
 ---
 
@@ -190,7 +190,7 @@ Use: For embedding and semantic queries
 
 ## Reference Links
 
-- Full capability matrix: `integrations/capability-matrix.md`
+- Full capability matrix: `integrations/capability-map.yaml`
 - MCP installation: `integrations/mcp-installation.md`
 - Context budget: `patterns/context-budget-management.md`
 - MCP patterns: `patterns/mcp-design-patterns.md`

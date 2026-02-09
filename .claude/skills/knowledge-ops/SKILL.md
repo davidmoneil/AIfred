@@ -34,7 +34,7 @@ Each tier serves a distinct purpose. None is a "fallback" — choose by need.
 | Topic files | `~/.claude/projects/.../memory/*.md` | Read/Edit (linked from MEMORY.md) |
 | Session state | `.claude/context/session-state.md` | Read/Edit |
 | Compaction essentials | `.claude/context/compaction-essentials.md` | Read (survives /clear) |
-| Patterns (48) | `.claude/context/patterns/*.md` | Read/Glob |
+| Patterns (51) | `.claude/context/patterns/*.md` | Read/Glob |
 
 **Scope**: Persistent, file-based. Survives sessions, restarts, and compaction.
 

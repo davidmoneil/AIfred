@@ -1,8 +1,10 @@
+> **DEPRECATED**: This workflow references the old capability-matrix.md. The authoritative selection guide is now `capability-map.yaml`. See `.claude/context/psyche/capability-map.yaml`.
+
 # Capability Matrix Update Workflow Template
 
-**Purpose**: Repeatable process for updating the capability matrix when tools are added/changed
+**Purpose**: Repeatable process for updating the capability map when tools are added/changed
 
-**Output**: Updated `.claude/context/integrations/capability-matrix.md`
+**Output**: Updated `.claude/context/integrations/capability-map.yaml`
 
 ---
 

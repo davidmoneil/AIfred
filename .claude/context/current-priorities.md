@@ -89,6 +89,22 @@ Active tasks and priorities for Project Aion (Jarvis Archon).
 
 ---
 
+## Stream 0 Completed Work (2026-02-09)
+
+All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed successfully.
+
+- C1-C5 critical fixes (capability-map.yaml, plugin-decompose, mcp-validation)
+- Count harmonization: patterns 51, skills 28, commands 40, hooks 28, agents 13
+- Index updates: skills/_index.md (+6 entries), knowledge-ops pattern count
+- README updates: commands/README.md, hooks/README.md
+- Bulk replacement: capability-matrix.md → capability-map.yaml in 19 operational files (26 substitutions)
+- Glossary: "Capability Matrix" → "Capability Map", path corrected
+- Deprecation header added to capability-matrix-update-workflow.md
+- Code reviews: 3 loops, all findings addressed
+- **Status**: COMPLETE — needs commit + push
+
+---
+
 ## Up Next
 
 ### Tool Reconstruction Backlog

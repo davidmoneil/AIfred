@@ -133,7 +133,7 @@ Browser:            browser-automation → Playwright → WebFetch
 
 ## Related Documentation
 
-- @capability-matrix.md — Full task-to-tool mapping
+- @capability-map.yaml — Full task-to-tool mapping
 - @agent-selection-pattern.md — Agent decision details
 - @tool-selection-intelligence.md — Comprehensive theory
 - @mcp-loading-strategy.md — MCP tier management

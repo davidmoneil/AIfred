@@ -19,7 +19,7 @@ The complete structural map of Jarvis as an Archon.
 │  │                                                                      │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │   │
 │  │  │ patterns │ │standards │ │workflows │ │ designs  │ │components│  │   │
-│  │  │   (50)   │ │   (5)    │ │   (1)    │ │  (arch)  │ │  (AC-*)  │  │   │
+│  │  │   (51)   │ │   (5)    │ │   (1)    │ │  (arch)  │ │  (AC-*)  │  │   │
 │  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │   │
 │  │  │integrat- │ │ lessons  │ │reference │ │ psyche   │ │ trouble- │  │   │
@@ -38,7 +38,7 @@ The complete structural map of Jarvis as an Archon.
 │  │                                                                      │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │   │
 │  │  │ agents   │ │ commands │ │  skills  │ │  hooks   │ │ scripts  │  │   │
-│  │  │  (12)    │ │  (35)    │ │  (26)    │ │  (28)    │ │ (session)│  │   │
+│  │  │  (12)    │ │  (40)    │ │  (28)    │ │  (28)    │ │ (session)│  │   │
 │  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │   │
 │  │  │  state   │ │  config  │ │ metrics  │ │ reports  │ │  logs    │  │   │
@@ -78,7 +78,7 @@ The complete structural map of Jarvis as an Archon.
 
 | Directory | Purpose | Key Files |
 |-----------|---------|-----------|
-| patterns/ | Behavioral rules | 50 patterns, wiggum-loop, selection-intelligence |
+| patterns/ | Behavioral rules | 51 patterns, wiggum-loop, selection-intelligence |
 | standards/ | Conventions | readme-standard, model-selection |
 | components/ | AC specs | AC-01 through AC-09 |
 | integrations/ | Tool knowledge | capability-map.yaml (manifest router) |
@@ -93,8 +93,8 @@ The complete structural map of Jarvis as an Archon.
 | Directory | Purpose | Count |
 |-----------|---------|-------|
 | agents/ | Custom agents | 12 active |
-| commands/ | Slash commands | 35 |
-| skills/ | On-demand skills | 26 (10 discoverable + 15 absorbed + 1 example) |
+| commands/ | Slash commands | 40 |
+| skills/ | On-demand skills | 28 (11 discoverable + 15 absorbed + 1 example + 1 _shared) |
 | hooks/ | Event automation | 28 registered |
 | scripts/ | Session scripts | ~20 |
 
