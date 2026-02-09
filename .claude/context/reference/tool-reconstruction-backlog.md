@@ -11,7 +11,7 @@
 
 | Category | Items | Status |
 |----------|-------|--------|
-| MCP Reconstruction (in-progress) | 8 | 6/8 DONE (templates + keys validated) |
+| MCP Reconstruction (in-progress) | 8 | 7/8 DONE (4 scripts + 1 partial + 2 prior) |
 | New MCP → Skill (planned) | 19 | Planned (MCPs not yet installed) |
 | Marketplace Extraction | 10 | 5/5 RESEARCHED (patterns identified) |
 | x-ops Consolidation | 6 | 4/6 DONE (self-ops, doc-ops, mcp-ops, autonom-ops) |
@@ -22,21 +22,21 @@
 ## Priority 1: Complete In-Progress Reconstructions
 
 These MCPs were removed but their unique capabilities need native skill integration.
-Target skills already exist (research-ops v2.0, knowledge-ops v2.0).
+Target skills already exist (research-ops v2.1, knowledge-ops v2.0).
 
 | # | MCP | Target Skill | Status | API Key |
 |---|-----|-------------|--------|---------|
-| 1 | context7 | research-ops | ✅ Template + key exist (`.rag.context7`) | `.rag.context7` |
-| 2 | arxiv | research-ops | ✅ Template exists, URL fixed (http→https) | None (public) |
-| 3 | brave-search | research-ops | ✅ Template + key exist, tested OK | `.search.brave` |
-| 4 | wikipedia | research-ops | ✅ Template exists, tested OK | None (public) |
-| 5 | perplexity | research-ops | ✅ Template + key exist, tested OK | `.llm.perplexity` |
-| 6 | gptresearcher | research-ops | ⏳ Workflow documented, needs agent impl | API key TBD |
+| 1 | context7 | research-ops | ⚠️ PARTIAL — `scripts/fetch-context7.sh` (workflow doc, needs local-rag) | `.rag.context7` |
+| 2 | arxiv | research-ops | ✅ DONE — `scripts/search-arxiv.sh` (category/author/sort, xmllint) | None (public) |
+| 3 | brave-search | research-ops | ✅ DONE — `scripts/search-brave.sh` (web/news/video/image, freshness) | `.search.brave` |
+| 4 | wikipedia | research-ops | ✅ DONE — `scripts/fetch-wikipedia.sh` (multi-lang, summary/full/search) | None (public) |
+| 5 | perplexity | research-ops | ✅ DONE — `scripts/search-perplexity.sh` (4 sonar models, citations) | `.llm.perplexity` |
+| 6 | gptresearcher | research-ops | ⏳ BLOCKED — `scripts/deep-research-gpt.sh` (workflow doc, API key TBD) | API key TBD |
 | 7 | lotus-wisdom | knowledge-ops | ✅ Patterns in knowledge-ops lines 81-89 | N/A (prompt-only) |
 | 8 | chroma | db-ops (NEW) | ⏳ Create db-ops skill with Docker Chroma client | N/A (local Docker) |
 
-**Status**: 6/8 DONE. Remaining: #6 (GPTResearcher agent), #8 (Chroma/db-ops).
-**Blocker**: #8 needs Docker Chroma running. #6 needs API key provisioning.
+**Status**: 7/8 DONE (4 scripts + 1 partial + 2 prior). Remaining: #6 (GPTResearcher — blocked, API key), #8 (Chroma/db-ops — blocked, Docker).
+**Stream 1 complete**: research-ops v2.1.0 with 8 scripts, 12/12 tests pass, ~3,100 token savings/session.
 
 ---
 

@@ -49,9 +49,11 @@ skills:
     file: .claude/skills/autonom-ops/SKILL.md
 
   - id: skill.research-ops
-    when: "Multi-source research — 14 backends: web, academic, financial, AI-augmented, scraping"
-    tools: [WebSearch, WebFetch, "Bash(curl)"]
+    version: 2.1.0
+    when: "Multi-source research — 15 backends: web, academic, financial, AI-augmented, scraping"
+    tools: [WebSearch, WebFetch, "Bash(scripts/)"]
     replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher, tavily, serper, serpapi, firecrawl MCPs
+    scripts: [search-brave.sh, search-arxiv.sh, fetch-wikipedia.sh, search-perplexity.sh, fetch-context7.sh, deep-research-gpt.sh]
     file: .claude/skills/research-ops/SKILL.md
 
   - id: skill.knowledge-ops

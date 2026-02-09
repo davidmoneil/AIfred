@@ -2,7 +2,7 @@
 
 **Purpose**: Master tracking of all MCP servers analyzed, decomposed, and reconstructed into skills.
 **Created**: 2026-02-07
-**Updated**: 2026-02-08 (v5.0 — Corrected decomposition verdicts, full paradigm alignment)
+**Updated**: 2026-02-09 (v5.1 — Stream 1: 4/6 MCP capabilities reconstructed as native scripts)
 **Authoritative Design**: `.claude/plans/pipeline-design-v3.md` (v4.0)
 
 ---
@@ -41,12 +41,12 @@ These MCPs were removed from config but their unique capabilities are being RECO
 
 | MCP | Target Skill | Unique Value Being Reconstructed | Status |
 |-----|-------------|----------------------------------|--------|
-| `context7` | `research-ops` | Version-pinned library doc fetching, LLM-optimized | PLANNED — API key at `.rag.context7` |
-| `arxiv` | `research-ops` | Structured paper search, category filters, date ranges, caching | PLANNED — public API, no key |
-| `brave-search` | `research-ops` | Local/video/news search, freshness filtering, AI summaries | PLANNED — API key at `.search.brave` |
-| `wikipedia` | `research-ops` | Structured section access, NLP fact extraction, multi-language | PLANNED — public API |
-| `perplexity` | `research-ops` | AI-augmented search, 4 sonar models, citations, deep research | PLANNED — PAID API, key to provision |
-| `gptresearcher` | `research-ops` | Autonomous multi-source research, source validation, reports | PLANNED — PAID API, key to provision |
+| `context7` | `research-ops` | Version-pinned library doc fetching, LLM-optimized | PARTIAL — `scripts/fetch-context7.sh` (workflow doc, requires local-rag MCP) |
+| `arxiv` | `research-ops` | Structured paper search, category filters, date ranges, caching | DONE — `scripts/search-arxiv.sh` (public API, xmllint parsing) |
+| `brave-search` | `research-ops` | Local/video/news search, freshness filtering, AI summaries | DONE — `scripts/search-brave.sh` (web/news/video/image, freshness filters) |
+| `wikipedia` | `research-ops` | Structured section access, NLP fact extraction, multi-language | DONE — `scripts/fetch-wikipedia.sh` (multi-lang, summary/full/search modes) |
+| `perplexity` | `research-ops` | AI-augmented search, 4 sonar models, citations, deep research | DONE — `scripts/search-perplexity.sh` (4 sonar models, dynamic timeout) |
+| `gptresearcher` | `research-ops` | Autonomous multi-source research, source validation, reports | BLOCKED — `scripts/deep-research-gpt.sh` (workflow doc, API key TBD) |
 | `lotus-wisdom` | `knowledge-ops` | Contemplative reflection patterns (examine, reflect, verify, transform) for AC-05/06 | PLANNED — prompt extraction |
 | `chroma` | `db-ops` | Vector DB client, collection mgmt, semantic search. USER OVERRIDE: DEFAULT for all vector use | PLANNED — requires Docker Chroma server |
 
@@ -239,7 +239,7 @@ NEVER: Use ad-hoc Bash(curl) as a "solution" — build a Skill.
 ### Unified x-ops Skills (MCP Reconstruction + Existing Skill Consolidation)
 
 ```
-research-ops (v2.0 DONE) ───────────────────────
+research-ops (v2.1 DONE) ───────────────────────
 ├── WebSearch/WebFetch (built-in)
 ├── brave-search, tavily, serper, serpapi (paid search APIs)
 ├── perplexity (AI-augmented, 4 sonar models)
@@ -372,6 +372,17 @@ FUTURE x-ops (3):     code-ops, flow-ops, data-sci-ops
 ### Phase 3: Swiss-Army-Knife Skills (2026-02-08)
 - research-ops: Created (313 tok, 9+ backends)
 - knowledge-ops: Created (379 tok, memory shadow + lotus + RAG)
+
+### Phase 4: Native MCP Reconstruction (2026-02-09)
+4/6 removed MCPs reconstructed as production-grade bash scripts in `research-ops/scripts/`:
+- search-brave.sh: web/news/video/image search, freshness filters — PASS
+- search-arxiv.sh: category/author/sort filters, xmllint parsing — PASS
+- fetch-wikipedia.sh: multi-lang, summary/full/search modes — PASS
+- search-perplexity.sh: 4 sonar models, dynamic timeout, citations — PASS
+- fetch-context7.sh: workflow doc (PARTIAL, requires local-rag MCP) — PASS
+- deep-research-gpt.sh: workflow doc (BLOCKED, API key TBD) — PASS
+- test-all.sh: 12/12 tests pass (full suite with paid APIs)
+- Token savings: ~3,100/session (91% reduction from removing MCP tool definitions)
 
 ### Empirical Measurement
 - Pre-removal: 18 MCPs connected, 43 deferred tools

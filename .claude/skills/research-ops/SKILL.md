@@ -1,6 +1,6 @@
 ---
 name: research-ops
-version: 2.0.0
+version: 2.1.0
 description: >
   Multi-source research — web, academic, financial, AI-augmented, scraping.
   Use when: research, search, papers, citations, deep research, grounding, scrape, crawl.
@@ -9,23 +9,23 @@ replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher MC
 
 ## Quick Reference
 
-| Backend | Command | Key Path |
-|---------|---------|----------|
-| Web search (default) | `WebSearch("query")` | None (built-in) |
-| Web page fetch | `WebFetch(url, prompt)` | None (built-in) |
-| Brave Search | `curl -s -H "X-Subscription-Token: $KEY" "https://api.search.brave.com/res/v1/web/search?q=QUERY"` | `.search.brave` |
-| Tavily Search | `curl -s -X POST "https://api.tavily.com/search" -H "Content-Type: application/json" -d '{"api_key":"$KEY","query":"QUERY","search_depth":"advanced"}'` | `.search.tavily` |
-| Serper (Google SERP) | `curl -s -X POST "https://google.serper.dev/search" -H "X-API-KEY: $KEY" -d '{"q":"QUERY"}'` | `.search.serper` |
-| SerpAPI | `curl -s "https://serpapi.com/search.json?q=QUERY&api_key=$KEY"` | `.search.serpapi` |
-| Perplexity (AI search) | `curl -s -X POST "https://api.perplexity.ai/chat/completions" -H "Authorization: Bearer $KEY" -d '{"model":"sonar","messages":[{"role":"user","content":"QUERY"}]}'` | `.llm.perplexity` |
-| arXiv papers | `curl -s "https://export.arxiv.org/api/query?search_query=QUERY&max_results=5"` | None (public) |
-| Wikipedia | `curl -s "https://en.wikipedia.org/api/rest_v1/page/summary/TITLE"` | None (public) |
-| PubMed | `curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=QUERY&retmode=json&api_key=$KEY"` | `.research.ncbi_pubmed` |
-| Firecrawl (scrape) | `curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer $KEY" -d '{"url":"URL"}'` | `.search.firecrawl` |
-| ScraperAPI | `curl -s "https://api.scraperapi.com?api_key=$KEY&url=URL"` | `.search.scraper_api` |
-| Alpha Vantage | `curl -s "https://www.alphavantage.co/query?function=FUNC&symbol=SYM&apikey=$KEY"` | `.research.alpha_vantage` |
-| Context7 (lib docs) | `ToolSearch "+local-rag"` then query | `.rag.context7` |
-| Octagon DeepSearch | API endpoint (see docs) | `.research.octagon_deepsearch` |
+| Backend | Script / Tool | Key Path | Status |
+|---------|--------------|----------|--------|
+| Web search (default) | `WebSearch("query")` | None (built-in) | Active |
+| Web page fetch | `WebFetch(url, prompt)` | None (built-in) | Active |
+| Brave Search | `scripts/search-brave.sh "query"` | `.search.brave` | Active |
+| arXiv papers | `scripts/search-arxiv.sh "query"` | None (public) | Active |
+| Wikipedia | `scripts/fetch-wikipedia.sh "Title"` | None (public) | Active |
+| Perplexity (AI search) | `scripts/search-perplexity.sh "query"` | `.llm.perplexity` | Active |
+| Tavily Search | `curl` (see credential pattern below) | `.search.tavily` | Template |
+| Serper (Google SERP) | `curl` (see credential pattern below) | `.search.serper` | Template |
+| SerpAPI | `curl` (see credential pattern below) | `.search.serpapi` | Template |
+| PubMed | `curl` (see credential pattern below) | `.research.ncbi_pubmed` | Template |
+| Firecrawl (scrape) | `curl` (see credential pattern below) | `.search.firecrawl` | Template |
+| ScraperAPI | `curl` (see credential pattern below) | `.search.scraper_api` | Template |
+| Alpha Vantage | `curl` (see credential pattern below) | `.research.alpha_vantage` | Template |
+| Context7 (lib docs) | `scripts/fetch-context7.sh "lib" "topic"` | `.rag.context7` | Partial |
+| GPTResearcher | `scripts/deep-research-gpt.sh "question"` | TBD | Blocked |
 
 ## Selection Rules
 
@@ -46,22 +46,28 @@ Research needed?
 └── Multi-source validation → Combine 2+ backends
 ```
 
+## Scripts (`scripts/`)
+
+All scripts: `--help` for usage, structured JSON output, credential extraction via `_common.sh`.
+
+| Script | Features |
+|--------|----------|
+| `search-brave.sh` | `--type web\|news\|videos\|images`, `--freshness`, `--count` |
+| `search-arxiv.sh` | `--max`, `--category`, `--author`, `--sort date\|relevance` |
+| `fetch-wikipedia.sh` | `--lang`, `--mode summary\|full`, `--search` |
+| `search-perplexity.sh` | `--model sonar\|sonar-pro\|sonar-reasoning\|sonar-deep-research` |
+| `fetch-context7.sh` | Workflow doc — requires local-rag MCP |
+| `deep-research-gpt.sh` | Workflow doc — blocked, key not provisioned |
+
 ## Credential Pattern
 
 ```bash
 KEY=$(yq -r '.search.brave' .claude/secrets/credentials.yaml | head -1 | tr -d '[:space:]')
-# Perplexity is under .llm (LLM API, not search):
-PPLX=$(yq -r '.llm.perplexity' .claude/secrets/credentials.yaml | head -1 | tr -d '[:space:]')
 ```
 
-## Perplexity Models
+## Validation
 
-| Model | Use Case |
-|-------|----------|
-| `sonar` | Quick factual search with citations |
-| `sonar-pro` | Complex multi-step research |
-| `sonar-reasoning` | Analysis requiring chain-of-thought |
-| `sonar-deep-research` | Autonomous deep investigation (slow, thorough) |
-
-**Validated 2026-02-08**: arXiv, Wikipedia, Brave, Perplexity all tested OK.
-Pending: GPTResearcher (autonomous multi-source). Key not yet provisioned.
+```bash
+bash scripts/test-all.sh          # Full suite (requires API keys)
+bash scripts/test-all.sh --quick  # Public APIs only (arxiv, wikipedia)
+```

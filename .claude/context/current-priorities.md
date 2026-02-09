@@ -2,12 +2,27 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-02-08
+**Last Updated**: 2026-02-09
 **Version**: v5.9.0
 
 ---
 
 ## Recently Completed (This Session)
+
+### Stream 1: research-ops v2.1.0 — Native MCP Capability Reconstruction (2026-02-09)
+
+**8 scripts created** in `.claude/skills/research-ops/scripts/`:
+- `_common.sh` — shared utilities (credential extraction, HTTP helpers, error handling)
+- `search-brave.sh` — Brave Search API (web/news/video/image, freshness filters)
+- `search-arxiv.sh` — arXiv paper search (category/author/sort, xmllint parsing)
+- `fetch-wikipedia.sh` — Wikipedia REST API (multi-lang, summary/full/search modes)
+- `search-perplexity.sh` — Perplexity AI (4 sonar models, dynamic timeout, citations)
+- `fetch-context7.sh` — Context7 workflow doc (PARTIAL, requires local-rag MCP)
+- `deep-research-gpt.sh` — GPTResearcher workflow doc (BLOCKED, API key TBD)
+- `test-all.sh` — validation suite (12/12 pass with real API calls)
+
+**Results**: ~3,100 token savings/session (91% reduction), zero startup overhead, parallel execution enabled.
+**Deep analysis**: Capability regressions limited to power-user features (Brave local search, arXiv PDF download, Wikipedia coordinates/fact extraction).
 
 ### Lean Core v5.9.0 + MCP Decomposition (2026-02-07/08)
 

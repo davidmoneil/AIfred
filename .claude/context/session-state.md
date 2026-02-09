@@ -8,14 +8,14 @@
 
 ## Current Work Status
 
-**Status**: Stream 0 COMPLETE — needs commit + push
+**Status**: Stream 1 COMPLETE — committing
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 5ae66cb (Stream 0 changes uncommitted, ready to commit)
+**Last Commit**: 09e43be (Stream 0 housekeeping — pushed to origin/Project_Aion)
 
 **Current Blocker**: None
 
-**Current Work**: Stream 0 Housekeeping complete. 3 Wiggum Loops + 3 code reviews. Bulk replacement re-executed after compaction loss. 33+ files modified total. Ready to commit and push.
+**Current Work**: Stream 1 complete. research-ops v2.1.0 — 8 scripts created, 12/12 tests pass, ~3,100 token savings/session. 4 milestones executed (foundation, testing, code review, documentation). Committing now. Next: Stream 2 (plugin assessment), Stream 3 (new MCP evaluation).
 
 ---
 
