@@ -414,11 +414,11 @@ catalog:
     name: claude-code-docs
     category: mcp
     subcategory: documentation
-    description: "Claude Code documentation search MCP"
-    url: "https://github.com/nicobailey/claude-code-docs"
-    integration_status: planned
-    jarvis_relevance: medium
-    notes: "User directive: INSTALL (not skip)"
+    description: "Claude Code documentation mirror — 573 paths, 6 categories, Python-enhanced search"
+    url: "https://github.com/CannonCoPilot/claude-code-docs"
+    integration_status: active
+    jarvis_relevance: high
+    notes: "Jarvis fork (v0.6.0-jarvis) from costiash/claude-code-docs. Project-level /docs command, session-start sync, zero hooks."
 
   - id: SOTA-040
     name: Sequential Thinking MCP

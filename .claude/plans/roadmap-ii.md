@@ -88,10 +88,14 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 
 **Dependencies**: A (partial)
 
-### B.1 Install claude-code-docs (~1 hr)
-- [ ] Install via curl installer
-- [ ] Document in relevant Skills (research-ops, doc-ops, mcp-ops)
-- [ ] Test `/docs` command
+### B.1 Install claude-code-docs (~1 hr) — DONE
+- [x] Forked costiash/claude-code-docs → CannonCoPilot/claude-code-docs
+- [x] Refactored installer v0.6.0-jarvis: Jarvis-aware, GitRepos path, project-level /docs command
+- [x] Installed to /Users/aircannon/Claude/GitRepos/claude-code-docs (543 files, 573 paths, Python 3.9.6)
+- [x] Created /docs command at .claude/commands/docs.md (project-level, not user-level)
+- [x] Session-start sync: git pull on startup (session-start.sh, after AIfred sync)
+- [x] Zero hooks, zero persistent context overhead
+- **Commit**: TBD (this session)
 
 ### B.2 Deep Research Pattern Decomposition (~3-4 hrs) — DONE
 - [x] Extract `research-plan.sh` (query decomposition, sub-question generation, 8 question types)

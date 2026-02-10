@@ -241,6 +241,18 @@ if [[ -d "$AIFRED_REPO/.git" ]] && [[ "$SOURCE" == "startup" ]]; then
     cd "$CLAUDE_PROJECT_DIR" 2>/dev/null
 fi
 
+# --- Claude Code Docs Sync (B.1 integration) ---
+CLAUDE_DOCS_REPO="/Users/aircannon/Claude/GitRepos/claude-code-docs"
+if [[ -d "$CLAUDE_DOCS_REPO/.git" ]] && [[ "$SOURCE" == "startup" ]]; then
+    cd "$CLAUDE_DOCS_REPO" 2>/dev/null
+    if git pull --quiet origin main 2>/dev/null; then
+        echo "$TIMESTAMP | SessionStart | Claude docs: synced" >> "$LOG_DIR/session-start-diagnostic.log"
+    else
+        echo "$TIMESTAMP | SessionStart | Claude docs: sync failed (using cached)" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
+    cd "$CLAUDE_PROJECT_DIR" 2>/dev/null
+fi
+
 # --- Environment Validation (evo-2026-01-019) ---
 ENV_ISSUES=""
 ENV_WARNINGS=""

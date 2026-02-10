@@ -8,10 +8,10 @@
 
 ## Current Work Status
 
-**Status**: idle — Session ended cleanly (AC-09)
+**Status**: active — B.1 claude-code-docs complete, pending commit
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 22192b5 (Phase B polish — validation sweep)
+**Last Commit**: 38f2e0e (end-session — Phase B 4/7 complete)
 
 **Phase A Summary (6/6 tasks complete)**:
 1. Roadmap II AC-10 Ulfhedthnar — F.3 RideOrDie-ops → B.7 AC-10 Neuros override
@@ -32,11 +32,19 @@
 - Validation sweep: 7 issues found and fixed (3 CRITICAL version mismatches, 2 MEDIUM, 2 LOW shellcheck)
 - Commits: 671e0f3 (Phase B delivery, 35 files +725/-52) + 22192b5 (polish, 3 files)
 
+**What Was Accomplished (2026-02-09 evening session)**:
+- B.1 COMPLETE: claude-code-docs installed (Jarvis fork)
+  - Forked costiash/claude-code-docs → github.com/CannonCoPilot/claude-code-docs
+  - Refactored installer v0.6.0-jarvis (Jarvis-aware, GitRepos path, project-level /docs)
+  - Local clone at /Users/aircannon/Claude/GitRepos/claude-code-docs (543 files, 573 paths)
+  - /docs command at .claude/commands/docs.md (project-level)
+  - Session-start sync added (git pull on startup)
+  - Zero hooks, zero persistent context overhead, Python 3.9.6 enhanced features enabled
+
 **Next Session Pickup:**
-1. Roadmap II Phase B remaining: B.4 Phases 1-4 (JICM context engineering — iterative summarization, file-as-memory, observation masking, poisoning detection)
-2. B.1 claude-code-docs install (quick win, deferred)
-3. B.7 AC-10 Ulfhedthnar (6-8 hrs — berserker override system)
-4. Phase B plan: `.claude/plans/roadmap-ii.md`
+1. Roadmap II Phase B remaining: B.4 Phases 1-4 (JICM context engineering)
+2. B.7 AC-10 Ulfhedthnar (6-8 hrs — berserker override system)
+3. Phase B plan: `.claude/plans/roadmap-ii.md`
 
 **Current Blocker**: None
 

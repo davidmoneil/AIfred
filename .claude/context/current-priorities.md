@@ -143,7 +143,7 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Roadmap II**: `.claude/plans/roadmap-ii.md` — Phase A section updated with carry-forward table
 
 ### Roadmap II Phase B — Stream 2 Implementation (~15-20 hrs)
-- B.1: claude-code-docs install (~1 hr) — NOT STARTED (deferred)
+- B.1: claude-code-docs install — **DONE** (CannonCoPilot fork, Jarvis-integrated, /docs command, session-start sync)
 - B.2: Deep Research Pattern Decomposition — **DONE** (research-plan.sh + research-synthesize.sh, v2.2.0)
 - B.3: Hook Consolidation — **DONE** (34→23 hooks, commit c75f201)
 - B.4: Context Engineering JICM Integration — Wave 1 **DONE** (watcher v5.8.3, 4 bug fixes), Phases 1-4 PENDING
