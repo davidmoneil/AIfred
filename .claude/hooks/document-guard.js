@@ -12,7 +12,7 @@
  * Audit:     .claude/logs/document-guard.jsonl
  *
  * Created: 2026-02-08
- * Version: 2.0.0
+ * Version: 2.1.0
  */
 
 const fs = require('fs').promises;
@@ -20,7 +20,8 @@ const path = require('path');
 
 // --- Constants ---
 
-const PROJECT_DIR = path.resolve(__dirname, '..', '..');
+// Use CLAUDE_PROJECT_DIR env var (available in hooks), fall back to relative resolution
+const PROJECT_DIR = process.env.CLAUDE_PROJECT_DIR || path.resolve(__dirname, '..', '..');
 const LOG_DIR = path.join(PROJECT_DIR, '.claude', 'logs');
 const OVERRIDE_FILE = path.join(LOG_DIR, '.document-guard-overrides.json');
 const AUDIT_FILE = path.join(LOG_DIR, 'document-guard.jsonl');
@@ -39,7 +40,7 @@ async function loadConfig() {
   const configPath = path.join(__dirname, 'document-guard.config.js');
   try {
     const stat = await fs.stat(configPath);
-    if (stat.mtimeMs !== configMtime) {
+    if (stat.mtimeMs > configMtime) {
       delete require.cache[require.resolve(configPath)];
       configCache = require(configPath);
       configMtime = stat.mtimeMs;
@@ -466,8 +467,13 @@ async function queryOllama(content, purpose, v2Settings) {
       var genData = await genRes.json();
       var response = (genData.response || '').trim();
 
-      // Extract JSON from response (handle markdown code blocks)
-      var jsonMatch = response.match(/\{[\s\S]*?\}/);
+      // Extract expected JSON structure (anchored to "relevant" key to avoid
+      // matching JSON-like text from file content echoed in the response)
+      var jsonMatch = response.match(/\{\s*"relevant"\s*:\s*(?:true|false)[\s\S]*?\}/);
+      if (!jsonMatch) {
+        // Fallback: try generic JSON extraction
+        jsonMatch = response.match(/\{[\s\S]*?\}/);
+      }
       if (!jsonMatch) return null;
       return JSON.parse(jsonMatch[0]);
     } catch (e) {
@@ -585,6 +591,16 @@ async function runChecks(config, rules, editInfo, absolutePath, relativePath, to
 // OVERRIDE MECHANISM
 // ============================================================
 
+// Path-aware override matching: exact match or directory-boundary suffix match only.
+// Prevents "registry.yaml" from matching "feature-registry.yaml".
+function overrideMatchesPath(relativePath, overrideFile) {
+  var target = relativePath.replace(/\\/g, '/');
+  var pattern = overrideFile.replace(/\\/g, '/');
+  if (target === pattern) return true;
+  // Suffix match must be at a directory boundary
+  return target.endsWith('/' + pattern);
+}
+
 async function checkOverride(relativePath) {
   try {
     var data = await fs.readFile(OVERRIDE_FILE, 'utf8');
@@ -593,9 +609,8 @@ async function checkOverride(relativePath) {
     var overrides = parsed.overrides || [];
     for (var i = 0; i < overrides.length; i++) {
       var o = overrides[i];
-      var matchesFile = relativePath === o.file || relativePath.endsWith(o.file) || relativePath.includes(o.file);
       var notExpired = !o.expires || o.expires > now;
-      if (matchesFile && notExpired) return true;
+      if (overrideMatchesPath(relativePath, o.file) && notExpired) return true;
     }
     return false;
   } catch (e) {
@@ -608,8 +623,7 @@ async function consumeOverride(relativePath) {
     var data = await fs.readFile(OVERRIDE_FILE, 'utf8');
     var parsed = JSON.parse(data);
     parsed.overrides = (parsed.overrides || []).filter(function(o) {
-      var matchesFile = relativePath === o.file || relativePath.endsWith(o.file) || relativePath.includes(o.file);
-      return !matchesFile;
+      return !overrideMatchesPath(relativePath, o.file);
     });
     if (parsed.overrides.length === 0) {
       await fs.unlink(OVERRIDE_FILE).catch(function() {});
