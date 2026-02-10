@@ -1,10 +1,10 @@
 {
   "component": "AC-03",
   "name": "milestone-review",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "status": "active",
   "created": "2026-01-17T00:00:00.000Z",
-  "last_modified": "2026-02-08T10:00:00.000Z",
+  "last_modified": "2026-02-10T21:00:00.000Z",
   "implementation": {
     "spec_complete": true,
     "pattern_complete": true,
@@ -52,5 +52,5 @@
     "pass_rate": null,
     "avg_review_time_seconds": null
   },
-  "notes": "State file synced 2026-02-08. Spec checklist confirms: triggers tested (manual /review-milestone validated 2026-02-06 on PR-12.4), inputs/outputs validated (both agents produced structured JSON), gates implemented (verdict rules in defaults.yaml, completion gate in milestone-completion-gate.yaml), metrics emission integrated (telemetry-emitter.js). Remaining: failure modes testing, AC-02 remediation integration."
+  "notes": "v1.3.0 (2026-02-10): AC-03 hotfix — broadened MILESTONE_TASK_PATTERNS to match Roadmap II notation (Phase A-J, B.7, hotfix, backlog) and MILESTONE_PHRASES for phase completion phrases. VERSION realigned to 5.10.0. Prior: triggers tested (PR-12.4), inputs/outputs validated, gates implemented, metrics integrated. Remaining: failure modes testing, AC-02 remediation integration."
 }

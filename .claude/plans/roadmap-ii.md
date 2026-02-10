@@ -285,27 +285,71 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 
 ---
 
-## Phase F: Multi-Agent Coordination (~16-20 hrs)
+## Phase F: Multi-Agent Coordination + Aion MVP + Wiring (~24-36 hrs)
 
 **Dependencies**: B.5 (model routing), B.7 (Ulfhedthnar — Frenzy Mode uses agent coordination)
+**Version Target**: v5.10.0 → v6.1.0
 
-### F.1 Task Tool Equivalent for Jarvis (~5-6 hrs)
-- [ ] Task delegation protocol
-- [ ] Subagent spawning + result aggregation
-- [ ] Error handling + rollback
+### F.0 AC-03 Hotfix — Broadened Milestone Detection (~1-2 hrs) — DONE
+- [x] Expand `MILESTONE_TASK_PATTERNS` to match Roadmap II notation (Phase A-J, B.7, sub-phases)
+- [x] Expand `MILESTONE_PHRASES` to detect phase/PR/hotfix completion phrases
+- [x] Sync VERSION file from 2.3.0 to 5.10.0 (realignment with architecture versioning)
+- [x] Update CHANGELOG.md with Phase B completion + AC-03 hotfix documentation
+- [x] Update AC-03 state file to v1.3.0
+- [x] Verify detection: 6/6 test patterns trigger documentation gate
 
-### F.2 Agent Chain/Group Architecture (~6-8 hrs)
-- [ ] Chain: Main to [Analyzer to Planner to Implementer] to Main
-- [ ] Group: Main to [Agent1, Agent2, Agent3] to Aggregator to Main
-- [ ] Context isolation — free up main thread
-- [ ] Ulfhedthnar Frenzy Mode integration (max parallel agent spawning)
+### F.1 Ennoia MVP — Watcher-Synced Session Orchestrator (~4-6 hrs)
 
-### F.3 Agent Library — Comprehensive Sweep (~3-4 hrs)
-- [ ] Survey ALL 45 marketplaces for agents
-- [ ] Group by functional similarity (10+ categories)
-- [ ] "Best in class" per category
+**Critical constraint**: JICM, session-start wake-up, context compression, and post-/clear resume MUST remain fully operational in Watcher. Ennoia owns *intent*, Watcher keeps *mechanics*.
 
-### F.4 Best-in-Class Agent Implementation (~4-5 hrs)
+**Architecture**: Single-signal-file handoff — Watcher reads `.ennoia-recommendation` before keystroke injection; falls back to hardcoded behavior if file absent (graceful degradation).
+
+- [ ] Upgrade ennoia.sh v0.1 → v0.2: write `.ennoia-recommendation` with session briefing (arise) or resume intent (resume)
+- [ ] Modify Watcher `idle_hands_session_start()` + `idle_hands_jicm_resume()`: read `.ennoia-recommendation` for wake-up text, fall back to current hardcoded prompt if absent
+- [ ] Add tmux window 3 (Ennoia) to `launch-jarvis-tmux.sh`
+- [ ] Register in `capability-map.yaml`
+- [ ] Sync validation: confirm JICM cycle (compress → /clear → resume) still works with Ennoia running
+
+**Deferred to Phase J**: Idle-time work scheduler, session-start.sh thin-dispatcher refactoring, auto-actions
+
+### F.2 Virgil MVP — Task List, Active Agents, Files Touched (~4-6 hrs)
+
+**Three new panels** beyond v0.1 (recent files + git changes + context):
+
+- [ ] **TASKS panel**: Hook on PostToolUse writes `.virgil-tasks.json` tracking TaskCreate/TaskUpdate activity; Virgil reads and renders task list with status indicators
+- [ ] **ACTIVE AGENTS panel**: Hook on PostToolUse (Task tool) writes `.virgil-agents.json` tracking subagent launches; stale entries (>10 min) flagged; cleared on completion
+- [ ] **FILES TOUCHED panel**: Enhanced git diff display showing files modified/staged/untracked since session start
+- [ ] Create `virgil-tracker.js` hook (PostToolUse, matcher `^Task$|^TaskCreate$|^TaskUpdate$`)
+- [ ] Upgrade virgil.sh v0.1 → v0.2 with 3 new panels
+- [ ] Add tmux window 2 (Virgil) to `launch-jarvis-tmux.sh`
+- [ ] Register in `capability-map.yaml`
+
+**Deferred to Phase J**: Breadcrumbs, layer visualization, mode detection, Mermaid.js web dashboard
+
+### F.3 Remaining Wiring — Valedictions, Housekeep, Capability-Map (~3-4 hrs)
+- [ ] Wire `valedictions.yaml` into `end-session.md` Closing Salutation (replace hardcoded examples)
+- [ ] Create `housekeep.sh` implementing script for `/housekeep` command (7 phases per housekeep.md spec)
+- [ ] Register all new components in `capability-map.yaml` (ennoia, virgil, housekeep, valedictions)
+- [ ] Update `orchestration-overview.md` to document Aion Trinity (Watcher + Virgil + Ennoia)
+- [ ] Update launcher help text and window count documentation
+
+### F.4 Task Delegation Protocol (~5-6 hrs)
+- [ ] Formalize subagent spawning pattern beyond current compositions
+- [ ] Implement executable composition runner for `capability-map.yaml` compositions (currently 4 advisory-only compositions)
+- [ ] Define task delegation protocol: result format, error handling, rollback
+- [ ] Result aggregation pattern for parallel agent outputs (generalize from Ulfhedthnar Frenzy Mode)
+- [ ] Test with `compose.investigate-then-fix` pipeline
+
+### F.5 Agent Chain/Group Architecture (~4-6 hrs)
+- [ ] Chain pattern: Main → [Analyzer → Planner → Implementer] → Main (sequential pipeline)
+- [ ] Group pattern: Main → [Agent1, Agent2, Agent3] → Aggregator → Main (parallel fan-out/fan-in)
+- [ ] Context isolation — subagents free up main thread context budget
+- [ ] Ulfhedthnar Frenzy Mode integration (max parallel agent spawning via Group pattern)
+- [ ] Document patterns in `orchestration-philosophy.md`
+
+### F.6 Agent Library Survey + Best-in-Class Updates (~6-8 hrs, may defer to Phase G)
+- [ ] Survey ALL 45 marketplaces for agents; group by functional similarity
+- [ ] "Best in class" per category (10+ categories)
 - [ ] Update Jarvis's 12 operational agents with winning patterns
 - [ ] Test + rollback plan
 
@@ -361,11 +405,11 @@ From `consolidated-design-philosophy-2026-02-05.md`:
 
 **Dependencies**: C (for dashboard)
 
-### J.1 Ennoia — Session Orchestrator (~12 hrs)
-From `ennoia-aion-script-design.md`: idle scheduling, priority queue, intent formation
+### J.1 Ennoia — Full Session Orchestrator (~12 hrs)
+From `ennoia-aion-script-design.md`: idle-time work scheduler (auto-trigger /reflect, /maintain, /evolve, /research), priority queue, session-start.sh thin-dispatcher refactoring, auto-actions. Builds on F.1 MVP.
 
-### J.2 Virgil — Codebase Navigator (~10 hrs)
-From `virgil-angel-script-design.md`: OSC 8 hyperlinks, mode detection, Virgil Says engine
+### J.2 Virgil — Full Codebase Navigator (~10 hrs)
+From `virgil-angel-script-design.md`: breadcrumbs (session journey), layer visualization (Nous/Pneuma/Soma heatmap), mode detection (WORK/RESEARCH/MAINTENANCE), Virgil Says engine v2, Mermaid.js web dashboard. Builds on F.2 MVP.
 
 ### J.3 Watcher Dashboard Redesign (~8 hrs)
 From `watcher-aion-script-redesign.md`: context gauge, burn rate, event feed
@@ -381,17 +425,17 @@ From `watcher-aion-script-redesign.md`: context gauge, burn rate, event feed
 | **C** | Mac Studio Infrastructure | 20 | Mac Studio (Feb 12) | Feb 12+ |
 | **D** | AI/ML First Round | 15-20 | C | After C |
 | **E** | Memory System Architecture | 30-40 | C (partial) | Parallel with D |
-| **F** | Multi-Agent Coordination | 16-20 | B.5, B.7 | After B |
+| **F** | Multi-Agent + Aion MVP + Wiring + AC-03 | 24-36 | B.5, B.7 | After B |
 | **G** | Research Implementation | 40 | A, B | After A, B |
 | **H** | AIfred Integration | 39 | A | After A |
 | **I** | Command Migration | 20 | B | After B |
 | **J** | Aion Scripts | 30 | C | After C |
-| **Total** | | **~242-272** | | |
+| **Total** | | **~254-296** | | |
 
 ### Parallel Execution
 
 ```
-A (10-14h) --> B (21-28h) --> F (16-20h)
+A (10-14h) --> B (21-28h) --> F (24-36h)
           \--> H (39h)    --> I (20h)
           \--> G (40h)
 
@@ -400,15 +444,15 @@ C (20h, Feb 12) --> D (15-20h)
              \----> J (30h)
 ```
 
-**Critical path**: A to B to F + C to E = ~140-170 hours
+**Critical path**: A → B → F + C → E = ~148-188 hours
 
 ### Version Progression
 
 | Milestone | Version |
 |-----------|---------|
 | Current | v5.9.0 |
-| Phase A complete | v5.9.5 (all 9 Hippocrenae ACs active) ← **HERE** (2026-02-09, commit 5b38374) |
-| Phase B complete | v5.10.0 (Stream 2 + AC-10 Ulfhedthnar) |
+| Phase A complete | v5.9.5 (all 9 Hippocrenae ACs active) (2026-02-09, commit 5b38374) |
+| Phase B complete + F.0 AC-03 hotfix | v5.10.0 (Stream 2 + AC-10 Ulfhedthnar + version realignment) ← **HERE** (2026-02-10) |
 | Phase C complete | v5.11.0 (Mac Studio infrastructure) |
 | Phase D complete | v5.12.0 (AI/ML first round) |
 | Phase E complete | v6.0.0 (Memory System v2) |
@@ -492,5 +536,5 @@ The autonomic system is divided into two categories:
 ---
 
 *Roadmap II — Mac Studio Era & Beyond*
-*Jarvis v5.9.0 to v6.5.0 — Hippocrenae + Ulfhedthnar*
-*Created 2026-02-09, Updated 2026-02-09 (Phase A verified)*
+*Jarvis v5.10.0 to v6.5.0 — Hippocrenae + Ulfhedthnar*
+*Created 2026-02-09, Updated 2026-02-10 (Phase F expanded: AC-03 hotfix + Aion MVP + multi-agent coordination)*

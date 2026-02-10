@@ -11,6 +11,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [5.10.0] - 2026-02-10
+
+**VERSION Realignment + Phase B Complete + AC-03 Hotfix + Aion Trinity Scaffolding**
+
+### Version Realignment
+
+VERSION file jumped from 2.3.0 to 5.10.0 to align with architecture version progression:
+- Architecture has been at v5.9.0 since Roadmap II Phase A completion (2026-02-09)
+- Phase B (Stream 2 Implementation + AC-10 Ulfhedthnar) is now complete (7/7 sub-phases)
+- Per roadmap-ii.md version progression: Phase B complete = v5.10.0
+- All prior 2.x versions remain valid as historical entries
+
+### Phase B Complete — Stream 2 + Ulfhedthnar (7 sub-phases)
+
+#### Added
+- **B.1** claude-code-docs — Forked + installed, /docs command, session-start sync
+- **B.2** Deep Research — research-plan.sh + research-synthesize.sh (research-ops v2.2.0)
+- **B.3** Hook Consolidation — 34 to 23 hooks (32% reduction, 83% fewer spawns)
+- **B.4** Context Engineering JICM — Anchored summarization, file-as-memory, observation masking, poisoning detection; watcher v5.8.4; failure_modes_tested for AC-06/07/08
+- **B.5** Skill-Level Model Routing — capability-map.yaml v3 (11 skills + 12 agents)
+- **B.6** Automatic Skill Learning — /reflect Phase 2.5, /evolve Step 2.5
+- **B.7** AC-10 Ulfhedthnar — Neuros Override System: detector hook (620L, 60 tests), locked skill, /unleash + /disengage commands, Frenzy Mode parallel agents
+
+### Aion Trinity Scaffolding
+
+#### Added
+- **valedictions.yaml** — Wodehouse phrase bank for EndSession ceremony (73L)
+- **ennoia.sh** — Session Orchestrator v0.1 (193L, 4 modes: arise/attend/idle/resume)
+- **virgil.sh** — Codebase Guide v0.1 (138L, OSC 8 hyperlinks, recent files, git changes)
+- **virgil-web.sh** — HTTP server for Mermaid.js dashboard (29L, localhost:8377)
+- **virgil-ui/index.html** — Mermaid.js task diagram (251L)
+- **housekeep.md** — 7-phase cleanup command (181L)
+- Identity migration: jarvis-identity.md moved to .claude/context/psyche/
+
+### AC-03 Hotfix — Broadened Milestone Detection
+
+#### Changed
+- **milestone-coordinator.js** — Expanded MILESTONE_TASK_PATTERNS: Roadmap II phases (Phase A-J, B.7, F.3), work types (hotfix, bugfix, backlog), roadmap references
+- **milestone-coordinator.js** — Expanded MILESTONE_PHRASES: phase completion ("Phase B is complete", "B.7 is done"), hotfix completion
+
+---
+
 ## [2.3.0] - 2026-02-06
 
 **PR-12.3 + PR-12.4 Complete: Milestone Review + Context Management**

@@ -46,6 +46,17 @@ const MILESTONE_PHRASES = [
   /completed?\s+(the\s+)?milestone/i,
   /milestone\s+completion/i,
   /mark(ing)?\s+(this\s+)?milestone\s+(as\s+)?(complete|done)/i,
+
+  // Roadmap II phase completion phrases
+  /phase\s+[A-Z](\.\d+)?\s+(is\s+)?(complete|done|finished)/i,
+  /completed?\s+(the\s+)?phase\s+[A-Z]/i,
+  /finished\s+(the\s+)?phase/i,
+  /\b[A-Z]\.\d+\s+(is\s+)?(complete|done|finished)/i,
+  /hotfix\s+(is\s+)?(complete|done|applied|finished)/i,
+
+  // PR completion phrases (pre-existing gap — MILESTONE_PHRASES never matched PR-\d+)
+  /PR[-\s]?\d+\s+(is\s+)?(complete|done|finished)/i,
+  /completed?\s+(the\s+)?PR[-\s]?\d+/i,
 ];
 
 const END_SESSION_PATTERN = /\/end-session/i;
@@ -142,8 +153,22 @@ const STATE_FILE = path.join(STATE_DIR, 'AC-03-review.json');
 const WIGGUM_STATE_FILE = path.join(STATE_DIR, 'AC-02-wiggum.json');
 
 const MILESTONE_TASK_PATTERNS = [
-  /PR[-\s]?\d+/i, /milestone/i, /phase[-\s]?\d+/i, /release[-\s]?v?\d+/i,
+  // Original patterns
+  /PR[-\s]?\d+/i, /milestone/i, /release[-\s]?v?\d+/i,
   /complete.*PR/i, /finish.*feature/i, /implement.*system/i,
+
+  // Roadmap II phase patterns (letters + sub-phases)
+  /phase[-\s]?[A-Z]/i,              // Phase A, Phase F, Phase-C
+  /phase[-\s]?\d+/i,                // Phase 5, phase-6 (original)
+  /\b[A-Z]\.\d+\b/,                // B.7, F.3, A.1 (sub-phase dot notation)
+
+  // Work type patterns
+  /\bhotfix\b/i, /\bbugfix\b/i, /\bbacklog\b/i,
+  /\bRoadmap\s*(I{1,2}|[12])\b/i,  // Roadmap I, Roadmap II
+
+  // Broader completion patterns
+  /complete.*phase/i, /finish.*phase/i,
+  /complete.*implementation/i,
 ];
 
 function isMilestoneTask(desc) {
