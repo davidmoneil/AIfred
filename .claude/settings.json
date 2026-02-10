@@ -176,6 +176,15 @@
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/milestone-coordinator.js"
           }
         ]
+      },
+      {
+        "matcher": "^Write$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/memory-mirror.js"
+          }
+        ]
       }
     ],
     "Notification": [

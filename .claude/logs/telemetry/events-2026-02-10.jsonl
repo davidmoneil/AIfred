@@ -1,3 +1,20 @@
 {"timestamp":"2026-02-10T00:13:48.776Z","component":"AC-09","event_type":"session_end","session_id":"local-1770682428777","data":{"phase":"start","trigger":"end-session-command"},"metadata":{"jarvis_version":"2.3.0"}}
 {"timestamp":"2026-02-10T00:15:21.706Z","component":"AC-09","event_type":"session_end","session_id":"local-1770682521706","data":{"phase":"complete","steps_completed":12,"commits":["5b38374","a831daa"]},"metadata":{"jarvis_version":"2.3.0"}}
 {"timestamp":"2026-02-10T02:47:04.124Z","component":"AC-09","event_type":"session_end","session_id":"local-1770691624124","data":{"phase":"start","trigger":"end-session-command"},"metadata":{"jarvis_version":"2.3.0"}}
+{"timestamp":"2026-02-10T02:48:12.821Z","component":"AC-09","event_type":"session_end","session_id":"local-1770691692821","data":{"phase":"complete","steps_completed":12},"metadata":{"jarvis_version":"2.3.0"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":66,"warnings":["Context at 66% — compression should be active"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":77,"warnings":["Context at 77% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":79,"warnings":["Context at 79% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":79,"warnings":["Context at 79% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":79,"warnings":["Context at 79% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":79,"warnings":["Context at 79% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":85,"warnings":["Context at 85% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":85,"warnings":["Context at 85% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":87,"warnings":["Context at 87% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":88,"warnings":["Context at 88% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":88,"warnings":["Context at 88% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":88,"warnings":["Context at 88% — EMERGENCY: near lockout ceiling"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":61,"warnings":["Context at 61% — approaching 65% compression trigger"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":62,"warnings":["Context at 62% — approaching 65% compression trigger"],"session_id":"unknown"}}
+{"component":"AC-04","event_type":"context_health_warning","data":{"context_pct":68,"warnings":["Context at 68% — compression should be active"],"session_id":"unknown"}}
+{"timestamp":"2026-02-10T08:01:03.487Z","component":"AC-09","event_type":"session_end","session_id":"local-1770710463488","data":{"phase":"start","trigger":"end-session-command"},"metadata":{"jarvis_version":"2.3.0"}}

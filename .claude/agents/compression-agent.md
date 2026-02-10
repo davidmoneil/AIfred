@@ -63,20 +63,28 @@ This is the most important section for **what Jarvis was doing**:
 
 | Source | Location | Purpose |
 |--------|----------|---------|
+| Chat export | `.claude/exports/chat-*-pre-compress.txt` (most recent) | Raw terminal history — trimmed but faithful record of recent work |
 | Context captures | `.claude/context/.context-captured*.txt` | Pre-processed conversation snapshots |
 | In-progress dump | `.claude/context/.in-progress-ready.md` | Jarvis's own pre-clear work summary |
 | Transcript JSONL | `~/.claude/projects/-Users-aircannon-Claude-Jarvis/[session-id].jsonl` | Full conversation (large, sample selectively) |
 
-**How to find the session transcript:**
+**How to find the chat export (preferred — pre-captured by watcher):**
+```bash
+# Most recent pre-compress export:
+ls -t .claude/exports/chat-*-pre-compress.txt 2>/dev/null | head -1
+```
+
+**How to find the session transcript (fallback):**
 ```bash
 # Most recent session directory:
 ls -t ~/.claude/projects/-Users-aircannon-Claude-Jarvis/*.jsonl | head -1
 ```
 
-**Processing the transcript:**
+**Processing the chat export or transcript:**
 - Focus on the LAST 30-40% (most recent work)
 - Extract: decisions made, files modified, errors encountered, user directives
-- Skip: verbose tool outputs, file contents read, exploration dead-ends
+- Apply observation masking: skip verbose tool outputs, file contents, exploration dead-ends
+- Preserve a trimmed but otherwise faithful "as-is" slice of the most recent conversation history
 
 ### Priority 4: Session State (Read-Only Context)
 
@@ -129,10 +137,13 @@ Check `.claude/context/.active-tasks.txt`. If it exists, preserve the full task 
 
 Read Priority 3 sources in this order:
 1. `.in-progress-ready.md` (if exists — Jarvis's own summary, highest signal)
-2. `.context-captured*.txt` files (if exist)
-3. Transcript JSONL (last resort, sample selectively)
+2. `.claude/exports/chat-*-pre-compress.txt` (most recent — raw terminal history, use for faithful "as-is" reconstruction of recent conversation)
+3. `.context-captured*.txt` files (if exist)
+4. Transcript JSONL (last resort, sample selectively)
 
 If `.in-progress-ready.md` exists, treat it as the primary source for work-in-progress. It was written by Jarvis specifically for this purpose.
+
+If a chat export exists, use it to preserve a **trimmed but faithful slice** of the most recent conversation — apply observation masking to skip tool output noise, but keep the actual dialogue flow, user requests, and Jarvis responses as-is. This serves as a failsafe for context reconstruction.
 
 ### Step 4: Analyze and Categorize (with Observation Masking)
 

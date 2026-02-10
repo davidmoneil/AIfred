@@ -18,7 +18,7 @@
 # Lower values increase usable context before lockout.
 # 15000 is a good balance - high enough for substantial responses,
 # low enough to maximize context utilization.
-export CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000
+# export CLAUDE_CODE_MAX_OUTPUT_TOKENS=15000
 
 # CLAUDE_AUTOCOMPACT_PCT_OVERRIDE
 #

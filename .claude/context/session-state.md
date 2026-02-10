@@ -8,42 +8,36 @@
 
 ## Current Work Status
 
-**Status**: active — B.1 claude-code-docs complete, pending commit
+**Status**: 🟢 Idle — Phase B 6/7 complete, all feature requests done
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 38f2e0e (end-session — Phase B 4/7 complete)
+**Last Commit**: 5f3cdc9 (EVO-2026-02-010 — watcher startup recovery)
 
-**Phase A Summary (6/6 tasks complete)**:
-1. Roadmap II AC-10 Ulfhedthnar — F.3 RideOrDie-ops → B.7 AC-10 Neuros override
-2. AC-06 Evolution (PR-12.6) — state → active, downtime-detector.sh, evolution.jsonl
-3. AC-07 R&D (PR-12.7) — state → active, file-usage-tracker.sh, file-usage.jsonl
-4. AC-08 Maintenance (PR-12.8) — state → active, freshness-auditor.sh, organization-auditor.sh (43/43 pass)
-5. PR-13 Monitoring — benchmark-suite.yaml (10 benchmarks), telemetry-dashboard.sh
-6. PR-14 SOTA Catalog — sota-catalog.yaml (55 entries, 9 categories)
+**What Was Accomplished (2026-02-10, sessions 2-3)**:
+- B.4 Context Engineering JICM: ALL 4 phases complete (commit de4ffd7, 18 files +578/-48)
+  - Phase 1: Anchored iterative summarization (preservation manifest, section validation)
+  - Phase 2: File-system-as-memory (.claude/context/jicm/ hierarchy, cross-session YAML)
+  - Phase 3: Observation masking (observation-tracker.js, compaction-essentials.md)
+  - Phase 4: Context poisoning detection (context-health-monitor.js, 4 degradation benchmarks BM-11/12/13/14)
+- Phase A residuals closed: AC-07 cross-ref, failure_modes_tested=true for AC-06/07/08
+- EVO-2026-02-010 filed: watcher startup recovery + emergency ESC interrupt
+- 6 B.4 feature enhancements (ALL complete):
+  1. tmux window titles → "Jarvis"/"Watcher" (launch-jarvis-tmux.sh + automatic-rename off)
+  2. /export before compress/clear → watcher v5.8.4, export_chat_history()
+  3. Memory mirror hook → memory-mirror.js (PostToolUse Write → MEMORY.md sync)
+  4. Tool output offloading → documented in compaction-essentials.md, .tool-output/ dir created
+  5. Status line accuracy → v7.4: consistency validation, config-based overhead, cache staleness detection
+  6. ~/.claude/ data concerns → symlinks for external scripts, hook ownership clarified
+- Hooks: 26 (21 .js + 5 .sh) — +3 from B.4 (observation-tracker, context-health-monitor, memory-mirror)
 
-**Files Modified**: 19 total (5 new scripts, 2 new logs, 2 new YAML deliverables, 2 reports, 3 state files, 3 spec checklists, 1 roadmap, 1 orchestration overview)
-
-**What Was Accomplished (2026-02-10)**:
-- Roadmap II Phase B: 4/7 tasks COMPLETE (B.2, B.3, B.5, B.6) + B.4 Wave 1
-- B.2: research-plan.sh (185 lines, query decomposition, 8 question types) + research-synthesize.sh (254 lines, multi-source aggregation, 3 synthesis styles). research-ops v2.2.0.
-- B.4 Wave 1: jarvis-watcher.sh v5.8.3 — 4 bug fixes (failsafe loops, emergency /compact, /clear retry, failure recording)
-- B.5: Model routing — 26 SKILL.md files + capability-map.yaml v3 (11 skills + 12 agents with model: fields)
-- B.6: Automatic skill learning — reflect Phase 2.5, evolve Step 2.5, skill-candidates.yaml + skill-promotions.yaml
-- Validation sweep: 7 issues found and fixed (3 CRITICAL version mismatches, 2 MEDIUM, 2 LOW shellcheck)
-- Commits: 671e0f3 (Phase B delivery, 35 files +725/-52) + 22192b5 (polish, 3 files)
-
-**What Was Accomplished (2026-02-09 evening session)**:
-- B.1 COMPLETE: claude-code-docs installed (Jarvis fork)
-  - Forked costiash/claude-code-docs → github.com/CannonCoPilot/claude-code-docs
-  - Refactored installer v0.6.0-jarvis (Jarvis-aware, GitRepos path, project-level /docs)
-  - Local clone at /Users/aircannon/Claude/GitRepos/claude-code-docs (543 files, 573 paths)
-  - /docs command at .claude/commands/docs.md (project-level)
-  - Session-start sync added (git pull on startup)
-  - Zero hooks, zero persistent context overhead, Python 3.9.6 enhanced features enabled
+**What Was Accomplished (2026-02-10, session 1)**:
+- Roadmap II Phase B: B.2, B.3, B.5, B.6 all complete + B.4 Wave 1 (watcher v5.8.3)
+- Validation sweep: 7 issues found and fixed (3 CRITICAL version mismatches)
+- B.1 COMPLETE from 2026-02-09 evening (claude-code-docs Jarvis fork)
 
 **Next Session Pickup:**
-1. Roadmap II Phase B remaining: B.4 Phases 1-4 (JICM context engineering)
-2. B.7 AC-10 Ulfhedthnar (6-8 hrs — berserker override system)
+1. B.7 AC-10 Ulfhedthnar (6-8 hrs — berserker override system)
+2. Phase C Mac Studio Infrastructure (Wed Feb 12+ arrival)
 3. Phase B plan: `.claude/plans/roadmap-ii.md`
 
 **Current Blocker**: None

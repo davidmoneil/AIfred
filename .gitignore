@@ -25,10 +25,25 @@
 .claude/context/.continuation-injected.signal
 .claude/context/.compression-in-progress
 
+# Tool output offloading (temp files for large results)
+.claude/context/.tool-output/
+
 # Compressed context (restored on /clear, not persisted)
 .claude/context/.compressed-context-ready.md
 .claude/context/.in-progress-ready.md
 .claude/context/.active-tasks.txt
+
+# Chat exports (auto-generated before compress/clear, can be large)
+.claude/exports/
+
+# Memory mirror (auto-synced from ~/.claude/projects/.../memory/)
+.claude/context/memory/MEMORY.md
+
+# Symlinks to external ~/.claude/ scripts (originals live outside project)
+.claude/scripts/jarvis-statusline.sh
+.claude/scripts/update-context-cache.sh
+.claude/scripts/statusline-debug-capture.sh
+.claude/hooks/update-context-cache.js
 
 # State files (runtime only)
 .claude/state/components/*.json

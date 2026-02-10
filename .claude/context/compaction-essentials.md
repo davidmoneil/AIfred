@@ -84,6 +84,14 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 - Read >500 lines (when only overview needed) → key sections only
 - Never mask error messages, file paths, or security-relevant output
 
+**Tool Output Offloading** (>2000 tokens): Write large results to `.claude/context/.tool-output/` temp files instead of keeping them inline in context. Reference the file for selective re-reading:
+- Subagent results: Agent writes findings to file, returns summary + path
+- WebFetch/WebSearch: Write full response to temp file, extract key info inline
+- Large grep/glob: Already handled by masking above; for programmatic use, write to file
+- Pattern: `Write to .claude/context/.tool-output/<tool>-<timestamp>.txt`, summarize inline as `[See /path/file — N lines, key: X, Y, Z]`
+- Cleanup: Temp files pruned on session start (>24h old) or at /clear
+- Benefit: Context stays lean; full data available for re-read when needed
+
 ## Key Patterns
 
 - **TodoWrite**: Use for any task with 2+ steps
@@ -99,7 +107,7 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 | Skills | 28 total (11 discoverable + 15 absorbed + 1 example + 1 _shared) |
 | Agents | 13 (12 operational + 1 template) |
 | Commands | 40 (.md files excl. README) |
-| Hooks | 25 (20 .js + 5 .sh) |
+| Hooks | 26 (21 .js + 5 .sh) |
 | MCPs | 5 (memory, local-rag, fetch, git, playwright) |
 
 ## Automation Expectations

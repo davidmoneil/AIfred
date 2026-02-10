@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.8.3
+# JARVIS UNIFIED WATCHER — JICM v5.8.4
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -19,6 +19,14 @@
 # Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
+#
+# Changelog v5.8.4 (2026-02-10, B.4 Chat Export):
+#   - NEW: export_chat_history() — captures chat via tmux scrollback + /export
+#     before compression and /clear. Two-layer approach: instant raw capture
+#     (tmux capture-pane -S -) plus Claude Code's native /export for richer format.
+#   - NEW: Auto-prune keeps last 20 exports in .claude/exports/
+#   - WIRE: Section 3 calls export_chat_history("pre-compress") before /intelligent-compress
+#   - WIRE: Section 1.5 calls export_chat_history("pre-clear") before /clear
 #
 # Changelog v5.8.3 (2026-02-10, B.4 JICM Integration):
 #   - FIX: 300s failsafe infinite loop — added cooldown period (600s) after failsafe
@@ -206,6 +214,9 @@ COMPRESSION_IN_PROGRESS="$PROJECT_DIR/.claude/context/.compression-in-progress"
 PRE_CLEAR_TOKENS_FILE="$PROJECT_DIR/.claude/context/.pre-clear-tokens"
 JICM_CONFIG_FILE="$PROJECT_DIR/.claude/context/.jicm-config"
 
+# Chat export directory (B.4 enhancement: auto-export before compress/clear)
+EXPORTS_DIR="$PROJECT_DIR/.claude/exports"
+
 # Thresholds (JICM v5)
 # Single threshold for compression trigger (dynamically configurable)
 # See: jicm-v5-design-addendum.md Section 2.2
@@ -248,7 +259,7 @@ while [[ $# -gt 0 ]]; do
         --interval) INTERVAL="$2"; shift 2 ;;
         --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.8.3 — JICM v5 with event-driven state machine"
+            echo "JARVIS WATCHER v5.8.4 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -287,6 +298,7 @@ NC='\033[0m'
 mkdir -p "$(dirname "$LOG_FILE")"
 mkdir -p "$(dirname "$STATUS_FILE")"
 mkdir -p "$(dirname "$SIGNAL_FILE")"
+mkdir -p "$EXPORTS_DIR"
 echo $$ > "$PID_FILE"
 
 # State tracking
@@ -613,7 +625,7 @@ update_status() {
 
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.8.3
+version: 5.8.4
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
@@ -673,6 +685,18 @@ JICM_APPROACH_OFFSET=${JICM_APPROACH_OFFSET:-10}
 # JICM_CRITICAL_PCT removed (C1) — was never used as a condition
 RESERVED_OUTPUT_TOKENS=$RESERVED_OUTPUT_TOKENS
 CONTEXT_WINDOW_SIZE=$MAX_CONTEXT_TOKENS
+
+# Overhead category defaults (tokens) — tunable from /context output
+# Last calibrated: 2026-01-24 (from captured /context data)
+OVERHEAD_SYS_PROMPT=\${OVERHEAD_SYS_PROMPT:-2700}
+OVERHEAD_SYS_TOOLS=\${OVERHEAD_SYS_TOOLS:-17100}
+OVERHEAD_AGENTS=\${OVERHEAD_AGENTS:-300}
+OVERHEAD_MEMORY=\${OVERHEAD_MEMORY:-1100}
+OVERHEAD_SKILLS=\${OVERHEAD_SKILLS:-1700}
+OVERHEAD_COMPACT=\${OVERHEAD_COMPACT:-3000}
+
+# Cache consistency threshold — invalidate when API vs cache diverge by this fraction
+CACHE_CONSISTENCY_THRESHOLD=0.25
 EOF
     log INFO "Wrote JICM config (threshold: ${JICM_THRESHOLD}%, reserved: ${RESERVED_OUTPUT_TOKENS})"
 }
@@ -780,6 +804,46 @@ send_text() {
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$text"
     sleep 0.1
     "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+    return 0
+}
+
+# =============================================================================
+# CHAT EXPORT (B.4 enhancement)
+# =============================================================================
+# Captures chat history before compression or /clear for context preservation.
+# Two-layer approach:
+#   1. Raw tmux capture (instant, always works, limited by scrollback buffer)
+#   2. Built-in /export command (full conversation, needs idle time)
+#
+# Called by: section 3 (before compression), section 1.5 (before /clear)
+export_chat_history() {
+    local trigger_reason="${1:-manual}"
+    local timestamp
+    timestamp=$(date +%Y%m%d-%H%M%S)
+    local export_file="$EXPORTS_DIR/chat-${timestamp}-${trigger_reason}.txt"
+
+    # Layer 1: Instant raw tmux capture (scrollback buffer)
+    if "$TMUX_BIN" capture-pane -t "$TMUX_TARGET" -p -S - > "$export_file" 2>/dev/null; then
+        local line_count
+        line_count=$(wc -l < "$export_file" | tr -d ' ')
+        log EXPORT "Raw capture saved: $export_file (${line_count} lines, trigger: $trigger_reason)"
+    else
+        log WARN "Raw tmux capture failed (trigger: $trigger_reason)"
+    fi
+
+    # Layer 2: Send built-in /export for Claude Code's richer format
+    # This runs async — the file will be written by Claude Code to its default location
+    send_command "/export"
+    log EXPORT "Sent /export command (trigger: $trigger_reason)"
+
+    # Prune old exports (keep last 20)
+    local export_count
+    export_count=$(ls -1 "$EXPORTS_DIR"/chat-*.txt 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$export_count" -gt 20 ]]; then
+        ls -1t "$EXPORTS_DIR"/chat-*.txt 2>/dev/null | tail -n +21 | xargs rm -f 2>/dev/null || true
+        log EXPORT "Pruned old exports (kept 20, removed $((export_count - 20)))"
+    fi
+
     return 0
 }
 
@@ -1395,8 +1459,8 @@ check_idle_hands() {
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.3 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.3 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.4 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.4 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1431,7 +1495,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.8.3, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
+    log INFO "Watcher started (JICM v5.8.4, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
@@ -1601,6 +1665,9 @@ main() {
             fi
             # ── end .in-progress-ready.md gating ─────────────────────────
 
+            # B.4: Export chat history before /clear for failsafe context preservation
+            export_chat_history "pre-clear"
+
             # Send /clear (compressed context is ready for post-clear hook to inject)
             if [[ "$was_watcher_triggered" == "true" ]]; then
                 log JICM "═══ COMPRESSION SUCCESS: Sending /clear (watcher-triggered) ═══"
@@ -1761,6 +1828,8 @@ main() {
                 else
                     TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
                     log JICM "═══ JICM v5: Context at ${pct}% — triggering compression (#${TRIGGER_COUNT}) ═══"
+                    # B.4: Export chat history before compression for context preservation
+                    export_chat_history "pre-compress"
                     send_command "/intelligent-compress"
                     JICM_STATE="compression_triggered"
                     JICM_LAST_TRIGGER=$(date +%s)

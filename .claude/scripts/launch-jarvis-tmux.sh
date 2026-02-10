@@ -113,7 +113,7 @@ export TERM=xterm-256color
 
 # Context management environment variables
 # - ENABLE_TOOL_SEARCH: Enable MCP tool search to reduce context usage
-# - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 15K (affects effective context budget)
+# - CLAUDE_CODE_MAX_OUTPUT_TOKENS: Set max output to 20K (affects effective context budget)
 # Note: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE left at default (~95%, effective ~85%)
 #       JICM triggers at 55% with 30% headroom before auto-compact
 # Determine session type
@@ -123,7 +123,7 @@ else
     JARVIS_SESSION_TYPE="continue"
 fi
 
-CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=25000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
+CLAUDE_ENV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000 JARVIS_SESSION_TYPE=$JARVIS_SESSION_TYPE"
 
 # Create new tmux session with Claude in the main pane
 # Environment variables are exported inline before the claude command
@@ -132,7 +132,7 @@ if [[ "$FRESH_MODE" != "true" ]]; then
     CLAUDE_CMD="$CLAUDE_CMD --continue"
 fi
 
-"$TMUX_BIN" new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" \
+"$TMUX_BIN" new-session -d -s "$SESSION_NAME" -n "Jarvis" -c "$PROJECT_DIR" \
     "export $CLAUDE_ENV && $CLAUDE_CMD"
 
 # Give Claude a moment to start
@@ -149,20 +149,23 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
 
     # Create watcher window (window 1, detached so we stay on window 0)
     # JICM v5.7.0: threshold=55 (accounts for queuing delay before compression starts)
-    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "watcher" -d \
+    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Watcher" -d \
         "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
 fi
 
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
 "$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
+# Prevent tmux from overriding window names with command names
+"$TMUX_BIN" set-window-option -t "$SESSION_NAME:0" automatic-rename off 2>/dev/null || true
+"$TMUX_BIN" set-window-option -t "$SESSION_NAME:1" automatic-rename off 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"
 echo ""
 echo "Windows:"
-echo "  Window 0: Claude Code"
-echo "  Window 1: Watcher (context monitor + signal handler)"
+echo "  Window 0: Jarvis"
+echo "  Window 1: Watcher"
 echo ""
 
 if [[ "$ITERM2_MODE" == "true" ]]; then
