@@ -119,7 +119,7 @@ echo '{"component":"AC-05","event_type":"component_start","data":{"trigger":"ref
    5. Report any gaps
    ```
 
-6. **Output (Phase 5: Proposal)**
+6. **Output (Phase 4: Proposal)**
    - Generate evolution proposals
    - Create/update lessons entries
    - Update lessons index

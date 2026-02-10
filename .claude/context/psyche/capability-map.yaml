@@ -63,7 +63,7 @@ skills:
 
   - id: skill.research-ops
     model: opus
-    version: 2.1.0
+    version: 2.2.0
     when: "Multi-source research — 15 backends: web, academic, financial, AI-augmented, scraping"
     tools: [WebSearch, WebFetch, "Bash(scripts/)"]
     replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher, tavily, serper, serpapi, firecrawl MCPs

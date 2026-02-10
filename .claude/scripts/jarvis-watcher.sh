@@ -413,7 +413,7 @@ get_tokens_from_tui_abbreviated() {
 
     if [[ -n "$abbrev_tokens" ]]; then
         local numeric_part
-        numeric_part=$(echo "$abbrev_tokens" | sed 's/k$//')
+        numeric_part="${abbrev_tokens%k}"
         if [[ "$numeric_part" == *"."* ]]; then
             local result
             result=$(echo "$numeric_part * 1000" | bc 2>/dev/null | cut -d'.' -f1 || true)
@@ -613,7 +613,7 @@ update_status() {
 
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.6.2
+version: 5.8.3
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
@@ -1187,7 +1187,7 @@ cleanup_jicm_files() {
     rm -f "$COMPRESSION_IN_PROGRESS"
 
     # Mark JICM complete
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$JICM_COMPLETE_SIGNAL"
+    date -u +%Y-%m-%dT%H:%M:%SZ > "$JICM_COMPLETE_SIGNAL"
 
     log JICM "JICM files cleaned up (context archived to $archive_dir)"
 }
@@ -1395,8 +1395,8 @@ check_idle_hands() {
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.2 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.2 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.3 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.3 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1431,7 +1431,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.8.2, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
+    log INFO "Watcher started (JICM v5.8.3, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
