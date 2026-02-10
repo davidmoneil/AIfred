@@ -132,17 +132,25 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Hook optimization**: Matchers added, ~70% fewer processes per tool call
 - Backlog: `.claude/context/reference/tool-reconstruction-backlog.md`
 
-### Phase 6: Autonomy, Self-Evolution & Benchmark Gates
-**Status**: 8 of 10 PR-12 sub-PRs complete — readiness report updated
-- PR-11 (framework): COMPLETE
-- PR-12.1-12.4: COMPLETE (AC-01, AC-02, AC-03, AC-04 all active, state files synced)
-- **PR-12.5: COMPLETE** (AC-05 operationalized 2026-02-08: telemetry wired, 10 reflections done)
-- **PR-12.9: COMPLETE** (AC-09 operationalized 2026-02-08: trigger tested, telemetry wired)
-- PR-12.6-12.8: Need implementation work (~6 hrs total)
-- **PR-12.10: COMPLETE** (/self-improve operational — 2 prior runs with 4/4 phases, reports exist)
-- PR-13: Monitoring/benchmarks — pending (~4-6 hrs)
-- **Assessment**: `.claude/context/research/phase-6-readiness-assessment.md`
-- **Design**: `projects/project-aion/designs/current/phase-6-autonomy-design.md`
+### Phase 6 / Roadmap II Phase A — COMPLETE (2026-02-09)
+**Status**: All PR-12 sub-PRs COMPLETE, PR-13 COMPLETE, PR-14 COMPLETE
+**Commit**: 5b38374 (32 files, +3874/-78)
+- PR-12.1-12.10: ALL COMPLETE — all 9 Hippocrenae ACs active
+- PR-13: Monitoring — telemetry-dashboard.sh + benchmark-suite.yaml (10 benchmarks)
+- PR-14: SOTA Catalog — 55 entries, 9 categories
+- **Residual**: AC-06/07 scaffolded (specs+scripts, not execution-wired), failure_modes_tested=false on 06/07/08
+- **Verified**: 5-agent parallel audit confirmed all deliverables
+- **Roadmap II**: `.claude/plans/roadmap-ii.md` — Phase A section updated with carry-forward table
+
+### Next: Roadmap II Phase B — Stream 2 Implementation (~15-20 hrs)
+- B.1: claude-code-docs install (~1 hr)
+- B.2: Deep Research Pattern Decomposition (~3-4 hrs)
+- B.3: Hook Consolidation (~2-3 hrs)
+- B.4: Context Engineering JICM Integration (~5-7 hrs)
+- B.5: Skill-Level Model Routing (~2 hrs)
+- B.6: Automatic Skill Learning Enhancement (~2-3 hrs)
+- B.7: AC-10 Ulfhedthnar — Neuros Override System (~6-8 hrs)
+- **Plan**: `.claude/plans/roadmap-ii.md` Phase B section
 
 ---
 

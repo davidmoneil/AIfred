@@ -31,37 +31,56 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 
 ---
 
-## Phase A: Complete Roadmap I Phase 6 (~10-14 hrs)
+## Phase A: Complete Roadmap I Phase 6 (~10-14 hrs) — COMPLETE
 
 **Dependencies**: None (immediate)
+**Status**: COMPLETE (verified 2026-02-09)
+**Commit**: 5b38374 (32 files, +3874/-78)
 
-### A.1 PR-12.6 — AC-06 Evolution (~2-3 hrs)
-- [ ] Downtime detector + rollback mechanism
-- [ ] Evolution log tracking
-- [ ] Integration with `/evolve` command
-- [ ] State file: AC-06-evolution.json
+### A.1 PR-12.6 — AC-06 Evolution (~2-3 hrs) — DONE (scaffolded)
+- [x] Downtime detector — `.claude/scripts/downtime-detector.sh` (idle detection; rollback logic deferred to /evolve implementation)
+- [x] Evolution log tracking — `.claude/logs/evolution.jsonl` (provisioned, empty until first evolution cycle)
+- [x] Integration with `/evolve` command — `commands/evolve.md` spec complete; telemetry wired in emitter
+- [x] State file: `AC-06-evolution.json` → status "active"
+- **Residual gaps**: /evolve executable pipeline not implemented (spec-only); rollback mechanism not in detector script; failure_modes_tested=false
+- **Carry-forward**: /evolve operational implementation → Phase B.6 (Automatic Skill Learning)
 
-### A.2 PR-12.7 — AC-07 R&D (~2 hrs)
-- [ ] File usage tracker
-- [ ] External research integrator
-- [ ] Integration with research-ops skill
-- [ ] State file: AC-07-research.json
+### A.2 PR-12.7 — AC-07 R&D (~2 hrs) — DONE (scaffolded)
+- [x] File usage tracker — `.claude/scripts/file-usage-tracker.sh` (jq --arg hardened, bash 3.2 compatible)
+- [x] External research integrator — research-ops v2.1.0 provides backends (implicit coupling)
+- [x] Integration with research-ops skill — functional but undocumented cross-reference
+- [x] State file: `AC-07-rd.json` → status "active"
+- **Residual gaps**: research-ops SKILL.md has no AC-07 reference; file-usage.jsonl empty (no active caller); failure_modes_tested=false
 
-### A.3 PR-12.8 — AC-08 Maintenance (~2 hrs)
-- [ ] Freshness auditor (flags files >30 days stale)
-- [ ] Organization auditor (validates structure)
-- [ ] State file: AC-08-maintenance.json
+### A.3 PR-12.8 — AC-08 Maintenance (~2 hrs) — DONE (fully operational)
+- [x] Freshness auditor — `.claude/scripts/freshness-auditor.sh` (168 files scanned, 17 stale flagged)
+- [x] Organization auditor — `.claude/scripts/organization-auditor.sh` (39/39 checks PASS)
+- [x] State file: `AC-08-maintenance.json` → status "active"
+- **Reports generated**: `reports/maintenance/freshness-2026-02-09.md`, `organization-2026-02-09.md`
+- **Residual gap**: failure_modes_tested=false (deferred by design)
 
-### A.4 PR-13 — Monitoring & Benchmarks (~4-6 hrs)
-- [ ] PR-13.1: Token usage + response time tracking
-- [ ] PR-13.2: 10-task benchmark suite
-- [ ] PR-13.3: Task complexity + success scoring
-- [ ] PR-13.4: JICM threshold + compression metrics
-- [ ] PR-13.5: Aggregate telemetry dashboard
+### A.4 PR-13 — Monitoring & Benchmarks (~4-6 hrs) — DONE
+- [x] PR-13.1: Token usage + response time — `hooks/telemetry-emitter.js` (326 lines, JSONL events)
+- [x] PR-13.2: 10-task benchmark suite — `test/benchmarks/benchmark-suite.yaml` (BM-01 to BM-10, all 9 ACs)
+- [x] PR-13.3: Task complexity + success scoring — distributed: `scoring-engine.js` + `regression-detector.js`
+- [x] PR-13.4: JICM threshold + compression metrics — 4 threshold levels captured in telemetry
+- [x] PR-13.5: Aggregate telemetry dashboard — `.claude/scripts/telemetry-dashboard.sh` (101 lines)
+- **Supporting infra (pre-existing)**: telemetry-aggregator.js, telemetry-query.js, benchmark-runner.js
 
-### A.5 PR-14 — SOTA Catalog (~2 hrs)
-- [ ] 50+ entries (AI/ML, DevOps, Knowledge Mgmt, Automation)
-- [ ] Integration status tracking in capability-map.yaml
+### A.5 PR-14 — SOTA Catalog (~2 hrs) — DONE
+- [x] 55 entries across 9 categories (AI/ML, DevOps, KnowledgeMgmt, CodeIntel, MCP, Automation, Testing, Research, Security)
+- [x] Integration status tracking — 6 statuses (Active:9, Planned:14, Candidate:13, Monitor:5, Deferred:3, Decomposed:2)
+- **File**: `projects/project-aion/sota-catalog/sota-catalog.yaml` (619 lines)
+
+### Phase A Residual Items (carry-forward to Phase B)
+
+| Item | Origin | Target |
+|------|--------|--------|
+| /evolve executable pipeline | A.1 | B.6 (Automatic Skill Learning) |
+| AC-06 rollback mechanism | A.1 | B.6 |
+| research-ops ↔ AC-07 cross-ref docs | A.2 | B.2 (Deep Research) |
+| failure_modes_tested for AC-06/07/08 | A.1-A.3 | B.4 (Context Engineering, degradation testing) |
+| Empty log files (evolution.jsonl, file-usage.jsonl) | A.1-A.2 | Populated when ACs execute |
 
 ---
 
@@ -376,7 +395,7 @@ C (20h, Feb 12) --> D (15-20h)
 | Milestone | Version |
 |-----------|---------|
 | Current | v5.9.0 |
-| Phase A complete | v5.9.5 (all 9 Hippocrenae ACs active) |
+| Phase A complete | v5.9.5 (all 9 Hippocrenae ACs active) ← **HERE** (2026-02-09, commit 5b38374) |
 | Phase B complete | v5.10.0 (Stream 2 + AC-10 Ulfhedthnar) |
 | Phase C complete | v5.11.0 (Mac Studio infrastructure) |
 | Phase D complete | v5.12.0 (AI/ML first round) |
@@ -413,7 +432,7 @@ C (20h, Feb 12) --> D (15-20h)
 | Self-constitution | `.claude/proposals/jarvis-self-constitution-proposal.md` |
 | Pipeline design | `.claude/plans/pipeline-design-v3.md` |
 | Autopoietic paradigm | `.claude/context/psyche/autopoietic-paradigm.md` |
-| AC-10 Ulfhedthnar spec | `.claude/context/components/AC-10-ulfhedthnar.md` |
+| AC-10 Ulfhedthnar spec | `.claude/context/components/AC-10-ulfhedthnar.md` *(to be created in B.7)* |
 | Orchestration overview | `.claude/context/components/orchestration-overview.md` |
 
 ---
@@ -445,6 +464,21 @@ The autonomic system is divided into two categories:
 
 ---
 
+### Phase A Verification Summary (2026-02-09)
+
+| Component | Verdict | Operational | Notes |
+|-----------|---------|-------------|-------|
+| AC-06 Evolution | Scaffolded | 60% | Spec + detector + state; /evolve pipeline not built |
+| AC-07 R&D | Scaffolded | 80% | Tracker + state; cross-ref docs missing |
+| AC-08 Maintenance | Fully operational | 95% | Scripts tested (43/43), reports generated |
+| PR-13 Monitoring | Operational | 90% | Scoring distributed; all else solid |
+| PR-14 SOTA Catalog | Complete | 100% | 55 entries, 9 categories |
+| Orchestration v1.1.0 | Updated | 100% | All 9 Hippocrenae active |
+
+**Overall Phase A**: All deliverables present and committed. AC-08, PR-13, PR-14 are fully operational. AC-06 and AC-07 are scaffolded (specs, state files, scripts) with residual implementation gaps carried forward to Phase B.
+
+---
+
 *Roadmap II — Mac Studio Era & Beyond*
 *Jarvis v5.9.0 to v6.5.0 — Hippocrenae + Ulfhedthnar*
-*Created 2026-02-09, Updated 2026-02-09*
+*Created 2026-02-09, Updated 2026-02-09 (Phase A verified)*
