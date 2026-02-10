@@ -57,7 +57,7 @@ Each tier serves a distinct purpose. None is a "fallback" — choose by need.
 
 | Document | Path |
 |----------|------|
-| Identity | `.claude/jarvis-identity.md` |
+| Identity | `.claude/context/psyche/jarvis-identity.md` |
 | Architecture | `.claude/context/psyche/_index.md` |
 | AC components | `.claude/context/components/orchestration-overview.md` |
 | JICM design | `.claude/context/designs/jicm-v5-design-addendum.md` |

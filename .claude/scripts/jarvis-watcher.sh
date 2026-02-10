@@ -1497,6 +1497,13 @@ main() {
 
     log INFO "Watcher started (JICM v5.8.4, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
+    # Self-healing: clear standdown from previous sessions on fresh startup
+    if [[ -f "$STANDDOWN_FILE" ]]; then
+        log INFO "Clearing stale standdown from previous session"
+        rm -f "$STANDDOWN_FILE"
+        FAILURE_COUNT=0
+    fi
+
     # Write JICM config for statusline to read (dynamic threshold marker)
     write_jicm_config
 

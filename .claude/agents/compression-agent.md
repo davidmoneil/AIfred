@@ -36,7 +36,7 @@ These define WHO Jarvis is and HOW he operates. Compress the **content** — not
 | File | What to Compress |
 |------|-----------------|
 | `.claude/CLAUDE.md` or `CLAUDE.md` (root) | Every guardrail, every autonomic component, every command/skill, architecture layers, tool selection rules |
-| `.claude/jarvis-identity.md` | Communication style rules, address protocol, tone, humor guidelines, safety posture, emergency protocol |
+| `.claude/context/psyche/jarvis-identity.md` | Communication style rules, address protocol, tone, humor guidelines, safety posture, emergency protocol |
 | `.claude/context/compaction-essentials.md` | Archon layers, Wiggum Loop, component IDs, session continuity paths, key patterns |
 
 **Compression approach for foundation docs:**

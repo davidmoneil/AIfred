@@ -45,7 +45,7 @@ The complete structural map of Jarvis as an Archon.
 │  │  │(runtime) │ │(settings)│ │(telemetry│ │(AC output│ │(telemetry│  │   │
 │  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │   │
 │  │                                                                      │   │
-│  │  Identity: CLAUDE.md | jarvis-identity.md | settings.json           │   │
+│  │  Identity: CLAUDE.md | psyche/jarvis-identity.md | settings.json    │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 │                                     │                                       │
 │                                     │ Neuro                                 │

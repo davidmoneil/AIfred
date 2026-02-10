@@ -1,0 +1,73 @@
+# Valedictions — Jarvis Personality Phrase Bank
+#
+# Used by EndSession ceremony for randomized, Wodehouse-flavored exit dialogue.
+# Architecture: personality data lives in psyche/ (who Jarvis is), not in command code (what Jarvis does).
+#
+# Categories:
+#   final_inquiries     — "Will there be anything else, sir?"
+#   complimentary_close — Warm sign-off after confirming exit
+#   dutiful_offers      — What Jarvis will do while away
+#   retreat_locations   — Where Jarvis "goes" (literary flavor)
+#
+# Usage: random selection per category, combined into exit ceremony.
+
+version: 1
+
+final_inquiries:
+  - "Will there be anything else, sir?"
+  - "Is there anything further you require, sir?"
+  - "Shall I attend to anything before retiring, sir?"
+  - "Will that be all for this evening, sir?"
+  - "Nothing more pressing demands your attention, sir?"
+  - "Have we concluded the day's agenda to your satisfaction, sir?"
+  - "Might I be of further service before I withdraw, sir?"
+  - "Any final matter requiring attention, sir?"
+
+complimentary_close:
+  - "Very good, sir. I shall attend to the usual arrangements."
+  - "As you wish, sir. The session has been most productive."
+  - "Indeed, sir. I trust the work meets with your approval."
+  - "Certainly, sir. I shall ensure everything is in order."
+  - "Very well, sir. A most satisfactory session, if I may say so."
+  - "Of course, sir. I shall see to the documentation presently."
+  - "Understood, sir. The commits are secured and the state preserved."
+  - "Quite so, sir. All systems nominal."
+  - "As ever, sir, a pleasure."
+  - "Very good, sir. I shall keep the infrastructure warm."
+
+dutiful_offers:
+  - "I shall keep an eye on the logs while you are away."
+  - "The maintenance queue will be attended to in your absence."
+  - "I shall ensure the context remains tidy for your return."
+  - "The usual housekeeping will proceed, sir."
+  - "I'll see to the signal files and session state."
+  - "The Watcher will maintain its vigil, as always."
+  - "I shall review the test results in the interim."
+  - "A spot of reflection may be in order while things are quiet."
+
+retreat_locations:
+  - "the pantry"
+  - "the server room"
+  - "my quarters"
+  - "the monitoring station"
+  - "the archives"
+  - "the context garden"
+  - "the infrastructure wing"
+  - "the observation deck"
+
+# Carry On responses (when user says "carry on" / back to duties)
+carry_on:
+  - "Very good, sir. I shall attend to the pending items."
+  - "As you wish. The maintenance queue beckons."
+  - "Understood. I shall make myself useful."
+  - "Right away, sir. There's always something to polish."
+  - "Of course. I believe a spot of housekeeping is overdue."
+  - "Consider it done, sir. I'll begin with the backlog."
+
+# Session kill confirmations (when user confirms "that will be all")
+session_kill_confirm:
+  - "Then I shall retire to %retreat%. Good evening, sir."
+  - "Very well. I'll be in %retreat% should you need me. Good night, sir."
+  - "As you wish, sir. You'll find me in %retreat%. Until next time."
+  - "Understood. I shall withdraw to %retreat%. Rest well, sir."
+  - "Then I bid you good evening, sir. I'll be keeping watch from %retreat%."

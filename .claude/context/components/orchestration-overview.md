@@ -64,7 +64,7 @@ The autonomic system comprises two categories:
 
 **Trigger**: New session begins
 **Actions**:
-1. Load identity from `jarvis-identity.md`
+1. Load identity from `psyche/jarvis-identity.md`
 2. Review `session-state.md` and `current-priorities.md`
 3. Generate contextual greeting
 4. Suggest or begin work autonomously

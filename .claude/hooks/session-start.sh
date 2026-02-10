@@ -173,6 +173,14 @@ EOF
         rm -f "$COMPRESSION_FLAG_V5"
         echo "$TIMESTAMP | SessionStart | JICM: Cleared compression-in-progress flag (v5)" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
+
+    # Clear standdown flag from previous session (self-healing)
+    # Standdown is per-session; a new session starts with a clean slate
+    STANDDOWN_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-standdown"
+    if [[ -f "$STANDDOWN_FILE" ]]; then
+        rm -f "$STANDDOWN_FILE"
+        echo "$TIMESTAMP | SessionStart | JICM: Cleared standdown from previous session" >> "$LOG_DIR/session-start-diagnostic.log"
+    fi
 fi
 
 # ============================================================================

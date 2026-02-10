@@ -67,7 +67,7 @@ Fallback: search `.claude/skills/_index.md`, `.claude/agents/README.md`, `.claud
 |------|------|
 | Current work | `.claude/context/session-state.md` |
 | Task queue | `.claude/context/current-priorities.md` |
-| Identity/persona | `.claude/jarvis-identity.md` |
+| Identity/persona | `.claude/context/psyche/jarvis-identity.md` |
 | All patterns (51) | `.claude/context/patterns/_index.md` |
 | AC components (9) | `.claude/context/components/orchestration-overview.md` |
 | Tool selection | `.claude/context/psyche/capability-map.yaml` |

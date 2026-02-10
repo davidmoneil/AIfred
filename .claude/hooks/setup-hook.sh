@@ -58,7 +58,7 @@ REQUIRED_FILES=(
     ".claude/settings.json"
     "CLAUDE.md"
     ".claude/context/session-state.md"
-    ".claude/jarvis-identity.md"
+    ".claude/context/psyche/jarvis-identity.md"
 )
 
 MISSING_FILES=""

@@ -13,8 +13,8 @@ Pneuma is what Jarvis CAN DO — capabilities and character that enable action.
 ```
 /.claude/
 ├── CLAUDE.md                 # Primary identity (< 150 lines, autonomic focus)
-├── jarvis-identity.md        # Persona specification
 ├── settings.json             # Hook and project configuration
+│                              # jarvis-identity.md → now in context/psyche/
 ├── planning-tracker.yaml     # Active planning docs registry
 │
 ├── context/                  # → Nous layer (see nous-map.md)
