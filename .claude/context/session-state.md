@@ -11,7 +11,7 @@
 **Status**: idle — Session ended cleanly (AC-09)
 **Version**: v5.9.0
 **Branch**: Project_Aion
-**Last Commit**: 5b38374 (Roadmap II Phase A complete)
+**Last Commit**: 22192b5 (Phase B polish — validation sweep)
 
 **Phase A Summary (6/6 tasks complete)**:
 1. Roadmap II AC-10 Ulfhedthnar — F.3 RideOrDie-ops → B.7 AC-10 Neuros override
@@ -23,10 +23,20 @@
 
 **Files Modified**: 19 total (5 new scripts, 2 new logs, 2 new YAML deliverables, 2 reports, 3 state files, 3 spec checklists, 1 roadmap, 1 orchestration overview)
 
+**What Was Accomplished (2026-02-10)**:
+- Roadmap II Phase B: 4/7 tasks COMPLETE (B.2, B.3, B.5, B.6) + B.4 Wave 1
+- B.2: research-plan.sh (185 lines, query decomposition, 8 question types) + research-synthesize.sh (254 lines, multi-source aggregation, 3 synthesis styles). research-ops v2.2.0.
+- B.4 Wave 1: jarvis-watcher.sh v5.8.3 — 4 bug fixes (failsafe loops, emergency /compact, /clear retry, failure recording)
+- B.5: Model routing — 26 SKILL.md files + capability-map.yaml v3 (11 skills + 12 agents with model: fields)
+- B.6: Automatic skill learning — reflect Phase 2.5, evolve Step 2.5, skill-candidates.yaml + skill-promotions.yaml
+- Validation sweep: 7 issues found and fixed (3 CRITICAL version mismatches, 2 MEDIUM, 2 LOW shellcheck)
+- Commits: 671e0f3 (Phase B delivery, 35 files +725/-52) + 22192b5 (polish, 3 files)
+
 **Next Session Pickup:**
-1. Begin Roadmap II Phase B (Stream 2 Implementation)
-2. Start with B.1 (claude-code-docs) or B.3 (Hook Consolidation) — both are quick wins
-3. Phase B plan: `.claude/plans/roadmap-ii.md`
+1. Roadmap II Phase B remaining: B.4 Phases 1-4 (JICM context engineering — iterative summarization, file-as-memory, observation masking, poisoning detection)
+2. B.1 claude-code-docs install (quick win, deferred)
+3. B.7 AC-10 Ulfhedthnar (6-8 hrs — berserker override system)
+4. Phase B plan: `.claude/plans/roadmap-ii.md`
 
 **Current Blocker**: None
 

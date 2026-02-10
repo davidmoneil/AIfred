@@ -142,14 +142,16 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Verified**: 5-agent parallel audit confirmed all deliverables
 - **Roadmap II**: `.claude/plans/roadmap-ii.md` — Phase A section updated with carry-forward table
 
-### Next: Roadmap II Phase B — Stream 2 Implementation (~15-20 hrs)
-- B.1: claude-code-docs install (~1 hr)
-- B.2: Deep Research Pattern Decomposition (~3-4 hrs)
-- B.3: Hook Consolidation (~2-3 hrs)
-- B.4: Context Engineering JICM Integration (~5-7 hrs)
-- B.5: Skill-Level Model Routing (~2 hrs)
-- B.6: Automatic Skill Learning Enhancement (~2-3 hrs)
-- B.7: AC-10 Ulfhedthnar — Neuros Override System (~6-8 hrs)
+### Roadmap II Phase B — Stream 2 Implementation (~15-20 hrs)
+- B.1: claude-code-docs install (~1 hr) — NOT STARTED (deferred)
+- B.2: Deep Research Pattern Decomposition — **DONE** (research-plan.sh + research-synthesize.sh, v2.2.0)
+- B.3: Hook Consolidation — **DONE** (34→23 hooks, commit c75f201)
+- B.4: Context Engineering JICM Integration — Wave 1 **DONE** (watcher v5.8.3, 4 bug fixes), Phases 1-4 PENDING
+- B.5: Skill-Level Model Routing — **DONE** (26 SKILL.md + 23 capability-map entries, all validated)
+- B.6: Automatic Skill Learning — **DONE** (reflect Phase 2.5, evolve Step 2.5, 2 YAML files)
+- B.7: AC-10 Ulfhedthnar — NOT STARTED (~6-8 hrs)
+- **Status**: 4/7 COMPLETE, B.4 partially done (Wave 1 only)
+- **Next**: B.4 Phases 1-4 (iterative summarization, file-as-memory, observation masking, poisoning detection)
 - **Plan**: `.claude/plans/roadmap-ii.md` Phase B section
 
 ---
