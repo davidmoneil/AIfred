@@ -192,7 +192,19 @@ Configured:
 🤖 Generated with AIfred Setup Wizard"
 ```
 
-### 7. GitHub Push (Optional)
+### 7. Initialize Update Tracking
+
+Initialize the AIfred component manifest so users can check for upstream updates later:
+
+```bash
+scripts/aifred-update.sh init
+```
+
+This creates `.aifred.yaml` (gitignored, user-specific) which tracks the version and SHA of every component. Users can later run `/stay-current check` or `scripts/aifred-update.sh check` to see if upstream has new versions.
+
+Also creates `.aifred-ignore` from the template if it doesn't exist, where users can list components they never want updated.
+
+### 8. GitHub Push (Optional)
 
 If GitHub integration enabled:
 

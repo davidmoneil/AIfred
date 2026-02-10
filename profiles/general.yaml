@@ -214,6 +214,9 @@ permissions:
     - "Bash(jq:*)"
     - "Bash(yq:*)"
 
+    # AIfred update system
+    - "Bash(scripts/aifred-update.sh:*)"
+
     # Claude tools
     - "Read"
     - "Glob"

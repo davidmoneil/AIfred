@@ -79,6 +79,50 @@ async function getGitChanges() {
 }
 
 /**
+ * Check AIfred update cache for session notification.
+ * Reads .aifred-check-result.json (written by aifred-update.sh check).
+ * Returns a notification string or null.
+ */
+async function checkAifredUpdates() {
+  try {
+    // Check if notifications are disabled
+    const manifestPath = path.join(PROJECT_ROOT, '.aifred.yaml');
+    const manifest = await fs.readFile(manifestPath, 'utf8');
+    if (/^notify:\s*false/m.test(manifest)) {
+      return null;
+    }
+
+    const cachePath = path.join(PROJECT_ROOT, '.aifred-check-result.json');
+    const content = await fs.readFile(cachePath, 'utf8');
+    const cache = JSON.parse(content);
+
+    const checkedAt = new Date(cache.checked_at);
+    const now = new Date();
+    const daysAgo = Math.floor((now - checkedAt) / (1000 * 60 * 60 * 24));
+
+    if (cache.update_count > 0) {
+      const staleNote = daysAgo > 7 ? ` (checked ${daysAgo}d ago)` : '';
+      return `\u26A1 ${cache.update_count} AIfred update(s) available (${cache.local_version} \u2192 ${cache.upstream_version})${staleNote} \u2014 run /stay-current update`;
+    }
+
+    if (daysAgo > 14) {
+      return `\u23F0 Last AIfred update check was ${daysAgo} days ago \u2014 run /stay-current check`;
+    }
+
+    return null; // All current, stay quiet
+  } catch {
+    // No cache file or manifest — check if manifest exists to distinguish init vs not-yet
+    try {
+      await fs.access(path.join(PROJECT_ROOT, '.aifred.yaml'));
+      // Manifest exists but no cache — suggest a check
+      return '\u2139\uFE0F AIfred update tracking initialized but never checked \u2014 run /stay-current check';
+    } catch {
+      return null; // No manifest — update system not initialized, stay silent
+    }
+  }
+}
+
+/**
  * SessionStart Hook - Auto-loads context on session start
  */
 module.exports = {
@@ -107,6 +151,12 @@ module.exports = {
         if (content) {
           contextParts.push(`\n--- ${file.label} ---\n${content}`);
         }
+      }
+
+      // Check for AIfred upstream updates
+      const updateNotice = await checkAifredUpdates();
+      if (updateNotice) {
+        contextParts.push(updateNotice);
       }
 
       // Add session start marker

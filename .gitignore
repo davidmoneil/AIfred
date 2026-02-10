@@ -46,3 +46,8 @@ venv/
 
 # Script configuration (contains sensitive data)
 scripts/config.sh
+
+# AIfred update tracking (user-specific)
+.aifred.yaml
+.aifred-ignore
+.aifred-check-result.json

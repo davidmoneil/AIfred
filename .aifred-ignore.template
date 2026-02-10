@@ -1,0 +1,21 @@
+# AIfred Ignore File
+# Components listed here will never be offered for upstream updates.
+# Uses gitignore-style glob patterns matched against component keys.
+#
+# Component key format: category/filename
+#   hooks/audit-logger.js
+#   commands/end-session.md
+#   commands/orchestration/plan.md
+#   skills/session-management/SKILL.md
+#   agents/deep-research.md
+#   scripts/sync-git.sh
+#   profiles/general.yaml
+#   patterns/memory-storage-pattern.md
+#
+# Examples:
+#   patterns/*                    # Ignore all pattern updates
+#   commands/orchestration/*      # Ignore orchestration commands
+#   hooks/my-custom-hook.js       # Ignore a specific hook
+#   profiles/*                    # Keep your profile customizations
+
+# --- Add your exclusions below ---
