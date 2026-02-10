@@ -38,7 +38,7 @@ get_recent_files() {
 import json, sys
 from datetime import datetime, timedelta, timezone
 try:
-    d = json.load(open('$FILE_ACCESS'))
+    d = json.load(open(sys.argv[1]))
 except (FileNotFoundError, json.JSONDecodeError):
     sys.exit(0)
 cutoff = datetime.now(timezone.utc) - timedelta(minutes=10)
@@ -53,7 +53,7 @@ for path, info in d.get('files', {}).items():
 recent.sort(reverse=True)
 for lr, path, count in recent[:8]:
     print(f'{count}\t{path}')
-" 2>/dev/null
+" "$FILE_ACCESS" 2>/dev/null
 }
 
 get_git_changes() { git -C "$PROJECT_DIR" status --short 2>/dev/null; }
