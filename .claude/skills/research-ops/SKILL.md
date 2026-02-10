@@ -74,3 +74,11 @@ KEY=$(yq -r '.search.brave' .claude/secrets/credentials.yaml | head -1 | tr -d '
 bash scripts/test-all.sh          # Full suite (requires API keys)
 bash scripts/test-all.sh --quick  # Public APIs only (arxiv, wikipedia)
 ```
+
+## AC-07 Integration
+
+research-ops is the primary capability provider for **AC-07 (R&D Cycles)**. When AC-07 triggers research:
+- Research agenda: `.claude/state/queues/research-agenda.yaml`
+- File usage tracker: `.claude/scripts/file-usage-tracker.sh`
+- Research results feed into AC-05 (reflection) and AC-06 (evolution) via shared patterns
+- Telemetry: AC-07 events emitted via `telemetry-emitter.js`

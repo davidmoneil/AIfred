@@ -1,0 +1,11 @@
+# Cross-Session File Knowledge Cache
+# Maps frequently-accessed files to purpose summaries
+# Avoids re-reading files just to recall their purpose after compression
+
+files: {}
+# Example:
+# .claude/scripts/jarvis-watcher.sh:
+#   purpose: "JICM v5.8.3 watcher — context monitoring, signal execution, compression orchestration"
+#   lines: 1800+
+#   key_functions: [poll_context, handle_signals, trigger_compression, idle_hands_resume]
+#   last_accessed: "2026-02-10"

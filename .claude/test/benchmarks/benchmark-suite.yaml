@@ -104,14 +104,58 @@ benchmarks:
     alert_pct: 80
     measurement: "Steps completed in AC-09 / expected steps (state update, priorities, reflection)"
 
+  # 11. Context Reconstruction Fidelity (B.4 Phase 4)
+  - id: BM-11
+    name: "Post-Compression Reconstruction"
+    component: AC-04
+    type: accuracy
+    description: "Can Jarvis resume work after compression without re-reading files?"
+    target_pct: 90
+    alert_pct: 70
+    measurement: "Tasks resumed without file re-read / total post-compression resumptions"
+    degradation_test: true
+    test_levels: [30, 50, 65, 73]
+
+  # 12. Decision Consistency Across Compressions (B.4 Phase 4)
+  - id: BM-12
+    name: "Decision Consistency"
+    component: AC-04
+    type: accuracy
+    description: "Decisions made pre-compression are maintained post-compression"
+    target_pct: 95
+    alert_pct: 80
+    measurement: "Consistent decisions / total decisions checked post-compression"
+    degradation_test: true
+
+  # 13. Observation Masking Effectiveness (B.4 Phase 3)
+  - id: BM-13
+    name: "Observation Token Savings"
+    component: AC-04
+    type: ratio
+    description: "Token savings from observation masking behavior"
+    target_ratio: 0.3
+    alert_ratio: 0.1
+    measurement: "Tokens saved by masking / total tool output tokens"
+
+  # 14. Context Health Signal Detection (B.4 Phase 4)
+  - id: BM-14
+    name: "Poisoning Detection Accuracy"
+    component: AC-04
+    type: accuracy
+    description: "Context degradation signals correctly detected"
+    target_pct: 80
+    alert_pct: 50
+    measurement: "True positive health warnings / total degradation events"
+
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   created: "2026-02-09"
-  total_benchmarks: 10
+  updated: "2026-02-10"
+  total_benchmarks: 14
   categories:
     timing: [BM-01, BM-02]
-    accuracy: [BM-03, BM-05]
-    ratio: [BM-04, BM-07]
+    accuracy: [BM-03, BM-05, BM-11, BM-12, BM-14]
+    ratio: [BM-04, BM-07, BM-13]
     count: [BM-06, BM-08]
     score: [BM-09]
     checklist: [BM-10]

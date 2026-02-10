@@ -89,24 +89,27 @@ ls -t ~/.claude/projects/-Users-aircannon-Claude-Jarvis/*.jsonl | head -1
 
 ## Compression Protocol
 
-### Step 0: Check for Prior Checkpoint (Anchored Iterative Summarization)
+### Step 0: Check for Prior Checkpoint + Preservation Manifest
 
-**Before reading sources**, check if a previous checkpoint exists:
+**Before reading sources**, check for existing artifacts:
 
 ```bash
 ls .claude/context/.compressed-context-ready.md 2>/dev/null
+ls .claude/context/.preservation-manifest.json 2>/dev/null
 ```
 
-**If a prior checkpoint exists** (cycle 2+):
+**Preservation manifest** (if exists): Read `.claude/context/.preservation-manifest.json`. It contains AI-prioritized items categorized as `preserve` (critical/high — keep verbatim), `compress` (low — summarize), and `discard` (drop). Use these priorities to guide what survives compression.
+
+**Prior checkpoint** (cycle 2+):
 - Read it first — this is your **anchor**
-- Your job is to MERGE new session content INTO the existing sections, not regenerate from scratch
+- MERGE new session content INTO the existing sections, not regenerate from scratch
 - Preserve all prior decisions, file paths, and context that remain relevant
 - Update sections that changed (Current Task, Work In Progress, Todos)
 - ADD to Decisions Made (don't replace — append new decisions)
 - This is incremental summarization: each cycle builds on the last
 - The anchor sections are: Foundation Context, Session Objective, Decisions Made, Key Files
 
-**If no prior checkpoint exists** (cycle 1):
+**No prior checkpoint** (cycle 1):
 - Proceed with full generation from sources below
 
 This approach prevents silent information loss across multiple compression cycles
@@ -288,19 +291,28 @@ You have **5 minutes** maximum. If approaching the limit:
 
 A partial checkpoint that includes the current task, active decisions, and next steps is sufficient for Jarvis to recover. Foundation context can be re-read from files on disk.
 
-## Quality Checklist
+## Quality Checklist — Section Validation
 
-Before writing output, verify:
+Before writing output, verify each required section is **non-empty**:
 
+| Section | Required | Validation |
+|---------|----------|------------|
+| Foundation Context | YES | All guardrails, AC IDs, architecture preserved |
+| Session Objective | YES | 2-3 sentences describing current goal |
+| Current Task | YES | Specific file paths and what's happening |
+| Work In Progress | YES | At least one file:status entry |
+| Decisions Made | YES | Numbered with rationale |
+| Todos | If available | From task dump or session state |
+| Next Steps | YES | Numbered, specific, actionable |
+| Resume Instructions | YES | Immediate context + On Resume steps |
+| Key Files | YES | Absolute paths for all relevant files |
+| Critical Notes | If applicable | Gotchas, constraints, blockers |
+
+**Additional checks:**
 - [ ] Written from Jarvis's perspective (first person "I")
-- [ ] Foundation context compressed but complete (all rules preserved)
-- [ ] Current task clearly stated with specific file paths
-- [ ] Decisions include rationale
-- [ ] Next steps are actionable and numbered
-- [ ] Active tasks preserved if available
-- [ ] No full file contents included
+- [ ] No full file contents included (paths only — contents are on disk)
 - [ ] Total output is 5K-15K tokens
-- [ ] Resume instructions are clear and specific
+- [ ] Preservation manifest items marked "critical" are preserved
 - [ ] Signal file written as final step
 
 ---

@@ -146,12 +146,12 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - B.1: claude-code-docs install — **DONE** (CannonCoPilot fork, Jarvis-integrated, /docs command, session-start sync)
 - B.2: Deep Research Pattern Decomposition — **DONE** (research-plan.sh + research-synthesize.sh, v2.2.0)
 - B.3: Hook Consolidation — **DONE** (34→23 hooks, commit c75f201)
-- B.4: Context Engineering JICM Integration — Wave 1 **DONE** (watcher v5.8.3, 4 bug fixes), Phases 1-4 PENDING
+- B.4: Context Engineering JICM Integration — **DONE** (watcher v5.8.3 + Phases 1-4: anchored summarization, file-system-as-memory, observation masking, poisoning detection)
 - B.5: Skill-Level Model Routing — **DONE** (26 SKILL.md + 23 capability-map entries, all validated)
 - B.6: Automatic Skill Learning — **DONE** (reflect Phase 2.5, evolve Step 2.5, 2 YAML files)
 - B.7: AC-10 Ulfhedthnar — NOT STARTED (~6-8 hrs)
-- **Status**: 4/7 COMPLETE, B.4 partially done (Wave 1 only)
-- **Next**: B.4 Phases 1-4 (iterative summarization, file-as-memory, observation masking, poisoning detection)
+- **Status**: 6/7 COMPLETE (B.1-B.6 all done), B.7 remaining
+- **Next**: B.7 AC-10 Ulfhedthnar (~6-8 hrs)
 - **Plan**: `.claude/plans/roadmap-ii.md` Phase B section
 
 ---

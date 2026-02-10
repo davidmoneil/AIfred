@@ -1,0 +1,11 @@
+# Cross-Session Error Solutions Cache
+# Known fixes for commonly encountered errors
+# Prevents re-debugging the same issues across sessions
+
+solutions: []
+# Example:
+# - error_pattern: "gh auth login failed.*read:org"
+#   context: "PAT from credentials.yaml lacks read:org scope"
+#   solution: "Use GitHub REST API directly with curl instead of gh CLI"
+#   first_seen: "2026-02-09"
+#   occurrences: 1

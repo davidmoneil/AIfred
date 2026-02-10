@@ -123,6 +123,10 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/jicm-continuation-verifier.js"
+          },
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/context-health-monitor.js"
           }
         ]
       }
@@ -152,6 +156,15 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/usage-tracker.js"
+          }
+        ]
+      },
+      {
+        "matcher": "^(Read|Bash|Grep|Glob|WebFetch|WebSearch)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/observation-tracker.js"
           }
         ]
       },

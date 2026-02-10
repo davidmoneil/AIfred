@@ -56,6 +56,19 @@ Prepare context artifacts that help the next session start cleanly:
    rm -f .claude/context/.soft-restart-checkpoint.md 2>/dev/null || true
    ```
 
+2b. **Archive JICM session memory** (B.4 Phase 2):
+   ```bash
+   # Archive current session directory if it exists
+   JICM_SID=$(cat .claude/context/jicm/.current-session-id 2>/dev/null)
+   if [[ -n "$JICM_SID" ]] && [[ -d ".claude/context/jicm/sessions/$JICM_SID" ]]; then
+       # Move session data to archive (preserve for analysis)
+       mv ".claude/context/jicm/sessions/$JICM_SID" ".claude/context/jicm/archive/session-$JICM_SID" 2>/dev/null || true
+       rm -f .claude/context/jicm/.current-session-id 2>/dev/null || true
+       # Prune old session archives (keep last 10)
+       ls -dt .claude/context/jicm/archive/session-* 2>/dev/null | tail -n +11 | xargs rm -rf 2>/dev/null || true
+   fi
+   ```
+
 3. **Log session end**:
    ```bash
    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) | SessionEnd | /end-session invoked" >> .claude/logs/session-start-diagnostic.log

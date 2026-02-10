@@ -22,7 +22,7 @@
     "dependencies_verified": true,
     "gates_implemented": true,
     "metrics_emission_working": true,
-    "failure_modes_tested": false,
+    "failure_modes_tested": true,
     "integration_with_consumers_verified": true,
     "documentation_updated": true
   },
@@ -56,5 +56,5 @@
     "defer_count": 0,
     "reject_count": 0
   },
-  "notes": "Operationalized 2026-02-09 (PR-12.7). File usage tracker at .claude/scripts/file-usage-tracker.sh. Research agenda has 3 pending topics. Integration with research-ops skill via shared patterns. Telemetry wired."
+  "notes": "Operationalized 2026-02-09 (PR-12.7). File usage tracker at .claude/scripts/file-usage-tracker.sh. Research agenda has 3 pending topics. Integration with research-ops skill via shared patterns and AC-07 cross-ref in SKILL.md. Telemetry wired. B.4 Phase 4: failure modes covered by context-health-monitor.js and degradation benchmarks BM-11/12/14."
 }

@@ -1,0 +1,12 @@
+# Cross-Session Observed Patterns
+# Populated by AC-05 (Self-Reflection) and manual observation
+# Format: pattern-id, description, frequency, first_seen, last_seen
+
+patterns: []
+# Example:
+# - id: repeated-file-reread
+#   description: "Same file read 3+ times in 10 turns — compression lost path"
+#   frequency: 0
+#   first_seen: null
+#   last_seen: null
+#   mitigation: "Ensure file paths preserved in compression anchor"

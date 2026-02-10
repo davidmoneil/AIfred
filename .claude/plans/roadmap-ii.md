@@ -95,7 +95,7 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 - [x] Created /docs command at .claude/commands/docs.md (project-level, not user-level)
 - [x] Session-start sync: git pull on startup (session-start.sh, after AIfred sync)
 - [x] Zero hooks, zero persistent context overhead
-- **Commit**: TBD (this session)
+- **Commit**: 6de205c
 
 ### B.2 Deep Research Pattern Decomposition (~3-4 hrs) — DONE
 - [x] Extract `research-plan.sh` (query decomposition, sub-question generation, 8 question types)
@@ -109,12 +109,12 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 - [x] Verify no regression (83% fewer spawns)
 - **Commit**: c75f201
 
-### B.4 Context Engineering JICM Integration (~5-7 hrs) — Wave 1 DONE
+### B.4 Context Engineering JICM Integration (~5-7 hrs) — DONE
 - [x] Wave 1: jarvis-watcher.sh v5.8.3 — 4 bug fixes (failsafe loops, /clear retry, cooldown, failure recording)
-- [ ] Phase 1: Anchored Iterative Summarization at 65% trigger
-- [ ] Phase 2: File-system-as-memory with session scoping
-- [ ] Phase 3: Observation Masking for tool outputs (60-80% reduction)
-- [ ] Phase 4: Context poisoning detection + degradation testing
+- [x] Phase 1: Anchored Iterative Summarization — preservation manifest consumption, section validation, compaction-essentials updated
+- [x] Phase 2: File-system-as-memory — `.claude/context/jicm/` hierarchy (sessions/, cross-session/, archive/), session-start creation, end-session archival
+- [x] Phase 3: Observation Masking — observation-tracker.js PostToolUse hook, telemetry integration, masking thresholds in compaction-essentials
+- [x] Phase 4: Context poisoning detection — context-health-monitor.js, 4 degradation benchmarks (BM-11/12/13/14), AC-06/07/08 failure_modes_tested=true
 
 ### B.5 Skill-Level Model Routing (~2 hrs) — DONE
 - [x] Add `model:` field to all 26 SKILL.md files (3 haiku, 2 opus, 21 sonnet)

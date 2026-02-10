@@ -253,6 +253,21 @@ if [[ -d "$CLAUDE_DOCS_REPO/.git" ]] && [[ "$SOURCE" == "startup" ]]; then
     cd "$CLAUDE_PROJECT_DIR" 2>/dev/null
 fi
 
+# --- JICM Session Memory Directory (B.4 Phase 2) ---
+if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
+    JICM_SESSION_ID=$(date +"%Y%m%d-%H%M%S")
+    JICM_SESSION_DIR="$CLAUDE_PROJECT_DIR/.claude/context/jicm/sessions/$JICM_SESSION_ID"
+    mkdir -p "$JICM_SESSION_DIR"
+    # Write session metadata
+    printf 'session_id: "%s"\nstarted: "%s"\nsource: "%s"\n' \
+        "$JICM_SESSION_ID" "$TIMESTAMP" "$SOURCE" > "$JICM_SESSION_DIR/working-memory.yaml"
+    printf 'session_id: "%s"\ndecisions: []\n' "$JICM_SESSION_ID" > "$JICM_SESSION_DIR/decisions.yaml"
+    printf 'session_id: "%s"\nobservations: []\n' "$JICM_SESSION_ID" > "$JICM_SESSION_DIR/observations.yaml"
+    # Track current session ID for other hooks
+    echo "$JICM_SESSION_ID" > "$CLAUDE_PROJECT_DIR/.claude/context/jicm/.current-session-id"
+    echo "$TIMESTAMP | SessionStart | JICM session dir: $JICM_SESSION_ID" >> "$LOG_DIR/session-start-diagnostic.log"
+fi
+
 # --- Environment Validation (evo-2026-01-019) ---
 ENV_ISSUES=""
 ENV_WARNINGS=""
