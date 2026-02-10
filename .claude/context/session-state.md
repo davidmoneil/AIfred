@@ -8,10 +8,22 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle — Phase B 7/7 COMPLETE, B.7 Ulfhedthnar done (needs commit)
-**Version**: v5.9.0
+**Status**: 🟢 Idle — Phase B 7/7 COMPLETE + F.1 Ennoia MVP COMPLETE
+**Version**: v5.10.0
 **Branch**: Project_Aion
-**Last Commit**: 5f3cdc9 (EVO-2026-02-010 — watcher startup recovery)
+**Last Commit**: 02b4272 (F.1 Ennoia MVP — intent-driven wake-up recommendations v0.2)
+
+**What Was Accomplished (2026-02-10, session 6 — Phase F)**:
+- F.0: AC-03 hotfix + VERSION 5.10.0 + Phase F roadmap rewrite (commit 96ee40b)
+- F.1 Ennoia MVP — intent-driven wake-up recommendations (commit 02b4272):
+  - ennoia.sh v0.2 (280 lines): session orchestrator with 4 modes (arise/resume/attend/idle)
+  - jarvis-watcher.sh v5.8.5: Ennoia integration (read_ennoia_recommendation + send_prompt_by_type)
+  - launch-jarvis-tmux.sh: Aion Trinity layout — Window 2 "Ennoia" added
+  - capability-map.yaml: aion.ennoia component registered
+  - 14/14 tests pass (8 Ennoia + 6 Watcher reader), all 3 scripts pass bash -n
+  - BSD sed fix: LC_ALL=C for emoji stripping (macOS compatibility)
+- Aion Trinity scaffolding + identity migration to psyche/ (commit fbd74d9)
+- virgil.sh python3 injection fix (commit c18066b)
 
 **What Was Accomplished (2026-02-10, sessions 2-3)**:
 - B.4 Context Engineering JICM: ALL 4 phases complete (commit de4ffd7, 18 files +578/-48)
@@ -45,7 +57,7 @@
   - Implementation report: `.claude/reports/ulfhedthnar/implementation-2026-02-10.md`
 
 **Next Session Pickup:**
-1. Commit + push B.7 Ulfhedthnar changes
+1. Phase F.2+ (Virgil MVP, remaining Aion Trinity wiring) — per roadmap-ii.md Phase F
 2. Phase C Mac Studio Infrastructure (Wed Feb 12+ arrival)
 3. Phase C plan: `.claude/plans/roadmap-ii.md`
 

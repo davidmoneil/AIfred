@@ -198,6 +198,15 @@
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/ulfhedthnar-detector.js"
           }
         ]
+      },
+      {
+        "matcher": "^(Task|TaskCreate|TaskUpdate)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/virgil-tracker.js"
+          }
+        ]
       }
     ],
     "Notification": [
@@ -222,6 +231,10 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/ulfhedthnar-detector.js"
+          },
+          {
+            "type": "command",
+            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/virgil-tracker.js"
           }
         ]
       }

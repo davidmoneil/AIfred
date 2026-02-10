@@ -142,17 +142,23 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Verified**: 5-agent parallel audit confirmed all deliverables
 - **Roadmap II**: `.claude/plans/roadmap-ii.md` — Phase A section updated with carry-forward table
 
-### Roadmap II Phase B — Stream 2 Implementation (~15-20 hrs)
-- B.1: claude-code-docs install — **DONE** (CannonCoPilot fork, Jarvis-integrated, /docs command, session-start sync)
-- B.2: Deep Research Pattern Decomposition — **DONE** (research-plan.sh + research-synthesize.sh, v2.2.0)
-- B.3: Hook Consolidation — **DONE** (34→23 hooks, commit c75f201)
-- B.4: Context Engineering JICM Integration — **DONE** (watcher v5.8.4, Phases 1-4 complete, 6 feature enhancements, statusline v7.4)
-- B.5: Skill-Level Model Routing — **DONE** (26 SKILL.md + 23 capability-map entries, all validated)
-- B.6: Automatic Skill Learning — **DONE** (reflect Phase 2.5, evolve Step 2.5, 2 YAML files)
-- B.7: AC-10 Ulfhedthnar — **DONE** (detector hook, skill, commands, 60 tests, 5 Wiggum Loops)
-- **Status**: 7/7 COMPLETE — Phase B DONE
-- **Next**: Phase C Mac Studio Infrastructure (Wed Feb 12+ arrival) — C.1-C.4
-- **Plan**: `.claude/plans/roadmap-ii.md` Phase C section
+### Roadmap II Phase B — COMPLETE (7/7)
+- B.1: claude-code-docs install — **DONE**
+- B.2: Deep Research Pattern Decomposition — **DONE**
+- B.3: Hook Consolidation — **DONE**
+- B.4: Context Engineering JICM Integration — **DONE**
+- B.5: Skill-Level Model Routing — **DONE**
+- B.6: Automatic Skill Learning — **DONE**
+- B.7: AC-10 Ulfhedthnar — **DONE**
+
+### Roadmap II Phase F — Aion Trinity (in progress)
+- F.0: AC-03 hotfix + VERSION 5.10.0 + roadmap rewrite — **DONE** (96ee40b)
+- F.1: Ennoia MVP (session orchestrator) — **DONE** (02b4272, 14/14 tests, v0.2)
+- F.2: Virgil MVP (knowledge companion) — NEXT
+- F.3: Remaining Aion Trinity wiring — PENDING
+- **Status**: 2/4+ in progress
+- **Next**: Phase C blocked until Mac Studio arrival (Wed Feb 12+)
+- **Plan**: `.claude/plans/roadmap-ii.md` Phase F section
 
 ---
 

@@ -2,7 +2,7 @@
 # Launch Jarvis (Claude) in a tmux session for autonomous control
 # This enables auto-command execution via tmux send-keys
 #
-# Layout (Aion Trinity):
+# Layout (Aion Quartet):
 # ┌─────────────────────────────────────────┐
 # │            Claude Code (window 0)       │
 # └─────────────────────────────────────────┘
@@ -11,6 +11,9 @@
 # └─────────────────────────────────────────┘
 # ┌─────────────────────────────────────────┐
 # │            Ennoia (window 2)            │
+# └─────────────────────────────────────────┘
+# ┌─────────────────────────────────────────┐
+# │            Virgil (window 3)            │
 # └─────────────────────────────────────────┘
 #
 # The watcher runs in a tmux window (not separate terminal) and handles:
@@ -162,6 +165,14 @@ if [[ -x "$ENNOIA_SCRIPT" ]]; then
         "cd '$PROJECT_DIR' && '$ENNOIA_SCRIPT'; echo 'Ennoia stopped.'; read"
 fi
 
+# Launch Virgil codebase guide in a tmux window (window 3, detached)
+VIRGIL_SCRIPT="$PROJECT_DIR/.claude/scripts/virgil.sh"
+if [[ -x "$VIRGIL_SCRIPT" ]]; then
+    echo "Launching Virgil codebase guide in tmux window..."
+    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Virgil" -d \
+        "cd '$PROJECT_DIR' && '$VIRGIL_SCRIPT'; echo 'Virgil stopped.'; read"
+fi
+
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
 "$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
@@ -169,6 +180,7 @@ fi
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:0" automatic-rename off 2>/dev/null || true
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:1" automatic-rename off 2>/dev/null || true
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:2" automatic-rename off 2>/dev/null || true
+"$TMUX_BIN" set-window-option -t "$SESSION_NAME:3" automatic-rename off 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"
@@ -177,6 +189,7 @@ echo "Windows:"
 echo "  Window 0: Jarvis"
 echo "  Window 1: Watcher"
 echo "  Window 2: Ennoia"
+echo "  Window 3: Virgil"
 echo ""
 
 if [[ "$ITERM2_MODE" == "true" ]]; then
@@ -189,7 +202,7 @@ if [[ "$ITERM2_MODE" == "true" ]]; then
     exec "$TMUX_BIN" -CC attach-session -t "$SESSION_NAME"
 else
     echo "Keyboard shortcuts:"
-    echo "  Ctrl+b then 0/1/2 - Switch to Jarvis (0), Watcher (1), or Ennoia (2)"
+    echo "  Ctrl+b then 0/1/2/3 - Switch to Jarvis (0), Watcher (1), Ennoia (2), Virgil (3)"
     echo "  Ctrl+b then d     - Detach (leave running)"
     echo "  Ctrl+b then x     - Close current window"
     echo ""
