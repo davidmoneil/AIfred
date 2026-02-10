@@ -1,0 +1,52 @@
+{
+  "signals": [
+    {
+      "type": "defeat_language",
+      "source": "Task_return",
+      "detail": "I can't figure out how to solve this problem",
+      "weight": 2,
+      "timestamp": 1770712762326
+    },
+    {
+      "type": "defeat_language",
+      "source": "Task_return",
+      "detail": "I can't figure out how to solve this problem",
+      "weight": 2,
+      "timestamp": 1770712919476
+    },
+    {
+      "type": "defeat_language",
+      "source": "Task_return",
+      "detail": "I can't figure out how to solve this problem",
+      "weight": 2,
+      "timestamp": 1770713051461
+    },
+    {
+      "type": "tool_failure",
+      "source": "Bash",
+      "detail": "Error: command not found: foobar                    ",
+      "weight": 1,
+      "timestamp": 1770713051462
+    },
+    {
+      "type": "tool_failure",
+      "source": "Bash",
+      "detail": "Error: command not found: foobar                    ",
+      "weight": 1,
+      "timestamp": 1770713051462
+    },
+    {
+      "type": "defeat_language",
+      "source": "test-uncertain-3",
+      "detail": "\"I'm not sure\" repeated 3 times",
+      "weight": 2,
+      "timestamp": 1770713051462
+    }
+  ],
+  "last_activation": null,
+  "total_activations": 0,
+  "active": false,
+  "activated_at": null,
+  "consecutive_failures": 0,
+  "uncertainty_count": 0
+}

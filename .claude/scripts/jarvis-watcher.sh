@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.8.4
+# JARVIS UNIFIED WATCHER — JICM v5.8.5
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -19,6 +19,15 @@
 # Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
+#
+# Changelog v5.8.5 (2026-02-10, F.1 Ennoia MVP):
+#   - NEW: read_ennoia_recommendation() — reads .ennoia-recommendation signal file
+#     written by Ennoia session orchestrator (v0.2). Returns recommendation text or
+#     empty string if file absent, stale (>120s), or invalid format.
+#   - MOD: send_prompt_by_type() — for RESUME variant, tries Ennoia recommendation
+#     first, falls through to hardcoded prompt if unavailable. SIMPLE/MINIMAL
+#     variants unchanged. Emergency paths unaffected.
+#   - ADD: ENNOIA_RECOMMENDATION path constant in signal files section
 #
 # Changelog v5.8.4 (2026-02-10, B.4 Chat Export):
 #   - NEW: export_chat_history() — captures chat via tmux scrollback + /export
@@ -213,6 +222,7 @@ IDLE_HANDS_FLAG="$PROJECT_DIR/.claude/context/.idle-hands-active"
 COMPRESSION_IN_PROGRESS="$PROJECT_DIR/.claude/context/.compression-in-progress"
 PRE_CLEAR_TOKENS_FILE="$PROJECT_DIR/.claude/context/.pre-clear-tokens"
 JICM_CONFIG_FILE="$PROJECT_DIR/.claude/context/.jicm-config"
+ENNOIA_RECOMMENDATION="$PROJECT_DIR/.claude/context/.ennoia-recommendation"
 
 # Chat export directory (B.4 enhancement: auto-export before compress/clear)
 EXPORTS_DIR="$PROJECT_DIR/.claude/exports"
@@ -259,7 +269,7 @@ while [[ $# -gt 0 ]]; do
         --interval) INTERVAL="$2"; shift 2 ;;
         --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.8.4 — JICM v5 with event-driven state machine"
+            echo "JARVIS WATCHER v5.8.5 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -943,6 +953,51 @@ SUBMISSION_PROMPTS=(
 
 SUBMISSION_VARIANT_INDEX=0
 
+# Read Ennoia's recommendation for wake-up prompt text
+# Returns: recommendation text on stdout, or empty string if unavailable/stale
+# Consumes the file after reading (single-use)
+# Staleness threshold: 120 seconds
+# v5.8.5 (F.1 Ennoia MVP): Ennoia writes .ennoia-recommendation with context-aware
+# wake-up text. Watcher reads here for RESUME variant, falls back to hardcoded if absent.
+read_ennoia_recommendation() {
+    if [[ ! -f "$ENNOIA_RECOMMENDATION" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Check staleness (>120s = stale, ignore)
+    local rec_mtime rec_now rec_age
+    rec_mtime=$(stat -f %m "$ENNOIA_RECOMMENDATION" 2>/dev/null || echo "0")
+    rec_now=$(date +%s)
+    rec_age=$((rec_now - rec_mtime))
+
+    if [[ $rec_age -gt 120 ]]; then
+        log JICM "Ennoia recommendation stale (${rec_age}s old) — ignoring"
+        rm -f "$ENNOIA_RECOMMENDATION"
+        echo ""
+        return 0
+    fi
+
+    # Read content (single line expected — tmux send-keys -l constraint)
+    local content
+    content=$(head -1 "$ENNOIA_RECOMMENDATION" 2>/dev/null || echo "")
+
+    # Validate: must start with [ prefix (format check)
+    if [[ -z "$content" ]] || [[ ! "$content" =~ ^\[ ]]; then
+        log WARN "Ennoia recommendation invalid format — ignoring"
+        rm -f "$ENNOIA_RECOMMENDATION"
+        echo ""
+        return 0
+    fi
+
+    # Consume (single-use — Ennoia rewrites on next 30s cycle)
+    rm -f "$ENNOIA_RECOMMENDATION"
+
+    log JICM "Using Ennoia recommendation (${#content} chars, ${rec_age}s old)"
+    echo "$content"
+    return 0
+}
+
 # Detect if Jarvis is idle (for idle-hands monitor)
 detect_idle_state() {
     local pane_content
@@ -1111,6 +1166,19 @@ send_prompt_by_type() {
     # CRITICAL: All prompts MUST be single-line. Multi-line -l strings inject
     # literal newlines into the input buffer, causing premature submission or
     # corrupted commands. See: Section 6.4.1 Submission Pattern Requirements.
+
+    # v5.8.5 (F.1 Ennoia MVP): For RESUME variant, try Ennoia's context-aware
+    # recommendation first. SIMPLE/MINIMAL retries always use hardcoded text.
+    if [[ "$prompt_type" == "RESUME" ]]; then
+        local ennoia_rec
+        ennoia_rec=$(read_ennoia_recommendation)
+        if [[ -n "$ennoia_rec" ]]; then
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "$ennoia_rec"
+            return 0
+        fi
+        # Fall through to hardcoded if Ennoia unavailable
+    fi
+
     case "${mode}:${prompt_type}" in
         "jicm_resume:RESUME")
             "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l '[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet.'
@@ -1459,8 +1527,8 @@ check_idle_hands() {
 # =============================================================================
 
 banner() {
-    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.4 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
-    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.4 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
+    echo -e "${CYAN}━━━ JARVIS WATCHER v5.8.5 ━━━${NC} threshold:${JICM_THRESHOLD}% interval:${INTERVAL}s session:${SESSION_TYPE}"
+    echo -e "${GREEN}●${NC} Context ${GREEN}●${NC} JICM v5.8.5 ${GREEN}●${NC} Idle-Hands Monitor │ Ctrl+C to stop"
     echo ""
 }
 
@@ -1495,7 +1563,7 @@ main() {
         exit 1
     fi
 
-    log INFO "Watcher started (JICM v5.8.4, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
+    log INFO "Watcher started (JICM v5.8.5, threshold=${JICM_THRESHOLD}%, emergency=${EMERGENCY_COMPACT_PCT}%, lockout=~${LOCKOUT_PCT}%)"
 
     # Self-healing: clear standdown from previous sessions on fresh startup
     if [[ -f "$STANDDOWN_FILE" ]]; then

@@ -2,14 +2,15 @@
 # Launch Jarvis (Claude) in a tmux session for autonomous control
 # This enables auto-command execution via tmux send-keys
 #
-# Layout:
+# Layout (Aion Trinity):
 # ┌─────────────────────────────────────────┐
-# │                                         │
 # │            Claude Code (window 0)       │
-# │                                         │
 # └─────────────────────────────────────────┘
 # ┌─────────────────────────────────────────┐
 # │            Watcher (window 1)           │
+# └─────────────────────────────────────────┘
+# ┌─────────────────────────────────────────┐
+# │            Ennoia (window 2)            │
 # └─────────────────────────────────────────┘
 #
 # The watcher runs in a tmux window (not separate terminal) and handles:
@@ -153,12 +154,21 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
         "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
 fi
 
+# Launch Ennoia session orchestrator in a tmux window (window 2, detached)
+ENNOIA_SCRIPT="$PROJECT_DIR/.claude/scripts/ennoia.sh"
+if [[ -x "$ENNOIA_SCRIPT" ]]; then
+    echo "Launching Ennoia orchestrator in tmux window..."
+    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Ennoia" -d \
+        "cd '$PROJECT_DIR' && '$ENNOIA_SCRIPT'; echo 'Ennoia stopped.'; read"
+fi
+
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
 "$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
 # Prevent tmux from overriding window names with command names
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:0" automatic-rename off 2>/dev/null || true
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:1" automatic-rename off 2>/dev/null || true
+"$TMUX_BIN" set-window-option -t "$SESSION_NAME:2" automatic-rename off 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"
@@ -166,6 +176,7 @@ echo ""
 echo "Windows:"
 echo "  Window 0: Jarvis"
 echo "  Window 1: Watcher"
+echo "  Window 2: Ennoia"
 echo ""
 
 if [[ "$ITERM2_MODE" == "true" ]]; then
@@ -178,7 +189,7 @@ if [[ "$ITERM2_MODE" == "true" ]]; then
     exec "$TMUX_BIN" -CC attach-session -t "$SESSION_NAME"
 else
     echo "Keyboard shortcuts:"
-    echo "  Ctrl+b then 0/1   - Switch to window 0 (Claude) or 1 (Watcher)"
+    echo "  Ctrl+b then 0/1/2 - Switch to Jarvis (0), Watcher (1), or Ennoia (2)"
     echo "  Ctrl+b then d     - Detach (leave running)"
     echo "  Ctrl+b then x     - Close current window"
     echo ""

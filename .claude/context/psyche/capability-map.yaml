@@ -260,6 +260,15 @@ components:
     hook: .claude/hooks/ulfhedthnar-detector.js
     note: "Hidden Neuros override — outside Hippocrenae hierarchy"
 
+  - id: aion.ennoia
+    version: "0.2"
+    when: "Session orchestration — intent-driven wake-up, session briefing"
+    status: active
+    script: .claude/scripts/ennoia.sh
+    signal_files: [".ennoia-recommendation", ".ennoia-status"]
+    consumed_by: "jarvis-watcher.sh send_prompt_by_type()"
+    note: "Aion Trinity: Ennoia=intent, Watcher=mechanics, Virgil=navigation"
+
 # ─── SKILL COMPOSITIONS (dynamic chaining) ───
 # Extracted from OMC "orchestration skills" pattern (Stream 2).
 # Instead of hardcoding delegation, define compositions that

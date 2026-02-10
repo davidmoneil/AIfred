@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ennoia.sh — Session Orchestrator Aion Script v0.1
-# Runs in tmux jarvis:3, 30s refresh cycle
-# Read-only (except .ennoia-status), no keystroke injection
+# ennoia.sh — Session Orchestrator Aion Script v0.2
+# Runs in tmux jarvis:2, 30s refresh cycle
+# Writes: .ennoia-status (dashboard state), .ennoia-recommendation (Watcher handoff)
 #
 # Design: .claude/plans/ennoia-aion-script-design.md (27 iterations)
 # Architecture: Ennoia = intent layer (what should I do?)
@@ -9,8 +9,10 @@
 #   - Virgil = navigational awareness (what am I looking at?)
 #   - Ennoia = intentional awareness (what should I do next?)
 #
-# v0.1 scope: Dashboard only (display). No scheduler, no auto-actions.
-# v0.2+: Idle scheduler, .ennoia-recommendation signal file
+# v0.1: Dashboard only (display). No scheduler, no auto-actions.
+# v0.2: Writes .ennoia-recommendation signal file for Watcher consumption.
+#        Watcher reads recommendation for wake-up prompt text (graceful fallback).
+# v0.3+: session-start.sh thin dispatcher, idle scheduler
 
 set -euo pipefail
 
@@ -79,6 +81,81 @@ detect_mode() {
 # Get session intent from session-state.md
 get_intent() {
     grep "Status" "$SESSION_STATE" 2>/dev/null | head -1 | sed 's/.*: //'
+}
+
+# Get current work description from session-state.md (for recommendations)
+# Strips markdown bold, emoji, leading whitespace. Truncates to 80 chars.
+get_current_work() {
+    local status_line
+    status_line=$(grep -m1 '^\*\*Status\*\*' "$SESSION_STATE" 2>/dev/null \
+        | sed 's/\*\*Status\*\*:[[:space:]]*//' \
+        | LC_ALL=C sed 's/[^[:print:][:space:]]//g' \
+        | sed 's/^[[:space:]]*//' || echo "")
+    if [[ -n "$status_line" ]]; then
+        echo "${status_line:0:80}"
+    else
+        echo "unknown"
+    fi
+    return 0
+}
+
+# Get next priority from current-priorities.md
+# Looks for **Next**: lines or first ### heading under ## Up Next
+get_next_priority() {
+    local next_line
+    # Try explicit **Next**: field first
+    next_line=$(grep -m1 '\*\*Next\*\*' "$PRIORITIES" 2>/dev/null \
+        | sed 's/.*\*\*Next\*\*:[[:space:]]*//' \
+        | sed 's/\*\*//g' || echo "")
+    if [[ -n "$next_line" ]]; then
+        echo "${next_line:0:60}"
+        return 0
+    fi
+    # Fallback: first ### under ## Up Next
+    next_line=$(awk '/^## Up Next/{found=1; next} found && /^### /{print; exit}' "$PRIORITIES" 2>/dev/null \
+        | sed 's/^### //' || echo "")
+    if [[ -n "$next_line" ]]; then
+        echo "${next_line:0:60}"
+        return 0
+    fi
+    echo ""
+    return 0
+}
+
+# Write .ennoia-recommendation signal file for Watcher consumption
+# Atomic write: tmp file → mv (prevents Watcher reading partial content)
+# Only writes for arise and resume modes (attend/idle = no recommendation)
+write_recommendation() {
+    local mode="$1"
+    local recommendation=""
+
+    case "$mode" in
+        arise)
+            local current_work next_priority
+            current_work=$(get_current_work)
+            next_priority=$(get_next_priority)
+            if [[ -n "$next_priority" ]]; then
+                recommendation="[SESSION-START] New session. Current: ${current_work}. Next: ${next_priority}. Read .claude/context/session-state.md + .claude/context/current-priorities.md, begin work. Do NOT just greet."
+            else
+                recommendation="[SESSION-START] New session. Current: ${current_work}. Read .claude/context/session-state.md + .claude/context/current-priorities.md, begin work. Do NOT just greet."
+            fi
+            ;;
+        resume)
+            recommendation="[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet."
+            ;;
+        attend|idle)
+            # No recommendation for attend (working) or idle (Phase J scope)
+            return 0
+            ;;
+    esac
+
+    if [[ -n "$recommendation" ]]; then
+        # Atomic write: write to tmp, then mv
+        echo "$recommendation" > "${ENNOIA_RECOMMENDATION}.tmp"
+        mv "${ENNOIA_RECOMMENDATION}.tmp" "$ENNOIA_RECOMMENDATION"
+    fi
+
+    return 0
 }
 
 # Get maintenance status from report directories
@@ -170,18 +247,27 @@ render() {
             ;;
     esac
 
+    # Write recommendation signal file for Watcher
+    write_recommendation "$mode"
+
     # Footer
     printf '\n%.0s─' $(seq 1 "$cols"); echo
-    local tokens pct
+    local tokens pct rec_indicator
     tokens=$(awk '/^tokens:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
     pct=$(awk '/^percentage:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
-    printf '  Mode: %s │ Context: %s (%s)\n' "$mode" "${pct:-?}" "${tokens:-?}"
+    rec_indicator=""
+    [[ -f "$ENNOIA_RECOMMENDATION" ]] && rec_indicator=" | REC: ready"
+    printf '  Mode: %s | Context: %s (%s)%s\n' "$mode" "${pct:-?}" "${tokens:-?}" "$rec_indicator"
 
-    # Update status file (only file Ennoia writes)
+    # Update status file
+    local has_rec="false"
+    [[ -f "$ENNOIA_RECOMMENDATION" ]] && has_rec="true"
     cat > "$ENNOIA_STATUS" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+version: 0.2
 mode: $mode
 intent: $(get_intent)
+recommendation_active: $has_rec
 EOF
 }
 
