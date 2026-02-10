@@ -93,33 +93,37 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 - [ ] Document in relevant Skills (research-ops, doc-ops, mcp-ops)
 - [ ] Test `/docs` command
 
-### B.2 Deep Research Pattern Decomposition (~3-4 hrs)
-- [ ] Extract `research-plan.sh` (query decomposition, sub-question generation)
-- [ ] Extract `research-synthesize.sh` (multi-source aggregation, citation, narrative)
-- [ ] NO direct LLM provider calls (use built-in WebSearch/WebFetch + Perplexity)
-- [ ] Integration with research-ops v2.1
+### B.2 Deep Research Pattern Decomposition (~3-4 hrs) — DONE
+- [x] Extract `research-plan.sh` (query decomposition, sub-question generation, 8 question types)
+- [x] Extract `research-synthesize.sh` (multi-source aggregation, citation, 3 synthesis styles)
+- [x] NO direct LLM provider calls (uses heuristic keyword detection + backend mapping)
+- [x] Integration with research-ops v2.2.0 (SKILL.md updated, capability-map.yaml registered)
 
-### B.3 Hook Consolidation (~2-3 hrs)
-- [ ] Execute 5 merges from hook-consolidation-plan.md (28 to 17 hooks)
-- [ ] Update settings.json hook registrations
-- [ ] Verify no regression
+### B.3 Hook Consolidation (~2-3 hrs) — DONE
+- [x] Execute 5 merges from hook-consolidation-plan.md (34→23 hooks, 32% reduction)
+- [x] Update settings.json hook registrations
+- [x] Verify no regression (83% fewer spawns)
+- **Commit**: c75f201
 
-### B.4 Context Engineering JICM Integration (~5-7 hrs)
+### B.4 Context Engineering JICM Integration (~5-7 hrs) — Wave 1 DONE
+- [x] Wave 1: jarvis-watcher.sh v5.8.3 — 4 bug fixes (failsafe loops, /clear retry, cooldown, failure recording)
 - [ ] Phase 1: Anchored Iterative Summarization at 65% trigger
 - [ ] Phase 2: File-system-as-memory with session scoping
 - [ ] Phase 3: Observation Masking for tool outputs (60-80% reduction)
 - [ ] Phase 4: Context poisoning detection + degradation testing
 
-### B.5 Skill-Level Model Routing (~2 hrs)
-- [ ] Add `model:` flags to all 28 skills
-- [ ] Opus: main reasoning + 1 agent layer
-- [ ] Sonnet: delegated tasks, code review
-- [ ] Haiku: low-complexity, data transformation
+### B.5 Skill-Level Model Routing (~2 hrs) — DONE
+- [x] Add `model:` field to all 26 SKILL.md files (3 haiku, 2 opus, 21 sonnet)
+- [x] capability-map.yaml v3: 11/11 skills + 12/12 agents with model routing
+- [x] Opus: research-ops, knowledge-ops, deep-research agent
+- [x] Sonnet: 7 skills + 8 agents (code-review, code-implementer, etc.)
+- [x] Haiku: filesystem-ops, weather, autonom-ops + compression/JICM agents
 
-### B.6 Automatic Skill Learning Enhancement (~2-3 hrs)
-- [ ] /reflect identifies simplifiable session processes
-- [ ] /evolve creates demo skills for trial runs
-- [ ] Promotion criteria: trial to operational after 3+ successful uses
+### B.6 Automatic Skill Learning Enhancement (~2-3 hrs) — DONE
+- [x] /reflect Phase 2.5: Process Simplification Detection (scans for repeated multi-step patterns)
+- [x] /evolve Step 2.5: Skill Promotion Processing (auto-promotes candidates with frequency >= 3)
+- [x] skill-candidates.yaml + skill-promotions.yaml created in .claude/context/learning/
+- [x] Promotion criteria: frequency >= 3, complexity <= medium → auto-scaffold; high → evolution proposal
 
 ### B.7 AC-10 Ulfhedthnar — Neuros Override System (~6-8 hrs)
 

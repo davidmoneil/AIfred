@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# JARVIS UNIFIED WATCHER — JICM v5.8.2
+# JARVIS UNIFIED WATCHER — JICM v5.8.3
 # ============================================================================
 # Implements the JICM v5 context management architecture.
 #
@@ -19,6 +19,23 @@
 # Flow: section 3 → /intelligent-compress → section 1.5 → /clear → section 4
 #
 # Design: .claude/context/designs/jicm-v5-design-addendum.md
+#
+# Changelog v5.8.3 (2026-02-10, B.4 JICM Integration):
+#   - FIX: 300s failsafe infinite loop — added cooldown period (600s) after failsafe
+#     timeout to prevent immediate re-trigger. Root cause: state reset to monitoring
+#     caused section 3 to immediately re-trigger compression since pct > threshold.
+#   - FIX: Emergency /compact blocked during stuck compression — removed blanket
+#     `state != compression_triggered` guard. Now allows emergency /compact when
+#     compression has been stuck for 180s+ AND context is at emergency level.
+#   - FIX: /clear failsafe too aggressive — extended from 60s to 120s, added retry
+#     before giving up. On first timeout, retries /clear. On second, records failure.
+#   - FIX: Failsafe timeouts now call record_failure() to trigger standdown after
+#     3 consecutive failures (was missing, so standdown never activated).
+#   - NEW: Cooldown mechanism (COOLDOWN_UNTIL) — suppresses auto-trigger for a
+#     configurable period after failsafe fires. Breaks the cascading failure chain.
+#   - NEW: Context file archival — cleanup_jicm_files() now archives compressed
+#     context and in-progress files to .claude/logs/jicm/archive/ with timestamps
+#     instead of deleting them. Keeps last 20 archives.
 #
 # Changelog v5.8.2 (2026-02-08):
 #   - FIX: Section 1.5 JICM-DUMP now uses send_text() (includes wait_for_idle_brief)
@@ -231,7 +248,7 @@ while [[ $# -gt 0 ]]; do
         --interval) INTERVAL="$2"; shift 2 ;;
         --session-type) SESSION_TYPE="$2"; shift 2 ;;
         -h|--help)
-            echo "JARVIS WATCHER v5.8.2 — JICM v5 with event-driven state machine"
+            echo "JARVIS WATCHER v5.8.3 — JICM v5 with event-driven state machine"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -279,6 +296,8 @@ TRIGGER_COUNT=0
 FAILURE_COUNT=0
 GRACE_RESUME_UNTIL=0  # Timestamp until which grace period is active (post-clear, startup)
 EMERGENCY_COMPACT_SENT=false  # D1: Tracks if emergency /compact was sent (reset on context drop)
+COOLDOWN_UNTIL=0             # B.4: Cooldown timestamp — suppresses auto-trigger after failsafe
+CLEAR_RETRY_COUNT=0          # B.4: Track /clear retry attempts in "cleared" state
 
 # =============================================================================
 # LOGGING
@@ -1131,15 +1150,35 @@ mark_idle_hands_success() {
 cleanup_jicm_files() {
     log JICM "Cleaning up JICM files after confirmed resume"
 
-    # Delete signal files
+    # B.4: Archive context files instead of deleting (datetime-stamped)
+    local archive_dir="$PROJECT_DIR/.claude/logs/jicm/archive"
+    local ts
+    ts=$(date +%Y%m%d-%H%M%S)
+    mkdir -p "$archive_dir"
+
+    # Archive context files (valuable for debugging and history)
+    if [[ -f "$COMPRESSED_CONTEXT_FILE" ]]; then
+        mv "$COMPRESSED_CONTEXT_FILE" "$archive_dir/compressed-context-${ts}.md" 2>/dev/null || rm -f "$COMPRESSED_CONTEXT_FILE"
+    fi
+    if [[ -f "$IN_PROGRESS_FILE" ]]; then
+        mv "$IN_PROGRESS_FILE" "$archive_dir/in-progress-${ts}.md" 2>/dev/null || rm -f "$IN_PROGRESS_FILE"
+    fi
+
+    # Prune old archives (keep last 20)
+    local archive_count
+    archive_count=$(ls -1 "$archive_dir" 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$archive_count" -gt 20 ]]; then
+        ls -1t "$archive_dir" | tail -n +21 | while read -r old_file; do
+            rm -f "$archive_dir/$old_file"
+        done
+        log JICM "Pruned JICM archive (kept 20, removed $((archive_count - 20)))"
+    fi
+
+    # Delete signal files (ephemeral, no archive needed)
     rm -f "$COMPRESSION_DONE_SIGNAL"
     rm -f "$DUMP_REQUESTED_SIGNAL"
     rm -f "$CLEAR_SENT_SIGNAL"
     rm -f "$CONTINUATION_INJECTED_SIGNAL"
-
-    # Delete context files (now that Jarvis is working)
-    rm -f "$COMPRESSED_CONTEXT_FILE"
-    rm -f "$IN_PROGRESS_FILE"
 
     # Delete idle-hands flag
     rm -f "$IDLE_HANDS_FLAG"
@@ -1150,7 +1189,7 @@ cleanup_jicm_files() {
     # Mark JICM complete
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$JICM_COMPLETE_SIGNAL"
 
-    log JICM "JICM files cleaned up"
+    log JICM "JICM files cleaned up (context archived to $archive_dir)"
 }
 
 # Main idle-hands jicm_resume mode handler
@@ -1576,7 +1615,8 @@ main() {
             # Transition to "cleared" — section 4 handles cleared→monitoring
             # via event detection (pct < 30%), not a hardcoded sleep
             JICM_STATE="cleared"
-            JICM_LAST_TRIGGER=$(date +%s)  # Reset for section 4's 60s failsafe
+            JICM_LAST_TRIGGER=$(date +%s)  # Reset for section 4's failsafe
+            CLEAR_RETRY_COUNT=0            # B.4: Reset retry counter for fresh tracking
             GRACE_RESUME_UNTIL=$(($(date +%s) + 20))  # Post-clear grace (A2)
             reset_failure_count
             log JICM "State → cleared (section 4 handles transition to monitoring)"
@@ -1672,11 +1712,22 @@ main() {
         # Only fires once; resets when context drops below threshold.
         if [[ $pct_int -ge $EMERGENCY_COMPACT_PCT ]] && \
            [[ "$JICM_STATE" != "cleared" ]] && \
-           [[ "$JICM_STATE" != "compression_triggered" ]] && \
            [[ "$EMERGENCY_COMPACT_SENT" == "false" ]]; then
-            log JICM "═══ EMERGENCY /compact at ${pct_int}% (lockout at ~${LOCKOUT_PCT}%) ═══"
-            send_command "/compact"
-            EMERGENCY_COMPACT_SENT=true
+            # B.4 FIX: Allow emergency /compact during compression_triggered if stuck > 180s.
+            # Previously, the check `state != compression_triggered` blocked the safety net
+            # during stuck compression, allowing context to grow to lockout.
+            local allow_emergency=false
+            if [[ "$JICM_STATE" != "compression_triggered" ]]; then
+                allow_emergency=true
+            elif [[ $(($(date +%s) - JICM_LAST_TRIGGER)) -gt 180 ]]; then
+                log JICM "Compression stuck for 180s+ at emergency level — overriding state guard"
+                allow_emergency=true
+            fi
+            if [[ "$allow_emergency" == "true" ]]; then
+                log JICM "═══ EMERGENCY /compact at ${pct_int}% (lockout at ~${LOCKOUT_PCT}%) ═══"
+                send_command "/compact"
+                EMERGENCY_COMPACT_SENT=true
+            fi
         fi
 
         # Reset emergency compact flag when context drops below trigger
@@ -1697,11 +1748,23 @@ main() {
         #   state="cleared" → section 4 event: pct<30% → monitoring
         if [[ "$JICM_STATE" == "monitoring" ]]; then
             if [[ $pct_int -ge $JICM_THRESHOLD ]]; then
-                TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
-                log JICM "═══ JICM v5: Context at ${pct}% — triggering compression (#${TRIGGER_COUNT}) ═══"
-                send_command "/intelligent-compress"
-                JICM_STATE="compression_triggered"
-                JICM_LAST_TRIGGER=$(date +%s)
+                # B.4 FIX: Check cooldown before triggering — prevents infinite
+                # trigger→timeout→monitoring→trigger loop after failsafe fires.
+                local now_s
+                now_s=$(date +%s)
+                if [[ $now_s -lt $COOLDOWN_UNTIL ]]; then
+                    # Suppress trigger during cooldown (log every ~60s)
+                    if [[ $((poll_count % 12)) -eq 0 ]]; then
+                        local remaining=$((COOLDOWN_UNTIL - now_s))
+                        log JICM "Cooldown active: ${remaining}s remaining (trigger suppressed at ${pct_int}%)"
+                    fi
+                else
+                    TRIGGER_COUNT=$((TRIGGER_COUNT + 1))
+                    log JICM "═══ JICM v5: Context at ${pct}% — triggering compression (#${TRIGGER_COUNT}) ═══"
+                    send_command "/intelligent-compress"
+                    JICM_STATE="compression_triggered"
+                    JICM_LAST_TRIGGER=$(date +%s)
+                fi
             fi
         fi
 
@@ -1721,9 +1784,22 @@ main() {
             now=$(date +%s)
             local elapsed=$((now - JICM_LAST_TRIGGER))
             if [[ $elapsed -gt $DEBOUNCE_SECONDS ]]; then
-                log ERROR "compression_triggered: 300s failsafe timeout. Compression may have failed. Resetting to monitoring."
+                log ERROR "compression_triggered: ${DEBOUNCE_SECONDS}s failsafe timeout. Compression may have failed."
                 cleanup_jicm_signals_only
+                # B.4 FIX: Record failure (triggers standdown after 3 consecutive)
+                record_failure
                 JICM_STATE="monitoring"
+                # B.4 FIX: Set cooldown to prevent immediate re-trigger loop.
+                # Without this, section 3 immediately re-triggers because pct is
+                # still above threshold → creates infinite trigger→timeout→trigger cycle.
+                COOLDOWN_UNTIL=$((now + 600))  # 10 min cooldown
+                log JICM "Cooldown set for 600s to prevent re-trigger loop"
+                # Fire emergency /compact as recovery attempt
+                if [[ "$EMERGENCY_COMPACT_SENT" == "false" ]]; then
+                    log JICM "Firing emergency /compact as failsafe recovery"
+                    send_command "/compact"
+                    EMERGENCY_COMPACT_SENT=true
+                fi
             fi
         fi
 
@@ -1755,14 +1831,29 @@ main() {
                     rm -f "$JICM_COMPLETE_SIGNAL"
                 fi
             else
-                # FAILSAFE ONLY: If /clear somehow didn't reduce context after 60s
-                # (Only fires when event-driven transition hasn't happened yet)
+                # FAILSAFE: If /clear didn't reduce context after timeout.
+                # B.4 FIX: Extended from 60s to 120s, added retry before giving up.
+                # Previously, immediate reset to monitoring caused section 3 to re-trigger
+                # compression, creating a cascade when /clear was lost by TUI.
                 local now
                 now=$(date +%s)
                 local elapsed=$((now - JICM_LAST_TRIGGER))
-                if [[ $elapsed -gt 60 ]]; then
-                    log ERROR "cleared: 60s failsafe timeout. Clear may have failed. Resetting to monitoring."
-                    JICM_STATE="monitoring"
+                if [[ $elapsed -gt 120 ]]; then
+                    if [[ $CLEAR_RETRY_COUNT -lt 1 ]]; then
+                        log WARN "cleared: 120s without context drop. Retrying /clear (attempt 2)"
+                        send_command "/clear"
+                        date +%s > "$CLEAR_SENT_SIGNAL"
+                        invalidate_tui_cache
+                        JICM_LAST_TRIGGER=$(date +%s)
+                        CLEAR_RETRY_COUNT=$((CLEAR_RETRY_COUNT + 1))
+                    else
+                        log ERROR "cleared: /clear retry failed after ${CLEAR_RETRY_COUNT} retries. Recording failure."
+                        record_failure
+                        CLEAR_RETRY_COUNT=0
+                        JICM_STATE="monitoring"
+                        COOLDOWN_UNTIL=$(($(date +%s) + 300))  # 5 min cooldown
+                        log JICM "Cooldown set for 300s after failed /clear"
+                    fi
                 fi
             fi
         fi

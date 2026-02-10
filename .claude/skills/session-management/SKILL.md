@@ -1,5 +1,6 @@
 ---
 name: session-management
+model: sonnet
 version: 2.0.0
 description: Session lifecycle — start, checkpoint, exit with context preservation
 ---

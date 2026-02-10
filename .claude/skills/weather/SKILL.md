@@ -1,5 +1,6 @@
 ---
 name: weather
+model: haiku
 version: 2.0.0
 description: Weather via wttr.in API — no key required
 replaces: Inline curl in session-start.sh

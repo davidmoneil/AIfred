@@ -1,27 +1,36 @@
-version: 2
-updated: 2026-02-08
+version: 3
+updated: 2026-02-10
+
+# Model Tier Reference:
+#   opus   — Complex analysis, architecture, multi-step planning
+#   sonnet — Implementation, review, testing, standard agent work
+#   haiku  — Data transformation, lookups, status, formatting
 
 # ─── SKILLS (multi-step workflows) ───
 skills:
   - id: skill.filesystem-ops
+    model: haiku
     when: "File read/write/search/create/move/stat operations"
     tools: [Read, Write, Edit, Glob, Grep, "Bash(ls|stat|mkdir|mv|cp|rm)"]
     replaces: mcp__filesystem (15 tools)
     file: .claude/skills/filesystem-ops/SKILL.md
 
   - id: skill.git-ops
+    model: sonnet
     when: "Git status, log, diff, branch, commit, push, stash"
     tools: ["Bash(git *)"]
     replaces: mcp__git (12 tools)
     file: .claude/skills/git-ops/SKILL.md
 
   - id: skill.web-fetch
+    model: sonnet
     when: "Fetch URL content, web search, API calls"
     tools: [WebFetch, WebSearch, "Bash(curl)"]
     replaces: mcp__fetch
     file: .claude/skills/web-fetch/SKILL.md
 
   - id: skill.weather
+    model: haiku
     when: "Weather information for greeting or user request"
     tools: ["Bash(curl wttr.in)"]
     file: .claude/skills/weather/SKILL.md
@@ -29,40 +38,47 @@ skills:
   # ─── x-ops ROUTERS (consolidated skill groups) ───
 
   - id: skill.doc-ops
+    model: sonnet
     when: "Document operations — Word (.docx), Excel (.xlsx), PDF, PowerPoint (.pptx)"
     absorbs: [docx, xlsx, pdf, pptx]
     file: .claude/skills/doc-ops/SKILL.md
 
   - id: skill.self-ops
+    model: sonnet
     when: "Self-improvement, status monitoring, validation (AC-05/06/07/08)"
     absorbs: [self-improvement, jarvis-status, validation]
     file: .claude/skills/self-ops/SKILL.md
 
   - id: skill.mcp-ops
+    model: sonnet
     when: "MCP/skill lifecycle — build, validate, decompose plugins, create skills"
     absorbs: [mcp-builder, mcp-validation, plugin-decompose, skill-creator]
     file: .claude/skills/mcp-ops/SKILL.md
 
   - id: skill.autonom-ops
+    model: haiku
     when: "Session orchestration — commands, lifecycle, JICM context, Ralph loop"
     absorbs: [autonomous-commands, session-management, context-management, ralph-loop]
     file: .claude/skills/autonom-ops/SKILL.md
 
   - id: skill.research-ops
+    model: opus
     version: 2.1.0
     when: "Multi-source research — 15 backends: web, academic, financial, AI-augmented, scraping"
     tools: [WebSearch, WebFetch, "Bash(scripts/)"]
     replaces: brave-search, arxiv, wikipedia, context7, perplexity, gptresearcher, tavily, serper, serpapi, firecrawl MCPs
-    scripts: [search-brave.sh, search-arxiv.sh, fetch-wikipedia.sh, search-perplexity.sh, fetch-context7.sh, deep-research-gpt.sh]
+    scripts: [search-brave.sh, search-arxiv.sh, fetch-wikipedia.sh, search-perplexity.sh, fetch-context7.sh, deep-research-gpt.sh, research-plan.sh, research-synthesize.sh]
     file: .claude/skills/research-ops/SKILL.md
 
   - id: skill.knowledge-ops
+    model: opus
     when: "4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding"
     tools: [Read, Write, Grep, "Bash(jq)", ToolSearch]
     replaces: memory MCP (shadow), lotus-wisdom MCP
     file: .claude/skills/knowledge-ops/SKILL.md
 
   - id: skill.deck-ops
+    model: sonnet
     when: "Create slide deck presentations — zone-based layout, iterative refinement"
     tools: [Bash, Write, Read, Edit, WebSearch, WebFetch, Task]
     overlaps_with: [pptx, pdf, doc-ops]
@@ -79,50 +95,62 @@ skills:
 # ─── AGENTS (autonomous execution) ───
 agents:
   - id: agent.deep-research
+    model: opus
     when: "Thorough technical research with citations and multi-source validation"
     file: .claude/agents/deep-research.md
 
   - id: agent.code-review
+    model: sonnet
     when: "Technical quality review of code changes"
     file: .claude/agents/code-review.md
 
   - id: agent.project-manager
+    model: sonnet
     when: "Progress and alignment review for milestone/PR validation"
     file: .claude/agents/project-manager.md
 
   - id: agent.code-analyzer
+    model: sonnet
     when: "Understand codebase structure, identify tech stack, find patterns"
     file: .claude/agents/code-analyzer.md
 
   - id: agent.code-implementer
+    model: sonnet
     when: "Write, modify, refactor code with full git workflow"
     file: .claude/agents/code-implementer.md
 
   - id: agent.code-tester
+    model: sonnet
     when: "Run automated tests, Playwright flows, screenshot capture"
     file: .claude/agents/code-tester.md
 
   - id: agent.docker-deployer
+    model: sonnet
     when: "Deploy/configure Docker services with health verification"
     file: .claude/agents/docker-deployer.md
 
   - id: agent.service-troubleshooter
+    model: sonnet
     when: "Diagnose infrastructure/service issues with root cause analysis"
     file: .claude/agents/service-troubleshooter.md
 
   - id: agent.compression-agent
+    model: haiku
     when: "JICM v5 compression — compress context before /clear"
     file: .claude/agents/compression-agent.md
 
   - id: agent.context-compressor
+    model: haiku
     when: "Compress conversation context before /clear"
     file: .claude/agents/context-compressor.md
 
   - id: agent.memory-bank-synchronizer
+    model: sonnet
     when: "Sync documentation with code changes"
     file: .claude/agents/memory-bank-synchronizer.md
 
   - id: agent.jicm-agent
+    model: haiku
     when: "Autonomous JICM monitoring — runs in background"
     file: .claude/agents/jicm-agent.md
 

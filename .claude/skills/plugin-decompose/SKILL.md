@@ -1,5 +1,6 @@
 ---
 name: plugin-decompose
+model: sonnet
 version: 2.0.0
 description: Analyze and decompose Claude Code plugins for integration
 ---

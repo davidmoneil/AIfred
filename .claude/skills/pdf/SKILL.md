@@ -1,5 +1,6 @@
 ---
 name: pdf
+model: sonnet
 description: "Comprehensive PDF manipulation: extraction, creation, merging, splitting, and form handling"
 version: 1.0.0
 category: document

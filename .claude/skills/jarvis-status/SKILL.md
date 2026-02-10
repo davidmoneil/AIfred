@@ -1,5 +1,6 @@
 ---
 name: jarvis-status
+model: sonnet
 version: 1.0.0
 description: |
   Display Jarvis autonomic system status with component health and grades.

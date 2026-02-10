@@ -1,5 +1,6 @@
 ---
 name: web-fetch
+model: sonnet
 version: 2.0.0
 description: Web content retrieval using WebFetch, WebSearch, and curl
 replaces: mcp__fetch, mcp__mcp-gateway__fetch

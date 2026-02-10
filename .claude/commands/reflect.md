@@ -81,7 +81,26 @@ echo '{"component":"AC-05","event_type":"component_start","data":{"trigger":"ref
    - Pattern matching
    - Success/failure comparison
 
-4. **Planning Tracker Verification (Phase 3: MANDATORY)**
+4. **Process Simplification Detection (Phase 2.5)**
+   - Scan session work for repeated multi-step processes (3+ steps done 2+ times)
+   - Identify candidates for skill promotion (bash scripts, command sequences, workflows)
+   - Check existing skills — is this already covered?
+   - If candidate found:
+     - Append to `.claude/context/learning/skill-candidates.yaml`
+     - Include: pattern name, trigger, frequency, estimated complexity
+     - Flag for `/evolve` Step 2.5 processing
+   - This feeds the automatic skill learning pipeline (AC-06 integration)
+
+   ```
+   Simplification detection:
+   1. Scan session-state.md for repeated workflows
+   2. Check corrections.md for "did this manually again" patterns
+   3. Compare against skill registry — already automated?
+   4. If novel + repeated → add to skill-candidates.yaml
+   5. Report candidates in reflection output
+   ```
+
+5. **Planning Tracker Verification (Phase 3: MANDATORY)**
    - **Identify active planning/progress documents** from session work
    - Read `.claude/planning-tracker.yaml`
    - **Verify all active documents are registered** in the tracker
@@ -100,7 +119,7 @@ echo '{"component":"AC-05","event_type":"component_start","data":{"trigger":"ref
    5. Report any gaps
    ```
 
-5. **Output (Phase 4: Proposal)**
+6. **Output (Phase 5: Proposal)**
    - Generate evolution proposals
    - Create/update lessons entries
    - Update lessons index

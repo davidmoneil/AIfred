@@ -1,6 +1,7 @@
 ---
 name: research-ops
-version: 2.1.0
+model: opus
+version: 2.2.0
 description: >
   Multi-source research — web, academic, financial, AI-augmented, scraping.
   Use when: research, search, papers, citations, deep research, grounding, scrape, crawl.
@@ -57,6 +58,8 @@ All scripts: `--help` for usage, structured JSON output, credential extraction v
 | `fetch-wikipedia.sh` | `--lang`, `--mode summary\|full`, `--search` |
 | `search-perplexity.sh` | `--model sonar\|sonar-pro\|sonar-reasoning\|sonar-deep-research` |
 | `fetch-context7.sh` | Workflow doc — requires local-rag MCP |
+| `research-plan.sh` | `--depth quick\|standard\|thorough`, `--output json\|text` — query decomposition |
+| `research-synthesize.sh` | `--results-dir`, `--plan`, `--format`, `--style` — multi-source aggregation |
 | `deep-research-gpt.sh` | Workflow doc — blocked, key not provisioned |
 
 ## Credential Pattern

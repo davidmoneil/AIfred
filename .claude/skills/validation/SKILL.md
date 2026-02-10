@@ -1,5 +1,6 @@
 ---
 name: validation
+model: sonnet
 version: 1.0.0
 description: |
   Validate Jarvis tooling, infrastructure, and design decisions.

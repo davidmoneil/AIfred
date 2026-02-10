@@ -1,5 +1,6 @@
 ---
 name: docx
+model: sonnet
 description: "Comprehensive Word document creation, editing, and analysis with tracked changes, comments, and formatting support"
 version: 1.0.0
 category: document

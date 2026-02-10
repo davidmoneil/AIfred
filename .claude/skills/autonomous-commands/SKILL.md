@@ -1,5 +1,6 @@
 ---
 name: autonomous-commands
+model: haiku
 version: 1.0.0
 description: |
   Use this skill when the user wants to execute Claude Code built-in commands autonomously.

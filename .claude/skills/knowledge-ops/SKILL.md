@@ -1,5 +1,6 @@
 ---
 name: knowledge-ops
+model: opus
 version: 2.1.0
 description: >
   4-tier memory hierarchy — dynamic KG, static KG, semantic RAG, documentary grounding.

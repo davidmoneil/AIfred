@@ -1,5 +1,6 @@
 ---
 name: filesystem-ops
+model: haiku
 version: 2.0.0
 description: File and directory operations using built-in tools
 replaces: mcp__filesystem (15 tools)

@@ -1,0 +1,23 @@
+# Skill Promotions — log of candidates promoted to full skills by /evolve Step 2.5
+# Each entry records a candidate that was successfully automated.
+#
+# Fields:
+#   name: Original candidate name (from skill-candidates.yaml)
+#   promoted_to: Skill ID in capability-map.yaml
+#   date: Date of promotion
+#   complexity: Complexity at time of promotion
+#   frequency_at_promotion: How many times the pattern was observed before promotion
+#   skill_file: Path to created SKILL.md
+#   model_tier: haiku | sonnet | opus
+#   notes: Additional context
+
+promotions: []
+# Example:
+# - name: credential-rotation
+#   promoted_to: skill.credential-ops
+#   date: 2026-02-15
+#   complexity: low
+#   frequency_at_promotion: 5
+#   skill_file: .claude/skills/credential-ops/SKILL.md
+#   model_tier: haiku
+#   notes: "Auto-generated from 5 observed instances of manual credential handling"

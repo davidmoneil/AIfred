@@ -58,6 +58,17 @@ echo '{"component":"AC-06","event_type":"component_start","data":{"trigger":"evo
 - Require approval: medium/high risk
 - R&D proposals: always require approval
 
+### Step 2.5: Skill Promotion Processing
+- Load `.claude/context/learning/skill-candidates.yaml` (populated by `/reflect` Phase 2.5)
+- For each candidate with `frequency >= 3` and `complexity <= medium`:
+  - Auto-generate skill scaffold using `/skill-creator` patterns
+  - Create SKILL.md with appropriate model tier
+  - Register in capability-map.yaml
+  - Move candidate to `.claude/context/learning/skill-promotions.yaml` with status and date
+- For candidates with `complexity == high`:
+  - Create evolution proposal instead (queued for manual review)
+- Skip if no candidates exist
+
 ### Step 3: Branch Creation
 - Create evolution branch: `evolution/<proposal-id>`
 - Isolate changes from main branch

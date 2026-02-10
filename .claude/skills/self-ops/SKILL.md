@@ -1,5 +1,6 @@
 ---
 name: self-ops
+model: sonnet
 version: 1.0.0
 description: >
   Self-improvement, status monitoring, and validation workflows.

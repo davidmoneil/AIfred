@@ -1,5 +1,6 @@
 ---
 name: ralph-loop
+model: sonnet
 version: 1.0.0
 description: |
   Ralph Loop iterative development methodology for autonomous AI loops.

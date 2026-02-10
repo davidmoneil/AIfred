@@ -1,5 +1,6 @@
 ---
 name: mcp-ops
+model: sonnet
 version: 1.0.0
 description: >
   MCP and skill lifecycle — build, validate, decompose, create.

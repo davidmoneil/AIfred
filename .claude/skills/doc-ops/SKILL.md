@@ -1,5 +1,6 @@
 ---
 name: doc-ops
+model: sonnet
 version: 1.0.0
 description: >
   Document format operations — Word, Excel, PDF, PowerPoint.

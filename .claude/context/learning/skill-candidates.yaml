@@ -1,0 +1,30 @@
+# Skill Candidates — populated by /reflect Phase 2.5
+# Repeated multi-step processes detected during reflection that may warrant skill promotion.
+#
+# Fields:
+#   name: Short identifier for the pattern
+#   description: What the repeated process does
+#   trigger: When/how the user invokes this pattern
+#   frequency: How many times observed (incremented each reflection)
+#   complexity: low | medium | high
+#   first_seen: Date first detected
+#   last_seen: Date last observed
+#   source_sessions: List of session dates where pattern was observed
+#   status: candidate | promoted | rejected
+#   notes: Additional context
+#
+# Promotion threshold: frequency >= 3 AND complexity <= medium
+# High-complexity candidates become evolution proposals instead.
+
+candidates: []
+# Example:
+# - name: credential-rotation
+#   description: "Manual PAT extraction + remote URL update + push"
+#   trigger: "git push with credential refresh"
+#   frequency: 5
+#   complexity: low
+#   first_seen: 2026-02-01
+#   last_seen: 2026-02-09
+#   source_sessions: [2026-02-01, 2026-02-05, 2026-02-07, 2026-02-08, 2026-02-09]
+#   status: candidate
+#   notes: "Already partially covered by git-ops skill"

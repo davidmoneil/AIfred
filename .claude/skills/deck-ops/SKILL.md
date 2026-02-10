@@ -1,5 +1,6 @@
 ---
 name: deck-ops
+model: sonnet
 description: Create slide deck presentations
 version: 1.2.0
 category: document

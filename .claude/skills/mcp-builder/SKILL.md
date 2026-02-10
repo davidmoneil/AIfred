@@ -1,5 +1,6 @@
 ---
 name: mcp-builder
+model: sonnet
 description: "Guide for creating MCP servers that enable LLMs to interact with external services"
 version: 1.0.0
 category: development

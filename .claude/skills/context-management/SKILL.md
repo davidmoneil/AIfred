@@ -1,5 +1,6 @@
 ---
 name: context-management
+model: sonnet
 version: 4.0.0
 description: >
   JICM v5.8 context monitoring, analysis, and compaction.

@@ -1,5 +1,6 @@
 ---
 name: self-improvement
+model: sonnet
 version: 1.0.0
 description: |
   Jarvis self-improvement cycles - reflection, research, maintenance, and evolution.

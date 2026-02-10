@@ -1,5 +1,6 @@
 ---
 name: pptx
+model: sonnet
 description: "PowerPoint presentation creation, editing, and analysis with layouts, notes, and formatting"
 version: 1.0.0
 category: document

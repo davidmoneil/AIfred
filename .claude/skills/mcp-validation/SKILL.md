@@ -1,5 +1,6 @@
 ---
 name: mcp-validation
+model: sonnet
 description: Validate MCP installation, configuration, and functionality
 user_invocable: true
 arguments:

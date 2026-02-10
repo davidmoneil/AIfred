@@ -1,5 +1,6 @@
 ---
 name: xlsx
+model: sonnet
 description: "Comprehensive spreadsheet creation, editing, and analysis with formulas, formatting, and data visualization"
 version: 1.0.0
 category: document

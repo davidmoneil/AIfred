@@ -1,5 +1,6 @@
 ---
 name: git-ops
+model: sonnet
 version: 2.0.0
 description: Git operations using Bash commands instead of git MCP server
 replaces: mcp__git (12 tools)

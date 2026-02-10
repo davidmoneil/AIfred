@@ -1,5 +1,6 @@
 ---
 name: skill-creator
+model: sonnet
 description: "Guide for creating skills that extend Claude's capabilities with specialized knowledge and workflows"
 version: 1.0.0
 category: development

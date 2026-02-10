@@ -1,5 +1,6 @@
 ---
 name: autonom-ops
+model: sonnet
 version: 1.0.0
 description: >
   Session orchestration — autonomous commands, session lifecycle, context management, Ralph loop.
