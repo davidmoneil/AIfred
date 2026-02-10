@@ -26,7 +26,11 @@ const CONFIG = {
     'evolution_rollback',
     'session_end',
     'drift_detected',
-    'context_checkpoint'
+    'context_checkpoint',
+    'barrier_detected',
+    'unleash_manual',
+    'unleash_auto',
+    'problem_resolved'
   ],
   maxQueueSize: 1000,
   flushIntervalMs: 5000

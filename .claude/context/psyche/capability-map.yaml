@@ -252,6 +252,14 @@ components:
     signal: "/end-session"
     file: .claude/context/components/AC-09-session-completion.md
 
+  - id: ac.10-ulfhedthnar
+    signal: "Defeat signals >= threshold, /unleash"
+    status: dormant
+    file: .claude/context/components/AC-10-ulfhedthnar.md
+    skill: .claude/skills/ulfhedthnar/SKILL.md
+    hook: .claude/hooks/ulfhedthnar-detector.js
+    note: "Hidden Neuros override — outside Hippocrenae hierarchy"
+
 # ─── SKILL COMPOSITIONS (dynamic chaining) ───
 # Extracted from OMC "orchestration skills" pattern (Stream 2).
 # Instead of hardcoding delegation, define compositions that

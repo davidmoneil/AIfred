@@ -198,6 +198,7 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 | AC-07 | AC-01 | Discovery reports |
 | AC-08 | AC-01 | Health reports |
 | AC-09 | User request | AC-05 |
+| AC-10 | Defeat signals / /unleash | Frenzy Mode, Berserker Loop |
 
 ---
 

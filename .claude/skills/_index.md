@@ -46,6 +46,12 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [mcp-ops](mcp-ops/SKILL.md) | mcp-builder, mcp-validation, plugin-decompose, skill-creator | MCP/skill lifecycle |
 | [autonom-ops](autonom-ops/SKILL.md) | autonomous-commands, session-management, context-management, ralph-loop | Session orchestration |
 
+### Locked / Internal Skills
+
+| Skill | Description | Activation |
+|-------|-------------|------------|
+| [ulfhedthnar](ulfhedthnar/SKILL.md) | AC-10 Neuros Override — berserker problem-solving | Detection hook threshold or /unleash |
+
 ### Infrastructure
 
 | Directory | Purpose |

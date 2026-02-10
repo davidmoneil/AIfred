@@ -149,11 +149,10 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - B.4: Context Engineering JICM Integration — **DONE** (watcher v5.8.4, Phases 1-4 complete, 6 feature enhancements, statusline v7.4)
 - B.5: Skill-Level Model Routing — **DONE** (26 SKILL.md + 23 capability-map entries, all validated)
 - B.6: Automatic Skill Learning — **DONE** (reflect Phase 2.5, evolve Step 2.5, 2 YAML files)
-- B.7: AC-10 Ulfhedthnar — NOT STARTED (~6-8 hrs)
-- **Status**: 6/7 COMPLETE (B.1-B.6 all done), B.7 remaining
-- **Next**: B.7 AC-10 Ulfhedthnar (~6-8 hrs)
-- **Plan**: `.claude/plans/roadmap-ii.md` Phase B section
-- **Phase C**: Mac Studio Infrastructure (Wed Feb 12+ arrival) — C.1-C.4
+- B.7: AC-10 Ulfhedthnar — **DONE** (detector hook, skill, commands, 60 tests, 5 Wiggum Loops)
+- **Status**: 7/7 COMPLETE — Phase B DONE
+- **Next**: Phase C Mac Studio Infrastructure (Wed Feb 12+ arrival) — C.1-C.4
+- **Plan**: `.claude/plans/roadmap-ii.md` Phase C section
 
 ---
 

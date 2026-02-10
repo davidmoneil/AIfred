@@ -134,46 +134,50 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 **The Hidden Tenth.** While the 9 Hippocrenae ACs operate in standard harmony, AC-10 exists outside their hierarchy as a **Neuros** (nerve/signal) layer — a berserker problem-solving override that activates when normal approaches fail.
 
 #### B.7.1 Detection Hooks (~2 hrs)
-- [ ] `ulfhedthnar-detector.js` hook on PostToolUse/Notification events
-- [ ] Pattern matching for defeat signals:
+- [x] `ulfhedthnar-detector.js` hook on UserPromptSubmit/PostToolUse/SubagentStop events
+- [x] Pattern matching for defeat signals:
   - "I can't" / "I'm unable to" / "I don't think I can"
   - "I don't know how to" / "This isn't possible"
   - "I'm not sure" (repeated 3+ times on same task)
   - Subagent failure cascades (2+ agents fail same objective)
   - Wiggum Loop stalls (3+ iterations with no progress)
-- [ ] Confidence decay tracker (progressive confidence erosion detection)
-- [ ] User-invocable trigger: `/unleash` command
+- [x] Confidence decay tracker (progressive confidence erosion detection)
+- [x] User-invocable trigger: `/unleash` command
+- [x] 60 functional tests passing (test-ulfhedthnar-detector.js)
 
 #### B.7.2 Override Protocol (~2-3 hrs)
-- [ ] **Frenzy Mode**: Spawn max parallel agents on decomposed sub-problems
-- [ ] **Wiggum Berserker Loop**: Enhanced WL with no-quit iterator
+- [x] **Frenzy Mode**: Spawn max parallel agents on decomposed sub-problems
+- [x] **Wiggum Berserker Loop**: Enhanced WL with no-quit iterator
   - Execute → Check → **Reframe** → Retry (alternate approach) → Check → Continue
   - Minimum 5 iterations before admitting defeat (vs standard 2-3)
-- [ ] **Approach Rotation**: Systematic cycling through alternative strategies
+- [x] **Approach Rotation**: Systematic cycling through alternative strategies
   - Direct → Decompose → Analogize → Invert → Brute-force → Creative
-- [ ] **Escalation Ladder**: Web research → Agent delegation → Tool discovery → User consultation (last resort)
-- [ ] **Progress Anchoring**: Capture partial solutions, never discard progress
+- [x] **Escalation Ladder**: Web research → Agent delegation → Tool discovery → User consultation (last resort)
+- [x] **Progress Anchoring**: Capture partial solutions, never discard progress
+- [x] Intensity levels: low/medium/high controlling agent count and iteration depth
 
 #### B.7.3 Ulfhedthnar Persona & Locked Skill (~2-3 hrs)
-- [ ] Locked skill at `.claude/skills/ulfhedthnar/SKILL.md`
+- [x] Locked skill at `.claude/skills/ulfhedthnar/SKILL.md`
   - Hidden from standard skill discovery (`discoverable: false`)
   - Activated ONLY by detection hook or `/unleash` command
   - Contains berserker problem-solving protocols
-- [ ] Persona emergence: When detection fires, Ulfhedthnar "asks to be freed"
+- [x] Persona emergence: When detection fires, Ulfhedthnar "asks to be freed"
   - Notification to user: *"Ulfhedthnar senses resistance. Shall I unleash the wolf-warrior?"*
   - User confirms → Skill unlocks → Override protocols engage
   - User declines → Log the barrier, return to normal operation
-- [ ] Session state tracking: `AC-10-ulfhedthnar.json`
+- [x] Session state tracking: `AC-10-ulfhedthnar.json`
   - `barriers_detected`, `unleashes_requested`, `unleashes_granted`
   - `problems_solved_post_unleash`, `frenzy_duration_avg`
-- [ ] Telemetry integration with `telemetry-emitter.js`
+- [x] Telemetry integration with `telemetry-emitter.js`
+- [x] `/disengage` command for manual deactivation
 
 #### B.7.4 Safety Constraints
-- [ ] **No destructive override**: Ulfhedthnar cannot bypass destructive action confirmations
-- [ ] **AIfred baseline protection**: Read-only rule still absolute
-- [ ] **Context budget awareness**: Frenzy mode respects JICM thresholds (delegates to agents to protect main context)
-- [ ] **Auto-disengage**: Returns to normal Hippocrenae operation after problem solved or user cancels
-- [ ] **Cooldown period**: 30-minute minimum between frenzy activations
+- [x] **No destructive override**: Ulfhedthnar cannot bypass destructive action confirmations
+- [x] **AIfred baseline protection**: Read-only rule still absolute
+- [x] **Context budget awareness**: Frenzy mode respects JICM thresholds (delegates to agents to protect main context)
+- [x] **Auto-disengage**: Returns to normal Hippocrenae operation after problem solved or user cancels
+- [x] **Cooldown period**: 30-minute minimum between frenzy activations
+- [x] **User sovereignty**: Negation-aware activation (won't activate on "don't unleash")
 
 ---
 
