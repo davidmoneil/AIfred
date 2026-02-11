@@ -1960,6 +1960,123 @@ else
     skip "Disengage command not found"
 fi
 
+# ─── Test Group 27: Command Handler Extraction ──────────────────
+
+echo "Group 27: Command Handler Extraction"
+
+CMD_HANDLER="$SCRIPT_DIR/scripts/command-handler.sh"
+
+# Test 27.1: command-handler.sh exists and passes syntax check
+if [[ -f "$CMD_HANDLER" ]]; then
+    if bash -n "$CMD_HANDLER" 2>/dev/null; then
+        pass "command-handler.sh syntax OK"
+    else
+        fail "command-handler.sh syntax" "Syntax error"
+    fi
+else
+    fail "command-handler.sh exists" "File not found"
+fi
+
+# Test 27.2: command-handler.sh is executable
+if [[ -x "$CMD_HANDLER" ]]; then
+    pass "command-handler.sh is executable"
+else
+    fail "command-handler.sh executable" "Not executable"
+fi
+
+# Test 27.3: Has required functions
+for func in is_valid_command send_command send_text process_signal_file is_claude_busy wait_for_idle_brief; do
+    if grep -q "^${func}()" "$CMD_HANDLER"; then
+        pass "Has function: $func()"
+    else
+        fail "Missing function" "$func() not found"
+    fi
+done
+
+# Test 27.4: Uses set -euo pipefail
+if grep -q 'set -euo pipefail' "$CMD_HANDLER"; then
+    pass "Uses strict mode"
+else
+    fail "Strict mode" "Missing set -euo pipefail"
+fi
+
+# Test 27.5: SUPPORTED_COMMANDS array defined with sufficient entries
+if grep -q 'SUPPORTED_COMMANDS=' "$CMD_HANDLER"; then
+    CMD_COUNT=$(sed -n '/SUPPORTED_COMMANDS=/,/)/p' "$CMD_HANDLER" | grep -oE '"/[^"]*"' | wc -l | tr -d ' ')
+    if [[ "$CMD_COUNT" -ge 15 ]]; then
+        pass "SUPPORTED_COMMANDS has $CMD_COUNT commands (>= 15)"
+    else
+        fail "Command count" "Only $CMD_COUNT commands (expected >= 15)"
+    fi
+else
+    fail "SUPPORTED_COMMANDS" "Array not defined"
+fi
+
+# Test 27.6: No operational JICM references (clean separation)
+# Filter out comments (lines starting with #) before checking
+JICM_REFS=$(grep -v '^\s*#' "$CMD_HANDLER" | grep -ciE 'jicm|HALTING|COMPRESSING|CLEARING|RESTORING|context_pct' || true)
+if [[ "$JICM_REFS" -eq 0 ]]; then
+    pass "No operational JICM references (clean separation)"
+else
+    fail "JICM leakage" "$JICM_REFS JICM-related references in code"
+fi
+
+# Test 27.7: PID file for concurrent handler detection
+if grep -q 'PID_FILE' "$CMD_HANDLER" && grep -q 'command-handler.pid' "$CMD_HANDLER"; then
+    pass "PID file for concurrent detection"
+else
+    fail "PID file" "Missing PID file handling"
+fi
+
+# Test 27.8: Cleanup trap removes PID file
+if grep -q 'trap cleanup' "$CMD_HANDLER"; then
+    pass "Cleanup trap registered"
+else
+    fail "Cleanup trap" "Missing cleanup trap"
+fi
+
+# Test 27.9: Uses .command-signal path
+if grep -q '.command-signal' "$CMD_HANDLER"; then
+    pass "Uses .command-signal path"
+else
+    fail "Signal path" "Missing .command-signal reference"
+fi
+
+# Test 27.10: Launcher includes command handler window
+LAUNCHER="$SCRIPT_DIR/scripts/launch-jarvis-tmux.sh"
+if [[ -f "$LAUNCHER" ]]; then
+    if grep -q 'command-handler.sh' "$LAUNCHER"; then
+        pass "Launcher references command-handler.sh"
+    else
+        fail "Launcher wiring" "command-handler.sh not in launcher"
+    fi
+    if grep -q 'Commands' "$LAUNCHER"; then
+        pass "Launcher has Commands window"
+    else
+        fail "Commands window" "Missing Commands window name"
+    fi
+else
+    skip "Launcher not found"
+    skip "Commands window check"
+fi
+
+# Test 27.11: bash 3.2 safety — return 1 only in guarded functions
+# is_valid_command() and process_signal_file() use return 1 (callers use if/!)
+RETURN1_COUNT=$(grep -c 'return 1' "$CMD_HANDLER" || true)
+# Expected: is_valid_command (1) + process_signal_file (2) = 3
+if [[ "$RETURN1_COUNT" -le 4 ]]; then
+    pass "return 1 count reasonable ($RETURN1_COUNT, all in guarded functions)"
+else
+    fail "return 1 safety" "$RETURN1_COUNT occurrences (expected <= 4)"
+fi
+
+# Test 27.12: Canonical tmux send-keys pattern
+if grep -q 'send-keys.*-l' "$CMD_HANDLER" && grep -q 'send-keys.*C-m' "$CMD_HANDLER"; then
+    pass "Canonical send-keys pattern (text via -l, C-m separate)"
+else
+    fail "send-keys pattern" "Missing canonical tmux pattern"
+fi
+
 echo ""
 
 # ─── Results ─────────────────────────────────────────────────────

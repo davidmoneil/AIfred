@@ -2,7 +2,7 @@
 # Launch Jarvis (Claude) in a tmux session for autonomous control
 # This enables auto-command execution via tmux send-keys
 #
-# Layout (Aion Quartet):
+# Layout (Aion Quartet + Commands):
 # ┌─────────────────────────────────────────┐
 # │            Claude Code (window 0)       │
 # └─────────────────────────────────────────┘
@@ -15,11 +15,14 @@
 # ┌─────────────────────────────────────────┐
 # │            Virgil (window 3)            │
 # └─────────────────────────────────────────┘
+# ┌─────────────────────────────────────────┐
+# │            Commands (window 4)          │
+# └─────────────────────────────────────────┘
 #
-# The watcher runs in a tmux window (not separate terminal) and handles:
-#   - Context monitoring (polls status line for token count)
-#   - Command signal execution (watches for signal files)
-#   - JICM workflow coordination (/intelligent-compress → /clear sequence)
+# Watcher (window 1): JICM v6 context monitoring + compression
+# Commands (window 4): Signal file → command injection via send-keys
+# Ennoia (window 2): Session orchestration, intent-driven wake-up
+# Virgil (window 3): Task tracking, agent monitoring, file changes
 #
 # iTerm2 Integration:
 #   Use --iterm2 flag to attach with tmux -CC for native iTerm2 tabs
@@ -180,6 +183,14 @@ if [[ -x "$VIRGIL_SCRIPT" ]]; then
         "cd '$PROJECT_DIR' && '$VIRGIL_SCRIPT'; echo 'Virgil stopped.'; read"
 fi
 
+# Launch command handler in a tmux window (window 4, detached)
+CMD_HANDLER_SCRIPT="$PROJECT_DIR/.claude/scripts/command-handler.sh"
+if [[ -x "$CMD_HANDLER_SCRIPT" ]]; then
+    echo "Launching command handler in tmux window..."
+    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Commands" -d \
+        "cd '$PROJECT_DIR' && '$CMD_HANDLER_SCRIPT' --interval 3; echo 'Command handler stopped.'; read"
+fi
+
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
 "$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
@@ -188,6 +199,7 @@ fi
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:1" automatic-rename off 2>/dev/null || true
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:2" automatic-rename off 2>/dev/null || true
 "$TMUX_BIN" set-window-option -t "$SESSION_NAME:3" automatic-rename off 2>/dev/null || true
+"$TMUX_BIN" set-window-option -t "$SESSION_NAME:4" automatic-rename off 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"

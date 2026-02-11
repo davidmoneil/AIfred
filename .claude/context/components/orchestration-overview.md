@@ -219,9 +219,10 @@ services that the ACs depend on but do not directly manage.
 
 | Component | tmux | Script | Role |
 |-----------|------|--------|------|
-| **Watcher** | W1 | jarvis-watcher.sh | JICM monitoring, token polling, /clear |
+| **Watcher** | W1 | jicm-watcher.sh | JICM monitoring, token polling, /clear |
 | **Ennoia** | W2 | ennoia.sh | Session orchestration, intent-driven wake-up |
 | **Virgil** | W3 | virgil.sh | Task/agent tracking, file changes |
+| **Commands** | W4 | command-handler.sh | Signal file → command injection via send-keys |
 | **Housekeep** | — | housekeep.sh | Signal cleanup, log rotation, state freshness |
 
 ### Signal File Communication
@@ -231,6 +232,8 @@ Ennoia ──writes──▶ .ennoia-recommendation ──read by──▶ Watch
 Watcher ─writes──▶ .jicm-state ──────────read by──▶ Ennoia, Virgil
 Hooks ───write───▶ .virgil-tasks.json ────────read by─▶ Virgil
 Hooks ───write───▶ .virgil-agents.json ──────read by─▶ Virgil
+Skills ──write───▶ .command-signal ──────read by──▶ Commands
+Ulfhedthnar ─────▶ .jicm-sleep.signal ──read by──▶ Watcher
 Housekeep ────────▶ cleans stale signals from all components
 ```
 

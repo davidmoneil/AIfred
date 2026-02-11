@@ -293,6 +293,13 @@ components:
     command: .claude/commands/housekeep.md
     note: "7-phase non-destructive cleanup (move, never delete)"
 
+  - id: flow.command-handler
+    when: "Command signal processing — polls .command-signal, injects via tmux send-keys"
+    status: active
+    script: .claude/scripts/command-handler.sh
+    signal_files: [".command-signal"]
+    note: "Standalone command handler (extracted from jarvis-watcher.sh v5, tmux window 4)"
+
 # ─── SKILL COMPOSITIONS (dynamic chaining) ───
 # Extracted from OMC "orchestration skills" pattern (Stream 2).
 # Instead of hardcoding delegation, define compositions that

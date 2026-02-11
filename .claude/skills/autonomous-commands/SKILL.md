@@ -8,7 +8,7 @@ description: |
   "check status", "export conversation", "resume previous session", "run doctor",
   "show costs", "review code", "show todos", "list hooks", "security review",
   "show statistics", "show context info", "release notes", "bash processes".
-  This skill creates signals that the jarvis-watcher executes via keystroke injection.
+  This skill creates signals that the command-handler executes via keystroke injection.
 category: automation
 tags: [commands, automation, signals, watcher]
 created: 2026-01-20
@@ -22,11 +22,11 @@ Execute Claude Code built-in slash commands autonomously via signal-based watche
 
 ## Overview
 
-This skill enables Claude to trigger built-in slash commands without user intervention. Commands are executed via keystroke injection through the jarvis-watcher running in a tmux pane.
+This skill enables Claude to trigger built-in slash commands without user intervention. Commands are executed via keystroke injection through the command-handler running in tmux window 4.
 
 **Prerequisites**:
 - Claude running in tmux via `launch-jarvis-tmux.sh`
-- Jarvis watcher running in bottom pane
+- Command handler running in tmux window 4
 - jq installed for JSON parsing
 
 ---
@@ -71,9 +71,9 @@ source .claude/scripts/signal-helper.sh && signal_<command> [args]
 After creating the signal, inform the user:
 
 ```
-Signal sent for /<command>. The watcher will execute it momentarily.
+Signal sent for /<command>. The command handler will execute it momentarily.
 
-If watcher is not running, start Jarvis with: .claude/scripts/launch-jarvis-tmux.sh
+If command handler is not running, start Jarvis with: .claude/scripts/launch-jarvis-tmux.sh
 ```
 
 ---
@@ -275,9 +275,9 @@ source .claude/scripts/signal-helper.sh && signal_release_notes
 
 ---
 
-## Checking Watcher Status
+## Checking Command Handler Status
 
-Before sending signals, verify the watcher is running:
+Before sending signals, verify the command handler is running:
 
 ```bash
 source .claude/scripts/signal-helper.sh && watcher_status
@@ -286,12 +286,12 @@ source .claude/scripts/signal-helper.sh && watcher_status
 If not running, inform the user to start Jarvis via tmux:
 
 ```
-The command watcher is not running. To enable autonomous command execution:
+The command handler is not running. To enable autonomous command execution:
 
 1. Exit this session
 2. Start Jarvis with: .claude/scripts/launch-jarvis-tmux.sh
 
-This will launch Claude in tmux with the watcher in a split pane.
+This will launch Claude in tmux with the command handler in window 4.
 ```
 
 ---
@@ -305,10 +305,10 @@ This will launch Claude in tmux with the watcher in a split pane.
 │  1. Claude (via this skill) creates signal file                  │
 │     └── .claude/context/.command-signal (JSON)                   │
 ├──────────────────────────────────────────────────────────────────┤
-│  2. jarvis-watcher.sh detects signal (command signal handler)     │
-│     └── Polls every 2 seconds                                    │
+│  2. command-handler.sh detects signal (tmux window 4)             │
+│     └── Polls every 3 seconds                                    │
 ├──────────────────────────────────────────────────────────────────┤
-│  3. Watcher validates and executes                               │
+│  3. Handler validates and executes                               │
 │     └── tmux send-keys -t jarvis "/compact" Enter                │
 ├──────────────────────────────────────────────────────────────────┤
 │  4. Claude Code executes /compact                                │
@@ -323,7 +323,8 @@ This will launch Claude in tmux with the watcher in a split pane.
 - Signal Protocol: @.claude/context/patterns/command-signal-protocol.md
 - Autonomous Execution Pattern: @.claude/context/patterns/autonomous-execution-pattern.md (scheduled/headless Claude Code execution via cron/systemd)
 - Signal Helper: @.claude/scripts/signal-helper.sh
-- Watcher Script: @.claude/scripts/jarvis-watcher.sh (command signals) / @.claude/scripts/jicm-watcher.sh (JICM)
+- Command Handler: @.claude/scripts/command-handler.sh (command signals, tmux window 4)
+- JICM Watcher: @.claude/scripts/jicm-watcher.sh (context monitoring, tmux window 1)
 - tmux Launcher: @.claude/scripts/launch-jarvis-tmux.sh
 
 ---
