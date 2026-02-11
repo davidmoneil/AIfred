@@ -283,8 +283,8 @@ components:
     when: "JICM context monitoring — token polling, compression triggers, /clear coordination"
     status: active
     script: .claude/scripts/jicm-watcher.sh
-    signal_files: [".jicm-state", ".compression-done.signal"]
-    note: "Aion Quartet: Watcher=defensive awareness (JICM v6 stop-and-wait, tmux window 1)"
+    signal_files: [".jicm-state", ".compression-done.signal", ".jicm-sleep.signal"]
+    note: "Aion Quartet: Watcher=defensive awareness (JICM v6 stop-and-wait, tmux window 1). Ulfhedthnar can sleep JICM via .jicm-sleep.signal"
 
   - id: flow.housekeep
     when: "Quick infrastructure cleanup — signal files, log rotation, state freshness"

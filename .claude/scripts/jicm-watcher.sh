@@ -36,6 +36,7 @@ LOG_FILE="$PROJECT_DIR/.claude/logs/jicm-watcher.log"
 STATE_FILE="$PROJECT_DIR/.claude/context/.jicm-state"
 COMPRESSED_FILE="$PROJECT_DIR/.claude/context/.compressed-context-ready.md"
 COMPRESSION_SIGNAL="$PROJECT_DIR/.claude/context/.compression-done.signal"
+SLEEP_SIGNAL="$PROJECT_DIR/.claude/context/.jicm-sleep.signal"
 ARCHIVE_DIR="$PROJECT_DIR/.claude/logs/jicm/archive"
 EXPORTS_DIR="$PROJECT_DIR/.claude/exports"
 
@@ -194,6 +195,8 @@ log() {
 # =============================================================================
 
 write_state() {
+    local sleeping="false"
+    [[ -f "$SLEEP_SIGNAL" ]] && sleeping="true"
     cat > "$STATE_FILE" <<EOF
 state: $JICM_STATE
 timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -204,6 +207,7 @@ compressions: $COMPRESSION_COUNT
 errors: $ERROR_COUNT
 pid: $$
 version: 6.1.0
+sleeping: $sleeping
 EOF
 
     # .watcher-status compat write REMOVED (v6.1) — all consumers migrated to .jicm-state
@@ -1075,6 +1079,16 @@ main() {
                     local remaining=$((COOLDOWN_UNTIL - now))
                     log INFO "Cooldown: ${remaining}s remaining"
                 fi
+                sleep "$POLL_INTERVAL"
+                continue
+            fi
+
+            # JICM Sleep check — Ulfhedthnar suppresses JICM when active
+            if [[ -f "$SLEEP_SIGNAL" ]]; then
+                if [[ $((poll_count % 12)) -eq 0 ]]; then
+                    log INFO "JICM sleeping — Ulfhedthnar active (threshold checks suspended)"
+                fi
+                write_state
                 sleep "$POLL_INTERVAL"
                 continue
             fi

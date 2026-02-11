@@ -195,6 +195,7 @@ compressions: 3
 errors: 0
 pid: 12345
 version: 6.1.0
+sleeping: false
 ```
 
 **Consumers** (6): ennoia.sh, virgil.sh, context-injector.js, ulfhedthnar-detector.js,

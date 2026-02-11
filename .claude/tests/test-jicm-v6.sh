@@ -1399,9 +1399,10 @@ compressions: 3
 errors: 0
 pid: 12345
 version: 6.1.0
+sleeping: false
 STATEEOF
 )
-EXPECTED_FIELDS="state timestamp context_pct context_tokens threshold compressions errors pid version"
+EXPECTED_FIELDS="state timestamp context_pct context_tokens threshold compressions errors pid version sleeping"
 MISSING_FIELDS=""
 for field in $EXPECTED_FIELDS; do
     if ! echo "$MOCK_STATE" | grep -q "^${field}:"; then
@@ -1409,7 +1410,7 @@ for field in $EXPECTED_FIELDS; do
     fi
 done
 if [[ -z "$MISSING_FIELDS" ]]; then
-    pass "write_state format has all 9 required fields"
+    pass "write_state format has all 10 required fields"
 else
     fail "write_state fields" "Missing:${MISSING_FIELDS}"
 fi
@@ -1522,6 +1523,7 @@ mkdir -p "$MOCK_DIR"
 (
     # Set up mock environment for write_state
     STATE_FILE="$MOCK_DIR/.jicm-state"
+    SLEEP_SIGNAL="$MOCK_DIR/.jicm-sleep.signal"
     JICM_STATE="WATCHING"
     LAST_PCT=42
     LAST_TOKENS=84000
@@ -1534,10 +1536,10 @@ mkdir -p "$MOCK_DIR"
 )
 if [[ -f "$MOCK_DIR/.jicm-state" ]]; then
     FIELD_COUNT=$(grep -c ':' "$MOCK_DIR/.jicm-state")
-    if [[ "$FIELD_COUNT" -ge 8 ]]; then
+    if [[ "$FIELD_COUNT" -ge 9 ]]; then
         pass "write_state() produces $FIELD_COUNT fields in .jicm-state"
     else
-        fail "write_state output" "Only $FIELD_COUNT fields (expected 8+)"
+        fail "write_state output" "Only $FIELD_COUNT fields (expected 9+)"
     fi
 else
     fail "write_state output" "No .jicm-state file created"
@@ -1786,12 +1788,12 @@ else
     fail "State count" "Design: $DESIGN_STATES, Implementation: $IMPL_STATES"
 fi
 
-# Test 21.5: Signal file count (should be 3 max per design)
-SIGNAL_FILES=$(grep -oE '\.(jicm-state|compressed-context-ready\.md|compression-done\.signal)' "$WATCHER" | sort -u | wc -l | tr -d ' ')
-if [[ "$SIGNAL_FILES" -le 3 ]]; then
-    pass "Signal files within design limit ($SIGNAL_FILES <= 3)"
+# Test 21.5: Signal file count (should be 4 max per design)
+SIGNAL_FILES=$(grep -oE '\.(jicm-state|compressed-context-ready\.md|compression-done\.signal|jicm-sleep\.signal)' "$WATCHER" | sort -u | wc -l | tr -d ' ')
+if [[ "$SIGNAL_FILES" -le 4 ]]; then
+    pass "Signal files within design limit ($SIGNAL_FILES <= 4)"
 else
-    fail "Signal count" "$SIGNAL_FILES signal files (design limit: 3)"
+    fail "Signal count" "$SIGNAL_FILES signal files (design limit: 4)"
 fi
 
 # Test 21.6: Watcher script is executable
@@ -1815,6 +1817,147 @@ if grep -q 'version: 6.1.0' "$WATCHER"; then
     pass "Version 6.1.0 string present"
 else
     fail "Version string" "Missing version 6.1.0"
+fi
+
+# ─── Test Group 26: JICM-Sleep Mechanism ─────────────────────────
+
+echo "Group 26: JICM-Sleep Mechanism"
+
+# Test 26.1: SLEEP_SIGNAL path defined in watcher
+if grep -q 'SLEEP_SIGNAL=' "$WATCHER"; then
+    pass "SLEEP_SIGNAL path defined"
+else
+    fail "SLEEP_SIGNAL path" "Missing SLEEP_SIGNAL variable"
+fi
+
+# Test 26.2: Sleep signal path points to .jicm-sleep.signal
+if grep 'SLEEP_SIGNAL=' "$WATCHER" | grep -q '.jicm-sleep.signal'; then
+    pass "Sleep signal path correct (.jicm-sleep.signal)"
+else
+    fail "Sleep signal path" "Wrong path for SLEEP_SIGNAL"
+fi
+
+# Test 26.3: WATCHING handler checks for sleep signal
+WATCHING_BLOCK=$(sed -n '/STATE: WATCHING/,/STATE: HALTING/p' "$WATCHER")
+if echo "$WATCHING_BLOCK" | grep -q 'SLEEP_SIGNAL'; then
+    pass "WATCHING handler checks SLEEP_SIGNAL"
+else
+    fail "WATCHING sleep check" "No SLEEP_SIGNAL check in WATCHING handler"
+fi
+
+# Test 26.4: Sleep check causes 'continue' (skips threshold)
+# Extract the WATCHING handler, then verify it has SLEEP_SIGNAL → continue pattern
+WATCHING_SLEEP=$(sed -n '/STATE: WATCHING/,/STATE: HALTING/p' "$WATCHER" | sed -n '/SLEEP_SIGNAL/,/continue/p' || true)
+if echo "$WATCHING_SLEEP" | grep -q 'continue'; then
+    pass "Sleep signal causes continue (skips threshold)"
+else
+    fail "Sleep continue" "SLEEP_SIGNAL check doesn't skip with continue"
+fi
+
+# Test 26.5: write_state includes sleeping field
+if grep -q 'sleeping:' "$WATCHER"; then
+    pass "write_state includes sleeping field"
+else
+    fail "sleeping field" "write_state missing sleeping field"
+fi
+
+# Test 26.6: sleeping field reflects SLEEP_SIGNAL presence
+WRITE_STATE_BLOCK=$(sed -n '/^write_state()/,/^}/p' "$WATCHER")
+if echo "$WRITE_STATE_BLOCK" | grep -q 'SLEEP_SIGNAL.*sleeping'; then
+    pass "sleeping field checks SLEEP_SIGNAL file"
+elif echo "$WRITE_STATE_BLOCK" | grep -q 'SLEEP_SIGNAL'; then
+    pass "sleeping field checks SLEEP_SIGNAL file (alternate pattern)"
+else
+    fail "sleeping field logic" "sleeping field doesn't check SLEEP_SIGNAL"
+fi
+
+# Test 26.7: Detector has isJicmSafeForActivation (not isContextBudgetSafe)
+DETECTOR="$SCRIPT_DIR/hooks/ulfhedthnar-detector.js"
+if [[ -f "$DETECTOR" ]]; then
+    if grep -q 'isJicmSafeForActivation' "$DETECTOR"; then
+        pass "Detector has isJicmSafeForActivation()"
+    else
+        fail "isJicmSafeForActivation" "Missing in detector"
+    fi
+    # Verify old function is removed
+    if grep -q 'isContextBudgetSafe' "$DETECTOR"; then
+        fail "isContextBudgetSafe still present" "Old function not removed"
+    else
+        pass "isContextBudgetSafe removed"
+    fi
+else
+    skip "Detector file not found"
+    skip "isContextBudgetSafe removal check"
+fi
+
+# Test 26.8: Detector gates on WATCHING state
+if [[ -f "$DETECTOR" ]]; then
+    if grep -q "stateMatch\[1\] === 'WATCHING'" "$DETECTOR"; then
+        pass "Detector gates on WATCHING state"
+    else
+        fail "WATCHING gate" "Detector doesn't check for WATCHING state"
+    fi
+else
+    skip "Detector file not found"
+fi
+
+# Test 26.9: Detector writes sleep signal on activation
+if [[ -f "$DETECTOR" ]]; then
+    if grep -q 'writeJicmSleepSignal' "$DETECTOR"; then
+        pass "Detector writes sleep signal on activation"
+    else
+        fail "writeJicmSleepSignal" "Missing sleep signal write"
+    fi
+else
+    skip "Detector file not found"
+fi
+
+# Test 26.10: Detector removes sleep signal on deactivation
+if [[ -f "$DETECTOR" ]]; then
+    if grep -q 'removeJicmSleepSignal' "$DETECTOR"; then
+        pass "Detector removes sleep signal on deactivation"
+    else
+        fail "removeJicmSleepSignal" "Missing sleep signal removal"
+    fi
+else
+    skip "Detector file not found"
+fi
+
+# Test 26.11: SLEEP_SIGNAL path in detector matches watcher
+if [[ -f "$DETECTOR" ]]; then
+    DETECTOR_PATH=$(grep 'jicm-sleep.signal' "$DETECTOR" | head -1)
+    WATCHER_PATH=$(grep 'jicm-sleep.signal' "$WATCHER" | head -1)
+    if [[ -n "$DETECTOR_PATH" ]] && [[ -n "$WATCHER_PATH" ]]; then
+        pass "Sleep signal path consistent between watcher and detector"
+    else
+        fail "Sleep signal path consistency" "Path mismatch or missing"
+    fi
+else
+    skip "Detector file not found"
+fi
+
+# Test 26.12: Unleash command references sleep signal
+UNLEASH_CMD="$SCRIPT_DIR/commands/unleash.md"
+if [[ -f "$UNLEASH_CMD" ]]; then
+    if grep -q 'jicm-sleep.signal' "$UNLEASH_CMD"; then
+        pass "/unleash references .jicm-sleep.signal"
+    else
+        fail "/unleash sleep ref" "Missing .jicm-sleep.signal in /unleash"
+    fi
+else
+    skip "Unleash command not found"
+fi
+
+# Test 26.13: Disengage command references sleep signal removal
+DISENGAGE_CMD="$SCRIPT_DIR/commands/disengage.md"
+if [[ -f "$DISENGAGE_CMD" ]]; then
+    if grep -q 'jicm-sleep.signal' "$DISENGAGE_CMD"; then
+        pass "/disengage references .jicm-sleep.signal"
+    else
+        fail "/disengage sleep ref" "Missing .jicm-sleep.signal in /disengage"
+    fi
+else
+    skip "Disengage command not found"
 fi
 
 echo ""

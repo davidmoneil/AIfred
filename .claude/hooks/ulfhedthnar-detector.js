@@ -259,28 +259,55 @@ function checkUserFrustration(prompt) {
 
 // ─── JICM Awareness ─────────────────────────────────────────
 
+const SLEEP_SIGNAL = path.join(WORKSPACE_ROOT, '.claude/context/.jicm-sleep.signal');
+
 /**
- * Check if context is too high for Ulfhedthnar activation.
- * If JICM is at emergency or lockout levels, don't inject
- * the large emergence prompt — it would waste context budget.
- * Returns true if it's safe to inject additional context.
+ * Check if JICM is in a safe state for Ulfhedthnar activation.
+ * Ulfhedthnar should only activate when JICM is in WATCHING state
+ * (not mid-cycle). When activated, Ulfhedthnar will SLEEP JICM
+ * via .jicm-sleep.signal — the watcher skips threshold checks
+ * while that file exists.
+ * Returns true if it's safe to activate.
  */
-function isContextBudgetSafe() {
+function isJicmSafeForActivation() {
   try {
     const content = fs.readFileSync(WATCHER_STATUS, 'utf8');
-    const match = content.match(/context_pct:\s*(\d+)/);
-    if (match) {
-      const pct = parseInt(match[1], 10);
-      // Don't inject if context >= 65% (conservative gate)
-      // TODO: Replace with JICM-sleep mechanism — Ulfhedthnar should sleep JICM,
-      // not be blocked by it. Gate on .jicm-state == WATCHING instead of pct threshold.
-      // See: commit 2 plan (Ulfhedthnar JICM-Sleep, .jicm-sleep.signal)
-      return pct < 65;
+    const stateMatch = content.match(/state:\s*(\w+)/);
+    if (stateMatch) {
+      // Only activate when JICM is idle (WATCHING state)
+      // If JICM is mid-cycle (HALTING/COMPRESSING/CLEARING/RESTORING),
+      // defer activation until the cycle completes
+      return stateMatch[1] === 'WATCHING';
     }
   } catch {
-    // No watcher status — assume safe
+    // No JICM state file — watcher not running, safe to activate
   }
   return true;
+}
+
+/**
+ * Write .jicm-sleep.signal to suppress JICM threshold checks.
+ * Called when Ulfhedthnar activates — watcher will skip compression
+ * triggers while this file exists.
+ */
+function writeJicmSleepSignal() {
+  try {
+    fs.writeFileSync(SLEEP_SIGNAL, `${Date.now()}\n`);
+  } catch {
+    // Non-critical — JICM will still function, just not sleeping
+  }
+}
+
+/**
+ * Remove .jicm-sleep.signal to resume JICM threshold checks.
+ * Called when Ulfhedthnar disengages.
+ */
+function removeJicmSleepSignal() {
+  try {
+    if (fs.existsSync(SLEEP_SIGNAL)) fs.unlinkSync(SLEEP_SIGNAL);
+  } catch {
+    // Non-critical
+  }
 }
 
 // ─── Telemetry ──────────────────────────────────────────────
@@ -351,6 +378,7 @@ function handleUserPrompt(hookData) {
     state.signals = [];
     state.consecutive_failures = 0;
     writeSignals(state);
+    removeJicmSleepSignal();
     updateAC10State('deactivated');
     emitTelemetry('disengage', { trigger: 'user_command', reason: 'manual' });
     return {
@@ -360,8 +388,10 @@ function handleUserPrompt(hookData) {
   }
 
   // Check for manual activation via text (require affirmative phrasing)
+  // Gate: only activate when JICM is in WATCHING state (not mid-cycle)
   if (!state.active && /(?:^|\s)unleash(?:\s|$|!|\.|,)/i.test(prompt) &&
-      !/\b(?:don'?t|not|never|stop)\s+unleash/i.test(prompt)) {
+      !/\b(?:don'?t|not|never|stop)\s+unleash/i.test(prompt) &&
+      isJicmSafeForActivation()) {
     state.active = true;
     state.activated_at = Date.now();
     state.last_activation = Date.now();
@@ -374,6 +404,7 @@ function handleUserPrompt(hookData) {
     state.consecutive_failures = 0;
     state.uncertainty_count = 0;
     writeSignals(state);
+    writeJicmSleepSignal();
     emitTelemetry('unleash_auto', { trigger: 'user_text' });
     return {
       proceed: true,
@@ -439,12 +470,12 @@ function handleUserPrompt(hookData) {
   if (weight >= ACTIVATION_THRESHOLD && canActivate(state)) {
     updateAC10State('barrier_detected', state);
 
-    // Safety: Don't inject large prompt if context budget is tight
-    if (!isContextBudgetSafe()) {
+    // Safety: Don't activate if JICM is mid-cycle
+    if (!isJicmSafeForActivation()) {
       emitTelemetry('barrier_detected', {
         cumulative_weight: weight,
         suppressed: true,
-        reason: 'context_budget_high'
+        reason: 'jicm_mid_cycle'
       });
       return { proceed: true };
     }
@@ -617,7 +648,11 @@ module.exports = {
     readSignals,
     writeSignals,
     checkAgentCascade,
-    checkLoopStall
+    checkLoopStall,
+    isJicmSafeForActivation,
+    writeJicmSleepSignal,
+    removeJicmSleepSignal,
+    SLEEP_SIGNAL
   }
 };
 

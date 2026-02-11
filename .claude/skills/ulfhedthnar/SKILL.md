@@ -161,7 +161,7 @@ Each iteration builds on ALL previous knowledge. Synthesis across iterations is 
 
 1. **No destructive override**: Cannot bypass rm, force-push, reset --hard confirmations
 2. **AIfred baseline inviolate**: Read-only rule absolute, no exceptions, ever
-3. **JICM respect**: Frenzy mode MUST delegate to agents to protect main context
+3. **JICM-sleep**: Ulfhedthnar suppresses JICM via `.jicm-sleep.signal` — watcher skips threshold checks while active. Frenzy mode MUST delegate to agents to protect main context
 4. **Auto-disengage**: Returns to Hippocrenae mode after:
    - Problem solved (success criteria met)
    - User cancels ("stand down", "disengage")

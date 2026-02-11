@@ -43,6 +43,21 @@ Emit telemetry at activation:
 echo '{"component":"AC-10","event_type":"unleash_manual","data":{"trigger":"command"}}' | node .claude/hooks/telemetry-emitter.js
 ```
 
+## JICM Sleep Signal
+
+When Ulfhedthnar activates, suppress JICM threshold checks so context compression
+doesn't interrupt berserker problem-solving:
+
+```bash
+echo "$(date +%s)" > .claude/context/.jicm-sleep.signal
+```
+
+The JICM watcher will skip threshold checks while this file exists.
+The signal is automatically removed on `/disengage` or manual deactivation.
+
+**Safety**: The detector hook also manages this signal file automatically.
+This step is a belt-and-suspenders for the `/unleash` command path.
+
 ## Activation Protocol
 
 When unleashed, execute these steps:
@@ -109,7 +124,8 @@ Return to normal Hippocrenae operation when:
 
 - Cannot bypass destructive action confirmations (rm, force-push, reset)
 - AIfred baseline remains read-only (no exceptions)
-- Respects JICM context thresholds — Frenzy Mode delegates to agents
+- JICM-sleep: Ulfhedthnar suppresses JICM threshold checks via .jicm-sleep.signal
+- Frenzy Mode delegates heavy work to agents to protect main context
 - 30-minute cooldown between frenzy activations
 - Cannot override user denial of activation
 

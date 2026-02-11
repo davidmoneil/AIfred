@@ -349,13 +349,14 @@ Watcher log entries (text, not JSONL):
 | Context management skill | `.claude/skills/context-management/SKILL.md` | User-facing context guidance |
 | Component spec | `.claude/context/components/AC-04-jicm.md` | This file |
 
-### Signal Files (v5 Protocol)
+### Signal Files (v6.1 Protocol)
 | Signal File | Purpose | Created By | Consumed By |
 |-------------|---------|------------|-------------|
 | `.compressed-context-ready.md` | Compressed context for restoration | Compression agent | session-start.sh hook |
 | `.compression-done.signal` | Compression agent completion marker | Compression agent | Watcher |
 | `.jicm-state` | v6 state (state, pct, tokens, threshold) | JICM watcher | Ennoia, Virgil, hooks |
 | `.jicm-watcher.pid` | v6 watcher process tracking | JICM watcher | signal-helper, stop-watcher |
+| `.jicm-sleep.signal` | Ulfhedthnar suppresses JICM threshold checks | ulfhedthnar-detector.js | JICM watcher |
 | `.compression-in-progress` | Guard against double compression | /intelligent-compress skill | session-start |
 | `.compression-done.signal` | Compression agent completion marker | Compression agent | JICM watcher |
 
