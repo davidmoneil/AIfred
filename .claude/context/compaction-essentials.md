@@ -47,7 +47,7 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 | AC-01 | Self-Launch | Session start | `hooks/session-start.sh` |
 | AC-02 | Wiggum Loop | **Always (default)** | `hooks/wiggum-loop-tracker.js` |
 | AC-03 | Milestone Review | Work completion | `hooks/milestone-coordinator.js` |
-| AC-04 | JICM | Context exhaustion (65%/73%/78.5%) | `scripts/jarvis-watcher.sh` |
+| AC-04 | JICM | Context exhaustion (55%/73%/78.5%) | `scripts/jicm-watcher.sh` (v6) |
 | AC-05 | Self-Reflection | Session end | `commands/reflect.md` |
 | AC-06 | Self-Evolution | Idle time | `commands/evolve.md` |
 | AC-07 | R&D Cycles | Research | `commands/research.md` |

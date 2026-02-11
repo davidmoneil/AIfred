@@ -34,7 +34,7 @@ Files to check:
   .claude/context/.soft-restart-checkpoint.md
 
 Action: Remove if older than 1 hour (stale from prior cycle)
-Safety: Never remove during active compression (check .watcher-status state)
+Safety: Never remove during active compression (check .jicm-state for COMPRESSING/HALTING)
 ```
 
 ### Phase 2: Signal File Cleanup

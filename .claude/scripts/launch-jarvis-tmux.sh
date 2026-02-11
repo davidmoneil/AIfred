@@ -30,7 +30,13 @@
 TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
 SESSION_NAME="${TMUX_SESSION:-jarvis}"
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/Claude/Jarvis}"
-WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jarvis-watcher.sh"
+# JICM v6 watcher (v5 removed in v6.1)
+WATCHER_SCRIPT="$PROJECT_DIR/.claude/scripts/jicm-watcher.sh"
+WATCHER_VERSION="v6"
+if [[ ! -x "$WATCHER_SCRIPT" ]]; then
+    WATCHER_SCRIPT=""
+    WATCHER_VERSION="none"
+fi
 
 # Parse arguments
 ITERM2_MODE=false
@@ -73,12 +79,13 @@ if [[ ! -x "$TMUX_BIN" ]]; then
 fi
 
 # Check if watcher script exists
-if [[ ! -x "$WATCHER_SCRIPT" ]]; then
-    echo -e "${YELLOW}WARNING: Watcher script not found at $WATCHER_SCRIPT${NC}"
+if [[ -z "$WATCHER_SCRIPT" ]] || [[ ! -x "$WATCHER_SCRIPT" ]]; then
+    echo -e "${YELLOW}WARNING: No watcher script found${NC}"
     echo "Commands will need to be executed manually."
     WATCHER_ENABLED=false
 else
     WATCHER_ENABLED=true
+    echo -e "  ${CYAN}Watcher:${NC} ${GREEN}$WATCHER_VERSION${NC} ($WATCHER_SCRIPT)"
 fi
 
 # Check if jq is available (needed by watcher)
@@ -152,9 +159,9 @@ if [[ "$WATCHER_ENABLED" = true ]]; then
     export CLAUDE_PROJECT_DIR="$PROJECT_DIR"
 
     # Create watcher window (window 1, detached so we stay on window 0)
-    # JICM v5.7.0: threshold=55 (accounts for queuing delay before compression starts)
+    # Threshold=55 (accounts for queuing delay before compression starts)
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Watcher" -d \
-        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5 --session-type $JARVIS_SESSION_TYPE; echo 'Watcher stopped.'; read"
+        "cd '$PROJECT_DIR' && '$WATCHER_SCRIPT' --threshold 55 --interval 5; echo 'Watcher stopped.'; read"
 fi
 
 # Launch Ennoia session orchestrator in a tmux window (window 2, detached)

@@ -20,7 +20,7 @@ set -euo pipefail
 
 PROJECT_DIR="${JARVIS_PROJECT_DIR:-/Users/aircannon/Claude/Jarvis}"
 FILE_ACCESS="$PROJECT_DIR/.claude/logs/file-access.json"
-WATCHER_STATUS="$PROJECT_DIR/.claude/context/.watcher-status"
+WATCHER_STATUS="$PROJECT_DIR/.claude/context/.jicm-state"
 ENNOIA_STATUS="$PROJECT_DIR/.claude/context/.ennoia-status"
 VIRGIL_TASKS="$PROJECT_DIR/.claude/context/.virgil-tasks.json"
 VIRGIL_AGENTS="$PROJECT_DIR/.claude/context/.virgil-agents.json"
@@ -196,7 +196,7 @@ render_files_touched() {
 # --- Virgil Says (highest priority rule wins) ---
 virgil_says() {
     local pct unpushed tasks_count agents_running
-    pct=$(awk '/^percentage:/{gsub(/%/,""); print $2}' "$WATCHER_STATUS" 2>/dev/null)
+    pct=$(awk '/^context_pct:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
     unpushed=$(get_unpushed)
     # Check for stalled agents
     agents_running=$(python3 -c "
@@ -277,8 +277,8 @@ render() {
 
     echo; echo "${C_BOLD} CONTEXT${C_RESET}"
     local tokens pct state
-    tokens=$(awk '/^tokens:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
-    pct=$(awk '/^percentage:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
+    tokens=$(awk '/^context_tokens:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
+    pct=$(awk '/^context_pct:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
     state=$(awk '/^state:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
     echo "  Tokens: ${tokens:-?} (${pct:-?}) | State: ${state:-?}"
 

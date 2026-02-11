@@ -2,7 +2,16 @@
 # Stop the Jarvis Watcher
 # Called when session ends or manually to clean up
 
-PID_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.watcher-pid"
+# Check v6 PID file first, fall back to v5
+V6_PID_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-watcher.pid"
+V5_PID_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.watcher-pid"
+if [[ -f "$V6_PID_FILE" ]]; then
+    PID_FILE="$V6_PID_FILE"
+elif [[ -f "$V5_PID_FILE" ]]; then
+    PID_FILE="$V5_PID_FILE"
+else
+    PID_FILE=""
+fi
 SIGNAL_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.auto-clear-signal"
 LOG_FILE="$CLAUDE_PROJECT_DIR/.claude/logs/watcher-launcher.log"
 
@@ -12,7 +21,7 @@ TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 rm -f "$SIGNAL_FILE"
 
 # Stop watcher process if running
-if [[ -f "$PID_FILE" ]]; then
+if [[ -n "$PID_FILE" && -f "$PID_FILE" ]]; then
     OLD_PID=$(cat "$PID_FILE")
     if ps -p "$OLD_PID" > /dev/null 2>&1; then
         echo "$TIMESTAMP | Stopping watcher (PID: $OLD_PID)" >> "$LOG_FILE"
@@ -29,7 +38,7 @@ if [[ -f "$PID_FILE" ]]; then
     rm -f "$PID_FILE"
 else
     # Try to find and kill by process name
-    WATCHER_PID=$(pgrep -f "jarvis-watcher.sh" | head -1)
+    WATCHER_PID=$(pgrep -f "jicm-watcher.sh" | head -1)
     if [[ -n "$WATCHER_PID" ]]; then
         echo "$TIMESTAMP | Stopping watcher by name (PID: $WATCHER_PID)" >> "$LOG_FILE"
         kill "$WATCHER_PID" 2>/dev/null

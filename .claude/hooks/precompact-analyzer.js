@@ -2,16 +2,16 @@
 /**
  * PreCompact Analyzer Hook
  *
- * JICM v3.0.0 Solution B: AI-Driven Context Prioritization
+ * JICM v6.1 Backup Defense: AI-Driven Context Prioritization
  *
- * This hook fires before auto-compact triggers. It:
+ * This hook fires before native auto-compact triggers. It:
  * 1. Reads current context status from statusline JSON
  * 2. Reads current-priorities.md and session-state.md
- * 3. Generates a preservation manifest for the context-compressor agent
+ * 3. Generates a preservation manifest for the compression agent
  * 4. The manifest tells the compressor what to preserve vs compress
  *
- * This implements the Hook-Orchestrated Architecture from:
- * .claude/context/designs/jicm-architecture-solutions.md
+ * Note: This is a BACKUP defense. JICM v6 watcher handles proactive
+ * context management. This hook only fires if the watcher misses.
  */
 
 const fs = require("fs");

@@ -136,10 +136,10 @@ phase_jicm_reset() {
 
     # Safety: skip if actively compressing
     local watcher_state=""
-    if [[ -f "$CONTEXT_DIR/.watcher-status" ]]; then
-        watcher_state=$(awk '/^state:/{print $2}' "$CONTEXT_DIR/.watcher-status" 2>/dev/null || true)
+    if [[ -f "$CONTEXT_DIR/.jicm-state" ]]; then
+        watcher_state=$(awk '/^state:/{print $2}' "$CONTEXT_DIR/.jicm-state" 2>/dev/null || true)
     fi
-    if [[ "$watcher_state" == "compression_triggered" ]]; then
+    if [[ "$watcher_state" == "COMPRESSING" ]] || [[ "$watcher_state" == "HALTING" ]]; then
         phase_result "skipped (compression active)"
         return
     fi
@@ -293,7 +293,7 @@ phase_core_validation() {
         "$CONTEXT_DIR/psyche/capability-map.yaml"
         "$CONTEXT_DIR/psyche/jarvis-identity.md"
         "$CONTEXT_DIR/compaction-essentials.md"
-        "$SCRIPTS_DIR/jarvis-watcher.sh"
+        "$SCRIPTS_DIR/jicm-watcher.sh"
     )
 
     for f in "${core_files[@]}"; do

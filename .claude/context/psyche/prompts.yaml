@@ -1,0 +1,54 @@
+# Canonical Prompt Templates — Single Source of Truth
+# Version: 1.0.0
+# Created: 2026-02-10 (Tier 2 — prompt deduplication)
+#
+# These are the authoritative prompt texts used by the Aion Quartet
+# (Watcher, Ennoia) for keystroke injection into Claude Code via tmux.
+#
+# CONSTRAINT: All prompts MUST be single-line. Multi-line -l strings inject
+# literal newlines into tmux input buffer, causing corruption.
+# See: .claude/context/lessons/tmux-self-injection-limitation.md
+#
+# CONSUMERS:
+#   - jarvis-watcher.sh: send_prompt_by_type() — hardcoded fallbacks match these
+#   - ennoia.sh: write_recommendation() — generates context-aware variants
+#   - session-start.sh: SessionStart hook — additionalContext injection (not tmux)
+#
+# When editing prompts, update THIS file first, then propagate to consumers.
+
+jicm_resume:
+  # After JICM compression + /clear — Claude has fresh context, needs restoration
+  resume: "[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet."
+  simple: "[JICM-RESUME] Read .claude/context/.compressed-context-ready.md and .claude/context/.in-progress-ready.md — continue work."
+  minimal: "[JICM-RESUME] Continue."
+
+session_start:
+  # Fresh session or --continue — Claude needs orientation
+  resume: "[SESSION-START] New session. Begin AC-01. Read .claude/context/session-state.md and .claude/context/current-priorities.md — assess state, decide next action, begin work. Do NOT just greet."
+  simple: "[SESSION-START] Read session-state.md and begin work."
+  minimal: "startSession"
+
+fallback:
+  # Catch-all for unrecognized mode+type combinations
+  template: "[{MODE}] Resume work. Read .claude/context/session-state.md and continue."
+
+# Ennoia-generated variants (context-aware, dynamic)
+# These are NOT hardcoded — Ennoia reads state files and builds custom text.
+# Listed here for documentation only.
+ennoia_dynamic:
+  arise: "[SESSION-START] New session. Current: {current_work}. Next: {next_priority}. Read .claude/context/session-state.md + .claude/context/current-priorities.md, begin work. Do NOT just greet."
+  resume: "[JICM-RESUME] Context compressed and cleared. Task: {work_hint}. Read {files_list}, and session-state.md — resume work immediately. Do NOT greet."
+
+# Session-start.sh hook injection (additionalContext, NOT tmux keystroke)
+# These can be multi-line since they're JSON additionalContext, not tmux send-keys.
+hook_injection:
+  jicm_v5_resume: |
+    CONTEXT RESTART PROTOCOL:
+    You are Jarvis. The context has been compressed or cleared and is now being restored.
+    Your response should:
+    1. Briefly acknowledge the context restoration (e.g., "Context restored, sir.")
+    2. State the current date and time
+    3. Say: "One moment while I review the previous session work..."
+    4. Then silently read the checkpoint content above
+    5. After review, summarize what was in progress and continue the work
+    DO NOT generate a full greeting. This is a continuation, not a fresh start.

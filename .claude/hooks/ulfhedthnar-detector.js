@@ -35,7 +35,7 @@ const AGENT_LOG = path.join(WORKSPACE_ROOT, '.claude/logs/agent-activity.jsonl')
 const RALPH_STATE = path.join(WORKSPACE_ROOT, '.claude/ralph-loop.local.md');
 const AC10_STATE = path.join(WORKSPACE_ROOT, '.claude/state/components/AC-10-ulfhedthnar.json');
 const TELEMETRY_DIR = path.join(WORKSPACE_ROOT, '.claude/logs/telemetry');
-const WATCHER_STATUS = path.join(WORKSPACE_ROOT, '.claude/context/.watcher-status');
+const WATCHER_STATUS = path.join(WORKSPACE_ROOT, '.claude/context/.jicm-state');
 
 // Thresholds (configurable)
 const ACTIVATION_THRESHOLD = 7;
@@ -268,10 +268,13 @@ function checkUserFrustration(prompt) {
 function isContextBudgetSafe() {
   try {
     const content = fs.readFileSync(WATCHER_STATUS, 'utf8');
-    const match = content.match(/CONTEXT_PERCENT:\s*(\d+)/);
+    const match = content.match(/context_pct:\s*(\d+)/);
     if (match) {
       const pct = parseInt(match[1], 10);
-      // Don't inject if context >= 65% (JICM compress threshold)
+      // Don't inject if context >= 65% (conservative gate)
+      // TODO: Replace with JICM-sleep mechanism — Ulfhedthnar should sleep JICM,
+      // not be blocked by it. Gate on .jicm-state == WATCHING instead of pct threshold.
+      // See: commit 2 plan (Ulfhedthnar JICM-Sleep, .jicm-sleep.signal)
       return pct < 65;
     }
   } catch {

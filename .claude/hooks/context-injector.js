@@ -73,29 +73,33 @@ const TOOL_HINTS = {
   }
 };
 
-// Context budget thresholds
+// Context budget thresholds (Tier 3: disabled — JICM handles context proactively.
+// Set to 200% so budget warnings never fire. Tool hints still active.)
 const BUDGET_THRESHOLDS = {
-  warning: 70,
-  critical: 85
+  warning: 200,
+  critical: 200
 };
 
 // Config paths
 const CONFIG = {
-  contextEstimatePath: path.join(process.env.CLAUDE_PROJECT_DIR || '.', '.claude/logs/context-estimate.json'),
+  watcherStatusPath: path.join(process.env.CLAUDE_PROJECT_DIR || '.', '.claude/context/.jicm-state'),
   selectionGuidePath: path.join(process.env.CLAUDE_PROJECT_DIR || '.', '.claude/context/patterns/selection-intelligence-guide.md')
 };
 
 /**
- * Get current context usage percentage
+ * Get current context usage percentage from Watcher's status file
+ * (Reads live .jicm-state file from JICM v6 watcher)
  */
 function getContextUsage() {
   try {
-    if (fs.existsSync(CONFIG.contextEstimatePath)) {
-      const data = JSON.parse(fs.readFileSync(CONFIG.contextEstimatePath, 'utf8'));
-      return data.percentage || 0;
+    if (fs.existsSync(CONFIG.watcherStatusPath)) {
+      const content = fs.readFileSync(CONFIG.watcherStatusPath, 'utf8');
+      // .jicm-state is YAML-like: "context_pct: 42"
+      const match = content.match(/^context_pct:\s*(\d+)/m);
+      if (match) return parseInt(match[1], 10);
     }
   } catch (e) {
-    // Silently fail - context estimate not available
+    // Silently fail - watcher status not available
   }
   return 0;
 }

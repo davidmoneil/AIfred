@@ -130,12 +130,10 @@ Event-driven state machine (v5.6.2):
 | Compressed context | `.claude/context/.compressed-context-ready.md` | create/update |
 | Compression signal | `.claude/context/.compression-done.signal` | create/remove |
 | Compression guard | `.claude/context/.compression-in-progress` | create/remove |
-| Clear signal | `.claude/context/.clear-sent.signal` | create/remove |
-| Continuation signal | `.claude/context/.continuation-injected.signal` | create/remove |
-| Idle-hands flag | `.claude/context/.idle-hands-active` | create/remove |
-| Watcher PID | `.claude/context/.watcher-pid` | create/update |
-| Watcher status | `.claude/context/.watcher-status` | create/update |
-| JICM config | `.claude/context/.jicm-config` | create/update |
+| JICM state (v6) | `.claude/context/.jicm-state` | create/update |
+| JICM watcher PID (v6) | `.claude/context/.jicm-watcher.pid` | create/update |
+| Compression guard | `.claude/context/.compression-in-progress` | create/remove |
+| Compression signal | `.claude/context/.compression-done.signal` | create/remove |
 
 ---
 
@@ -356,13 +354,10 @@ Watcher log entries (text, not JSONL):
 |-------------|---------|------------|-------------|
 | `.compressed-context-ready.md` | Compressed context for restoration | Compression agent | session-start.sh hook |
 | `.compression-done.signal` | Compression agent completion marker | Compression agent | Watcher |
-| `.compression-in-progress` | Guard against double compression | Watcher | Watcher |
-| `.clear-sent.signal` | Dedup marker for /clear | Watcher | Watcher |
-| `.continuation-injected.signal` | Hook injection confirmation | session-start.sh | Watcher |
-| `.idle-hands-active` | Triggers idle-hands monitor | session-start.sh | Watcher |
-| `.watcher-pid` | Process tracking | Watcher | External scripts |
-| `.watcher-status` | Status for external monitoring | Watcher | External scripts |
-| `.jicm-config` | Dynamic config (threshold markers) | Watcher | Watcher |
+| `.jicm-state` | v6 state (state, pct, tokens, threshold) | JICM watcher | Ennoia, Virgil, hooks |
+| `.jicm-watcher.pid` | v6 watcher process tracking | JICM watcher | signal-helper, stop-watcher |
+| `.compression-in-progress` | Guard against double compression | /intelligent-compress skill | session-start |
+| `.compression-done.signal` | Compression agent completion marker | Compression agent | JICM watcher |
 
 All signal files live in `.claude/context/` and are gitignored.
 

@@ -7,8 +7,7 @@ Automatic behaviors that run before/after tool executions.
 **Registered in settings.json**: 9 event categories
 **Archived**: 12 (.js in hooks/archive/)
 
-> **JICM v2 Note**: `context-accumulator.js` removed from PostToolUse hooks.
-> Context monitoring now handled by `jarvis-watcher.sh` (polls status line).
+> **JICM Note**: Context monitoring handled by `jicm-watcher.sh` (v6 stop-and-wait architecture).
 
 ---
 
@@ -41,7 +40,7 @@ These hooks are registered in `settings.json` and actively execute:
 | `selection-audit.js` | PostToolUse | Audit tool selection decisions |
 | `milestone-detector.js` | PostToolUse | Detect milestone completions |
 
-> **Removed**: `context-accumulator.js` — Context monitoring moved to jarvis-watcher.sh (JICM v2)
+> **Removed**: `context-accumulator.js` — Context monitoring moved to jicm-watcher.sh (JICM v6)
 
 ---
 

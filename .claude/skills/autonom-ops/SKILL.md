@@ -29,7 +29,7 @@ absorbs: autonomous-commands, session-management, context-management, ralph-loop
 What do you need?
 ├── Execute native slash command → Read skills/autonomous-commands/SKILL.md
 │   Signal-based: signal_compact, signal_rename, signal_resume, etc.
-│   Requires: tmux + jarvis-watcher running
+│   Requires: tmux + watcher running (jarvis-watcher.sh for signals)
 │   Pattern: source signal-helper.sh && signal_<command> [args]
 │
 ├── Session lifecycle → Read skills/session-management/SKILL.md
@@ -40,7 +40,7 @@ What do you need?
 │
 ├── Context management (JICM) → Read skills/context-management/SKILL.md
 │   Thresholds: 50% caution, 65% compress, 73% emergency, 78.5% lockout
-│   Watcher: jarvis-watcher.sh polls every 30s
+│   JICM Watcher: jicm-watcher.sh (v6 stop-and-wait, polls 5s)
 │   Agent: compression-agent (sonnet, background)
 │   Hook: precompact-analyzer.js
 │

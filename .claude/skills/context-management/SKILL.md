@@ -1,9 +1,9 @@
 ---
 name: context-management
 model: sonnet
-version: 4.0.0
+version: 5.0.0
 description: >
-  JICM v5.8 context monitoring, analysis, and compaction.
+  JICM v6.1 context monitoring, analysis, and compaction.
   Use when: context budget, JICM, smart compact, token usage, compaction, compress.
 ---
 
@@ -20,26 +20,26 @@ description: >
 | Set auto-trigger threshold | `/autocompact-threshold <tokens>` |
 | Report forgotten context | `/context-loss "desc"` |
 
-## Thresholds (AC-04 JICM v5.8.2)
+## Thresholds (AC-04 JICM v6.1)
 
 | Usage | Status | Action |
 |-------|--------|--------|
 | <50% | Healthy | Continue normally |
 | 50-64% | Caution | Log warning |
-| 65% | Compress trigger | Watcher spawns `/intelligent-compress` |
-| 73% | Emergency | Watcher sends native `/compact` fallback |
+| 55% | Compress trigger | v6 watcher triggers stop-and-wait cycle |
+| 73% | Emergency | Native `/compact` fallback |
 | 78.5% | Lockout ceiling | Claude Code auto-compacts (unrecoverable) |
 
 ## Automatic Flow (Watcher-Managed)
 
 ```
-jarvis-watcher.sh polls every 30s
-├── <65% → monitoring (no action)
-├── 65% → /intelligent-compress → compression-agent (background)
+jicm-watcher.sh (v6 stop-and-wait) polls every 5s
+├── <55% → WATCHING (no action)
+├── 55% → HALTING → halt Jarvis → COMPRESSING → spawn compression-agent
 │   └── agent writes .compressed-context-ready.md + signal
-│       └── watcher detects → requests state dump → sends /clear
-│           └── session-start hook injects checkpoint → resume
-├── 73% → emergency /compact (native fallback)
+│       └── watcher detects → CLEARING → sends /clear
+│           └── RESTORING → session-start injects checkpoint → resume
+├── 73% → emergency (native /compact as backup)
 └── 78.5% → Claude auto-compacts (avoid — data loss risk)
 ```
 
@@ -74,7 +74,7 @@ For multi-phase tasks, isolate sub-agent contexts via Task tool — each agent g
 
 ## Infrastructure
 
-Watcher: `jarvis-watcher.sh` (v5.8.2, state machine). Agent: `compression-agent` (sonnet, background). Hook: `precompact-analyzer.js`. Essentials: `compaction-essentials.md`.
+Watcher: `jicm-watcher.sh` (v6.1, stop-and-wait). Agent: `compression-agent` (sonnet, background). Hook: `precompact-analyzer.js`. Essentials: `compaction-essentials.md`.
 
 ## References
 

@@ -64,24 +64,27 @@ Total: 115,969 / 200,000 tokens (58.0%)
 
 **Purpose**: Monitor context window to trigger JICM compression before auto-compact.
 
-**Data Source**: Watcher reads token count from tmux status line.
-**File**: `.claude/context/.watcher-status`
+**Data Source**: JICM v6 watcher reads token count from statusline capture.
+**File**: `.claude/context/.jicm-state`
 
 ```yaml
-# Example watcher status
-timestamp: 2026-01-21T17:16:04Z
-tokens: 102975
-percentage: 51.4%
-threshold: 80%
-state: monitoring
-max_context: 200000
+# Example JICM v6 state
+state: WATCHING
+timestamp: 2026-02-11T12:00:00Z
+context_pct: 42
+context_tokens: 84000
+threshold: 55
+compressions: 3
+errors: 0
+pid: 12345
+version: 6.1.0
 ```
 
 **Workflow**:
-1. Watcher polls tmux pane for token count
-2. Calculates percentage of 200k max context
-3. At threshold (e.g., 80%), triggers JICM
-4. JICM compresses context, sends /clear, resumes
+1. JICM v6 watcher polls statusline capture for token count
+2. Calculates percentage of max context
+3. At threshold (55%), triggers stop-and-wait compression
+4. States: WATCHING → HALTING → COMPRESSING → CLEARING → RESTORING
 
 ### Pattern 2: Budget Monitoring (via /usage)
 
@@ -102,7 +105,7 @@ max_context: 200000
 **Purpose**: Full self-assessment combining context + budget.
 
 ```
-1. Check context window (watcher-status or /context)
+1. Check context window (.jicm-state or /context)
 2. Check budget (/usage with auto-resume)
 3. Aggregate into health report
 4. Store in .claude/logs/health-check.json
@@ -150,7 +153,7 @@ Fire-and-forget commands don't return data to Jarvis. With auto-resume:
 1. **Use /context for JICM decisions** — It shows what's consuming context
 2. **Use /usage for budget awareness** — It shows quota consumption
 3. **Don't conflate percentages** — 50% context ≠ 50% budget
-4. **Prefer watcher-status for context** — It's already tracked
+4. **Prefer .jicm-state for context** — It's already tracked by JICM v6 watcher
 5. **Use auto-resume for workflows** — Fire-and-forget doesn't return data
 6. **Log health checks** — Store in `.claude/logs/` for analytics
 

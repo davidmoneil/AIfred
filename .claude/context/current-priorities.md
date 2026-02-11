@@ -2,8 +2,8 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-02-09
-**Version**: v5.9.0
+**Last Updated**: 2026-02-11
+**Version**: v5.10.0
 
 ---
 
@@ -151,14 +151,31 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - B.6: Automatic Skill Learning — **DONE**
 - B.7: AC-10 Ulfhedthnar — **DONE**
 
-### Roadmap II Phase F — Aion Trinity (in progress)
+### Roadmap II Phase F — Aion Quartet — COMPLETE
 - F.0: AC-03 hotfix + VERSION 5.10.0 + roadmap rewrite — **DONE** (96ee40b)
 - F.1: Ennoia MVP (session orchestrator) — **DONE** (02b4272, 14/14 tests, v0.2)
-- F.2: Virgil MVP (knowledge companion) — NEXT
-- F.3: Remaining Aion Trinity wiring — PENDING
-- **Status**: 2/4+ in progress
-- **Next**: Phase C blocked until Mac Studio arrival (Wed Feb 12+)
-- **Plan**: `.claude/plans/roadmap-ii.md` Phase F section
+- F.2: Virgil MVP (codebase guide dashboard) — **DONE** (cf5cb0d, all tests pass, v0.2)
+- F.3: Remaining Aion Quartet wiring — **DONE** (housekeep.sh, valedictions, cap-map, orchestration docs)
+- **Status**: COMPLETE (4/4)
+
+### JICM v6.1 Enhancement (2026-02-10/11) — COMPLETE
+- 20 Wiggum Loop TDD cycles, 196 tests passing
+- E1: ESC-triggered idle detection (replaces spinner polling)
+- E2: Token extraction range validation
+- E3: v6.1 compression agent prompt
+- E4: Session-start/restart differentiation
+- E5: Cycle metrics + telemetry (JSONL)
+- E6: v5 watcher removal — 164 lines from session-start, 6 consumers migrated to .jicm-state
+- E7: /compact hook cleanup
+- E8: Session-state de-prioritization
+- **Report**: `.claude/context/designs/jicm-v6.1-implementation-report.md`
+- **Deferred**: jarvis-watcher.sh file deletion (still used for command signals)
+- **Needs**: Commit + push
+
+### Next: Phase C — Mac Studio Infrastructure (Wed Feb 12+)
+- Docker container deployment
+- Multi-agent orchestration infrastructure
+- Blocked until Mac Studio arrives
 
 ---
 

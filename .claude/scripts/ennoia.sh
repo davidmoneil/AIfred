@@ -19,7 +19,7 @@ set -euo pipefail
 PROJECT_DIR="${JARVIS_PROJECT_DIR:-/Users/aircannon/Claude/Jarvis}"
 SESSION_STATE="$PROJECT_DIR/.claude/context/session-state.md"
 PRIORITIES="$PROJECT_DIR/.claude/context/current-priorities.md"
-WATCHER_STATUS="$PROJECT_DIR/.claude/context/.watcher-status"
+WATCHER_STATUS="$PROJECT_DIR/.claude/context/.jicm-state"
 ENNOIA_STATE="$PROJECT_DIR/.claude/context/.ennoia-state"
 ENNOIA_STATUS="$PROJECT_DIR/.claude/context/.ennoia-status"
 ENNOIA_RECOMMENDATION="$PROJECT_DIR/.claude/context/.ennoia-recommendation"
@@ -52,6 +52,10 @@ EOF
     fi
 }
 
+# Paths for compressed context detection (Tier 2: Ennoia reads JICM artifacts)
+COMPRESSED_CONTEXT="$PROJECT_DIR/.claude/context/.compressed-context-ready.md"
+INPROGRESS_CONTEXT="$PROJECT_DIR/.claude/context/.in-progress-ready.md"
+
 # Determine mode: arise, attend, idle, or resume
 detect_mode() {
     local watcher_state
@@ -59,6 +63,13 @@ detect_mode() {
 
     # If watcher just cleared → resume mode (brief)
     if [[ "$watcher_state" == "cleared" ]]; then
+        echo "resume"
+        return 0
+    fi
+
+    # If compressed context files exist → also resume mode
+    # (stronger signal than watcher state — files survive watcher restarts)
+    if [[ -f "$COMPRESSED_CONTEXT" ]] || [[ -f "$INPROGRESS_CONTEXT" ]]; then
         echo "resume"
         return 0
     fi
@@ -149,7 +160,23 @@ write_recommendation() {
             fi
             ;;
         resume)
-            recommendation="[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md, .claude/context/.in-progress-ready.md, and .claude/context/session-state.md — resume work immediately. Do NOT greet."
+            # Tier 2: Read compressed context files for context-aware recommendation
+            local work_hint="" files_hint=""
+            if [[ -f "$COMPRESSED_CONTEXT" ]]; then
+                # Extract first Status/Current Work line for task awareness
+                work_hint=$(grep -m1 -E '(Status|Current Work|## Current|In Progress)' \
+                    "$COMPRESSED_CONTEXT" 2>/dev/null \
+                    | sed 's/^##* //' | sed 's/\*\*//g' | sed 's/^[[:space:]]*//' \
+                    | head -c 80 || echo "")
+                files_hint=".compressed-context-ready.md"
+            fi
+            if [[ -f "$INPROGRESS_CONTEXT" ]]; then
+                [[ -n "$files_hint" ]] && files_hint="${files_hint}, " || true
+                files_hint="${files_hint}.in-progress-ready.md"
+            fi
+            local task_clause=""
+            [[ -n "$work_hint" ]] && task_clause=" Task: ${work_hint}."
+            recommendation="[JICM-RESUME] Context compressed and cleared.${task_clause} Read ${files_hint:-.compressed-context-ready.md}, and session-state.md — resume work immediately. Do NOT greet."
             ;;
         attend|idle)
             # No recommendation for attend (working) or idle (Phase J scope)
@@ -237,7 +264,7 @@ render() {
         attend)
             echo; echo "  CURRENT: $(get_intent)"
             local pct
-            pct=$(awk '/^percentage:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
+            pct=$(awk '/^context_pct:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
             echo "  Context: ${pct:-?}"
             ;;
 
@@ -261,8 +288,8 @@ render() {
     # Footer
     printf '\n%.0s─' $(seq 1 "$cols"); echo
     local tokens pct rec_indicator
-    tokens=$(awk '/^tokens:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
-    pct=$(awk '/^percentage:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
+    tokens=$(awk '/^context_tokens:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
+    pct=$(awk '/^context_pct:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
     rec_indicator=""
     [[ -f "$ENNOIA_RECOMMENDATION" ]] && rec_indicator=" | REC: ready"
     printf '  Mode: %s | Context: %s (%s)%s\n' "$mode" "${pct:-?}" "${tokens:-?}" "$rec_indicator"

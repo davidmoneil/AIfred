@@ -66,15 +66,6 @@
 #   - FIX: handle_critical_state "post_clear_unhandled" now uses send_text()
 #     instead of raw send-keys (same idle-wait fix as section 1.5)
 #
-# Changelog v5.8.2 (2026-02-08):
-#   - FIX: Section 1.5 JICM-DUMP now uses send_text() (includes wait_for_idle_brief)
-#     instead of raw send-keys, preventing prompt text stuck in TUI during generation
-#   - FIX: Section 1.5 checks .in-progress-ready.md age before deleting — if <120s
-#     old, skips dump request (Jarvis may have already written it)
-#   - FIX: Section 4 B2 now checks JICM_COMPLETE_SIGNAL before firing emergency
-#     restore. Idle-hands cleanup was deleting its flag, making B2 think hooks failed
-#   - FIX: handle_critical_state post_clear_unhandled uses send_text() (idle-wait)
-#
 # Changelog v5.8.1 (2026-02-07):
 #   - Added .compression-in-progress cleanup to cleanup_jicm_signals_only() and cleanup_jicm_files()
 #   - Prevents stale compression flag from blocking future JICM cycles after agent crash
@@ -635,7 +626,7 @@ update_status() {
 
     cat > "$STATUS_FILE" <<EOF
 timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-version: 5.8.4
+version: 5.8.5
 tokens: $tokens
 percentage: $pct%
 threshold: $JICM_THRESHOLD%
@@ -843,8 +834,8 @@ export_chat_history() {
 
     # Layer 2: Send built-in /export for Claude Code's richer format
     # This runs async — the file will be written by Claude Code to its default location
-    send_command "/export"
-    log EXPORT "Sent /export command (trigger: $trigger_reason)"
+    send_command "/export" ".claude/context/export_chat.txt"
+    log EXPORT "Sent /export command with path (trigger: $trigger_reason)"
 
     # Prune old exports (keep last 20)
     local export_count
@@ -955,10 +946,11 @@ SUBMISSION_VARIANT_INDEX=0
 
 # Read Ennoia's recommendation for wake-up prompt text
 # Returns: recommendation text on stdout, or empty string if unavailable/stale
-# Consumes the file after reading (single-use)
+# Caches (does NOT consume) — Ennoia's 30s refresh cycle handles staleness
 # Staleness threshold: 120 seconds
 # v5.8.5 (F.1 Ennoia MVP): Ennoia writes .ennoia-recommendation with context-aware
 # wake-up text. Watcher reads here for RESUME variant, falls back to hardcoded if absent.
+# v5.8.6 (Tier 2): Changed from consume to cache — retries preserve recommendation
 read_ennoia_recommendation() {
     if [[ ! -f "$ENNOIA_RECOMMENDATION" ]]; then
         echo ""
@@ -973,7 +965,6 @@ read_ennoia_recommendation() {
 
     if [[ $rec_age -gt 120 ]]; then
         log JICM "Ennoia recommendation stale (${rec_age}s old) — ignoring"
-        rm -f "$ENNOIA_RECOMMENDATION"
         echo ""
         return 0
     fi
@@ -985,13 +976,13 @@ read_ennoia_recommendation() {
     # Validate: must start with [ prefix (format check)
     if [[ -z "$content" ]] || [[ ! "$content" =~ ^\[ ]]; then
         log WARN "Ennoia recommendation invalid format — ignoring"
-        rm -f "$ENNOIA_RECOMMENDATION"
         echo ""
         return 0
     fi
 
-    # Consume (single-use — Ennoia rewrites on next 30s cycle)
-    rm -f "$ENNOIA_RECOMMENDATION"
+    # Tier 2: Cache instead of consume — Ennoia's 30s refresh handles staleness.
+    # If mode changes (arise→attend), Ennoia stops writing recommendations.
+    # Stale check above (120s) provides the safety net.
 
     log JICM "Using Ennoia recommendation (${#content} chars, ${rec_age}s old)"
     echo "$content"

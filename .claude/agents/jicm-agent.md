@@ -281,7 +281,7 @@ On stop signal or context exhaustion:
 
 ## Integration Points
 
-- **jarvis-watcher.sh**: May read .jicm-status.json to display enhanced status
+- **jicm-watcher.sh**: May read .jicm-status.json to display enhanced status
 - **precompact-analyzer.js**: Uses preservation manifest if available
 - **context-compressor agent**: Reads manifest for compression priorities
 - **session-start.sh**: May spawn this agent on session start

@@ -124,7 +124,7 @@ function main(hookData) {
 function readWatcherStatus(projectDir) {
   const statusFile = path.join(
     projectDir,
-    ".claude/context/.watcher-status"
+    ".claude/context/.jicm-state"
   );
   try {
     const content = fs.readFileSync(statusFile, "utf8");

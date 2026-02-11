@@ -14,7 +14,8 @@
 
 ### Signal-Based Automation
 - `signal-helper.sh` — Signal utility functions
-- `jarvis-watcher.sh` — Unified watcher (v3.0.0): context + command signals
+- `jicm-watcher.sh` — JICM v6.1 context watcher (stop-and-wait architecture)
+- `jarvis-watcher.sh` — Legacy v5 watcher (command signal execution only)
 
 ### Context Management
 - `context-checkpoint.sh` — Save context state

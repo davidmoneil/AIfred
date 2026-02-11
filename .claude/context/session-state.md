@@ -8,10 +8,36 @@
 
 ## Current Work Status
 
-**Status**: 🟢 Idle — Phase B 7/7 COMPLETE + F.1 Ennoia MVP COMPLETE
+**Status**: 🟢 Idle — Phase F COMPLETE + JICM v6.1 COMPLETE (needs commit)
 **Version**: v5.10.0
 **Branch**: Project_Aion
-**Last Commit**: 02b4272 (F.1 Ennoia MVP — intent-driven wake-up recommendations v0.2)
+**Last Commit**: cf5cb0d (F.2 Virgil MVP — task tracking, agent monitoring, files touched v0.2)
+
+**What Was Accomplished (2026-02-11, sessions 8-9 — JICM v6.1)**:
+- JICM v6.1 Enhancement — 20 Wiggum Loop TDD cycles, 196/196 tests passing:
+  - E1: ESC-triggered idle detection (5 functions: _check_idle_pattern, trigger_idle_check, etc.)
+  - E2: Token extraction range validation (<200001)
+  - E3: v6.1 compression agent prompt (stop-and-wait architecture)
+  - E4: Session-start vs JICM-restore differentiation
+  - E5: emit_cycle_metrics() JSONL telemetry (5 call paths)
+  - E6: v5 watcher removal — 164 lines from session-start.sh, 6 consumers migrated to .jicm-state
+  - E7: /compact hook cleanup, E8: session-state de-prioritization
+  - Consumer migration: ennoia, virgil, context-injector, ulfhedthnar-detector, health-monitor, housekeep
+  - Infrastructure: signal-helper v6 PID, stop-watcher v6 PID, 14 docs updated
+  - Report: `.claude/context/designs/jicm-v6.1-implementation-report.md`
+  - 28 files modified, test suite grew from 102→196 tests in 31 groups
+  - **Deferred**: jarvis-watcher.sh deletion (command signal handler dependency)
+  - **Needs**: Commit + push
+
+**What Was Accomplished (2026-02-10, session 7 — Phase F continued)**:
+- F.2 Virgil MVP — task tracking, agent monitoring, files touched (commit cf5cb0d):
+  - virgil-tracker.js hook (156 lines): PostToolUse + SubagentStop signal-file IPC
+  - virgil.sh v0.2 (296 lines): 3 new panels (TASKS, AGENTS, FILES TOUCHED) + enhanced heuristics
+  - launch-jarvis-tmux.sh: Aion Quartet layout — Window 3 "Virgil" added
+  - settings.json: hook registered (PostToolUse + SubagentStop)
+  - capability-map.yaml: aion.virgil component registered
+  - All 4 syntax checks + 5 hook behavior tests + stale cleanup + dashboard render verified
+  - ANSI-C quoting fix for reliable color rendering in bash dashboard
 
 **What Was Accomplished (2026-02-10, session 6 — Phase F)**:
 - F.0: AC-03 hotfix + VERSION 5.10.0 + Phase F roadmap rewrite (commit 96ee40b)
@@ -57,7 +83,7 @@
   - Implementation report: `.claude/reports/ulfhedthnar/implementation-2026-02-10.md`
 
 **Next Session Pickup:**
-1. Phase F.2+ (Virgil MVP, remaining Aion Trinity wiring) — per roadmap-ii.md Phase F
+1. Phase F.3+ (remaining Aion Quartet wiring, integration tests) — per roadmap-ii.md Phase F
 2. Phase C Mac Studio Infrastructure (Wed Feb 12+ arrival)
 3. Phase C plan: `.claude/plans/roadmap-ii.md`
 

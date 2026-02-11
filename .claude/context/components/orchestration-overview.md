@@ -228,7 +228,7 @@ services that the ACs depend on but do not directly manage.
 
 ```
 Ennoia ──writes──▶ .ennoia-recommendation ──read by──▶ Watcher
-Watcher ─writes──▶ .watcher-status ──────read by──▶ Ennoia, Virgil
+Watcher ─writes──▶ .jicm-state ──────────read by──▶ Ennoia, Virgil
 Hooks ───write───▶ .virgil-tasks.json ────────read by─▶ Virgil
 Hooks ───write───▶ .virgil-agents.json ──────read by─▶ Virgil
 Housekeep ────────▶ cleans stale signals from all components

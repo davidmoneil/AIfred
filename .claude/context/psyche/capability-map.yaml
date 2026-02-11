@@ -266,7 +266,7 @@ components:
     status: active
     script: .claude/scripts/ennoia.sh
     signal_files: [".ennoia-recommendation", ".ennoia-status"]
-    consumed_by: "jarvis-watcher.sh send_prompt_by_type()"
+    consumed_by: "jicm-watcher.sh (v6 JICM cycle coordinator)"
     note: "Aion Quartet: Ennoia=intent, Watcher=mechanics, Virgil=navigation"
 
   - id: aion.virgil
@@ -279,12 +279,12 @@ components:
     note: "Aion Quartet: Virgil=navigation dashboard (tmux window 3)"
 
   - id: aion.watcher
-    version: "5.8.5"
+    version: "6.1.0"
     when: "JICM context monitoring — token polling, compression triggers, /clear coordination"
     status: active
-    script: .claude/scripts/jarvis-watcher.sh
-    signal_files: [".watcher-status", ".compression-done.signal"]
-    note: "Aion Quartet: Watcher=defensive awareness (JICM mechanics, tmux window 1)"
+    script: .claude/scripts/jicm-watcher.sh
+    signal_files: [".jicm-state", ".compression-done.signal"]
+    note: "Aion Quartet: Watcher=defensive awareness (JICM v6 stop-and-wait, tmux window 1)"
 
   - id: flow.housekeep
     when: "Quick infrastructure cleanup — signal files, log rotation, state freshness"

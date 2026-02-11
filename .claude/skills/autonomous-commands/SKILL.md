@@ -305,7 +305,7 @@ This will launch Claude in tmux with the watcher in a split pane.
 │  1. Claude (via this skill) creates signal file                  │
 │     └── .claude/context/.command-signal (JSON)                   │
 ├──────────────────────────────────────────────────────────────────┤
-│  2. jarvis-watcher.sh detects signal                             │
+│  2. jarvis-watcher.sh detects signal (command signal handler)     │
 │     └── Polls every 2 seconds                                    │
 ├──────────────────────────────────────────────────────────────────┤
 │  3. Watcher validates and executes                               │
@@ -323,7 +323,7 @@ This will launch Claude in tmux with the watcher in a split pane.
 - Signal Protocol: @.claude/context/patterns/command-signal-protocol.md
 - Autonomous Execution Pattern: @.claude/context/patterns/autonomous-execution-pattern.md (scheduled/headless Claude Code execution via cron/systemd)
 - Signal Helper: @.claude/scripts/signal-helper.sh
-- Watcher Script: @.claude/scripts/jarvis-watcher.sh
+- Watcher Script: @.claude/scripts/jarvis-watcher.sh (command signals) / @.claude/scripts/jicm-watcher.sh (JICM)
 - tmux Launcher: @.claude/scripts/launch-jarvis-tmux.sh
 
 ---

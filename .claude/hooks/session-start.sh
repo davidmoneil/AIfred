@@ -11,18 +11,12 @@
 # - MCP suggestions based on work type
 # - Auto-clear watcher launch
 #
-# JICM v5 Integration:
-# - Context injection via additionalContext (Mechanism 1 — reliable)
-# - Creates .idle-hands-active flag for Mechanism 2 (idle-hands monitor)
-# - See: .claude/context/designs/jicm-v5-design-addendum.md
+# JICM v6 Integration:
+# - Context injection via additionalContext (hook → Claude)
+# - v6 watcher handles all state transitions via .jicm-state file
+# - See: .claude/context/designs/jicm-v6-design.md
 #
-# ARCHITECTURE NOTE (2026-02-04):
-# This hook uses additionalContext injection (NOT tmux keystroke injection).
-# Keystroke injection must come from external processes (jarvis-watcher.sh).
-# Self-injection from within Claude Code fails due to TUI event loop blocking.
-# See: .claude/context/lessons/tmux-self-injection-limitation.md
-#
-# Updated: 2026-02-04 (Validated submission patterns)
+# Updated: 2026-02-11 (v6.1 — v5 code paths removed)
 
 # Read input from stdin (JSON)
 INPUT=$(cat)
@@ -113,73 +107,25 @@ if [[ -f "$PENDING_FILE" ]]; then
     echo "$TIMESTAMP | SessionStart | Cleaned up .clear-pending marker" >> "$LOG_DIR/session-start-diagnostic.log"
 fi
 
-# ============== JICM v5 DEBOUNCE — Prevent Double-Clear Stall ==============
-# If a clear was sent within the last 30 seconds, this might be a duplicate clear
-# caused by race conditions. Skip re-initialization and just return success.
-V5_CLEAR_SENT_CHECK="$CLAUDE_PROJECT_DIR/.claude/context/.clear-sent.signal"
-DEBOUNCE_WINDOW=30
-
-if [[ "$SOURCE" == "clear" ]] && [[ -f "$V5_CLEAR_SENT_CHECK" ]]; then
-    CLEAR_EPOCH=$(cat "$V5_CLEAR_SENT_CHECK" 2>/dev/null)
-    if [[ -n "$CLEAR_EPOCH" ]] && [[ "$CLEAR_EPOCH" =~ ^[0-9]+$ ]]; then
-        # Signal file contains epoch seconds (timezone-safe)
-        NOW_EPOCH=$(date +%s)
-        ELAPSED=$((NOW_EPOCH - CLEAR_EPOCH))
-
-        if [[ $ELAPSED -lt $DEBOUNCE_WINDOW ]]; then
-            echo "$TIMESTAMP | SessionStart | JICM v5 DEBOUNCE: Ignoring duplicate clear (${ELAPSED}s < ${DEBOUNCE_WINDOW}s)" >> "$LOG_DIR/session-start-diagnostic.log"
-            # Return minimal response to prevent re-triggering
-            jq -n '{
-              "systemMessage": "JICM v5 debounce: duplicate clear ignored",
-              "hookSpecificOutput": {
-                "hookEventName": "SessionStart",
-                "additionalContext": "A clear was recently processed. If you are waiting for instructions, read .claude/context/.compressed-context-ready.md and .claude/context/.in-progress-ready.md then continue your work."
-              }
-            }'
-            exit 0
-        fi
-    fi
-fi
+    # v5 debounce REMOVED (v6.1) — v6 state machine handles clear dedup via .jicm-state
 
 # ============== JICM RESET (AC-04 Integration) ==============
-# Reset context estimate on startup or clear (but NOT on resume/compact to preserve tracking)
-CONTEXT_ESTIMATE_FILE="$LOG_DIR/context-estimate.json"
+# context-estimate.json write REMOVED (Tier 3+ cleanup) — no production code reads it.
+# Watcher writes .watcher-status with live context percentage instead.
 COMPACTION_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.compaction-in-progress"
 
 if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "clear" ]]; then
-    # Reset context estimate to baseline
-    BASELINE_TOKENS=30000  # Base MCP load estimate
-    cat > "$CONTEXT_ESTIMATE_FILE" << EOF
-{
-  "sessionStart": "$TIMESTAMP",
-  "totalTokens": $BASELINE_TOKENS,
-  "toolCalls": 0,
-  "lastUpdate": "$TIMESTAMP",
-  "percentage": 15.0
-}
-EOF
-    echo "$TIMESTAMP | SessionStart | JICM reset: context-estimate.json baseline=$BASELINE_TOKENS" >> "$LOG_DIR/session-start-diagnostic.log"
-
     # Clear compaction-in-progress flag if exists
     if [[ -f "$COMPACTION_FLAG" ]]; then
         rm -f "$COMPACTION_FLAG"
         echo "$TIMESTAMP | SessionStart | JICM: Cleared compaction-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
 
-    # Clear v5 compression-in-progress flag if exists (CRIT-04 fix)
-    # Prevents permanent compression blockage after crash
-    COMPRESSION_FLAG_V5="$CLAUDE_PROJECT_DIR/.claude/context/.compression-in-progress"
-    if [[ -f "$COMPRESSION_FLAG_V5" ]]; then
-        rm -f "$COMPRESSION_FLAG_V5"
-        echo "$TIMESTAMP | SessionStart | JICM: Cleared compression-in-progress flag (v5)" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
-
-    # Clear standdown flag from previous session (self-healing)
-    # Standdown is per-session; a new session starts with a clean slate
-    STANDDOWN_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-standdown"
-    if [[ -f "$STANDDOWN_FILE" ]]; then
-        rm -f "$STANDDOWN_FILE"
-        echo "$TIMESTAMP | SessionStart | JICM: Cleared standdown from previous session" >> "$LOG_DIR/session-start-diagnostic.log"
+    # Clear compression-in-progress flag if exists (skill still writes this)
+    COMPRESSION_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.compression-in-progress"
+    if [[ -f "$COMPRESSION_FLAG" ]]; then
+        rm -f "$COMPRESSION_FLAG"
+        echo "$TIMESTAMP | SessionStart | JICM: Cleared compression-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
     fi
 fi
 
@@ -198,26 +144,8 @@ if [[ "$SOURCE" == "startup" ]] || [[ "$SOURCE" == "resume" ]]; then
     # Watcher launch removed - see comment above
     echo "$TIMESTAMP | SessionStart | Watcher launch skipped (handled by tmux launcher)" >> "$LOG_DIR/session-start-diagnostic.log"
 
-    # ============== JICM AGENT SPAWN SIGNAL (v3.0.0 Solution C) ==============
-    # Check if JICM autonomous agent is enabled in config
-    JICM_AGENT_ENABLED=$(yq -r '.components."AC-04-jicm".settings.autonomous_agent.enabled // false' "$CONFIG_FILE" 2>/dev/null || echo "false")
-
-    if [[ "$JICM_AGENT_ENABLED" == "true" ]]; then
-        # Write spawn signal for Claude to detect and spawn JICM agent
-        JICM_SPAWN_SIGNAL="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-agent-spawn-signal"
-        cat > "$JICM_SPAWN_SIGNAL" <<EOF
-{
-    "action": "spawn_jicm_agent",
-    "timestamp": "$TIMESTAMP",
-    "config": {
-        "agent_file": ".claude/agents/jicm-agent.md",
-        "status_file": ".claude/context/.jicm-status.json",
-        "run_in_background": true
-    }
-}
-EOF
-        echo "$TIMESTAMP | SessionStart | JICM agent spawn signal created" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
+    # JICM agent spawn signal removed (Tier 1 pruning) — nobody reads .jicm-agent-spawn-signal.
+    # JICM is fully managed by jicm-watcher.sh (v6 stop-and-wait).
 fi
 
 # ============== MCP SUGGESTIONS ==============
@@ -378,150 +306,66 @@ Read session-state.md + current-priorities.md, then begin work. Do NOT just gree
 PROTOCOL
 }
 
-# ============== JICM v5 — TWO-MECHANISM RESUME ARCHITECTURE ==============
-# Mechanism 1: This hook injects context via additionalContext (always works)
-# Mechanism 2: jarvis-watcher.sh sends keystroke submission (external process)
-#
-# WHY TWO MECHANISMS:
-# - additionalContext injection works reliably from hooks
-# - BUT hooks cannot force Jarvis to respond (just inject context)
-# - Keystroke injection from external watcher ensures Jarvis wakes up
-# - Self-injection (from within Claude Code) fails due to TUI event loop blocking
-#
-# See: jicm-v5-design-addendum.md Section 7 & 10
-# See: lessons/tmux-self-injection-limitation.md
-#
-# v5 Signal Files:
-V5_COMPRESSED_CONTEXT="$CLAUDE_PROJECT_DIR/.claude/context/.compressed-context-ready.md"
-V5_IN_PROGRESS="$CLAUDE_PROJECT_DIR/.claude/context/.in-progress-ready.md"
-V5_CLEAR_SENT="$CLAUDE_PROJECT_DIR/.claude/context/.clear-sent.signal"
-V5_CONTINUATION_INJECTED="$CLAUDE_PROJECT_DIR/.claude/context/.continuation-injected.signal"
-V5_JICM_COMPLETE="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-complete.signal"
-V5_IDLE_HANDS_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.idle-hands-active"
+# ============== JICM v6 — STOP-AND-WAIT ARCHITECTURE ==============
+# v6 uses a single .jicm-state file instead of multiple signal files.
+# The watcher handles all state transitions; this hook just injects context.
+# Detection: .jicm-state exists with state=clearing or state=restoring
+# See: .claude/context/designs/jicm-v6-design.md
+V6_STATE_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.jicm-state"
+V6_COMPRESSED="$CLAUDE_PROJECT_DIR/.claude/context/.compressed-context-ready.md"
 
-# Check for v5 JICM cycle - takes priority over legacy
-if [[ -f "$V5_COMPRESSED_CONTEXT" ]] || [[ -f "$V5_IN_PROGRESS" ]]; then
-    echo "$TIMESTAMP | SessionStart | JICM v5: Detected v5 signal files" >> "$LOG_DIR/session-start-diagnostic.log"
+if [[ "$SOURCE" == "clear" ]] && [[ -f "$V6_STATE_FILE" ]]; then
+    V6_STATE=$(grep '^state:' "$V6_STATE_FILE" 2>/dev/null | head -1 | awk '{print $2}')
 
-    # Read compressed context if available
-    V5_COMPRESSED_CONTENT=""
-    if [[ -f "$V5_COMPRESSED_CONTEXT" ]]; then
-        V5_COMPRESSED_CONTENT=$(cat "$V5_COMPRESSED_CONTEXT")
-        echo "$TIMESTAMP | SessionStart | JICM v5: Loaded compressed context ($(wc -c < "$V5_COMPRESSED_CONTEXT") bytes)" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
+    if [[ "$V6_STATE" == "CLEARING" ]] || [[ "$V6_STATE" == "RESTORING" ]]; then
+        echo "$TIMESTAMP | SessionStart | JICM v6: Detected state=$V6_STATE" >> "$LOG_DIR/session-start-diagnostic.log"
 
-    # Read in-progress work if available
-    V5_IN_PROGRESS_CONTENT=""
-    if [[ -f "$V5_IN_PROGRESS" ]]; then
-        V5_IN_PROGRESS_CONTENT=$(cat "$V5_IN_PROGRESS")
-        echo "$TIMESTAMP | SessionStart | JICM v5: Loaded in-progress work ($(wc -c < "$V5_IN_PROGRESS") bytes)" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
+        V6_CONTEXT=""
+        if [[ -f "$V6_COMPRESSED" ]]; then
+            V6_CONTEXT=$(cat "$V6_COMPRESSED")
+            echo "$TIMESTAMP | SessionStart | JICM v6: Loaded compressed context ($(wc -c < "$V6_COMPRESSED") bytes)" >> "$LOG_DIR/session-start-diagnostic.log"
+        fi
 
-    # DO NOT delete context files yet - they persist until Jarvis is confirmed working
-    # Only signal files are cleaned up after reading
-    # Context files deleted by idle-hands monitor after confirmed resume
+        # NOTE: Session-state.md deliberately NOT loaded for mid-session restores.
+        # It is stale during active work. Compressed context contains current state.
+        # Session-state is for NEW session starts only (created at session end).
 
-    # Also clean up legacy v2 files to prevent confusion
-    rm -f "$CLAUDE_PROJECT_DIR/.claude/context/.compressed-context.md"
-    rm -f "$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
+        MESSAGE="JICM v6: Context compressed and cleared.$ENV_STATUS"
+        CONTEXT="JICM v6 CONTEXT RESTORATION — NOT a new session.
+You are Jarvis. Context was compressed via stop-and-wait JICM cycle.
+Resume work immediately. Do NOT greet. Do NOT ask what to work on.
 
-    # Mark continuation as injected (for idle-hands gating)
-    echo "$TIMESTAMP" > "$V5_CONTINUATION_INJECTED"
-
-    # ═══ MECHANISM 2 SETUP: Create .idle-hands-active flag ═══
-    # This triggers the idle-hands monitor (Mechanism 2) to ensure Jarvis wakes up
-    # See: jicm-v5-design-addendum.md Section 7 (Resume Architecture)
-    cat > "$V5_IDLE_HANDS_FLAG" << IDLE_HANDS_EOF
-mode: jicm_resume
-created: $TIMESTAMP
-context_files:
-  - .compressed-context-ready.md
-  - .in-progress-ready.md
-submission_attempts: 0
-last_attempt: null
-success: false
-IDLE_HANDS_EOF
-    echo "$TIMESTAMP | SessionStart | JICM v5: Created .idle-hands-active flag (mode: jicm_resume)" >> "$LOG_DIR/session-start-diagnostic.log"
-
-    # Build continuation context using v5 template (lean)
-    MESSAGE="JICM v5: Context Restored. Resume immediately.$ENV_STATUS"
-
-    CONTEXT="JICM CONTEXT CONTINUATION — NOT a new session. Resume work immediately.
-Do NOT greet. Do NOT ask what to work on. Announce what you're continuing (1 line), then proceed.
+Current datetime: $LOCAL_DATE at $LOCAL_TIME
 
 Compressed Context:
-$V5_COMPRESSED_CONTENT
+$V6_CONTEXT
 
-Work In Progress:
-$V5_IN_PROGRESS_CONTENT
+After reading compressed context, also read CLAUDE.md for guardrails.
+Read .claude/context/psyche/capability-map.yaml for tool selection.
+Resume: Parse above, continue from interruption point."
 
-Resume: Parse above, continue from interruption point. Say \"Context restored. Continuing with [task]...\" then proceed."
+        # Write state file (AC-01)
+        echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"jicm_v6\", \"restart_type\": \"v6_stop_and_wait\"}" > "$STATE_DIR/AC-01-launch.json"
 
-    # Write state file
-    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"jicm_v5\", \"restart_type\": \"v5_idle_hands\"}" > "$STATE_DIR/AC-01-launch.json"
+        # NO .idle-hands-active flag — v6 watcher handles resume directly
+        jq -n \
+          --arg msg "$MESSAGE" \
+          --arg ctx "$CONTEXT" \
+          '{
+            "systemMessage": $msg,
+            "hookSpecificOutput": {
+              "hookEventName": "SessionStart",
+              "additionalContext": $ctx
+            }
+          }'
 
-    jq -n \
-      --arg msg "$MESSAGE" \
-      --arg ctx "$CONTEXT" \
-      '{
-        "systemMessage": $msg,
-        "hookSpecificOutput": {
-          "hookEventName": "SessionStart",
-          "additionalContext": $ctx
-        }
-      }'
-
-    exit 0
+        exit 0
+    fi
 fi
 
-# ============== INTELLIGENT COMPRESSION HANDLING (JICM v2 - Legacy) ==============
-COMPRESSED_CONTEXT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.compressed-context.md"
-COMPRESSION_FLAG="$CLAUDE_PROJECT_DIR/.claude/context/.compression-in-progress"
-
-# Clean up compression flag if exists
-if [[ -f "$COMPRESSION_FLAG" ]]; then
-    rm -f "$COMPRESSION_FLAG"
-    echo "$TIMESTAMP | SessionStart | JICM v2: Cleared compression-in-progress flag" >> "$LOG_DIR/session-start-diagnostic.log"
-fi
-
-# Check for intelligently compressed context (takes priority over simple checkpoint)
-if [[ -f "$COMPRESSED_CONTEXT_FILE" ]]; then
-    # Load compressed context from AI compression
-    COMPRESSED_CONTENT=$(cat "$COMPRESSED_CONTEXT_FILE")
-
-    echo "$TIMESTAMP | SessionStart | JICM v2: Loading compressed context" >> "$LOG_DIR/session-start-diagnostic.log"
-
-    # Delete the compressed context file after reading (one-time use)
-    rm -f "$COMPRESSED_CONTEXT_FILE"
-    echo "$TIMESTAMP | SessionStart | JICM v2: Deleted compressed context file" >> "$LOG_DIR/session-start-diagnostic.log"
-
-    # Also remove any old checkpoint file to avoid confusion
-    rm -f "$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
-
-    MESSAGE="CONTEXT RESTORED (Intelligent Compression)$ENV_STATUS"
-    CONTEXT="JICM v2 RESTORATION — $LOCAL_DATE at $LOCAL_TIME
-Acknowledge \"Context restored, sir.\" then review and continue work.
-
-=== COMPRESSED CONTEXT ===
-$COMPRESSED_CONTENT
-=== END COMPRESSED CONTEXT ==="
-
-    # Write state file
-    echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": true, \"compression_type\": \"intelligent\", \"restart_type\": \"compressed_context\"}" > "$STATE_DIR/AC-01-launch.json"
-
-    jq -n \
-      --arg msg "$MESSAGE" \
-      --arg ctx "$CONTEXT" \
-      '{
-        "systemMessage": $msg,
-        "hookSpecificOutput": {
-          "hookEventName": "SessionStart",
-          "additionalContext": $ctx
-        }
-      }'
-
-    exit 0
-fi
+# JICM v5 code path REMOVED (v6.1, 2026-02-11)
+# v5 used two-mechanism resume: hook injection + idle-hands keystroke monitor.
+# v6 uses single .jicm-state file + stop-and-wait architecture (above).
 
 # ============== CHECKPOINT HANDLING (Legacy/Fallback) ==============
 CHECKPOINT_FILE="$CLAUDE_PROJECT_DIR/.claude/context/.soft-restart-checkpoint.md"
@@ -615,26 +459,6 @@ Present status and offer to continue with pending work."
     fi
 
     MESSAGE="Session started ($SOURCE)$ENV_STATUS"
-
-    # ═══ SESSION START IDLE-HANDS FLAG ═══
-    # Create idle-hands flag for automatic session wake-up
-    # The watcher will detect this and auto-inject a wake-up prompt
-    # This ensures Jarvis starts working without requiring user input
-    #
-    # Skip if JARVIS_MANUAL_MODE is set (user wants manual control)
-    if [[ "$JARVIS_MANUAL_MODE" != "true" ]]; then
-        cat > "$V5_IDLE_HANDS_FLAG" << IDLE_HANDS_EOF
-mode: session_start
-source: $SOURCE
-created: $TIMESTAMP
-auto_continue: $AUTO_CONTINUE
-next_step: ${NEXT_STEP:-none}
-submission_attempts: 0
-last_attempt: null
-success: false
-IDLE_HANDS_EOF
-        echo "$TIMESTAMP | SessionStart | Created .idle-hands-active flag (mode: session_start, source: $SOURCE)" >> "$LOG_DIR/session-start-diagnostic.log"
-    fi
 
     # Write state file
     echo "{\"last_run\": \"$TIMESTAMP\", \"greeting_type\": \"$TIME_OF_DAY\", \"checkpoint_loaded\": false, \"auto_continue\": $AUTO_CONTINUE}" > "$STATE_DIR/AC-01-launch.json"

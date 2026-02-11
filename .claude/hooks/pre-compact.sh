@@ -55,17 +55,16 @@ sed -i.bak "s/TIMESTAMP_PLACEHOLDER/$TIMESTAMP/" "$CHECKPOINT_FILE" && rm -f "${
 # No disable needed — all retained MCPs are essential or auto-provisioned.
 echo "$TIMESTAMP | PreCompact | No Tier 2 MCPs to disable (removed 2026-02-07)" >> "$LOG_DIR/session-start-diagnostic.log"
 
-# NOTE: Signal file creation REMOVED per JICM investigation (Q10)
-# PreCompact is BACKUP defense - checkpoint only, no /clear trigger
-# JICM (context-accumulator.js) handles proactive /clear signals
-echo "$TIMESTAMP | PreCompact | Checkpoint created (no signal - JICM decoupled)" >> "$LOG_DIR/session-start-diagnostic.log"
+# PreCompact is BACKUP defense — checkpoint only, no /clear trigger
+# JICM v6 watcher handles proactive context management
+echo "$TIMESTAMP | PreCompact | Checkpoint created (backup defense — JICM v6 watcher handles proactive compression)" >> "$LOG_DIR/session-start-diagnostic.log"
 
 # Output message to user
 MESSAGE="⚠️ CONTEXT THRESHOLD - BACKUP CHECKPOINT CREATED\n\n"
 MESSAGE="${MESSAGE}Native auto-compact triggered. A backup checkpoint has been saved.\n\n"
-MESSAGE="${MESSAGE}This means JICM's proactive threshold was missed.\n"
+MESSAGE="${MESSAGE}This means JICM v6 watcher's proactive threshold was missed.\n"
 MESSAGE="${MESSAGE}After compaction, session-start will restore context.\n\n"
-MESSAGE="${MESSAGE}Only 5 MCPs remain (memory, local-rag, fetch, git, playwright) — no Tier 2 to disable."
+MESSAGE="${MESSAGE}MCPs: memory, local-rag, fetch, git, playwright (all essential, none to disable)."
 
 echo "{\"systemMessage\": $(echo "$MESSAGE" | jq -Rs .)}"
 

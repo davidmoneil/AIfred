@@ -344,10 +344,17 @@ signal_context_resume() {
     signal_with_resume "/context" "" "$resume_message" "$resume_delay"
 }
 
-# Check if watcher is running
+# Check if watcher is running (v6 JICM watcher first, v5 legacy fallback)
 is_watcher_running() {
-    local pid_file="$PROJECT_DIR/.claude/context/.watcher-pid"
-    if [[ -f "$pid_file" ]]; then
+    local v6_pid_file="$PROJECT_DIR/.claude/context/.jicm-watcher.pid"
+    local v5_pid_file="$PROJECT_DIR/.claude/context/.watcher-pid"
+    local pid_file=""
+    if [[ -f "$v6_pid_file" ]]; then
+        pid_file="$v6_pid_file"
+    elif [[ -f "$v5_pid_file" ]]; then
+        pid_file="$v5_pid_file"
+    fi
+    if [[ -n "$pid_file" ]]; then
         local pid
         pid=$(cat "$pid_file")
         if kill -0 "$pid" 2>/dev/null; then
@@ -359,16 +366,35 @@ is_watcher_running() {
 
 # Get watcher status
 watcher_status() {
-    if is_watcher_running; then
+    local v6_pid_file="$PROJECT_DIR/.claude/context/.jicm-watcher.pid"
+    local v5_pid_file="$PROJECT_DIR/.claude/context/.watcher-pid"
+    if [[ -f "$v6_pid_file" ]]; then
         local pid
-        pid=$(cat "$PROJECT_DIR/.claude/context/.watcher-pid")
-        echo "Watcher is RUNNING (PID: $pid)"
-        return 0
-    else
-        echo "Watcher is NOT RUNNING"
-        echo "Start with: .claude/scripts/jarvis-watcher.sh"
-        return 1
+        pid=$(cat "$v6_pid_file")
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "JICM v6 Watcher is RUNNING (PID: $pid)"
+            # Show state from .jicm-state if available
+            local state_file="$PROJECT_DIR/.claude/context/.jicm-state"
+            if [[ -f "$state_file" ]]; then
+                local state pct
+                state=$(awk '/^state:/{print $2}' "$state_file")
+                pct=$(awk '/^context_pct:/{print $2}' "$state_file")
+                echo "State: ${state:-?} | Context: ${pct:-?}%"
+            fi
+            return 0
+        fi
     fi
+    if [[ -f "$v5_pid_file" ]]; then
+        local pid
+        pid=$(cat "$v5_pid_file")
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "Legacy Watcher is RUNNING (PID: $pid)"
+            return 0
+        fi
+    fi
+    echo "Watcher is NOT RUNNING"
+    echo "Start with: .claude/scripts/jicm-watcher.sh (v6) or launch-jarvis-tmux.sh"
+    return 1
 }
 
 # List pending signal (if any)

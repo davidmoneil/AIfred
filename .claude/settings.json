@@ -50,10 +50,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-auto-clear.sh"
-          },
-          {
-            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-hook.sh"
           },
           {
@@ -115,14 +111,6 @@
           {
             "type": "command",
             "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/milestone-coordinator.js"
-          },
-          {
-            "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/session-trigger.js"
-          },
-          {
-            "type": "command",
-            "command": "node $CLAUDE_PROJECT_DIR/.claude/hooks/jicm-continuation-verifier.js"
           },
           {
             "type": "command",
