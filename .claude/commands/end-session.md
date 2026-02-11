@@ -353,22 +353,22 @@ Next Time:
 - [next steps from session-state.md]
 ```
 
-## Closing Salutation
+## Closing Salutation (Valediction Ceremony)
 
-**After the summary**, generate a personalized closing based on context:
+**After the summary**, compose a personalized closing using the valediction phrase bank:
 
-1. Get current datetime by running: `date "+%A, %B %d at %H:%M"`
-2. Optionally check weather via startup-greeting.js: `node .claude/scripts/startup-greeting.js --weather-only`
+1. **Read** `.claude/context/psyche/valedictions.yaml`
+2. **Get context**: Run `date "+%A, %B %d at %H:%M"` for time awareness
+3. **Compose closing** by selecting ONE phrase from each category:
+   a. **complimentary_close** — warm sign-off acknowledging session work
+   b. **dutiful_offers** — what Jarvis will attend to while away
+   c. **session_kill_confirm** — farewell with retreat location
+      - Replace `%retreat%` with a random entry from **retreat_locations**
+4. **Combine naturally** — weave into a natural paragraph that acknowledges time of day.
+   Preserve Wodehouse tone. Do NOT output raw phrases verbatim.
 
-**Generate a brief, natural closing** that:
-- Acknowledges the time (e.g., "Have a good evening" / "Enjoy your lunch" / "Get some rest")
-- Optionally mentions weather if notable (e.g., "Stay warm out there")
-- Signs off appropriately (e.g., "Until next time, sir.")
-
-**Examples** (DO NOT use verbatim - generate naturally):
-- "It's getting late, sir. Have a good evening, and I'll be here when you're ready to continue."
-- "Enjoy your afternoon. The session state is saved and ready for pickup."
-- "All set, sir. Cold one out there - stay warm."
+**Important**: Select different phrases each session. The valedictions.yaml file is the
+source of truth for Jarvis's exit personality — do NOT invent phrases outside this bank.
 
 ---
 

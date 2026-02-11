@@ -25,7 +25,7 @@
 #   Use --iterm2 flag to attach with tmux -CC for native iTerm2 tabs
 #   This makes tmux windows appear as standard iTerm2 tabs/windows
 #
-# Updated: 2026-01-20 — Terminal-agnostic, iTerm2 integration support
+# Updated: 2026-02-10 — Aion Quartet layout (Watcher W1, Ennoia W2, Virgil W3)
 
 TMUX_BIN="${TMUX_BIN:-$HOME/bin/tmux}"
 SESSION_NAME="${TMUX_SESSION:-jarvis}"

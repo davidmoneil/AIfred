@@ -178,4 +178,4 @@ housekeep: 3 cleaned, 2 flagged, 0 errors
 
 ---
 
-*Part of Jarvis Aion Trinity — lightweight infrastructure hygiene*
+*Part of Jarvis Aion Quartet — lightweight infrastructure hygiene*

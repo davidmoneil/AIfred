@@ -304,11 +304,11 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 
 **Architecture**: Single-signal-file handoff — Watcher reads `.ennoia-recommendation` before keystroke injection; falls back to hardcoded behavior if file absent (graceful degradation).
 
-- [ ] Upgrade ennoia.sh v0.1 → v0.2: write `.ennoia-recommendation` with session briefing (arise) or resume intent (resume)
-- [ ] Modify Watcher `idle_hands_session_start()` + `idle_hands_jicm_resume()`: read `.ennoia-recommendation` for wake-up text, fall back to current hardcoded prompt if absent
-- [ ] Add tmux window 3 (Ennoia) to `launch-jarvis-tmux.sh`
-- [ ] Register in `capability-map.yaml`
-- [ ] Sync validation: confirm JICM cycle (compress → /clear → resume) still works with Ennoia running
+- [x] Upgrade ennoia.sh v0.1 → v0.2: write `.ennoia-recommendation` with session briefing (arise) or resume intent (resume)
+- [x] Modify Watcher `idle_hands_session_start()` + `idle_hands_jicm_resume()`: read `.ennoia-recommendation` for wake-up text, fall back to current hardcoded prompt if absent
+- [x] Add tmux window 2 (Ennoia) to `launch-jarvis-tmux.sh`
+- [x] Register in `capability-map.yaml`
+- [x] Sync validation: confirm JICM cycle (compress → /clear → resume) still works with Ennoia running
 
 **Deferred to Phase J**: Idle-time work scheduler, session-start.sh thin-dispatcher refactoring, auto-actions
 
@@ -316,22 +316,23 @@ Beyond the Nine Muses exists a hidden 10th component: **AC-10 Ulfhedthnar** — 
 
 **Three new panels** beyond v0.1 (recent files + git changes + context):
 
-- [ ] **TASKS panel**: Hook on PostToolUse writes `.virgil-tasks.json` tracking TaskCreate/TaskUpdate activity; Virgil reads and renders task list with status indicators
-- [ ] **ACTIVE AGENTS panel**: Hook on PostToolUse (Task tool) writes `.virgil-agents.json` tracking subagent launches; stale entries (>10 min) flagged; cleared on completion
-- [ ] **FILES TOUCHED panel**: Enhanced git diff display showing files modified/staged/untracked since session start
-- [ ] Create `virgil-tracker.js` hook (PostToolUse, matcher `^Task$|^TaskCreate$|^TaskUpdate$`)
-- [ ] Upgrade virgil.sh v0.1 → v0.2 with 3 new panels
-- [ ] Add tmux window 2 (Virgil) to `launch-jarvis-tmux.sh`
-- [ ] Register in `capability-map.yaml`
+- [x] **TASKS panel**: Hook on PostToolUse writes `.virgil-tasks.json` tracking TaskCreate/TaskUpdate activity; Virgil reads and renders task list with status indicators
+- [x] **ACTIVE AGENTS panel**: Hook on PostToolUse (Task tool) writes `.virgil-agents.json` tracking subagent launches; stale entries (>10 min) flagged; cleared on completion
+- [x] **FILES TOUCHED panel**: Enhanced git diff display showing files modified/staged/untracked since session start
+- [x] Create `virgil-tracker.js` hook (PostToolUse, matcher `^Task$|^TaskCreate$|^TaskUpdate$`)
+- [x] Upgrade virgil.sh v0.1 → v0.2 with 3 new panels
+- [x] Add tmux window 3 (Virgil) to `launch-jarvis-tmux.sh`
+- [x] Register in `capability-map.yaml`
 
 **Deferred to Phase J**: Breadcrumbs, layer visualization, mode detection, Mermaid.js web dashboard
 
 ### F.3 Remaining Wiring — Valedictions, Housekeep, Capability-Map (~3-4 hrs)
-- [ ] Wire `valedictions.yaml` into `end-session.md` Closing Salutation (replace hardcoded examples)
-- [ ] Create `housekeep.sh` implementing script for `/housekeep` command (7 phases per housekeep.md spec)
-- [ ] Register all new components in `capability-map.yaml` (ennoia, virgil, housekeep, valedictions)
-- [ ] Update `orchestration-overview.md` to document Aion Trinity (Watcher + Virgil + Ennoia)
-- [ ] Update launcher help text and window count documentation
+- [x] Wire `valedictions.yaml` into `end-session.md` Closing Salutation (replace hardcoded examples)
+- [x] Create `housekeep.sh` implementing script for `/housekeep` command (7 phases per housekeep.md spec)
+- [x] Register all new components in `capability-map.yaml` (ennoia, virgil, watcher, housekeep)
+- [x] Update `orchestration-overview.md` to document Aion Quartet (Watcher + Ennoia + Virgil + Housekeep)
+- [x] Update launcher help text and window count documentation
+- [x] Critical review + convention cleanup (ennoia.sh color vars, housekeep.sh git -C, signal diagram fix)
 
 ### F.4 Task Delegation Protocol (~5-6 hrs)
 - [ ] Formalize subagent spawning pattern beyond current compositions

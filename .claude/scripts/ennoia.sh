@@ -25,6 +25,14 @@ ENNOIA_STATUS="$PROJECT_DIR/.claude/context/.ennoia-status"
 ENNOIA_RECOMMENDATION="$PROJECT_DIR/.claude/context/.ennoia-recommendation"
 REFRESH=30
 
+# --- Color Constants (ANSI-C quoting for reliable escape sequences) ---
+C_RESET=$'\e[0m'
+C_BOLD=$'\e[1m'
+C_DIM=$'\e[2m'
+C_GREEN=$'\e[32m'
+C_YELLOW=$'\e[33m'
+C_MAGENTA=$'\e[35m'
+
 # Trap for clean exit
 trap 'echo "Ennoia: shutting down."; exit 0' SIGTERM SIGINT
 
@@ -204,13 +212,13 @@ render() {
     tput ed 2>/dev/null
 
     # Header
-    printf '\e[1;35m ENNOIA\e[0m — Session Orchestrator'
+    printf "${C_BOLD}${C_MAGENTA} ENNOIA${C_RESET} — Session Orchestrator"
     printf '%*s\n' $((cols - 35)) "$(date '+%H:%M %Z')"
     printf '%.0s─' $(seq 1 "$cols"); echo
 
     case "$mode" in
         arise)
-            echo -e "\n\e[1m  SESSION INTENT\e[0m"
+            echo; echo "${C_BOLD}  SESSION INTENT${C_RESET}"
             echo "  → $(get_intent)"
             local unpushed
             unpushed=$(git -C "$PROJECT_DIR" log --oneline origin/Project_Aion..HEAD 2>/dev/null | wc -l | tr -d ' ')
@@ -219,7 +227,7 @@ render() {
             branch=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null)
             echo "  → Branch: ${branch:-unknown}"
 
-            echo -e "\n\e[1m  MAINTENANCE QUEUE\e[0m"
+            echo; echo "${C_BOLD}  MAINTENANCE QUEUE${C_RESET}"
             local maint
             maint=$(get_maintenance_status)
             echo "  ▪ /reflect — last: $(echo "$maint" | grep -o 'reflect:[^ ]*' | cut -d: -f2)"
@@ -227,14 +235,14 @@ render() {
             ;;
 
         attend)
-            echo -e "\n  CURRENT: $(get_intent)"
+            echo; echo "  CURRENT: $(get_intent)"
             local pct
             pct=$(awk '/^percentage:/{print $2}' "$WATCHER_STATUS" 2>/dev/null)
             echo "  Context: ${pct:-?}"
             ;;
 
         idle)
-            echo -e "\n\e[33m  IDLE\e[0m — Evaluating maintenance queue..."
+            echo; echo "${C_YELLOW}  IDLE${C_RESET} — Evaluating maintenance queue..."
             local maint
             maint=$(get_maintenance_status)
             echo "  ▪ /reflect — last: $(echo "$maint" | grep -o 'reflect:[^ ]*' | cut -d: -f2)"
@@ -242,7 +250,7 @@ render() {
             ;;
 
         resume)
-            echo -e "\n  Resuming after context compression..."
+            echo; echo "  Resuming after context compression..."
             echo "  Reading compressed context..."
             ;;
     esac

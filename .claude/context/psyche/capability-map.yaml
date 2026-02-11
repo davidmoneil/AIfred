@@ -278,6 +278,21 @@ components:
     signal_files: [".virgil-tasks.json", ".virgil-agents.json"]
     note: "Aion Quartet: Virgil=navigation dashboard (tmux window 3)"
 
+  - id: aion.watcher
+    version: "5.8.5"
+    when: "JICM context monitoring — token polling, compression triggers, /clear coordination"
+    status: active
+    script: .claude/scripts/jarvis-watcher.sh
+    signal_files: [".watcher-status", ".compression-done.signal"]
+    note: "Aion Quartet: Watcher=defensive awareness (JICM mechanics, tmux window 1)"
+
+  - id: flow.housekeep
+    when: "Quick infrastructure cleanup — signal files, log rotation, state freshness"
+    status: active
+    script: .claude/scripts/housekeep.sh
+    command: .claude/commands/housekeep.md
+    note: "7-phase non-destructive cleanup (move, never delete)"
+
 # ─── SKILL COMPOSITIONS (dynamic chaining) ───
 # Extracted from OMC "orchestration skills" pattern (Stream 2).
 # Instead of hardcoding delegation, define compositions that

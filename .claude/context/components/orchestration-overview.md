@@ -2,14 +2,15 @@
 
 How the Autonomic Components interact during Jarvis sessions.
 
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Layer**: Nous (component topology)
 
-## Architecture: Hippocrenae + Ulfhedthnar
+## Architecture: Hippocrenae + Ulfhedthnar + Aion Quartet
 
-The autonomic system comprises two categories:
+The autonomic system comprises three categories:
 - **Hippocrenae** (AC-01 through AC-09): The Nine Muses — standard operational harmony
 - **Ulfhedthnar** (AC-10): The Wolf-Warrior — hidden Neuros override system (dormant until barriers detected)
+- **Aion Quartet** (Watcher, Ennoia, Virgil, Housekeep): Infrastructure layer — zero-context-cost background processes
 
 ---
 
@@ -202,6 +203,39 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 
 ---
 
+## Aion Quartet — Infrastructure Layer
+
+The Aion Quartet operates beneath the Autonomic Components, providing infrastructure
+services that the ACs depend on but do not directly manage.
+
+| Aspect | Autonomic Components (ACs) | Aion Quartet |
+|--------|---------------------------|--------------|
+| Role | Behavioral/decisional | Infrastructure/mechanical |
+| Trigger | Events, thresholds, commands | Always-on loops, scheduled |
+| Runs as | Claude conversation flow | tmux background processes (bash) |
+| Context cost | Consumes tokens | Zero context cost |
+
+### Components
+
+| Component | tmux | Script | Role |
+|-----------|------|--------|------|
+| **Watcher** | W1 | jarvis-watcher.sh | JICM monitoring, token polling, /clear |
+| **Ennoia** | W2 | ennoia.sh | Session orchestration, intent-driven wake-up |
+| **Virgil** | W3 | virgil.sh | Task/agent tracking, file changes |
+| **Housekeep** | — | housekeep.sh | Signal cleanup, log rotation, state freshness |
+
+### Signal File Communication
+
+```
+Ennoia ──writes──▶ .ennoia-recommendation ──read by──▶ Watcher
+Watcher ─writes──▶ .watcher-status ──────read by──▶ Ennoia, Virgil
+Hooks ───write───▶ .virgil-tasks.json ────────read by─▶ Virgil
+Hooks ───write───▶ .virgil-agents.json ──────read by─▶ Virgil
+Housekeep ────────▶ cleans stale signals from all components
+```
+
+---
+
 ## Quick Reference
 
 **Hippocrenae (Nine Muses)**:
@@ -216,6 +250,12 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 - **Override**: Max parallel agents, approach rotation, no-quit Wiggum Berserker Loop
 - **Safety**: Cannot bypass destructive confirmations, respects JICM, auto-disengages
 
+**Aion Quartet (Infrastructure)**:
+- **Watcher** (W1): Always-on JICM monitoring, compression triggers, /clear coordination
+- **Ennoia** (W2): Intent-driven session orchestration, wake-up recommendations
+- **Virgil** (W3): Codebase navigation, task/agent tracking, file change monitoring
+- **Housekeep**: On-demand cleanup — signal files, log rotation, state freshness (7 phases)
+
 ---
 
-*Jarvis — Nous Layer (Component Topology) — Hippocrenae + Ulfhedthnar*
+*Jarvis — Nous Layer (Component Topology) — Hippocrenae + Ulfhedthnar + Aion Quartet*
