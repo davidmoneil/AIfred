@@ -109,6 +109,29 @@ fi
 # Check if session already exists
 if "$TMUX_BIN" has-session -t "$SESSION_NAME" 2>/dev/null; then
     echo -e "${GREEN}Session '$SESSION_NAME' already exists.${NC}"
+
+    # If --dev requested and W5 doesn't exist, add it to the running session
+    if [[ "$DEV_MODE" == "true" ]]; then
+        EXISTING_WINDOWS=$("$TMUX_BIN" list-windows -t "$SESSION_NAME" -F '#{window_name}' 2>/dev/null)
+        if ! echo "$EXISTING_WINDOWS" | grep -q "^Jarvis-dev$"; then
+            echo "Adding Jarvis-dev window (W5) to existing session..."
+            JARVIS_DEV_SESSION_ID="bd0954d9-b5fd-50cf-b107-c2751b0018a1"
+            JARVIS_DEV_SESSION_FILE="$HOME/.claude/projects/-Users-aircannon-Claude-Jarvis/${JARVIS_DEV_SESSION_ID}.jsonl"
+            CLAUDE_ENV_DEV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000 JARVIS_SESSION_ROLE=dev"
+            if [[ -f "$JARVIS_DEV_SESSION_FILE" ]]; then
+                CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --resume $JARVIS_DEV_SESSION_ID"
+            else
+                CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --session-id $JARVIS_DEV_SESSION_ID"
+            fi
+            "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Jarvis-dev" -d \
+                "cd '$PROJECT_DIR' && export $CLAUDE_ENV_DEV && $CLAUDE_CMD_DEV"
+            "$TMUX_BIN" set-window-option -t "${SESSION_NAME}:Jarvis-dev" automatic-rename off 2>/dev/null || true
+            echo -e "  ${GREEN}✓${NC} Jarvis-dev window created"
+        else
+            echo "  Jarvis-dev window already exists."
+        fi
+    fi
+
     if [[ "$ITERM2_MODE" == "true" ]]; then
         echo "Attaching with iTerm2 integration..."
         exec "$TMUX_BIN" -CC attach-session -t "$SESSION_NAME"
@@ -199,11 +222,19 @@ if [[ -x "$CMD_HANDLER_SCRIPT" ]]; then
         "cd '$PROJECT_DIR' && '$CMD_HANDLER_SCRIPT' --interval 3; echo 'Command handler stopped.'; read"
 fi
 
-# W5: Jarvis-dev (second Claude session — test driver, with --continue)
+# W5: Jarvis-dev (developer's seat — named session for deterministic resumption)
+# Uses a deterministic UUID so --resume always picks up the same conversation.
+# UUID v5 of "project_aion_jarvis_dev" in NAMESPACE_URL = bd0954d9-b5fd-50cf-b107-c2751b0018a1
 if [[ "$DEV_MODE" == "true" ]]; then
-    echo "Launching Jarvis-dev (test driver) in tmux window..."
+    echo "Launching Jarvis-dev (developer's seat) in tmux window..."
+    JARVIS_DEV_SESSION_ID="bd0954d9-b5fd-50cf-b107-c2751b0018a1"
+    JARVIS_DEV_SESSION_FILE="$HOME/.claude/projects/-Users-aircannon-Claude-Jarvis/${JARVIS_DEV_SESSION_ID}.jsonl"
     CLAUDE_ENV_DEV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000 JARVIS_SESSION_ROLE=dev"
-    CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --continue"
+    if [[ -f "$JARVIS_DEV_SESSION_FILE" ]]; then
+        CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --resume $JARVIS_DEV_SESSION_ID"
+    else
+        CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --session-id $JARVIS_DEV_SESSION_ID"
+    fi
     "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Jarvis-dev" -d \
         "cd '$PROJECT_DIR' && export $CLAUDE_ENV_DEV && $CLAUDE_CMD_DEV"
     "$TMUX_BIN" set-window-option -t "$SESSION_NAME:5" automatic-rename off 2>/dev/null || true
