@@ -37,6 +37,7 @@ STATE_FILE="$PROJECT_DIR/.claude/context/.jicm-state"
 COMPRESSED_FILE="$PROJECT_DIR/.claude/context/.compressed-context-ready.md"
 COMPRESSION_SIGNAL="$PROJECT_DIR/.claude/context/.compression-done.signal"
 SLEEP_SIGNAL="$PROJECT_DIR/.claude/context/.jicm-sleep.signal"
+EXIT_SIGNAL="$PROJECT_DIR/.claude/context/.jicm-exit-mode.signal"
 ARCHIVE_DIR="$PROJECT_DIR/.claude/logs/jicm/archive"
 EXPORTS_DIR="$PROJECT_DIR/.claude/exports"
 
@@ -1087,6 +1088,16 @@ main() {
             if [[ -f "$SLEEP_SIGNAL" ]]; then
                 if [[ $((poll_count % 12)) -eq 0 ]]; then
                     log INFO "JICM sleeping — Ulfhedthnar active (threshold checks suspended)"
+                fi
+                write_state
+                sleep "$POLL_INTERVAL"
+                continue
+            fi
+
+            # JICM Exit-Mode check — /end-session suppresses JICM during exit protocol
+            if [[ -f "$EXIT_SIGNAL" ]]; then
+                if [[ $((poll_count % 12)) -eq 0 ]]; then
+                    log INFO "JICM paused — exit protocol active (threshold checks suspended)"
                 fi
                 write_state
                 sleep "$POLL_INTERVAL"

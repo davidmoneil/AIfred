@@ -1,6 +1,6 @@
 ---
 description: Clean session exit with documentation
-allowed-tools: Read, Write, Edit, Bash(git:*), Bash(echo:*), Bash(node:*), Bash(rm:*), Bash(date:*), Bash(wc:*), Bash(ls:*), Bash(mkdir:*)
+allowed-tools: Read, Write, Edit, Bash(git:*), Bash(echo:*), Bash(node:*), Bash(rm:*), Bash(date:*), Bash(wc:*), Bash(ls:*), Bash(mkdir:*), Bash(touch:*)
 ---
 
 # End Session
@@ -25,6 +25,19 @@ Available options:
 
 **If user chooses an option**: Run the selected command, then return here to complete exit.
 **If user skips or presses Enter**: Proceed to exit procedure below.
+
+---
+
+## JICM Exit-Mode Signal (MUST be first)
+
+**Immediately** create the exit-mode signal file to prevent JICM from interrupting this protocol:
+
+```bash
+touch .claude/context/.jicm-exit-mode.signal
+```
+
+This suspends ALL JICM threshold checks until the signal is removed at exit completion.
+If this step is skipped, the watcher may fire JICM-HALT mid-protocol and interrupt the exit.
 
 ---
 
@@ -397,4 +410,14 @@ console.log('AC-09 state updated: sessions=' + state.metrics.total_sessions + ',
 
 ---
 
-*Jarvis v5.9.0 — Project Aion Master Archon (AC-09 telemetry wired 2026-02-08)*
+## JICM Exit-Mode Signal Cleanup (MUST be last)
+
+Remove the exit-mode signal to re-enable JICM monitoring for the next session:
+
+```bash
+rm -f .claude/context/.jicm-exit-mode.signal
+```
+
+---
+
+*Jarvis v5.10.0 — Project Aion Master Archon (AC-09 exit-mode signal added 2026-02-12)*

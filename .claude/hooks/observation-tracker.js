@@ -71,6 +71,16 @@ function main(hookData) {
     );
 
     try {
+      // Rotate if observations file exceeds 500KB to prevent unbounded growth
+      const OBS_MAX_BYTES = 512000; // 500KB
+      try {
+        const stats = fs.statSync(obsFile);
+        if (stats.size > OBS_MAX_BYTES) {
+          const prevFile = obsFile.replace(/\.yaml$/, '.prev.yaml');
+          fs.renameSync(obsFile, prevFile);
+        }
+      } catch (e) { /* file may not exist yet */ }
+
       const entry = `\n- tool: "${toolName}"\n  tokens_est: ${estimatedTokens}\n  large: ${isLarge}\n  timestamp: "${new Date().toISOString()}"\n`;
       fs.appendFileSync(obsFile, entry);
     } catch (e) {
