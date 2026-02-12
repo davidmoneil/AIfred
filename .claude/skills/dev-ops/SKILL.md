@@ -36,6 +36,8 @@ W5: Jarvis-dev    — TEST DRIVER (you are here)
 
 **Isolation**: Watcher and command-handler hardcode `${TMUX_SESSION}:0` — W5 is invisible.
 
+**Session naming**: W5 uses a deterministic UUID (`bd0954d9-...`, v5 hash of `"project_aion_jarvis_dev"`) so every relaunch resumes the same conversation. If the session file exists, launcher uses `--resume`; if not, `--session-id` to create it. This eliminates the `--continue` race condition where W0's fresh session could become "most recent."
+
 **Prerequisites**:
 - Launched via `launch-jarvis-tmux.sh --dev`
 - W0 (Jarvis) active and idle
