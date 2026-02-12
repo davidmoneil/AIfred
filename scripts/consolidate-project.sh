@@ -15,12 +15,12 @@
 set -euo pipefail
 
 # Configuration
-AIPROJECTS_ROOT="${AIPROJECTS_ROOT:-$HOME/AIProjects}"
-PROJECTS_DIR="$AIPROJECTS_ROOT/.claude/projects"
-CONTEXT_DIR="$AIPROJECTS_ROOT/.claude/context"
-AGENTS_DIR="$AIPROJECTS_ROOT/.claude/agents"
-COMMANDS_DIR="$AIPROJECTS_ROOT/.claude/commands"
-SKILLS_DIR="$AIPROJECTS_ROOT/.claude/skills"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+PROJECTS_DIR="$AIFRED_HOME/.claude/projects"
+CONTEXT_DIR="$AIFRED_HOME/.claude/context"
+AGENTS_DIR="$AIFRED_HOME/.claude/agents"
+COMMANDS_DIR="$AIFRED_HOME/.claude/commands"
+SKILLS_DIR="$AIFRED_HOME/.claude/skills"
 
 # Colors (only for non-JSON output)
 RED='\033[0;31m'
@@ -274,7 +274,7 @@ analyze_infrastructure() {
         lines=$(echo "$line" | awk '{print $1}')
         file=$(echo "$line" | awk '{print $2}')
         if [[ -n "$file" && -n "$lines" ]]; then
-            local rel_path="${file#$AIPROJECTS_ROOT/}"
+            local rel_path="${file#$AIFRED_HOME/}"
             context_files+=("{\"path\": \"$rel_path\", \"lines\": $lines}")
         fi
     done < <(find "$CONTEXT_DIR" -name "*.md" -exec wc -l {} \; 2>/dev/null | sort -rn | head -20)

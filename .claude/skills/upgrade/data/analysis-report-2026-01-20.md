@@ -1,12 +1,12 @@
 # Upgrade Analysis Report
 **Generated**: 2026-01-20
-**Context**: AIProjects infrastructure with 8 skills, 35 hooks, 3 active MCPs, extensive automation
+**Context**: hub infrastructure with 8 skills, 35 hooks, 3 active MCPs, extensive automation
 
 ---
 
 ## Executive Summary
 
-**12 discoveries analyzed** against current AIProjects state:
+**12 discoveries analyzed** against current hub state:
 - **4 High Priority (≥7)** - Recommend evaluation/implementation
 - **5 Medium Priority (5-6)** - Consider for future sessions
 - **3 Low Priority (<5)** - Acknowledged, no action needed
@@ -21,12 +21,12 @@
 **Current Score**: 8 | **Recommended Score**: 9
 
 **Why Higher Score**:
-- ✅ Category Match (+3): AIProjects has significant TypeScript/JavaScript codebase (hooks, skills, plugins)
+- ✅ Category Match (+3): The hub has significant TypeScript/JavaScript codebase (hooks, skills, plugins)
 - ✅ Already Available (+2): Added in v2.0.74, no upgrade needed
 - ✅ Navigation Need (+2): 35 hooks, 8 skills, extensive .claude/ structure would benefit from go-to-definition
 - ✅ Recency (+2): Recent feature, actively maintained
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current pain point**: Navigating across 35+ hook files, 8 skill directories
 - **Use cases**: Jump to hook definitions, find references across skills, understand function usage
 - **Complexity**: LOW - Just enable/configure, no code changes
@@ -52,11 +52,11 @@ claude --version  # Should show 2.1.14
 **Current Score**: 7 | **Recommended Score**: 8
 
 **Why Higher Score**:
-- ✅ Direct Comparison Available (+1): AIProjects uses Playwright MCP via gateway
+- ✅ Direct Comparison Available (+1): The hub uses Playwright MCP via gateway
 - ✅ Integration Test Opportunity (+1): Can A/B test both approaches
 - ⚠️ Beta Status (-1): May be unstable
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current setup**: Playwright MCP through gateway (21 tools, proven stable)
 - **Use cases**: Browser automation for service health checks, visual testing
 - **Trade-offs**:
@@ -86,11 +86,11 @@ claude --version  # Should show 2.1.14
 **Current Score**: 7 | **Recommended Score**: 7 (UNCHANGED)
 
 **Analysis**:
-- ✅ Category Match (+3): AIProjects has 8 skills, some are context-heavy
+- ✅ Category Match (+3): The hub has 8 skills, some are context-heavy
 - ✅ Already Available (+2): Added in v2.1.0
 - ✅ Isolation Need (+2): parallel-dev, structured-planning could benefit
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current issue**: Heavy skills like parallel-dev may pollute main session context
 - **Candidates for forking**:
   - `parallel-dev` - Manages worktrees, can be long-running
@@ -121,7 +121,7 @@ context: fork
 - ✅ Current Version: Fixed in v2.1.14 (running now)
 - ✅ Direct Impact: Long sessions should see better context utilization
 
-**AIProjects Context**:
+**Hub Context**:
 - **Before**: May have hit context limits prematurely
 - **After**: Can use nearly full 200k context window
 - **Benefit**: Longer sessions without compression, better memory retention
@@ -137,12 +137,12 @@ context: fork
 
 ### UP-002: MCP External Data Sources (Score: 6)
 **Analysis**:
-- ✅ Category Match (+3): MCP integration is core to AIProjects
+- ✅ Category Match (+3): MCP integration is core to the hub
 - ⚠️ Need Unclear (+0): Slack/Drive/Figma not currently used
 - ✅ Ecosystem Awareness (+2): Good to know available
 - ✅ Recency (+1): Recent documentation update
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current MCPs**: filesystem, git, gateway (memory, fetch, playwright), n8n, prometheus, grafana
 - **Potential use cases**:
   - **Slack**: Could integrate with notification workflows
@@ -164,7 +164,7 @@ context: fork
 - ✅ Auto-updates (+2): Would catch updates automatically
 - ⚠️ Migration Effort (-1): Requires reinstall, configuration migration
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current**: Manual npm install, explicit version control
 - **Native benefits**: Background updates, system integration
 - **Trade-offs**: Less control over version timing
@@ -201,25 +201,25 @@ context: fork
 - ⚠️ No Immediate Action (+0): Informational only
 - ✅ Awareness (+1): Good for long-term planning
 
-**AIProjects Context**:
+**Hub Context**:
 - **Impact**: May see more MCP servers, better standardization
 - **Benefit**: Easier integration, more reliable tooling
 - **Timeline**: Long-term (6-12 months)
 
 **Recommendation**: **ACKNOWLEDGE - MONITOR ECOSYSTEM**
 - Watch for new MCP servers in Agentic AI Foundation registry
-- Consider contributing AIProjects patterns to community
+- Consider contributing patterns to community
 
 ---
 
 ### UP-010: Plugin Git SHA Pinning (Score: 5)
 **Analysis**:
 - ✅ Stability (+2): Pin plugins to known-good versions
-- ⚠️ No Plugins Used (+0): AIProjects doesn't use external plugins currently
+- ⚠️ No Plugins Used (+0): The hub doesn't use external plugins currently
 - ✅ Future Option (+2): Available if needed
 - ✅ Recency (+1): Recent feature (v2.1.14)
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current**: No external plugins (skills are internal)
 - **Use case**: If adopting community plugins (hookify, feature-dev, etc.)
 - **Complexity**: LOW - Just add SHA to config when needed
@@ -249,7 +249,7 @@ context: fork
 - ✅ Available (+2): Good for future internationalization
 - ✅ Low Complexity (+1): Simple config setting
 
-**AIProjects Context**:
+**Hub Context**:
 - **Current**: Default English responses
 - **Use case**: None currently
 - **Future**: Could enable if working with non-English users
@@ -310,7 +310,7 @@ context: fork
 
 **Scoring Adjustments**:
 - Base scores from discovery phase
-- Adjusted based on AIProjects-specific context
+- Adjusted based on hub-specific context
 - Factors: active usage patterns, current pain points, risk/effort ratio
 
 **Context Considered**:

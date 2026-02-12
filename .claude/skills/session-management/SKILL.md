@@ -5,7 +5,7 @@ description: Manage Claude Code sessions effectively - starting, tracking, check
 category: workflow
 tags: [session, context, continuity, priorities, audit]
 created: 2026-01-05
-ported_from: AIProjects
+
 ---
 
 # Session Management Skill

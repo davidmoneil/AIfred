@@ -9,8 +9,8 @@
 set -uo pipefail  # Don't exit on error, we want to report status
 
 # Configuration
-AIPROJECTS_DIR="${HOME}/AIProjects"
-REGISTRY_FILE="${AIPROJECTS_DIR}/.claude/context/registries/services.yaml"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+REGISTRY_FILE="${AIFRED_HOME}/.claude/context/registries/services.yaml"
 
 # Colors
 RED='\033[0;31m'

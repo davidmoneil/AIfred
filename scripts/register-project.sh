@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script: register-project.sh
-# Purpose: Register an existing project with AIProjects
+# Purpose: Register an existing project with AIfred
 # Usage: ./register-project.sh <path-or-github-url>
 # Author: David Moneil
 # Created: 2026-01-20
@@ -10,9 +10,9 @@ set -euo pipefail
 
 # Configuration
 CODE_DIR="${HOME}/Code"
-AIPROJECTS_DIR="${HOME}/AIProjects"
-REGISTRY_FILE="${AIPROJECTS_DIR}/paths-registry.yaml"
-CONTEXT_DIR="${AIPROJECTS_DIR}/.claude/context/projects"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
+CONTEXT_DIR="${AIFRED_HOME}/.claude/context/projects"
 
 # Colors
 RED='\033[0;31m'
@@ -26,7 +26,7 @@ show_help() {
     cat << EOF
 Usage: $(basename "$0") <path-or-github-url>
 
-Register an existing project with AIProjects.
+Register an existing project with AIfred.
 
 Arguments:
     path-or-url    Local path or GitHub URL

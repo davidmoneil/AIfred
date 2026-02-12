@@ -27,7 +27,7 @@
       "impact": "medium",
       "complexity": "medium",
       "status": "deferred",
-      "notes": "ANALYSIS: AIProjects has 3 active + 4 on-demand MCPs. Slack/Drive/Figma not currently needed. Good ecosystem awareness.",
+      "notes": "ANALYSIS: the hub has 3 active + 4 on-demand MCPs. Slack/Drive/Figma not currently needed. Good ecosystem awareness.",
       "recommendation": "DEFER - REVISIT WHEN NEEDED",
       "analysis_date": "2026-01-20"
     },
@@ -85,7 +85,7 @@
       "impact": "medium",
       "complexity": "low",
       "status": "ready_for_proposal",
-      "notes": "ANALYSIS: AIProjects uses Playwright MCP (21 tools) via gateway. Chrome extension offers different UX - interactive vs programmatic. A/B test recommended.",
+      "notes": "ANALYSIS: the hub uses Playwright MCP (21 tools) via gateway. Chrome extension offers different UX - interactive vs programmatic. A/B test recommended.",
       "recommendation": "EVALUATE (NOT REPLACE)",
       "analysis_date": "2026-01-20"
     },

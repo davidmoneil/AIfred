@@ -41,7 +41,7 @@ function shouldTrack(filePath) {
 }
 
 /**
- * Get relative path from AIProjects root
+ * Get relative path from hub root
  */
 function getRelativePath(filePath) {
   // Get project root dynamically (hook lives at .claude/hooks/)

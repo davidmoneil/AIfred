@@ -134,4 +134,4 @@ This command uses:
 - **Read** for key file inspection
 - **Write** for documentation generation
 
-The analysis is non-destructive - it only reads the codebase and writes to AIProjects context.
+The analysis is non-destructive - it only reads the codebase and writes to hub context.

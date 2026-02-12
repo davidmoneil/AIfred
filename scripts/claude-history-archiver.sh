@@ -5,7 +5,7 @@
 # Usage:
 #   ./claude-history-archiver.sh [--dry-run] [--archive] [--status]
 #
-# Synced from AIProjects: 2026-02-05 (v2.1)
+# AIfred history archiver
 
 set -uo pipefail
 # Note: -e removed to handle find returning no results gracefully

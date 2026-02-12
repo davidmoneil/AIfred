@@ -18,10 +18,10 @@
 set -euo pipefail
 
 # Configuration
-AIPROJECTS_ROOT="${AIPROJECTS_ROOT:-$HOME/AIProjects}"
-PRIORITIES_FILE="$AIPROJECTS_ROOT/.claude/context/projects/current-priorities.md"
-SESSION_NOTES_DIR="$AIPROJECTS_ROOT/knowledge/notes"
-SESSION_STATE_FILE="$AIPROJECTS_ROOT/.claude/context/session-state.md"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+PRIORITIES_FILE="$AIFRED_HOME/.claude/context/projects/current-priorities.md"
+SESSION_NOTES_DIR="$AIFRED_HOME/knowledge/notes"
+SESSION_STATE_FILE="$AIFRED_HOME/.claude/context/session-state.md"
 
 usage() {
     cat << EOF
@@ -53,7 +53,7 @@ EOF
 git_history() {
     local days="${1:-30}"
 
-    cd "$AIPROJECTS_ROOT"
+    cd "$AIFRED_HOME"
 
     local commits=()
     while IFS= read -r line; do
@@ -280,7 +280,7 @@ EOF
 gather_evidence() {
     local term="$1"
 
-    cd "$AIPROJECTS_ROOT"
+    cd "$AIFRED_HOME"
 
     # Git commits mentioning the term
     local git_matches=()
@@ -310,10 +310,10 @@ gather_evidence() {
     local context_matches=()
     while IFS= read -r file; do
         if [[ -n "$file" ]]; then
-            local rel_path="${file#$AIPROJECTS_ROOT/}"
+            local rel_path="${file#$AIFRED_HOME/}"
             context_matches+=("\"$rel_path\"")
         fi
-    done < <(grep -rli "$term" "$AIPROJECTS_ROOT/.claude/context/" 2>/dev/null | head -10)
+    done < <(grep -rli "$term" "$AIFRED_HOME/.claude/context/" 2>/dev/null | head -10)
 
     # Check if term looks like a service name and test
     local service_status="unknown"
@@ -374,7 +374,7 @@ summary() {
 
     # Recent commits
     local recent_commits
-    recent_commits=$(cd "$AIPROJECTS_ROOT" && git log --since="7 days ago" --oneline --no-merges 2>/dev/null | wc -l)
+    recent_commits=$(cd "$AIFRED_HOME" && git log --since="7 days ago" --oneline --no-merges 2>/dev/null | wc -l)
 
     # Docker containers
     local running_containers=0

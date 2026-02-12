@@ -298,7 +298,7 @@ full_discovery() {
 
     # Check for existing documentation
     local doc_exists="false"
-    local doc_path="$HOME/AIProjects/.claude/context/systems/docker/$container.md"
+    local doc_path="${AIFRED_HOME:-.}/.claude/context/systems/docker/$container.md"
     [[ -f "$doc_path" ]] && doc_exists="true"
 
     cat << EOF

@@ -1,6 +1,6 @@
 # /upgrade Command
 
-Self-improvement system for discovering and applying updates to AIProjects.
+Self-improvement system for discovering and applying updates to your hub.
 
 ## Usage
 
@@ -32,10 +32,10 @@ Sources checked: 6 | New discoveries: 2
 
 ### /upgrade analyze
 
-Evaluate pending upgrades for relevance to AIProjects.
+Evaluate pending upgrades for relevance to your hub.
 
 **Process**:
-1. Read AIProjects current state (hooks, skills, MCP config)
+1. Read current hub state (hooks, skills, MCP config)
 2. Score each upgrade by relevance, impact, complexity
 3. Prioritize by value/effort ratio
 4. Update pending-upgrades.json with scores

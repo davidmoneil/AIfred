@@ -17,7 +17,7 @@ memory_enabled: true
 session_logging: true
 created: 2026-01-05
 source: Design Pattern Integration Plan - Phase 3
-ported_from: AIProjects
+
 ---
 
 # Memory Bank Synchronizer Agent

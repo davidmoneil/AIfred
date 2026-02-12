@@ -2,7 +2,7 @@
 
 **Created**: 2026-01-02
 **Status**: Active
-**Applies To**: AIProjects, AIFred, all Claude Code projects
+**Applies To**: All Claude Code projects
 
 ---
 
@@ -54,7 +54,7 @@ MCP (Model Context Protocol) servers consume context tokens when loaded. This pa
 | Toggle mid-session | No |
 | Best for | Core functionality used in 80%+ of sessions |
 
-**Current Always-On MCPs (AIProjects)**:
+**Current Always-On MCPs **:
 - **MCP Gateway** (Memory, Fetch, Docker) - ~15k tokens
 - **Git MCP** - ~6k tokens
 - **Filesystem MCP** - ~8k tokens
@@ -83,7 +83,7 @@ MCP (Model Context Protocol) servers consume context tokens when loaded. This pa
 | Session end behavior | **Auto-disable** (returns to default off) |
 | Best for | Task-specific functionality, heavy token cost |
 
-**Current On-Demand MCPs (AIProjects)**:
+**Current On-Demand MCPs **:
 - **n8n-MCP** - ~28k tokens (42 tools) - Default: OFF
 - **GitHub MCP** - ~15k tokens - Default: OFF
 - **SSH MCP** - ~5k tokens - Default: OFF
@@ -148,7 +148,7 @@ claude mcp add <server-name>
 | Toggle mid-session | N/A (each call is fresh process) |
 | Best for | Heavy token cost, infrequent use, context isolation needed |
 
-**Current Isolated MCPs (AIProjects)**:
+**Current Isolated MCPs **:
 - **Playwright MCP** - ~15k tokens (21 tools) - Via `/browser` skill
 
 **Implementation Pattern**:
@@ -213,7 +213,7 @@ claude \
 
 ---
 
-## Current State (AIProjects)
+## Current State 
 
 ```
 DEFAULT SESSION (~22k tokens - lean)

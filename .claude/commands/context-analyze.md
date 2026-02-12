@@ -3,8 +3,7 @@ name: context-analyze
 description: Analyze Claude Code context usage and suggest optimizations
 usage: /context-analyze [--test] [--no-reduce]
 allowed-tools:
-  - Bash(~/AIProjects/Scripts/weekly-context-analysis.sh:*)
-  - Bash(~/Scripts/weekly-context-analysis.sh:*)
+  - Bash(scripts/weekly-context-analysis.sh:*)
 ---
 
 # /context-analyze - Context Usage Analysis
@@ -15,13 +14,13 @@ Analyzes Claude Code context usage patterns and suggests optimizations.
 
 ```bash
 # Full analysis with auto-reduction
-~/AIProjects/Scripts/weekly-context-analysis.sh
+scripts/weekly-context-analysis.sh
 
 # Test Ollama connection
-~/AIProjects/Scripts/weekly-context-analysis.sh --test
+scripts/weekly-context-analysis.sh --test
 
 # Run without auto-reduction
-CONTEXT_REDUCE=false ~/AIProjects/Scripts/weekly-context-analysis.sh
+CONTEXT_REDUCE=false scripts/weekly-context-analysis.sh
 ```
 
 ## Execution
@@ -31,7 +30,7 @@ CONTEXT_REDUCE=false ~/AIProjects/Scripts/weekly-context-analysis.sh
 Run the CLI script:
 
 ```bash
-~/AIProjects/Scripts/weekly-context-analysis.sh $ARGUMENTS
+scripts/weekly-context-analysis.sh $ARGUMENTS
 ```
 
 ## What It Analyzes
@@ -83,6 +82,6 @@ The script runs automatically via cron (weekly).
 
 ## Script Details
 
-**Location**: `~/AIProjects/Scripts/weekly-context-analysis.sh`
+**Location**: `scripts/weekly-context-analysis.sh`
 **Reports**: `.claude/logs/reports/`
 **Backups**: `.claude/logs/backups/` (before auto-reduction)

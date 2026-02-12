@@ -1,0 +1,39 @@
+# Beads Configuration File - AIfred Hub
+# Task management for your AI infrastructure hub
+# All settings can also be set via environment variables (BD_* prefix)
+#
+# Setup:
+#   1. npm install -g @beads/bd
+#   2. cd <your-aifred-directory>
+#   3. bd init
+#   4. cp .beads/config.yaml.template .beads/config.yaml
+#   5. Edit the actor field below with your name
+
+# Default actor for audit trails (overridden by BEADS_ACTOR env or --actor)
+# Claude sessions override this via hook: BEADS_ACTOR="claude-YYYYMMDD-sessionid"
+actor: "your-name"
+
+# Export events (audit trail) for full history tracking
+events-export: true
+
+# Auto-start daemon for fast CLI responses
+auto-start-daemon: true
+
+# Flush quickly so bv TUI sees changes in near-real-time
+flush-debounce: "2s"
+
+# Label Conventions for AIfred
+# =====================================
+# Domains:   domain:hooks, domain:skills, domain:profiles, domain:documentation, domain:infrastructure
+# Severity:  severity:critical, severity:high, severity:medium, severity:low
+# Sessions:  session:YYYYMMDD (date of creation)
+# Agents:    agent:claude, agent:human
+# Sources:   source:session, source:ad-hoc, source:automation, source:orchestration
+# Component: component:document-guard, component:setup-wizard, component:profiles
+#
+# Priority Mapping:
+#   0 = [X] CRITICAL
+#   1 = [!] HIGH
+#   2 = [~] MEDIUM
+#   3 = [-] LOW
+#   4 = Backlog

@@ -12,7 +12,7 @@
  * - Detects standalone commands (no skill parent)
  *
  * Created: 2026-01-22
- * Synced from AIProjects: 2026-02-05 (v2.1)
+ * AIfred skill router
  */
 
 const fs = require('fs').promises;

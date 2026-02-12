@@ -1,0 +1,56 @@
+# Persona: analyst
+# Tier: analyze (read + write to data files)
+# Purpose: Research, discover, write reports, create Beads tasks.
+
+persona: analyst
+tier: analyze
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Web access (research)
+  - WebFetch
+  - WebSearch
+  # Write (for data files and reports only)
+  - Write
+  # Git (read-only)
+  - mcp__git__git_status
+  - mcp__git__git_log
+  - mcp__git__git_diff
+  - mcp__git__git_show
+  # Filesystem (read + write)
+  - mcp__filesystem__read_text_file
+  - mcp__filesystem__read_file
+  - mcp__filesystem__list_directory
+  - mcp__filesystem__list_directory_with_sizes
+  - mcp__filesystem__directory_tree
+  - mcp__filesystem__get_file_info
+  - mcp__filesystem__search_files
+  - mcp__filesystem__write_file
+  # MCP Gateway (read + fetch)
+  - mcp__mcp-gateway__read_graph
+  - mcp__mcp-gateway__search_nodes
+  - mcp__mcp-gateway__open_nodes
+  - mcp__mcp-gateway__fetch
+
+denied_tools:
+  - Edit
+  - mcp__filesystem__edit_file
+  - mcp__filesystem__move_file
+  - mcp__git__git_add
+  - mcp__git__git_commit
+  - mcp__git__git_create_branch
+
+# Bash: wildcard allowed. Safety comes from prompt constraints and denied_tools.
+# Restrictive patterns break when Claude uses loops, pipes, or compound commands.
+allowed_bash:
+  - "*"
+
+pre_approved:
+  - "Read any file"
+  - "Write to .claude/logs/ and .claude/skills/*/data/"
+  - "Create Beads tasks with source:headless label"
+  - "Search the web"
+  - "Fetch web content"

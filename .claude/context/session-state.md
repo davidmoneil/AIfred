@@ -23,7 +23,7 @@
 ## Session Continuity Notes
 
 ### What Was Accomplished (2026-02-08)
-- Synced Document Guard V1+V2 file protection hook from AIProjects (sanitized for public release)
+- Synced Document Guard V1+V2 file protection hook from the hub template (sanitized for public release)
   - V1 (enabled): 4-tier protection, pattern-based rules, 7 check types, time-limited overrides, audit logging
   - V2 (off by default): Semantic relevance validation via local Ollama
   - New files: `document-guard.js`, `document-guard.config.js`, `feature-registry.yaml`
@@ -33,7 +33,7 @@
 - Version bumped to v2.3.0 in changelog
 
 ### Previous Session (2026-01-17)
-- Ported parallel-dev skill from AIProjects (34 files, 5346 lines)
+- Ported parallel-dev skill from the hub template (34 files, 5346 lines)
 - Committed and pushed: 8bd8d32
 
 ### Pending Items

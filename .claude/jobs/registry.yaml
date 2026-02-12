@@ -1,0 +1,128 @@
+# Headless Claude Job Registry
+#
+# Defines all scheduled and on-demand jobs for headless execution.
+# Each job specifies a persona, schedule, prompt, and resource limits.
+#
+# Usage:
+#   dispatcher.sh --list           # Show all jobs
+#   dispatcher.sh --run <job>      # Force-run a job
+#   executor.sh --job <job> --dry-run  # Preview execution
+#
+# Personas: investigator (read-only), analyst (read+write), troubleshooter (diag+fix)
+# Engines: claude-code (default), ollama (local, $0 cost)
+# Schedules: interval (every_hours), weekly (day+hour), on-demand
+
+# ============================================================================
+# Defaults (applied when job doesn't specify a value)
+# ============================================================================
+
+defaults:
+  persona: investigator
+  model: sonnet
+  engine: claude-code
+  max_turns: 10
+  max_budget_usd: 2.00
+  timeout_minutes: 10
+  enabled: true
+
+# ============================================================================
+# Quiet Hours (DND for non-critical notifications)
+# ============================================================================
+
+quiet_hours:
+  timezone: "America/Denver"      # Change to your timezone
+  weekday:
+    start: 22                     # 10 PM
+    end: 7                        # 7 AM
+  weekend:
+    start: 23                     # 11 PM
+    end: 9                        # 9 AM
+  severity_bypass:
+    - critical                    # Critical alerts always deliver
+
+# ============================================================================
+# Jobs
+# ============================================================================
+
+jobs:
+  # ------------------------------------------------------------------
+  # health-summary: Quick infrastructure health check
+  # ------------------------------------------------------------------
+  health-summary:
+    description: "Check infrastructure health — Docker containers, services, disk space"
+    persona: investigator
+    model: sonnet
+    engine: claude-code
+    max_turns: 5
+    max_budget_usd: 1.00
+    timeout_minutes: 5
+    schedule:
+      type: interval
+      every_hours: 12
+    prompt: |
+      Run a quick infrastructure health check:
+      1. Check Docker container status (docker ps, any unhealthy/exited)
+      2. Check disk space (df -h, flag if any mount > 85%)
+      3. Check system load (uptime)
+      4. Check key service endpoints if configured in paths-registry.yaml
+
+      Format output as a concise health report with:
+      - Overall status (HEALTHY / DEGRADED / CRITICAL)
+      - Per-check status with details
+      - Any recommended actions
+
+  # ------------------------------------------------------------------
+  # doc-sync-check: Check if docs are stale vs code changes
+  # ------------------------------------------------------------------
+  doc-sync-check:
+    description: "Compare code changes against documentation, flag stale docs"
+    persona: investigator
+    model: sonnet
+    engine: claude-code
+    max_turns: 5
+    max_budget_usd: 1.00
+    schedule:
+      type: weekly
+      day: sunday
+      hour: 6
+    prompt: |
+      Check if documentation is stale compared to recent code changes:
+      1. Look at git log for the past week (files changed)
+      2. Compare against .claude/context/ and .claude/hooks/README.md
+      3. Flag any documentation that references outdated information
+
+      Output a brief report: files changed vs docs that may need updates.
+
+  # ------------------------------------------------------------------
+  # ollama-test: Template for Ollama-powered jobs ($0 cost)
+  # ------------------------------------------------------------------
+  ollama-test:
+    description: "Template job using local Ollama instead of Claude API"
+    persona: investigator
+    model: llama3.2:3b
+    engine: ollama
+    enabled: false                # Enable after configuring Ollama
+    timeout_minutes: 5
+    schedule:
+      type: on-demand
+    prompt: |
+      This is a test job running on the local Ollama engine.
+      Summarize the current date and time, and confirm you are running locally.
+
+  # ------------------------------------------------------------------
+  # Add your custom jobs below
+  # ------------------------------------------------------------------
+  # my-custom-job:
+  #   description: "What this job does"
+  #   persona: analyst           # investigator | analyst | troubleshooter
+  #   model: sonnet              # sonnet | haiku | llama3.2:3b (for ollama)
+  #   engine: claude-code        # claude-code | ollama
+  #   max_turns: 10
+  #   max_budget_usd: 2.00
+  #   schedule:
+  #     type: interval           # interval | weekly | on-demand
+  #     every_hours: 24          # for interval
+  #     # day: monday            # for weekly
+  #     # hour: 6                # for weekly
+  #   prompt: |
+  #     Your job instructions here...

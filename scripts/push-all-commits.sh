@@ -10,7 +10,7 @@ set -uo pipefail
 
 # Configuration
 CODE_DIR="${HOME}/Code"
-AIPROJECTS_DIR="${HOME}/AIProjects"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 # Colors
 RED='\033[0;31m'
@@ -34,7 +34,7 @@ Options:
     -h, --help        Show this help
 
 Projects Checked:
-    - AIProjects (${AIPROJECTS_DIR})
+    - AIfred hub (${AIFRED_HOME})
     - All projects in ~/Code/
 
 Examples:
@@ -73,9 +73,9 @@ done
 # Collect projects
 PROJECTS=()
 
-# Add AIProjects
-if [[ -d "$AIPROJECTS_DIR/.git" ]]; then
-    PROJECTS+=("$AIPROJECTS_DIR")
+# Add AIfred hub
+if [[ -d "$AIFRED_HOME/.git" ]]; then
+    PROJECTS+=("$AIFRED_HOME")
 fi
 
 # Add Code projects

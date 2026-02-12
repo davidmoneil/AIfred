@@ -1,0 +1,12 @@
+# Beads runtime files (not version controlled)
+*.db
+*.db-shm
+*.db-wal
+*.sock
+daemon.pid
+daemon.lock
+daemon.log
+last-touched
+metadata.json
+interactions.jsonl
+export-state/

@@ -1,0 +1,57 @@
+# Persona: investigator
+# Tier: discovery (read-only)
+# Purpose: Observe, analyze, report. Never modify.
+
+persona: investigator
+tier: discovery
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Web access
+  - WebFetch
+  - WebSearch
+  # Git (read-only)
+  - mcp__git__git_status
+  - mcp__git__git_log
+  - mcp__git__git_diff
+  - mcp__git__git_show
+  # Filesystem (read-only)
+  - mcp__filesystem__read_text_file
+  - mcp__filesystem__read_file
+  - mcp__filesystem__list_directory
+  - mcp__filesystem__list_directory_with_sizes
+  - mcp__filesystem__directory_tree
+  - mcp__filesystem__get_file_info
+  - mcp__filesystem__search_files
+  # MCP Gateway (read-only)
+  - mcp__mcp-gateway__read_graph
+  - mcp__mcp-gateway__search_nodes
+  - mcp__mcp-gateway__open_nodes
+
+denied_tools:
+  - Edit
+  - Write
+  - mcp__filesystem__write_file
+  - mcp__filesystem__edit_file
+  - mcp__filesystem__create_directory
+  - mcp__filesystem__move_file
+  - mcp__git__git_add
+  - mcp__git__git_commit
+  - mcp__git__git_create_branch
+
+# Bash: wildcard allowed. Safety comes from prompt constraints (read-only)
+# and denied_tools (no Write/Edit). Restrictive patterns break when Claude
+# uses loops, pipes, or compound commands — prompt-guided safety is more robust.
+allowed_bash:
+  - "*"
+
+pre_approved:
+  - "Read any file on the system"
+  - "Query any Docker container status"
+  - "Check service health endpoints"
+  - "Search the web for documentation"
+  - "Read the knowledge graph"
+  - "Read Beads task list"

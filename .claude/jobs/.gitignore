@@ -1,0 +1,9 @@
+# Runtime state (not version controlled)
+state/last-run.json
+state/locks/
+state/msgbus-cursor.txt
+state/msgbus-cursor.lock
+notifications.jsonl
+messages.jsonl
+queue.json
+.env

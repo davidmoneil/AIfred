@@ -11,7 +11,6 @@
  *
  * Priority: LOW (Workflow Enhancement)
  * Created: 2025-12-06
- * Synced from AIProjects: 2026-02-05 (v2.1)
  * Converted to stdin/stdout executable hook with file persistence
  */
 

@@ -1,0 +1,21 @@
+# Persona: troubleshooter
+# Diagnostics and safe fixes
+
+persona: troubleshooter
+
+engine:
+  default: claude-code
+  model: sonnet
+  fallback: null
+
+limits:
+  max_turns: 20
+  max_budget_usd: 5.00
+  timeout_minutes: 15
+
+output:
+  format: json
+  save_to: .claude/logs/headless/executions/
+
+session:
+  persist: false

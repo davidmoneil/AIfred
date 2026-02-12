@@ -13,7 +13,7 @@
  * Priority: LOW (Background Tracking)
  * Created: 2026-01-05
  * Source: Design Pattern Integration Plan - Phase 3
- * Ported from: AIProjects
+ * AIfred documentation sync trigger
  */
 
 const fs = require('fs').promises;

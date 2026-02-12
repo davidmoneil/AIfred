@@ -11,7 +11,7 @@
  * Event: PostToolUse (*)
  * Priority: RECOMMENDED
  * Created: 2025-12-06
- * Adapted for AIfred: 2026-02-05 (generalized from AIProjects)
+ * AIfred paths registry sync
  */
 
 const fs = require('fs').promises;

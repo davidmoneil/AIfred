@@ -1,7 +1,7 @@
 ---
 name: upgrade
 version: 1.0.0
-description: Self-improvement system for discovering and applying updates to AIProjects
+description: Self-improvement system for discovering and applying updates to your hub
 category: maintenance
 tags: [self-improvement, updates, monitoring, automation]
 created: 2026-01-21
@@ -11,7 +11,7 @@ model: sonnet
 
 # Upgrade Skill
 
-A **self-improvement system** that monitors external sources for updates to Claude Code, libraries, and infrastructure components, then proposes and implements improvements to AIProjects.
+A **self-improvement system** that monitors external sources for updates to Claude Code, libraries, and infrastructure components, then proposes and implements improvements to your hub.
 
 **Inspiration**: Daniel Miessler's PAI v2 - "Within 5 minutes, the entire Kai system was upgraded with this piece of functionality."
 
@@ -21,7 +21,7 @@ A **self-improvement system** that monitors external sources for updates to Clau
 
 | Aspect | Description |
 |--------|-------------|
-| Purpose | Proactively discover and apply improvements to AIProjects |
+| Purpose | Proactively discover and apply improvements to your hub |
 | Pattern | SKILL.md + config + data files (current pattern) |
 | When to Use | Regular maintenance, after Claude Code releases, when exploring improvements |
 | TELOS Link | G-T1 (Infrastructure Maturity), G-T3 (AI Assistant Context Depth) |
@@ -57,7 +57,7 @@ A **self-improvement system** that monitors external sources for updates to Clau
 +---------------------------------------------------------------------+
 |  PHASE 2: ANALYZE                                                    |
 |  /upgrade analyze                                                    |
-|     - Read AIProjects current state (.claude/*, CLAUDE.md)           |
+|     - Read current hub state (.claude/*, CLAUDE.md)           |
 |     - Evaluate each discovery for relevance                          |
 |     - Score impact (1-10) and complexity (Low/Med/High)              |
 |     - Prioritize by value/effort ratio                               |
@@ -207,7 +207,7 @@ Run /upgrade analyze to evaluate relevance.
 Each proposal includes:
 
 1. **Summary**: What the upgrade does
-2. **Relevance**: Why it matters to AIProjects
+2. **Relevance**: Why it matters to your hub
 3. **Files to Modify**: Specific paths and changes
 4. **Risks**: What could go wrong
 5. **Rollback Strategy**: How to undo
@@ -364,7 +364,7 @@ If implementation fails:
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | Discovery returns empty | Rate limited or source down | Wait and retry, check source URLs |
-| Wrong relevance score | Missing context | Run analyze again after updating AIProjects state |
+| Wrong relevance score | Missing context | Run analyze again after updating hub state |
 | Rollback fails | Tag missing | Check git tags, may need manual restore |
 | Upgrade breaks something | Breaking change missed | Rollback, review changelog more carefully |
 

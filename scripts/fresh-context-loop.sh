@@ -3,7 +3,6 @@
 #
 # Purpose: Run multiple tasks with fresh context per task (no context pollution)
 # Source Pattern: snarktank/ralph (fresh context per iteration)
-# Synced from AIProjects: 2026-02-05 (v2.1)
 #
 # Usage:
 #   ./fresh-context-loop.sh <orchestration.yaml>

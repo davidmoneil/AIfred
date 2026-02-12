@@ -1,6 +1,6 @@
 # Service Architecture Pattern
 
-**Purpose**: Standard patterns for building TypeScript services in the AIProjects ecosystem.
+**Purpose**: Standard patterns for building TypeScript services in your hub.
 
 **Created**: 2026-01-20
 **Last Updated**: 2026-01-20

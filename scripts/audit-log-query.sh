@@ -9,8 +9,8 @@
 set -uo pipefail
 
 # Configuration
-AIPROJECTS_DIR="${HOME}/AIProjects"
-AUDIT_LOG="${AIPROJECTS_DIR}/.claude/logs/audit.jsonl"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AUDIT_LOG="${AIFRED_HOME}/.claude/logs/audit.jsonl"
 
 # Colors
 RED='\033[0;31m'

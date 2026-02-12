@@ -13,7 +13,7 @@
 
 ---
 
-## Relevance to AIProjects
+## Relevance to Your Hub
 
 | Factor | Score | Reason |
 |--------|-------|--------|

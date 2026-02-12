@@ -1,10 +1,10 @@
 # Health Endpoint Pattern
 
-Standard contract for service health endpoints in AIProjects infrastructure.
+Standard contract for service health endpoints in hub infrastructure.
 
 ## Overview
 
-All services created through AIProjects should implement a health endpoint following this pattern. This enables:
+All services created through your hub should implement a health endpoint following this pattern. This enables:
 - Automated monitoring via `detect-service-issues.sh`
 - Integration with Uptime Kuma
 - Grafana dashboard compatibility

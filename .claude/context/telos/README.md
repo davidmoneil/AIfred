@@ -33,7 +33,7 @@ orchestration/*.yaml       "How do I break this down?"
 telos/
 ├── TELOS.md                    # Master file - overall direction
 ├── domains/
-│   ├── technical.md            # AIProjects / Infrastructure / Professional
+│   ├── technical.md            # Infrastructure / Technical / Professional
 │   ├── creative.md             # Writing, CreativeProjects
 │   └── personal.md             # Personal growth (placeholder)
 ├── goals/
@@ -103,7 +103,7 @@ How do you measure success? Objective indicators of progress.
 
 | Domain | Code | Focus |
 |--------|------|-------|
-| Technical | T | AIProjects, infrastructure, professional |
+| Technical | T | Infrastructure, technical, professional |
 | Creative | C | Writing, worldbuilding, artistic work |
 | Personal | P | Health, family, growth (placeholder) |
 | Cross-domain | X | Goals spanning multiple domains |

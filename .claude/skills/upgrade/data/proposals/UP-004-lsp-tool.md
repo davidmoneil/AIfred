@@ -21,7 +21,7 @@ Enable Language Server Protocol (LSP) integration in Claude Code to provide code
 
 ---
 
-## Relevance to AIProjects
+## Relevance to Your Hub
 
 | Factor | Rating | Notes |
 |--------|--------|-------|
@@ -30,7 +30,7 @@ Enable Language Server Protocol (LSP) integration in Claude Code to provide code
 | **Current Pain Point** | MEDIUM | Grep/Glob work but slow for definition lookups |
 | **Risk/Effort Ratio** | EXCELLENT | Low effort, high potential benefit |
 
-### Specific Use Cases in AIProjects
+### Specific Use Cases in Your Hub
 
 1. **Hook Development**: Navigate between hook files, trace imports
 2. **Skill Maintenance**: Jump to shared utilities, find all references to patterns
@@ -87,7 +87,7 @@ npx tweakcc --apply
 
 ### Phase 4: Validate (5 minutes)
 
-Test in AIProjects directory:
+Test in your hub directory:
 ```
 # Go to definition test
 "Show me the definition of the auditLogger function in hooks"
@@ -106,9 +106,9 @@ Test in AIProjects directory:
 | File | Change | Purpose |
 |------|--------|---------|
 | `~/.bashrc` or `~/.zshrc` | Add `export ENABLE_LSP_TOOL=1` | Enable LSP permanently |
-| None in AIProjects | N/A | This is a tooling upgrade |
+| None in hub | N/A | This is a tooling upgrade |
 
-**Note**: No AIProjects files are modified. This is a Claude Code configuration change.
+**Note**: No hub files are modified. This is a Claude Code configuration change.
 
 ---
 
@@ -156,7 +156,7 @@ npm uninstall -g @vtsls/language-server
 
 - [ ] LSP tools appear in available tools list
 - [ ] "Go to definition" works for TypeScript/JavaScript files in `.claude/hooks/`
-- [ ] "Find references" locates usages across AIProjects
+- [ ] "Find references" locates usages across hub
 - [ ] No significant performance degradation
 - [ ] Faster navigation than Grep/Glob for definition lookups
 

@@ -3,8 +3,7 @@ name: docker-restart
 description: Weekly Docker restart with health verification
 usage: /docker-restart [--dry-run] [--skip-restart] [--verbose]
 allowed-tools:
-  - Bash(~/AIProjects/Scripts/weekly-docker-restart.sh:*)
-  - Bash(~/Scripts/weekly-docker-restart.sh:*)
+  - Bash(scripts/weekly-docker-restart.sh:*)
 ---
 
 # /docker-restart - Docker Restart with Health Verification
@@ -15,13 +14,13 @@ Restarts Docker daemon and verifies all services come back up healthy.
 
 ```bash
 # Full restart with verification
-~/AIProjects/Scripts/weekly-docker-restart.sh
+scripts/weekly-docker-restart.sh
 
 # Check what would happen (dry-run)
-~/AIProjects/Scripts/weekly-docker-restart.sh --dry-run
+scripts/weekly-docker-restart.sh --dry-run
 
 # Skip the actual restart, just verify services
-~/AIProjects/Scripts/weekly-docker-restart.sh --skip-restart
+scripts/weekly-docker-restart.sh --skip-restart
 ```
 
 ## Execution
@@ -31,7 +30,7 @@ Restarts Docker daemon and verifies all services come back up healthy.
 Run the CLI script:
 
 ```bash
-~/AIProjects/Scripts/weekly-docker-restart.sh $ARGUMENTS
+scripts/weekly-docker-restart.sh $ARGUMENTS
 ```
 
 ## What It Does
@@ -65,7 +64,7 @@ Run the CLI script:
 The script runs automatically via cron:
 
 ```
-0 3 * * 0 ~/AIProjects/Scripts/weekly-docker-restart.sh
+0 3 * * 0 $AIFRED_HOME/scripts/weekly-docker-restart.sh
 ```
 
 (Every Sunday at 3 AM)
@@ -76,6 +75,6 @@ Logs are stored in: `~/logs/weekly-restart/`
 
 ## Script Details
 
-**Location**: `~/AIProjects/Scripts/weekly-docker-restart.sh`
+**Location**: `scripts/weekly-docker-restart.sh`
 **Timeout**: 120 seconds for service verification
 **Notification**: Webhook to n8n for success/failure alerts

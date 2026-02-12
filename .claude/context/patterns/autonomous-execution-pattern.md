@@ -364,7 +364,7 @@ Output recommendations only - do not modify files.
 
 ```bash
 # Claude Code Scheduled Jobs
-# Runs in AIProjects directory to load context
+# Runs in hub directory to load context
 
 # Weekly upgrade discovery (Sunday 6:00 AM)
 0 6 * * 0 <project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover >> <project_root>/.claude/logs/scheduled/cron.log 2>&1

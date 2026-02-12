@@ -60,7 +60,7 @@
 ### UP-002: MCP External Data Sources
 - **Relevance**: 6/10 | **Impact**: Medium | **Complexity**: Medium
 - **Summary**: Docs mention MCP support for Google Drive, Figma, Slack integrations
-- **Action**: Evaluate if these MCP servers would be useful for AIProjects
+- **Action**: Evaluate if these MCP servers would be useful for your hub
 
 ### UP-009: MCP Donated to Agentic AI Foundation
 - **Relevance**: 6/10 | **Impact**: Low | **Complexity**: None

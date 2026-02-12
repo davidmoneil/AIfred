@@ -146,10 +146,11 @@ function detectPatterns(toolName, params) {
     }
   }
 
-  // Cross-Project Pattern - working outside AIProjects
+  // Cross-Project Pattern - working outside the hub directory
   if (toolName === 'Read' || toolName === 'Write' || toolName === 'Edit') {
     const filePath = params?.file_path || '';
-    if (filePath.includes('/Code/') && !filePath.includes('AIProjects')) {
+    const hubDir = path.basename(process.cwd());
+    if (filePath.includes('/Code/') && !filePath.includes(hubDir)) {
       patterns.push('cross-project-work');
     }
   }
@@ -228,7 +229,7 @@ async function main() {
       verbosity: VERBOSITY,
       // PAI-compatible fields
       hook_event_type: 'PreToolUse',
-      source_app: 'AIProjects',
+      source_app: 'aifred',
       agent_type: 'main',
       complexity: estimateComplexity(tool_name, tool_input),
       // Pattern detection

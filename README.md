@@ -11,11 +11,15 @@ AIfred is built on the latest Claude Code capabilities -- hooks across all lifec
 Fork it, run the setup wizard, pick your environment profiles, and you have a battle-tested AI assistant in minutes instead of weeks.
 
 ```bash
-git clone https://github.com/your-username/AIfred.git
+git clone https://github.com/davidmoneil/AIfred.git
 cd AIfred
 claude    # or: opencode
 /setup
 ```
+
+<p align="center">
+  <img src="docs/images/hub-architecture.svg" alt="AIfred Hub Architecture" width="800"/>
+</p>
 
 ---
 
@@ -65,6 +69,10 @@ Most projects give you a bag of 100+ commands or a set of personas. AIfred integ
 
 AIfred layers five capabilities on top of Claude Code:
 
+<p align="center">
+  <img src="docs/images/component-map.svg" alt="Component Interconnection Map" width="800"/>
+</p>
+
 ### Profiles Shape Your Environment
 
 You choose which layers apply to your setup. Each layer activates the right hooks, permissions, and patterns:
@@ -99,6 +107,14 @@ Specialized agents work independently on complex tasks: deploying Docker service
 
 ---
 
+## The /setup Wizard
+
+<p align="center">
+  <img src="docs/images/setup-flow.svg" alt="Setup Flow" width="800"/>
+</p>
+
+---
+
 ## Feature Overview
 
 ### Environment Profiles
@@ -114,7 +130,7 @@ Composable YAML layers that configure your entire AIfred installation:
 
 See [`profiles/README.md`](profiles/README.md) for full documentation.
 
-### Automation Hooks (27)
+### Automation Hooks (38)
 
 | Category | Examples |
 |----------|---------|
@@ -123,6 +139,7 @@ See [`profiles/README.md`](profiles/README.md) for full documentation.
 | **Operations** | Docker health checks, port conflict detection, restart loop detection |
 | **Workflow** | Skill routing, planning detection, orchestration, context tracking |
 | **Observability** | Audit logging, session tracking, documentation sync triggers |
+| **Task Management** | Beads actor identity, cross-project commit tracking |
 
 ### Slash Commands (49)
 
@@ -231,14 +248,20 @@ AIfred/
 │   ├── homelab.yaml        # Docker, NAS, monitoring
 │   ├── development.yaml    # Code projects, CI/CD
 │   └── production.yaml     # Security hardening
+├── .beads/                 # Beads task management config
 ├── .claude/
 │   ├── CLAUDE.md           # Claude Code instructions
 │   ├── settings.json       # Permissions (generated from profiles)
 │   ├── context/            # Knowledge base (37 files)
 │   ├── commands/           # Slash commands (49)
 │   ├── agents/             # Agent definitions
-│   ├── hooks/              # Automation hooks (27)
+│   ├── hooks/              # Automation hooks (38)
 │   ├── skills/             # Workflow skills (8)
+│   ├── jobs/               # Headless Claude scheduled jobs
+│   │   ├── dispatcher.sh   # Master scheduler (cron)
+│   │   ├── executor.sh     # Per-job execution engine
+│   │   ├── personas/       # Safety tiers (investigator/analyst/troubleshooter)
+│   │   └── lib/            # Support libs (msgbus, relay, dashboard)
 │   └── orchestration/      # Task orchestration configs
 ├── .opencode/              # OpenCode-specific configs
 ├── scripts/                # CLI automation scripts (16+)
@@ -261,6 +284,22 @@ AIfred/
 ---
 
 ## Changelog
+
+### v2.4.0 (2026-02-12) -- Beads + Headless Claude
+
+- **Beads task management** (required): `bd` CLI for all task tracking, replacing TodoWrite
+  - Actor identity hook for session provenance
+  - Shell aliases for zero-token views
+  - Config template with AIfred-specific label conventions
+- **Headless Claude job system**: Scheduled AI-powered automation
+  - Dispatcher + executor with cron-based scheduling
+  - 3 personas (investigator, analyst, troubleshooter) as safety tiers
+  - Ollama engine routing for $0 local jobs
+  - Message bus with Telegram notifications and DND
+  - Observability dashboard with cost tracking and Prometheus metrics
+  - 3 template jobs (health-summary, doc-sync-check, ollama-test)
+- **Full sanitization**: All personal references replaced with auto-detecting `AIFRED_HOME` pattern
+- CLAUDE.md updated with Beads and Headless Claude documentation
 
 ### v2.3.0 (2026-02-08) -- Document Guard
 

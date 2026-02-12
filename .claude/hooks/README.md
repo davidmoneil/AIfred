@@ -163,7 +163,7 @@ Register in `.claude/settings.json` under the appropriate event with a matcher.
 
 ## New in v2.1 (2026-02-05)
 
-**6 new hooks synced from AIProjects:**
+**6 hooks added:**
 - `skill-router.js` - Routes slash commands to parent skills for workflow context
 - `planning-mode-detector.js` - Detects planning-type requests, suggests `/plan` workflow
 - `priority-validator.js` - Tracks work evidence (commits, files, services) for priority validation
@@ -175,4 +175,4 @@ Register in `.claude/settings.json` under the appropriate event with a matcher.
 
 ---
 
-*AIfred Hooks v2.1 - Sync from AIProjects (2026-02-05)*
+*AIfred Hooks v2.1 (2026-02-05)*

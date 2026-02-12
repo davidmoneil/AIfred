@@ -1,7 +1,7 @@
 # Parallel Development Skill - Roadmap
 
 **Created**: 2026-01-17
-**Ported**: From AIProjects
+**Ported**: From hub template
 **Status**: Complete (MVP)
 **Goal**: Autonomous parallel development with rigorous planning, execution, and validation
 
@@ -231,6 +231,6 @@ Enable non-developers to describe what they want, answer clarifying questions on
 ## Changelog
 
 ### 2026-01-17 - Ported to AIfred
-- Ported from AIProjects with path generalizations
+- Ported with path generalizations
 - Updated config.json for configurable paths
 - Maintained all 6 phases of functionality

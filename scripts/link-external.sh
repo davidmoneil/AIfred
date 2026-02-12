@@ -9,9 +9,9 @@
 set -euo pipefail
 
 # Configuration
-AIPROJECTS_DIR="${HOME}/AIProjects"
-EXTERNAL_DIR="${AIPROJECTS_DIR}/external-sources"
-REGISTRY_FILE="${AIPROJECTS_DIR}/paths-registry.yaml"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+EXTERNAL_DIR="${AIFRED_HOME}/external-sources"
+REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
 
 # Colors
 RED='\033[0;31m'

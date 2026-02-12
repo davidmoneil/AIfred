@@ -9,7 +9,6 @@
 #
 # Usage: ./priority-cleanup.sh [--dry-run] [--verbose] [--force-claude]
 #
-# Synced from AIProjects: 2026-02-05 (v2.1)
 # Pattern: Capability Layering (bash detection + auto-archive, Claude for judgment)
 
 set -euo pipefail

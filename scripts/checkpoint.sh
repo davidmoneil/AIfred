@@ -9,8 +9,8 @@
 set -euo pipefail
 
 # Configuration
-AIPROJECTS_DIR="${HOME}/AIProjects"
-SESSION_STATE="${AIPROJECTS_DIR}/.claude/context/session-state.md"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+SESSION_STATE="${AIFRED_HOME}/.claude/context/session-state.md"
 
 # Colors
 RED='\033[0;31m'

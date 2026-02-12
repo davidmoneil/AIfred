@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script: new-code-project.sh
-# Purpose: Create a new code project in ~/Code and register with AIProjects
+# Purpose: Create a new code project in ~/Code and register with AIfred
 # Usage: ./new-code-project.sh <name> [--type TYPE] [--lang LANG] [--github]
 # Author: David Moneil
 # Created: 2026-01-20
@@ -10,9 +10,9 @@ set -euo pipefail
 
 # Configuration
 CODE_DIR="${HOME}/Code"
-AIPROJECTS_DIR="${HOME}/AIProjects"
-REGISTRY_FILE="${AIPROJECTS_DIR}/paths-registry.yaml"
-CONTEXT_DIR="${AIPROJECTS_DIR}/.claude/context/projects"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
+CONTEXT_DIR="${AIFRED_HOME}/.claude/context/projects"
 
 # Colors
 RED='\033[0;31m'
@@ -26,7 +26,7 @@ show_help() {
     cat << EOF
 Usage: $(basename "$0") <name> [options]
 
-Create a new code project in ~/Code and register with AIProjects.
+Create a new code project in ~/Code and register with AIfred.
 
 Arguments:
     name              Project name (will be normalized to lowercase-with-dashes)
@@ -196,7 +196,7 @@ cat > README.md << README
 
 ---
 
-*Managed via [AIProjects](${AIPROJECTS_DIR})*
+*Managed via [AIfred](${AIFRED_HOME})*
 README
 
 log_success "Created README.md"
@@ -208,7 +208,7 @@ cat > .claude/CLAUDE.md << CLAUDE
 **Type**: ${TYPE}
 **Language**: ${LANG:-Not specified}
 **Created**: ${DATE}
-**Hub**: ${AIPROJECTS_DIR}
+**Hub**: ${AIFRED_HOME}
 
 ## Purpose
 
@@ -296,8 +296,8 @@ COMPOSE
         ;;
 esac
 
-# Register with AIProjects - Update paths-registry.yaml
-cd "$AIPROJECTS_DIR"
+# Register with AIfred - Update paths-registry.yaml
+cd "$AIFRED_HOME"
 
 # Add to paths-registry.yaml under coding.projects
 # Using a simple append approach - assumes coding.projects section exists
@@ -322,7 +322,7 @@ fi
 
 log_success "Registry entry prepared"
 
-# Create context file in AIProjects
+# Create context file in AIfred
 mkdir -p "$CONTEXT_DIR"
 cat > "${CONTEXT_DIR}/${NAME}.md" << CONTEXT
 # ${NAME}
@@ -378,7 +378,7 @@ git commit --quiet -m "Initial project setup
 
 Type: ${TYPE}
 Language: ${LANG:-Not specified}
-Hub: AIProjects
+Hub: AIfred
 
 Co-Authored-By: Claude Code <noreply@anthropic.com>"
 

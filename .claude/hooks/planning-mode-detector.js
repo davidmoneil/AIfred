@@ -16,7 +16,6 @@
  * orchestration fires for execution tracking needs.
  *
  * Created: 2026-01-19
- * Synced from AIProjects: 2026-02-05 (v2.1)
  * Converted to stdin/stdout executable hook
  */
 

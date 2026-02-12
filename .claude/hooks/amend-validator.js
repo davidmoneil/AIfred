@@ -15,12 +15,14 @@ const util = require('util');
 const execAsync = util.promisify(exec);
 
 // Expected author patterns (your commits)
+// Customize this list with your name/email patterns
 const EXPECTED_AUTHORS = [
-  /david\s*moneil/i,
-  /davidmoneil/i,
   /claude/i,
   /anthropic/i,
   /noreply@anthropic\.com/i
+  // Add your own patterns here, e.g.:
+  // /your\s*name/i,
+  // /yourname/i,
 ];
 
 /**

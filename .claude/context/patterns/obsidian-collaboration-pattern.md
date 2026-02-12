@@ -347,17 +347,17 @@ Example: `/mnt/synology_nas/Obsidian/Master/AI-Sessions/2026/01/02-obsidian-inte
 
 ---
 
-## Relationship to AIProjects
+## Relationship to Hub
 
 | Content Type | Location | Reason |
 |--------------|----------|--------|
-| **Design patterns** | AIProjects `.claude/context/patterns/` | Reusable across projects |
-| **Standards** | AIProjects `.claude/context/standards/` | Project governance |
+| **Design patterns** | Hub `.claude/context/patterns/` | Reusable across projects |
+| **Standards** | Hub `.claude/context/standards/` | Project governance |
 | **Session artifacts** | Obsidian `AI-Sessions/` | User collaboration, visual navigation |
-| **Project context** | AIProjects `.claude/context/projects/` | Technical project docs |
-| **Session state** | AIProjects `.claude/context/session-state.md` | Claude's working memory |
+| **Project context** | Hub `.claude/context/projects/` | Technical project docs |
+| **Session state** | Hub `.claude/context/session-state.md` | Claude's working memory |
 
-**Rule**: Default documentation goes to AIProjects unless explicitly requested for Obsidian.
+**Rule**: Default documentation goes to the hub unless explicitly requested for Obsidian.
 
 ---
 
@@ -372,7 +372,7 @@ Example: `/mnt/synology_nas/Obsidian/Master/AI-Sessions/2026/01/02-obsidian-inte
 ### Phase 3: Automation
 - [ ] Hook to auto-create session folders
 - [ ] Template insertion commands
-- [ ] Sync patterns between AIProjects and Obsidian
+- [ ] Sync patterns between hub and Obsidian
 
 ### Phase 4: My AI Plugin Integration
 - [ ] Plugin reads session context

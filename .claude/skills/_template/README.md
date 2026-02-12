@@ -111,8 +111,8 @@ interface MyCustomType {
 | Scenario | Tool Type | Location |
 |----------|-----------|----------|
 | Complex logic, type safety | TypeScript | `tools/index.ts` |
-| System operations, CLI tasks | Bash | `~/AIProjects/Scripts/` |
-| Data gathering for AI | Bash returning JSON | `~/AIProjects/Scripts/` |
+| System operations, CLI tasks | Bash | `scripts/` |
+| Data gathering for AI | Bash returning JSON | `scripts/` |
 
 **Note**: Bash scripts in `Scripts/` can be shared across skills and scheduled via cron.
 

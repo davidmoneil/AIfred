@@ -10,7 +10,6 @@
  * Log location: .claude/logs/context-usage/
  *
  * Created: 2025-12-26
- * Synced from AIProjects: 2026-02-05 (v2.1)
  * Converted to stdin/stdout executable hook with file persistence
  */
 

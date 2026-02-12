@@ -66,7 +66,7 @@ status: active
 **Theme**: Foundation & Reliability - Establish solid infrastructure and workflows before expanding capabilities
 
 **Top 3 Goals**:
-1. **G-T1**: AIProjects Infrastructure Maturity - 🟢 On Track
+1. **G-T1**: Infrastructure Maturity - 🟢 On Track
 2. **G-T4**: Deterministic AI Architecture (Code before Prompts) - 🟢 On Track
 3. **G-C1**: Creative Domain Definition - 🟡 Needs Definition
 
@@ -152,7 +152,7 @@ Every problem solved should become a reusable module - a command, pattern, workf
 Load context on-demand rather than upfront. Keep token usage efficient while maintaining depth when needed.
 
 ### 5. Hub, Not Container
-AIProjects orchestrates but doesn't contain. Code lives in ~/Code/, infrastructure in ~/Docker/. Clear separation.
+The hub orchestrates but doesn't contain. Code lives in ~/Code/, infrastructure in ~/Docker/. Clear separation.
 
 ### 6. Right Tool for the Job
 Use the appropriate automation level for each task. See @.claude/context/patterns/agent-selection-pattern.md

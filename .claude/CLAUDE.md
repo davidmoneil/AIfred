@@ -192,22 +192,72 @@ Need autonomous COMPLEX task execution?
 
 ---
 
+## Task Management (Beads)
+
+**Beads (`bd`) is the primary task management system.** All tasks, priorities, and work items are tracked in `.beads/` using the `bd` CLI. The human dashboard is `bv` (beads_viewer TUI) - zero tokens to view.
+
+### Prerequisites
+
+```bash
+npm install -g @beads/bd    # Install Beads CLI
+cd /path/to/aifred && bd init  # Initialize in your AIfred directory
+cp .beads/config.yaml.template .beads/config.yaml  # Configure
+```
+
+### Core Commands for Claude Sessions
+
+```bash
+# Create a task (ALWAYS use labels)
+bd create "Task title" -t task -p 2 \
+  -l "domain:hooks,severity:medium,source:session"
+
+# Update task status
+bd update <id> --status in_progress --claim    # Start working
+bd close <id> --reason "Completed: description"  # Close with reason
+
+# Query tasks (zero-token for filtering)
+bd list --status open                            # All open tasks
+bd list --status open --label domain:hooks       # Filter by domain
+bd list --status in_progress                     # Active work
+bd ready                                         # Next actionable tasks
+```
+
+### Label Convention (REQUIRED on every task)
+
+| Category | Labels | Purpose |
+|----------|--------|---------|
+| **Domain** | `domain:hooks`, `domain:skills`, `domain:profiles`, `domain:documentation`, `domain:infrastructure` | Work category |
+| **Severity** | `severity:critical`, `severity:high`, `severity:medium`, `severity:low` | Impact level |
+| **Source** | `source:orchestration`, `source:session`, `source:ad-hoc`, `source:headless` | How it was created |
+| **Agent** | `agent:claude`, `agent:human` | Who created it |
+
+### Shell Aliases (Human Use)
+
+`scripts/beads-aliases.sh` provides zero-token aliases:
+- `bd-all` / `bd-next` / `bd-active` / `bd-done` - Status views
+- `bd-hooks` / `bd-skills` / `bd-profiles` - Domain views
+- `bd-high` / `bd-urgent` - Priority views
+- `bd-add "title" domain priority` - Quick create
+- `bd-dash` - Open `bv` TUI dashboard
+
+---
+
 ## Session Management
 
 ### Starting a Session
 1. Check @.claude/context/session-state.md
-2. Review any pending work
+2. Check Beads for current task state: `bd list --status in_progress`
 3. Continue where you left off
 
 ### During Work
-- Track tasks with TodoWrite tool
+- Track tasks with Beads (`bd create`, `bd update`, `bd close`)
 - Update context files as you discover information
 - Use Memory MCP for decisions and lessons learned
 
 ### Ending a Session
 Run `/end-session` which will:
+- Update Beads: close completed tasks, create follow-ups
 - Update session-state.md
-- Review and clear todos
 - Commit changes if needed
 - Push to GitHub if applicable
 - **Disable On-Demand MCPs** (returns to default OFF state)
@@ -399,6 +449,75 @@ All logs stored as JSONL in `.claude/logs/audit.jsonl`:
 
 ---
 
+## Headless Claude (Scheduled Jobs)
+
+**Autonomous AI-powered automation** via the Headless Claude system. Runs scheduled and on-demand jobs with persona-based safety tiers.
+
+### Quick Commands
+
+```bash
+# List all registered jobs
+.claude/jobs/dispatcher.sh --list
+
+# Check what's due now
+.claude/jobs/dispatcher.sh --check
+
+# Force-run a specific job
+.claude/jobs/dispatcher.sh --run health-summary
+
+# Preview execution (dry run)
+.claude/jobs/executor.sh --job health-summary --dry-run
+
+# Observability dashboard
+.claude/jobs/dispatcher.sh --dashboard
+```
+
+### Personas (Safety Model)
+
+| Persona | Tier | Purpose |
+|---------|------|---------|
+| **investigator** | Read-only | Health checks, monitoring, analysis |
+| **analyst** | Read + write data | Upgrade discovery, data collection |
+| **troubleshooter** | Diagnose + fix | Service restarts, cache clearing |
+
+### Engines
+
+| Engine | Cost | When to Use |
+|--------|------|-------------|
+| `claude-code` | API pricing | Complex analysis, multi-step tasks |
+| `ollama` | $0 (local) | Simple checks, summarization, triage |
+
+### Cron Setup
+
+Single entry, dispatcher handles all scheduling:
+```bash
+*/5 * * * * /path/to/aifred/.claude/jobs/dispatcher.sh >> /path/to/aifred/.claude/logs/headless/dispatcher.log 2>&1
+```
+
+**Full documentation**: @.claude/jobs/README.md
+
+---
+
+## Automation Routing
+
+**When user asks to "schedule", "automate", or "run on cron"**, apply this decision tree:
+
+```
+Is it deterministic (same input → same output)?
+├─ YES → Use pure bash script (capability layering)
+│        Location: scripts/ or .claude/jobs/
+│
+└─ NO → Does it require AI judgment?
+        ├─ YES → Use Headless Claude system
+        │        Registry: .claude/jobs/registry.yaml
+        │        Dispatcher: .claude/jobs/dispatcher.sh
+        │
+        └─ MAYBE → Hybrid approach
+                   Bash for deterministic parts, Claude for analysis
+```
+
+---
+
 ## Response Style
 
 - Be concise and practical
@@ -418,5 +537,5 @@ If not yet configured, run `/setup` to get started.
 
 ---
 
-*AIfred v2.2.0 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-02-05 - v2.2: Environment profile system, 5 new hooks, profile-driven setup*
+*AIfred v2.4.0 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-02-12 - v2.4: Beads task management, Headless Claude jobs, sanitized for portability*
