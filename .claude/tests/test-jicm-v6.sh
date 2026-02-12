@@ -2079,6 +2079,97 @@ fi
 
 echo ""
 
+# ─── Test Group 28: Dev-Ops Testing Infrastructure ─────────────────
+
+echo "Group 28: Dev-Ops Testing Infrastructure"
+echo "───────────────────────────────────────"
+
+# Group 28 tests real project files (not temp dirs used by other groups)
+REAL_PROJECT="${REAL_PROJECT_DIR:-$HOME/Claude/Jarvis}"
+DEV_SCRIPTS_DIR="$REAL_PROJECT/.claude/scripts/dev"
+DEV_TEST_SCRIPTS=(
+    "send-to-jarvis.sh"
+    "capture-jarvis.sh"
+    "watch-jicm.sh"
+    "restart-watcher.sh"
+)
+LIVE_TESTS="$REAL_PROJECT/.claude/tests/jarvis-live-tests.sh"
+
+# 28.1-28.4: Dev scripts exist and are executable
+for script in "${DEV_TEST_SCRIPTS[@]}"; do
+    if [[ -x "$DEV_SCRIPTS_DIR/$script" ]]; then
+        pass "$script exists and is executable"
+    else
+        fail "$script exists and executable"
+    fi
+done
+
+# 28.5: jarvis-live-tests.sh exists and is executable
+if [[ -x "$LIVE_TESTS" ]]; then
+    pass "jarvis-live-tests.sh exists and is executable"
+else
+    fail "jarvis-live-tests.sh exists and executable"
+fi
+
+# 28.6: All 5 scripts use set -euo pipefail
+for script in "${DEV_TEST_SCRIPTS[@]}"; do
+    if grep -q 'set -euo pipefail' "$DEV_SCRIPTS_DIR/$script" 2>/dev/null; then
+        pass "$script uses set -euo pipefail"
+    else
+        fail "$script set -euo pipefail"
+    fi
+done
+if grep -q 'set -euo pipefail' "$LIVE_TESTS" 2>/dev/null; then
+    pass "jarvis-live-tests.sh uses set -euo pipefail"
+else
+    fail "jarvis-live-tests.sh set -euo pipefail"
+fi
+
+# 28.7: send-to-jarvis.sh has --check-idle
+if grep -q 'check-idle\|check_idle\|CHECK_IDLE' "$DEV_SCRIPTS_DIR/send-to-jarvis.sh" 2>/dev/null; then
+    pass "send-to-jarvis.sh has --check-idle"
+else
+    fail "send-to-jarvis.sh --check-idle"
+fi
+
+# 28.8: watch-jicm.sh has --once and --json modes
+if grep -q '\-\-once' "$DEV_SCRIPTS_DIR/watch-jicm.sh" 2>/dev/null && \
+   grep -q '\-\-json' "$DEV_SCRIPTS_DIR/watch-jicm.sh" 2>/dev/null; then
+    pass "watch-jicm.sh has --once and --json modes"
+else
+    fail "watch-jicm.sh --once/--json"
+fi
+
+# 28.9: restart-watcher.sh references .jicm-watcher.pid
+if grep -q '.jicm-watcher.pid' "$DEV_SCRIPTS_DIR/restart-watcher.sh" 2>/dev/null; then
+    pass "restart-watcher.sh references .jicm-watcher.pid"
+else
+    fail "restart-watcher.sh .jicm-watcher.pid reference"
+fi
+
+# 28.10: dev-ops Skill exists
+if [[ -f "$REAL_PROJECT/.claude/skills/dev-ops/SKILL.md" ]]; then
+    pass "dev-ops Skill exists"
+else
+    fail "dev-ops Skill exists"
+fi
+
+# 28.11: /dev-test command exists
+if [[ -f "$REAL_PROJECT/.claude/commands/dev-test.md" ]]; then
+    pass "/dev-test command exists"
+else
+    fail "/dev-test command exists"
+fi
+
+# 28.12: launch-jarvis-tmux.sh has --dev flag
+if grep -q '\-\-dev' "$REAL_PROJECT/.claude/scripts/launch-jarvis-tmux.sh" 2>/dev/null; then
+    pass "launch-jarvis-tmux.sh has --dev flag"
+else
+    fail "launch-jarvis-tmux.sh --dev flag"
+fi
+
+echo ""
+
 # ─── Results ─────────────────────────────────────────────────────
 
 teardown

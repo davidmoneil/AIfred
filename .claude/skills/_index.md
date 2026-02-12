@@ -29,6 +29,7 @@ Unlike commands (single actions), skills provide end-to-end guidance for complex
 | [context-management](context-management/SKILL.md) | JICM v5.8 context monitoring, analysis, and compaction | /context-budget, /context-checkpoint, /smart-compact, /intelligent-compress |
 | [self-improvement](self-improvement/SKILL.md) | AC-05/06/07/08 orchestration for continuous improvement | /self-improve, /reflect, /evolve, /research, /maintain |
 | [validation](validation/SKILL.md) | Tooling, infrastructure, and design validation | /tooling-health, /health-report, /validate-selection, /design-review |
+| [dev-ops](dev-ops/SKILL.md) | Dev testing — autonomous W0 testing from Jarvis-dev | /dev-test |
 | [filesystem-ops](filesystem-ops/SKILL.md) | File/directory operations via built-in tools (replaces filesystem MCP) | N/A |
 | [git-ops](git-ops/SKILL.md) | Git operations via Bash commands (replaces git MCP) | N/A |
 | [web-fetch](web-fetch/SKILL.md) | Web content retrieval via WebFetch/WebSearch (replaces fetch MCP) | N/A |

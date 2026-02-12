@@ -20,9 +20,10 @@
 # └─────────────────────────────────────────┘
 #
 # Watcher (window 1): JICM v6 context monitoring + compression
-# Commands (window 4): Signal file → command injection via send-keys
 # Ennoia (window 2): Session orchestration, intent-driven wake-up
 # Virgil (window 3): Task tracking, agent monitoring, file changes
+# Commands (window 4): Signal file → command injection via send-keys
+# Jarvis-dev (window 5): Second Claude session for dev testing (--dev mode only)
 #
 # iTerm2 Integration:
 #   Use --iterm2 flag to attach with tmux -CC for native iTerm2 tabs
@@ -44,13 +45,20 @@ fi
 # Parse arguments
 ITERM2_MODE=false
 FRESH_MODE=false
+DEV_MODE=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --iterm2|-i) ITERM2_MODE=true; shift ;;
         --fresh|-f) FRESH_MODE=true; shift ;;
+        --dev|-d) DEV_MODE=true; shift ;;
         *) shift ;;
     esac
 done
+
+# --dev implies W0 gets --fresh (clean slate for test isolation)
+if [[ "$DEV_MODE" == "true" ]]; then
+    FRESH_MODE=true
+fi
 
 # Auto-detect iTerm2
 if [[ "$TERM_PROGRAM" == "iTerm.app" ]] && [[ "$ITERM2_MODE" != "true" ]]; then
@@ -191,6 +199,16 @@ if [[ -x "$CMD_HANDLER_SCRIPT" ]]; then
         "cd '$PROJECT_DIR' && '$CMD_HANDLER_SCRIPT' --interval 3; echo 'Command handler stopped.'; read"
 fi
 
+# W5: Jarvis-dev (second Claude session — test driver, with --continue)
+if [[ "$DEV_MODE" == "true" ]]; then
+    echo "Launching Jarvis-dev (test driver) in tmux window..."
+    CLAUDE_ENV_DEV="ENABLE_TOOL_SEARCH=true CLAUDE_CODE_MAX_OUTPUT_TOKENS=20000 JARVIS_SESSION_ROLE=dev"
+    CLAUDE_CMD_DEV="claude --dangerously-skip-permissions --verbose --continue"
+    "$TMUX_BIN" new-window -t "$SESSION_NAME" -n "Jarvis-dev" -d \
+        "cd '$PROJECT_DIR' && export $CLAUDE_ENV_DEV && $CLAUDE_CMD_DEV"
+    "$TMUX_BIN" set-window-option -t "$SESSION_NAME:5" automatic-rename off 2>/dev/null || true
+fi
+
 # Set tmux options for better experience
 "$TMUX_BIN" set-option -t "$SESSION_NAME" mouse on 2>/dev/null || true
 "$TMUX_BIN" set-option -t "$SESSION_NAME" history-limit 10000 2>/dev/null || true
@@ -205,10 +223,12 @@ echo ""
 echo -e "${GREEN}Jarvis is ready!${NC}"
 echo ""
 echo "Windows:"
-echo "  Window 0: Jarvis"
+echo "  Window 0: Jarvis (system under test)"
 echo "  Window 1: Watcher"
 echo "  Window 2: Ennoia"
 echo "  Window 3: Virgil"
+echo "  Window 4: Commands"
+[[ "$DEV_MODE" == "true" ]] && echo "  Window 5: Jarvis-dev (test driver)"
 echo ""
 
 if [[ "$ITERM2_MODE" == "true" ]]; then
@@ -221,7 +241,8 @@ if [[ "$ITERM2_MODE" == "true" ]]; then
     exec "$TMUX_BIN" -CC attach-session -t "$SESSION_NAME"
 else
     echo "Keyboard shortcuts:"
-    echo "  Ctrl+b then 0/1/2/3 - Switch to Jarvis (0), Watcher (1), Ennoia (2), Virgil (3)"
+    echo "  Ctrl+b then 0-4 - Switch windows: Jarvis (0), Watcher (1), Ennoia (2), Virgil (3), Commands (4)"
+    [[ "$DEV_MODE" == "true" ]] && echo "  Ctrl+b then 5   - Switch to Jarvis-dev (test driver)"
     echo "  Ctrl+b then d     - Detach (leave running)"
     echo "  Ctrl+b then x     - Close current window"
     echo ""

@@ -61,6 +61,13 @@ skills:
     absorbs: [autonomous-commands, session-management, context-management, ralph-loop]
     file: .claude/skills/autonom-ops/SKILL.md
 
+  - id: skill.dev-ops
+    model: sonnet
+    version: 1.0.0
+    when: "Development testing — test W0:Jarvis from Jarvis-dev, JICM cycles, IPC, hooks"
+    tools: [Bash, Read, Glob, Grep]
+    file: .claude/skills/dev-ops/SKILL.md
+
   - id: skill.research-ops
     model: opus
     version: 2.2.0
