@@ -28,6 +28,10 @@
 ### Context & Testing
 - `dev-test.md`, `context-analyze.md`, `smart-compact.md`, `context-budget.md`
 
+### Dev Session
+- `export-dev.md` — Export W5:Jarvis-dev chat to timestamped file
+- `dev-chat.md` — Browse and read saved dev chat exports
+
 ### Ulfhedthnar
 - `unleash.md`, `disengage.md`
 
