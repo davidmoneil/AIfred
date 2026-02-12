@@ -571,3 +571,9 @@ Comparative:          "How is [A] like [B] in your experience?"
 **For visual review**:
 - PyMuPDF (fitz) for rendering slides as images
 - Read tool for visual inspection of rendered PNGs
+
+## Control Prompt Versions
+
+- `control-prompt-v1.md` — Initial control prompt
+- `control-prompt-v2.md` — Refined control prompt
+- `control-prompt-v3.md` — Current control prompt

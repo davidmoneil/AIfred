@@ -46,6 +46,13 @@
 
 **Pattern reference**: See `.claude/context/patterns/agent-invocation-pattern.md` for invocation standards.
 
+## Agent Memory
+
+Research artifacts stored in `memory/deep-research/`:
+- `memory/deep-research/_index.md` — research memory index
+- `memory/deep-research/learnings.json` — accumulated research learnings
+- Analysis files: `afk-code-analysis.md`, `marvin-chief-of-staff-analysis.md`, `openclaw-analysis-2026-02-05.md`, etc.
+
 ## Memory System
 
 Agents store learnings in `memory/<agent-name>/learnings.json`.

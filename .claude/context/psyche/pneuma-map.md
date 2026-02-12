@@ -92,6 +92,8 @@ commands/
 
 ### skills/ — On-Demand Skills
 
+See: `.claude/skills/README.md`, `.claude/skills/_index.md`
+
 | Skill | Purpose |
 |-------|---------|
 | filesystem-ops | File/directory operations (replaces filesystem MCP) |

@@ -77,6 +77,7 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 | AC-09-session-completion.md | Session exit |
 
 **Orchestration diagram**: `orchestration-overview.md`
+**Lifecycle**: `.claude/context/components/context-lifecycle-diagram.md`
 
 ### integrations/ — Tool Knowledge
 
@@ -102,6 +103,8 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 
 ### psyche/ — Topology Maps
 
+See also: `.claude/context/psyche/README.md`
+
 | Document | Purpose |
 |----------|---------|
 | _index.md | Master Archon topology |
@@ -110,15 +113,39 @@ Nous is what Jarvis KNOWS — accumulated wisdom that shapes decisions.
 | soma-map.md | Infrastructure layer |
 | capability-map.yaml | Manifest router (tool/skill/agent selection) |
 | autopoietic-paradigm.md | Self-organizing system philosophy |
-| self-knowledge/ | Operational introspection (strengths, weaknesses, patterns) |
+| prompts.yaml | Prompt templates and configurations |
+| .claude/context/psyche/self-knowledge/strengths.md | Operational strengths self-assessment |
+| .claude/context/psyche/self-knowledge/weaknesses.md | Operational weaknesses self-assessment |
+| .claude/context/psyche/self-knowledge/patterns-observed.md | Behavioral pattern observations |
+
+### research/ — R&D Documents
+
+| Document | Topic |
+|----------|-------|
+| context-engineering-quick-reference.txt | Context engineering patterns |
+| hook-infrastructure-analysis.md | Hook system analysis |
+| phase-6-readiness-assessment.md | Phase 6 readiness review |
+| serena-mcp-analysis.md | Serena MCP evaluation |
+
+### reflections/ — Session Reflections
+
+| Document | Purpose |
+|----------|---------|
+| session-reflection-20260207.md | Session reflection artifacts |
 
 ### troubleshooting/ — Problem Solutions
+
+See also: `.claude/context/troubleshooting/README.md`
 
 | Document | Problem Type |
 |----------|-------------|
 | _index.md | Problem navigation |
 | agent-format-migration.md | Agent YAML issues |
 | hookify-import-fix.md | Import resolution |
+
+### systems/ — Host Environment
+
+See: `.claude/context/systems/README.md`, `.claude/context/systems/_template.md`
 
 ### lessons/ — Memory
 

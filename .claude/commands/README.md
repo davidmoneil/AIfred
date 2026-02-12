@@ -25,6 +25,15 @@
 ### Validation
 - `tooling-health.md`, `design-review.md`, `validate-selection.md`
 
+### Context & Testing
+- `dev-test.md`, `context-analyze.md`, `smart-compact.md`, `context-budget.md`
+
+### Ulfhedthnar
+- `unleash.md`, `disengage.md`
+
+### Milestone & Review
+- `review-milestone.md`, `health-report.md`, `housekeep.md`
+
 ### Autonomous Execution
 - Handled by `autonomous-commands` skill (signal-based automation)
 
