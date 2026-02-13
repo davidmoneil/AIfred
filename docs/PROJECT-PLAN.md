@@ -1,8 +1,10 @@
 # AIfred Project Plan
 
-**Version**: 1.0
+**Version**: 1.1.0
 **Created**: 2025-12-24
-**Status**: In Development
+**Updated**: 2026-02-12
+**Status**: Active
+**Versioning**: [docs/VERSIONING.md](VERSIONING.md) (Major.Minor.Patch)
 
 ---
 
@@ -49,6 +51,7 @@ Phase 3: Foundation Setup
 ├── Create directory structure
 ├── Initialize paths-registry.yaml
 ├── Set up knowledge base templates
+├── Initialize Beads task management
 ├── Configure CLAUDE.md
 └── Set up settings.json (allow/deny lists)
 
@@ -60,9 +63,10 @@ Phase 4: Docker & MCP Integration
 └── Seed initial memory entities
 
 Phase 5: Hooks & Automation
-├── Install core hooks
+├── Install core hooks (including beads-actor.sh)
 ├── Configure session management
-├── Set up cron jobs (log rotation, pruning)
+├── Set up Headless Claude dispatcher (cron)
+├── Configure scheduled jobs (registry.yaml)
 ├── Create end-session workflow
 └── Configure permission prompting levels
 
@@ -92,63 +96,61 @@ When setup completes, the `/setup-phases/` directory is moved to `.claude/archiv
 
 ```
 AIfred/
+├── .beads/                         # Beads task management
+│   ├── config.yaml.template        # Label conventions template
+│   └── .gitignore                  # Ignore runtime DB files
 ├── .claude/
-│   ├── CLAUDE.md                 # Core instructions
-│   ├── settings.json             # Permissions
-│   ├── settings.local.json       # User overrides (gitignored)
-│   ├── context/
-│   │   ├── _index.md             # Context navigation
-│   │   ├── session-state.md      # Session continuity
-│   │   ├── systems/              # Infrastructure docs
-│   │   │   └── _template.md
-│   │   ├── projects/
-│   │   │   └── current-priorities.md
-│   │   ├── workflows/
-│   │   │   ├── session-exit.md
-│   │   │   └── _template.md
-│   │   └── integrations/
-│   │       └── memory-usage.md
-│   ├── commands/
-│   │   ├── setup.md              # THE setup command
-│   │   ├── end-session.md        # Session management
-│   │   ├── discover.md           # Service discovery
-│   │   ├── health-check.md       # System health
-│   │   └── README.md
-│   ├── agents/
-│   │   ├── _template-agent.md
-│   │   ├── docker-deployer.md
-│   │   ├── service-troubleshooter.md
-│   │   ├── deep-research.md
-│   │   ├── memory/
-│   │   ├── sessions/
-│   │   └── results/
-│   ├── hooks/
-│   │   ├── README.md
-│   │   ├── audit-logger.js
-│   │   ├── session-tracker.js
-│   │   ├── session-exit-enforcer.js
-│   │   ├── docker-health-check.js
-│   │   ├── secret-scanner.js
-│   │   ├── context-reminder.js
-│   │   └── memory-maintenance.js   # NEW
-│   ├── jobs/
-│   │   ├── log-rotation.sh
-│   │   ├── memory-prune.sh
-│   │   └── README.md
+│   ├── CLAUDE.md                   # Core instructions
+│   ├── settings.json               # Permissions (generated from profiles)
+│   ├── settings.local.json         # User overrides (gitignored)
+│   ├── context/                    # Knowledge base
+│   │   ├── _index.md              # Context navigation
+│   │   ├── session-state.md       # Session continuity
+│   │   ├── systems/               # Infrastructure docs
+│   │   ├── projects/              # Project context
+│   │   ├── workflows/             # Workflow definitions
+│   │   ├── patterns/              # Design patterns
+│   │   ├── standards/             # Coding standards
+│   │   └── integrations/          # Tool integrations
+│   ├── commands/                   # Slash commands (49)
+│   ├── agents/                     # Agent definitions
+│   ├── hooks/                      # Automation hooks (38)
+│   │   ├── beads-actor.sh         # Session provenance for Beads
+│   │   └── *.js                   # JS hooks (audit, security, workflow)
+│   ├── skills/                     # Workflow skills (8)
+│   ├── jobs/                       # Headless Claude job system
+│   │   ├── dispatcher.sh          # Master scheduler (cron entry point)
+│   │   ├── executor.sh            # Per-job execution engine
+│   │   ├── registry.yaml          # Job definitions and schedules
+│   │   ├── personas/              # Safety tiers
+│   │   │   ├── investigator/      # Read-only observer
+│   │   │   ├── analyst/           # Research + write reports
+│   │   │   └── troubleshooter/    # Diagnose + safe fixes
+│   │   ├── lib/                   # Support libraries
+│   │   │   ├── msgbus.sh          # Append-only message bus
+│   │   │   ├── msg-relay.sh       # DND-aware delivery relay
+│   │   │   ├── send-telegram.sh   # Telegram notifications
+│   │   │   ├── dashboard.sh       # Observability dashboard
+│   │   │   └── cost-report.sh     # Cost aggregation
+│   │   └── state/                 # Runtime state (gitignored)
+│   ├── orchestration/              # Task orchestration configs
 │   ├── logs/
 │   │   └── .gitkeep
 │   └── archive/
 │       └── setup/                  # Setup moves here when complete
+├── profiles/                       # Environment profile definitions (YAML)
+│   ├── general.yaml               # Base layer (always active)
+│   ├── homelab.yaml               # Docker, NAS, monitoring
+│   ├── development.yaml           # Code projects, CI/CD
+│   └── production.yaml            # Security hardening
 ├── knowledge/
-│   ├── docs/
-│   │   ├── getting-started.md
-│   │   ├── patterns.md
-│   │   └── automation-guide.md
-│   ├── notes/
-│   └── templates/
+│   ├── docs/                      # User-facing documentation
+│   ├── notes/                     # Session and research notes
+│   └── templates/                 # Document templates
 ├── external-sources/               # Created by setup
 ├── paths-registry.yaml             # Created by setup
 ├── setup-phases/                   # Setup workflow definitions
+│   ├── 00-prerequisites.md        # Dependency checks
 │   ├── 01-system-discovery.md
 │   ├── 02-purpose-interview.md
 │   ├── 03-foundation-setup.md
@@ -156,36 +158,42 @@ AIfred/
 │   ├── 05-hooks-automation.md
 │   ├── 06-agent-deployment.md
 │   └── 07-finalization.md
-├── docker/                         # MCP Gateway stack
-│   └── mcp-gateway/
-│       └── docker-compose.yml
-├── scripts/
-│   └── install-docker.sh
+├── scripts/                        # CLI automation scripts (16+)
+│   ├── beads-aliases.sh           # Beads shell aliases
+│   ├── profile-loader.js          # Profile → settings generator
+│   └── ...
+├── docs/                           # Architecture docs and images
 └── README.md
 ```
 
-### 2. Core Hooks (Always Installed)
+### 2. Core Hooks (Always Installed via `general` profile)
 
 | Hook | Purpose |
 |------|---------|
 | `audit-logger.js` | Log all tool executions |
 | `session-tracker.js` | Track session lifecycle |
 | `session-exit-enforcer.js` | Remind about exit procedures |
-| `docker-health-check.js` | Verify container health post-changes |
 | `secret-scanner.js` | Prevent credential commits |
-| `context-reminder.js` | Prompt for documentation updates |
-| `memory-maintenance.js` | Track entity access for pruning |
+| `credential-guard.js` | Block credential exposure |
+| `branch-protection.js` | Protect main/master branches |
+| `skill-router.js` | Auto-load skill context for commands |
+| `mcp-enforcer.js` | Validate MCP server availability |
+| `beads-actor.sh` | Session provenance for Beads tasks |
+| `document-guard.js` | 4-tier file protection |
 
-### 3. Optional Hooks (Based on Setup Answers)
+### 3. Optional Hooks (Profile-Driven)
 
-| Hook | When Installed |
-|------|----------------|
-| `compose-validator.js` | Docker focus |
-| `port-conflict-detector.js` | Docker focus |
-| `network-validator.js` | Docker focus |
-| `branch-protection.js` | Development focus |
-| `code-style-enforcer.js` | Development focus |
-| `mcp-enforcer.js` | When MCP installed |
+| Hook | Profile | Purpose |
+|------|---------|---------|
+| `docker-health-check.js` | homelab | Verify container health post-changes |
+| `compose-validator.js` | homelab | Validate compose files before deploy |
+| `docker-validator.js` | homelab | Docker operation validation |
+| `port-conflict-detector.js` | homelab | Detect port conflicts |
+| `restart-loop-detector.js` | homelab | Detect container restart loops |
+| `orchestration-detector.js` | development | Auto-detect complex tasks |
+| `planning-mode-detector.js` | development | Detect planning intent |
+| `project-detector.js` | development | Auto-register new projects |
+| `doc-sync-trigger.js` | development | Track code changes for doc sync |
 
 ### 4. Starter Agents
 
@@ -265,13 +273,30 @@ Users choose during setup:
 
 ---
 
-## Cron Jobs
+## Scheduled Jobs
+
+### Headless Claude (AI-Powered)
+
+Single cron entry runs the dispatcher every 5 minutes:
+
+```bash
+*/5 * * * * /path/to/aifred/.claude/jobs/dispatcher.sh >> .claude/logs/headless/dispatcher.log 2>&1
+```
+
+The dispatcher handles all job scheduling via `registry.yaml`. Template jobs included:
+
+| Job | Persona | Engine | Schedule | Purpose |
+|-----|---------|--------|----------|---------|
+| `health-summary` | investigator | claude-code | Every 12h | Infrastructure health check |
+| `doc-sync-check` | investigator | claude-code | Weekly Sun 6am | Check for stale documentation |
+| `ollama-test` | investigator | ollama | On-demand | Template for local AI jobs |
+
+### Legacy Scripts (Deterministic)
 
 | Job | Schedule | Purpose |
 |-----|----------|---------|
-| `log-rotation.sh` | Daily 2 AM | Rotate audit.jsonl, archive after 90 days |
-| `memory-prune.sh` | Weekly Sunday 3 AM | Archive inactive entities, update metadata |
-| `session-cleanup.sh` | Weekly | Remove agent sessions older than 90 days |
+| `memory-prune.sh` | Manual/Weekly | Archive inactive Memory MCP entities |
+| `context-staleness.sh` | Manual/Weekly | Find outdated context files |
 
 ---
 
@@ -310,45 +335,65 @@ A successful AIfred installation has:
 
 ## Development Phases
 
-### Phase 1: Foundation (Current Session)
+### Phase 1: Foundation -- COMPLETE (v2.0.0, 2026-01-21)
 - [x] Create project structure
-- [ ] Build core CLAUDE.md
-- [ ] Create settings.json template
-- [ ] Write setup phases 1-3
-- [ ] Initial commit and push
+- [x] Build core CLAUDE.md
+- [x] Create settings.json template
+- [x] Write setup phases 1-7
+- [x] 18 design patterns, 26 hooks, 7 skills, 16 CLI scripts
+- [x] Initial commit and push
 
-### Phase 2: Setup Engine
-- [ ] Complete all 7 setup phases
-- [ ] System discovery scripts
-- [ ] Purpose interview prompts
-- [ ] Docker installation script
+### Phase 2: Setup Engine -- COMPLETE (v2.0.0)
+- [x] Complete all 7 setup phases
+- [x] System discovery scripts
+- [x] Purpose interview prompts
+- [x] Docker installation script
 
-### Phase 3: MCP Integration
-- [ ] MCP Gateway docker-compose
-- [ ] Memory MCP configuration
-- [ ] Entity metadata tracking
-- [ ] Pruning automation
+### Phase 3: MCP Integration -- COMPLETE (v2.0.0)
+- [x] MCP Gateway docker-compose
+- [x] Memory MCP configuration
+- [x] Entity metadata tracking
+- [x] Pruning automation
 
-### Phase 4: Hooks & Agents
-- [ ] All 7 core hooks
-- [ ] 3 starter agents
-- [ ] Agent templates
-- [ ] Memory initialization
+### Phase 4: Hooks & Agents -- COMPLETE (v2.1.0, 2026-02-05)
+- [x] 27 core + optional hooks
+- [x] 3 starter agents (docker-deployer, service-troubleshooter, deep-research)
+- [x] Agent templates
+- [x] Skill routing, planning detection, orchestration detection
 
-### Phase 5: Polish
-- [ ] Comprehensive documentation
-- [ ] Test on fresh system
-- [ ] User feedback integration
-- [ ] Release v1.0
+### Phase 5: Environment Profiles -- COMPLETE (v2.2.0, 2026-02-05)
+- [x] Composable YAML profile system (4 layers)
+- [x] Profile loader (zero-dependency Node.js)
+- [x] Profile-driven hook activation
+- [x] Dual CLI support (Claude Code + OpenCode)
+
+### Phase 6: Document Protection -- COMPLETE (v2.3.0, 2026-02-08)
+- [x] Document Guard V1: 4-tier file protection
+- [x] Document Guard V2: Semantic validation via Ollama
+- [x] Feature registry for discoverability
+- [x] Override mechanism for approved exceptions
+
+### Phase 7: Beads + Headless Claude -- COMPLETE (v2.4.0, 2026-02-12)
+- [x] Beads task management as required dependency
+- [x] Beads actor hook for session provenance
+- [x] Beads shell aliases and config template
+- [x] Setup wizard integration (prerequisites + foundation phase)
+- [x] Headless Claude job system (dispatcher + executor)
+- [x] 3 personas (investigator, analyst, troubleshooter) as safety tiers
+- [x] Ollama engine routing for $0 local jobs
+- [x] Message bus with Telegram notifications and DND
+- [x] Observability dashboard with cost tracking
+- [x] Prometheus metrics integration
+- [x] 3 template jobs (health-summary, doc-sync-check, ollama-test)
+- [x] Full sanitization of all personal references
+
+### Phase 8: Distribution & Growth (Current)
+- [x] Stay Current update system (component registry + manifests)
+- [ ] Architecture diagrams and visual documentation
+- [ ] "Introducing AIfred" blog post
+- [ ] Community feedback and iteration
+- [ ] Test on fresh system (clean install validation)
 
 ---
 
-## Open Questions
-
-1. **Network scanning**: How aggressive should discovery be? (security implications)
-2. **Windows support**: Focus Linux-first or support Windows from start?
-3. **Cloud providers**: Include AWS/GCP/Azure discovery or keep local-only?
-
----
-
-*This plan will evolve as we build. Updated: 2025-12-24*
+*Updated: 2026-02-12*

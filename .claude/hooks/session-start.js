@@ -40,6 +40,40 @@ async function readFileSafe(filePath, maxChars) {
 }
 
 /**
+ * Get Claude Code CLI version
+ */
+async function getClaudeCodeVersion() {
+  try {
+    const { execFile } = require('child_process');
+    const { promisify } = require('util');
+    const execFileAsync = promisify(execFile);
+
+    const { stdout } = await execFileAsync('claude', ['--version'], {
+      timeout: 5000
+    });
+    // Output is like "2.1.39 (Claude Code)" — extract the version number
+    const match = stdout.trim().match(/^([\d.]+)/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get AIfred version from VERSION file (single source of truth)
+ */
+async function getAifredVersion() {
+  try {
+    const versionPath = path.join(PROJECT_ROOT, 'VERSION');
+    const content = await fs.readFile(versionPath, 'utf8');
+    const version = content.trim();
+    return version || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Get current git branch
  */
 async function getGitBranch() {
@@ -134,11 +168,18 @@ module.exports = {
     const contextParts = [];
 
     try {
-      // Load git status
-      const [branch, changes] = await Promise.all([
+      // Load versions and git status in parallel
+      const [claudeVersion, aifredVersion, branch, changes] = await Promise.all([
+        getClaudeCodeVersion(),
+        getAifredVersion(),
         getGitBranch(),
         getGitChanges()
       ]);
+
+      // Version banner
+      const ccLabel = claudeVersion ? `Claude Code v${claudeVersion}` : 'Claude Code';
+      const afLabel = aifredVersion ? `AIfred v${aifredVersion}` : 'AIfred';
+      contextParts.push(`${ccLabel}  |  ${afLabel}`);
 
       if (branch) {
         const changeText = changes > 0 ? `, ${changes} uncommitted changes` : '';

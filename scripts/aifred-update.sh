@@ -97,8 +97,18 @@ compute_sha() {
     fi
 }
 
-# Get current git tag (latest v* tag)
+# Get current version from VERSION file (single source of truth)
 get_local_version() {
+    local version_file="$REPO_DIR/VERSION"
+    if [[ -f "$version_file" ]]; then
+        local ver
+        ver=$(tr -d '[:space:]' < "$version_file")
+        if [[ -n "$ver" ]]; then
+            echo "v${ver}"
+            return
+        fi
+    fi
+    # Fallback to git tag if VERSION file doesn't exist
     cd "$REPO_DIR"
     git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo "unknown"
 }

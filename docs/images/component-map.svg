@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 700" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#EA580C"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#0D9488"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#94A3B8"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="700" rx="12" fill="#F8FAFC"/>
+
+  <!-- Title -->
+  <text x="480" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#0F172A">Component Interconnection Map</text>
+  <text x="480" y="58" text-anchor="middle" font-size="13" fill="#64748B">How profiles, hooks, commands, skills, and agents work together</text>
+
+  <!-- ===== PROFILES LAYER (Top) ===== -->
+  <rect x="40" y="80" width="880" height="100" rx="12" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5"/>
+  <text x="60" y="100" font-size="12" font-weight="700" fill="#EA580C">PROFILES</text>
+  <text x="180" y="100" font-size="10" fill="#9A3412">Composable YAML layers that configure everything below</text>
+
+  <!-- Profile cards -->
+  <rect x="60" y="112" width="170" height="54" rx="8" fill="white" stroke="#FDBA74" stroke-width="1"/>
+  <rect x="60" y="112" width="170" height="3" rx="2" fill="#EA580C"/>
+  <text x="145" y="133" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">general.yaml</text>
+  <text x="145" y="148" text-anchor="middle" font-size="9" fill="#64748B">Audit, security, sessions</text>
+  <text x="145" y="160" text-anchor="middle" font-size="9" fill="#94A3B8">Always active</text>
+
+  <text x="248" y="140" text-anchor="middle" font-size="16" fill="#EA580C" font-weight="700">+</text>
+
+  <rect x="270" y="112" width="170" height="54" rx="8" fill="white" stroke="#FDBA74" stroke-width="1"/>
+  <rect x="270" y="112" width="170" height="3" rx="2" fill="#F59E0B"/>
+  <text x="355" y="133" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">homelab.yaml</text>
+  <text x="355" y="148" text-anchor="middle" font-size="9" fill="#64748B">Docker, NAS, monitoring</text>
+  <text x="355" y="160" text-anchor="middle" font-size="9" fill="#94A3B8">Optional layer</text>
+
+  <text x="458" y="140" text-anchor="middle" font-size="16" fill="#EA580C" font-weight="700">+</text>
+
+  <rect x="480" y="112" width="170" height="54" rx="8" fill="white" stroke="#FDBA74" stroke-width="1"/>
+  <rect x="480" y="112" width="170" height="3" rx="2" fill="#8B5CF6"/>
+  <text x="565" y="133" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">development.yaml</text>
+  <text x="565" y="148" text-anchor="middle" font-size="9" fill="#64748B">Projects, CI/CD, branches</text>
+  <text x="565" y="160" text-anchor="middle" font-size="9" fill="#94A3B8">Optional layer</text>
+
+  <text x="668" y="140" text-anchor="middle" font-size="16" fill="#EA580C" font-weight="700">+</text>
+
+  <rect x="690" y="112" width="170" height="54" rx="8" fill="white" stroke="#FDBA74" stroke-width="1"/>
+  <rect x="690" y="112" width="170" height="3" rx="2" fill="#DC2626"/>
+  <text x="775" y="133" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">production.yaml</text>
+  <text x="775" y="148" text-anchor="middle" font-size="9" fill="#64748B">Strict security, gates</text>
+  <text x="775" y="160" text-anchor="middle" font-size="9" fill="#94A3B8">Optional layer</text>
+
+  <!-- Arrow: Profiles configure Hooks -->
+  <path d="M 480,182 L 480,205" stroke="#EA580C" stroke-width="2" marker-end="url(#arrowOrange)"/>
+  <text x="500" y="198" font-size="9" fill="#EA580C" font-weight="500">configures</text>
+
+  <!-- ===== HOOKS LAYER ===== -->
+  <rect x="40" y="210" width="880" height="120" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="60" y="232" font-size="12" font-weight="700" fill="#2563EB">HOOKS (27)</text>
+  <text x="160" y="232" font-size="10" fill="#1D4ED8">Automatic lifecycle automation — fire on events, not invocations</text>
+
+  <!-- Hook groups -->
+  <rect x="60" y="244" width="155" height="72" rx="8" fill="white" stroke="#93C5FD" stroke-width="1"/>
+  <text x="137" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">Security</text>
+  <text x="137" y="278" text-anchor="middle" font-size="9" fill="#475569">credential-guard</text>
+  <text x="137" y="291" text-anchor="middle" font-size="9" fill="#475569">branch-protection</text>
+  <text x="137" y="304" text-anchor="middle" font-size="9" fill="#475569">document-guard</text>
+
+  <rect x="230" y="244" width="155" height="72" rx="8" fill="white" stroke="#93C5FD" stroke-width="1"/>
+  <text x="307" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">Operations</text>
+  <text x="307" y="278" text-anchor="middle" font-size="9" fill="#475569">docker-health-check</text>
+  <text x="307" y="291" text-anchor="middle" font-size="9" fill="#475569">port-conflict-detector</text>
+  <text x="307" y="304" text-anchor="middle" font-size="9" fill="#475569">compose-validator</text>
+
+  <rect x="400" y="244" width="155" height="72" rx="8" fill="white" stroke="#93C5FD" stroke-width="1"/>
+  <text x="477" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">Workflow</text>
+  <text x="477" y="278" text-anchor="middle" font-size="9" fill="#475569">skill-router</text>
+  <text x="477" y="291" text-anchor="middle" font-size="9" fill="#475569">planning-detector</text>
+  <text x="477" y="304" text-anchor="middle" font-size="9" fill="#475569">orchestration-detector</text>
+
+  <rect x="570" y="244" width="155" height="72" rx="8" fill="white" stroke="#93C5FD" stroke-width="1"/>
+  <text x="647" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">Observability</text>
+  <text x="647" y="278" text-anchor="middle" font-size="9" fill="#475569">audit-logger</text>
+  <text x="647" y="291" text-anchor="middle" font-size="9" fill="#475569">session-tracker</text>
+  <text x="647" y="304" text-anchor="middle" font-size="9" fill="#475569">context-usage-tracker</text>
+
+  <rect x="740" y="244" width="155" height="72" rx="8" fill="white" stroke="#93C5FD" stroke-width="1"/>
+  <text x="817" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">Sync</text>
+  <text x="817" y="278" text-anchor="middle" font-size="9" fill="#475569">doc-sync-trigger</text>
+  <text x="817" y="291" text-anchor="middle" font-size="9" fill="#475569">paths-registry-sync</text>
+  <text x="817" y="304" text-anchor="middle" font-size="9" fill="#475569">index-sync</text>
+
+  <!-- Arrow: skill-router loads Skills -->
+  <path d="M 477,318 L 477,332 L 240,332 L 240,360" stroke="#0D9488" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowTeal)"/>
+  <text x="350" y="344" font-size="9" fill="#0D9488" font-weight="500">skill-router loads context for</text>
+
+  <!-- Arrow: orchestration-detector triggers Commands -->
+  <path d="M 477,318 L 477,332 L 580,332 L 580,360" stroke="#059669" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowGreen)"/>
+  <text x="615" y="344" font-size="9" fill="#059669" font-weight="500">auto-triggers</text>
+
+  <!-- ===== MIDDLE ROW: Skills + Commands ===== -->
+  <!-- Skills -->
+  <rect x="40" y="365" width="420" height="125" rx="12" fill="#F0FDFA" stroke="#5EEAD4" stroke-width="1.5"/>
+  <text x="60" y="387" font-size="12" font-weight="700" fill="#0D9488">SKILLS (8)</text>
+  <text x="140" y="387" font-size="10" fill="#115E59">Multi-step workflow guides</text>
+
+  <!-- Skill cards -->
+  <rect x="60" y="398" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="120" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">session-mgmt</text>
+  <text x="120" y="428" text-anchor="middle" font-size="8" fill="#64748B">Start → Track → Exit</text>
+
+  <rect x="190" y="398" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="250" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">infra-ops</text>
+  <text x="250" y="428" text-anchor="middle" font-size="8" fill="#64748B">Health, discovery</text>
+
+  <rect x="320" y="398" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="380" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">parallel-dev</text>
+  <text x="380" y="428" text-anchor="middle" font-size="8" fill="#64748B">Plan → Execute → QA</text>
+
+  <rect x="60" y="444" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="120" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">orchestration</text>
+  <text x="120" y="474" text-anchor="middle" font-size="8" fill="#64748B">Multi-phase tasks</text>
+
+  <rect x="190" y="444" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="250" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">planning</text>
+  <text x="250" y="474" text-anchor="middle" font-size="8" fill="#64748B">Guided design</text>
+
+  <rect x="320" y="444" width="120" height="38" rx="6" fill="white" stroke="#5EEAD4" stroke-width="1"/>
+  <text x="380" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">upgrade</text>
+  <text x="380" y="474" text-anchor="middle" font-size="8" fill="#64748B">Self-improvement</text>
+
+  <!-- Commands -->
+  <rect x="500" y="365" width="420" height="125" rx="12" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="520" y="387" font-size="12" font-weight="700" fill="#059669">COMMANDS (49)</text>
+  <text x="640" y="387" font-size="10" fill="#166534">Slash command shortcuts</text>
+
+  <rect x="520" y="398" width="110" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="575" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/setup</text>
+  <text x="575" y="428" text-anchor="middle" font-size="8" fill="#64748B">Full configuration</text>
+
+  <rect x="640" y="398" width="110" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="695" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/checkpoint</text>
+  <text x="695" y="428" text-anchor="middle" font-size="8" fill="#64748B">Save state</text>
+
+  <rect x="760" y="398" width="140" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="830" y="414" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/discover-docker</text>
+  <text x="830" y="428" text-anchor="middle" font-size="8" fill="#64748B">Document services</text>
+
+  <rect x="520" y="444" width="110" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="575" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/sync-git</text>
+  <text x="575" y="474" text-anchor="middle" font-size="8" fill="#64748B">Push projects</text>
+
+  <rect x="640" y="444" width="110" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="695" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/check-health</text>
+  <text x="695" y="474" text-anchor="middle" font-size="8" fill="#64748B">System health</text>
+
+  <rect x="760" y="444" width="140" height="38" rx="6" fill="white" stroke="#86EFAC" stroke-width="1"/>
+  <text x="830" y="460" text-anchor="middle" font-size="9" font-weight="600" fill="#0F172A">/end-session</text>
+  <text x="830" y="474" text-anchor="middle" font-size="8" fill="#64748B">Clean handoff</text>
+
+  <!-- Arrow: Skills bundle Commands -->
+  <line x1="462" y1="430" x2="496" y2="430" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+  <text x="479" y="422" text-anchor="middle" font-size="9" fill="#94A3B8">bundles</text>
+
+  <!-- Arrow: Commands invoke Agents -->
+  <path d="M 710,492 L 710,530" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <text x="728" y="516" font-size="9" fill="#7C3AED" font-weight="500">invokes</text>
+
+  <!-- Arrow: Skills use Agents -->
+  <path d="M 250,492 L 250,530" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <text x="268" y="516" font-size="9" fill="#7C3AED" font-weight="500">delegates to</text>
+
+  <!-- ===== AGENTS LAYER (Bottom) ===== -->
+  <rect x="40" y="535" width="880" height="90" rx="12" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.5"/>
+  <text x="60" y="557" font-size="12" font-weight="700" fill="#7C3AED">AGENTS (3)</text>
+  <text x="145" y="557" font-size="10" fill="#5B21B6">Autonomous specialists with persistent memory</text>
+
+  <rect x="90" y="568" width="220" height="44" rx="8" fill="white" stroke="#C4B5FD" stroke-width="1"/>
+  <text x="200" y="586" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">docker-deployer</text>
+  <text x="200" y="601" text-anchor="middle" font-size="9" fill="#64748B">Deploy services safely with validation</text>
+
+  <rect x="370" y="568" width="220" height="44" rx="8" fill="white" stroke="#C4B5FD" stroke-width="1"/>
+  <text x="480" y="586" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">service-troubleshooter</text>
+  <text x="480" y="601" text-anchor="middle" font-size="9" fill="#64748B">Diagnose issues with learned patterns</text>
+
+  <rect x="650" y="568" width="220" height="44" rx="8" fill="white" stroke="#C4B5FD" stroke-width="1"/>
+  <text x="760" y="586" text-anchor="middle" font-size="11" font-weight="600" fill="#0F172A">deep-research</text>
+  <text x="760" y="601" text-anchor="middle" font-size="9" fill="#64748B">In-depth investigation with citations</text>
+
+  <!-- ===== CONTEXT/KNOWLEDGE (Bottom bar) ===== -->
+  <rect x="40" y="642" width="880" height="44" rx="10" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="480" y="662" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Shared Foundation</text>
+  <text x="200" y="678" text-anchor="middle" font-size="10" fill="#64748B">paths-registry.yaml</text>
+  <text x="380" y="678" text-anchor="middle" font-size="10" fill="#64748B">context/ knowledge base</text>
+  <text x="560" y="678" text-anchor="middle" font-size="10" fill="#64748B">Memory MCP graph</text>
+  <text x="740" y="678" text-anchor="middle" font-size="10" fill="#64748B">18+ design patterns</text>
+
+  <!-- Vertical dotted lines from agents to foundation -->
+  <line x1="200" y1="614" x2="200" y2="640" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="480" y1="614" x2="480" y2="640" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="760" y1="614" x2="760" y2="640" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,3"/>
+</svg>

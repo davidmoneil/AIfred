@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="phase1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+    <linearGradient id="phase2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="phase3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D9488"/>
+      <stop offset="100%" stop-color="#2DD4BF"/>
+    </linearGradient>
+    <linearGradient id="phase4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+    <linearGradient id="phase5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#FB923C"/>
+    </linearGradient>
+    <linearGradient id="phase6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </linearGradient>
+    <linearGradient id="phase7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#94A3B8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="520" rx="12" fill="#F8FAFC"/>
+
+  <!-- Title -->
+  <text x="480" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#0F172A">The /setup Wizard</text>
+  <text x="480" y="58" text-anchor="middle" font-size="13" fill="#64748B">7 phases from blank slate to fully-configured AI assistant</text>
+
+  <!-- Row 1: Phases 1-4 -->
+  <!-- Phase 1 -->
+  <rect x="40" y="90" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="40" y="90" width="200" height="36" rx="12" fill="url(#phase1)"/>
+  <rect x="40" y="114" width="200" height="12" fill="url(#phase1)"/>
+  <circle cx="64" cy="108" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="64" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="white">1</text>
+  <text x="150" y="113" text-anchor="middle" font-size="12" font-weight="600" fill="white">Discovery</text>
+  <text x="140" y="148" text-anchor="middle" font-size="10" fill="#475569">Detect OS &amp; hardware</text>
+  <text x="140" y="164" text-anchor="middle" font-size="10" fill="#475569">Find Docker installation</text>
+  <text x="140" y="180" text-anchor="middle" font-size="10" fill="#475569">Scan running services</text>
+  <text x="140" y="196" text-anchor="middle" font-size="10" fill="#475569">Identify NAS/storage</text>
+  <text x="140" y="212" text-anchor="middle" font-size="10" fill="#475569">Network discovery</text>
+  <text x="140" y="236" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Automated scan</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="244" y1="170" x2="276" y2="170" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 2 -->
+  <rect x="280" y="90" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="280" y="90" width="200" height="36" rx="12" fill="url(#phase2)"/>
+  <rect x="280" y="114" width="200" height="12" fill="url(#phase2)"/>
+  <circle cx="304" cy="108" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="304" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="white">2</text>
+  <text x="390" y="113" text-anchor="middle" font-size="12" font-weight="600" fill="white">Interview</text>
+  <text x="380" y="148" text-anchor="middle" font-size="10" fill="#475569">"What will you use this for?"</text>
+  <text x="380" y="164" text-anchor="middle" font-size="10" fill="#475569">Automation preferences</text>
+  <text x="380" y="180" text-anchor="middle" font-size="10" fill="#475569">Focus areas selection</text>
+  <text x="380" y="196" text-anchor="middle" font-size="10" fill="#475569">Tool integrations</text>
+  <text x="380" y="212" text-anchor="middle" font-size="10" fill="#475569">Security preferences</text>
+  <text x="380" y="236" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Conversational</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="484" y1="170" x2="516" y2="170" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 3 -->
+  <rect x="520" y="90" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="520" y="90" width="200" height="36" rx="12" fill="url(#phase3)"/>
+  <rect x="520" y="114" width="200" height="12" fill="url(#phase3)"/>
+  <circle cx="544" cy="108" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="544" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="white">3</text>
+  <text x="630" y="113" text-anchor="middle" font-size="12" font-weight="600" fill="white">Foundation</text>
+  <text x="620" y="148" text-anchor="middle" font-size="10" fill="#475569">Create directory structure</text>
+  <text x="620" y="164" text-anchor="middle" font-size="10" fill="#475569">Initialize paths-registry</text>
+  <text x="620" y="180" text-anchor="middle" font-size="10" fill="#475569">Knowledge base templates</text>
+  <text x="620" y="196" text-anchor="middle" font-size="10" fill="#475569">Configure CLAUDE.md</text>
+  <text x="620" y="212" text-anchor="middle" font-size="10" fill="#475569">Set permissions</text>
+  <text x="620" y="236" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Automated build</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="724" y1="170" x2="756" y2="170" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 4 -->
+  <rect x="760" y="90" width="160" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="760" y="90" width="160" height="36" rx="12" fill="url(#phase4)"/>
+  <rect x="760" y="114" width="160" height="12" fill="url(#phase4)"/>
+  <circle cx="784" cy="108" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="784" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="white">4</text>
+  <text x="848" y="113" text-anchor="middle" font-size="12" font-weight="600" fill="white">MCP Setup</text>
+  <text x="840" y="148" text-anchor="middle" font-size="10" fill="#475569">Docker install</text>
+  <text x="840" y="164" text-anchor="middle" font-size="10" fill="#475569">Deploy MCP Gateway</text>
+  <text x="840" y="180" text-anchor="middle" font-size="10" fill="#475569">Memory MCP config</text>
+  <text x="840" y="196" text-anchor="middle" font-size="10" fill="#475569">Verify connectivity</text>
+  <text x="840" y="212" text-anchor="middle" font-size="10" fill="#475569">Seed initial data</text>
+  <text x="840" y="236" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Guided install</text>
+
+  <!-- Curved arrow from Phase 4 down to Phase 5 -->
+  <path d="M 840,254 L 840,290 L 740,290 L 740,310" stroke="#94A3B8" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Row 2: Phases 5-7 -->
+  <!-- Phase 5 -->
+  <rect x="640" y="314" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="640" y="314" width="200" height="36" rx="12" fill="url(#phase5)"/>
+  <rect x="640" y="338" width="200" height="12" fill="url(#phase5)"/>
+  <circle cx="664" cy="332" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="664" y="337" text-anchor="middle" font-size="12" font-weight="700" fill="white">5</text>
+  <text x="750" y="337" text-anchor="middle" font-size="12" font-weight="600" fill="white">Hooks &amp; Automation</text>
+  <text x="740" y="372" text-anchor="middle" font-size="10" fill="#475569">Install core hooks (27)</text>
+  <text x="740" y="388" text-anchor="middle" font-size="10" fill="#475569">Session management</text>
+  <text x="740" y="404" text-anchor="middle" font-size="10" fill="#475569">Cron jobs setup</text>
+  <text x="740" y="420" text-anchor="middle" font-size="10" fill="#475569">Exit workflow config</text>
+  <text x="740" y="436" text-anchor="middle" font-size="10" fill="#475569">Permission levels</text>
+  <text x="740" y="460" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Profile-driven</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="636" y1="394" x2="604" y2="394" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 6 -->
+  <rect x="400" y="314" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="400" y="314" width="200" height="36" rx="12" fill="url(#phase6)"/>
+  <rect x="400" y="338" width="200" height="12" fill="url(#phase6)"/>
+  <circle cx="424" cy="332" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="424" y="337" text-anchor="middle" font-size="12" font-weight="700" fill="white">6</text>
+  <text x="510" y="337" text-anchor="middle" font-size="12" font-weight="600" fill="white">Agent Deployment</text>
+  <text x="500" y="372" text-anchor="middle" font-size="10" fill="#475569">Deploy starter agents</text>
+  <text x="500" y="388" text-anchor="middle" font-size="10" fill="#475569">Initialize agent memory</text>
+  <text x="500" y="404" text-anchor="middle" font-size="10" fill="#475569">Create templates</text>
+  <text x="500" y="420" text-anchor="middle" font-size="10" fill="#475569">Results directories</text>
+  <text x="500" y="436" text-anchor="middle" font-size="10" fill="#475569">Session tracking</text>
+  <text x="500" y="460" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Focus-based selection</text>
+
+  <!-- Arrow 6→7 -->
+  <line x1="396" y1="394" x2="364" y2="394" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 7 -->
+  <rect x="160" y="314" width="200" height="160" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="160" y="314" width="200" height="36" rx="12" fill="url(#phase7)"/>
+  <rect x="160" y="338" width="200" height="12" fill="url(#phase7)"/>
+  <circle cx="184" cy="332" r="12" fill="white" fill-opacity="0.25"/>
+  <text x="184" y="337" text-anchor="middle" font-size="12" font-weight="700" fill="white">7</text>
+  <text x="270" y="337" text-anchor="middle" font-size="12" font-weight="600" fill="white">Finalization</text>
+  <text x="260" y="372" text-anchor="middle" font-size="10" fill="#475569">Generate documentation</text>
+  <text x="260" y="388" text-anchor="middle" font-size="10" fill="#475569">Archive setup artifacts</text>
+  <text x="260" y="404" text-anchor="middle" font-size="10" fill="#475569">Verify all systems</text>
+  <text x="260" y="420" text-anchor="middle" font-size="10" fill="#475569">Create "next steps" guide</text>
+  <text x="260" y="436" text-anchor="middle" font-size="10" fill="#475569">Optional: push to GitHub</text>
+  <text x="260" y="460" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">Ready to use!</text>
+
+  <!-- Done indicator -->
+  <circle cx="100" cy="394" r="24" fill="#059669" filter="url(#shadow)"/>
+  <text x="100" y="390" text-anchor="middle" font-size="16" fill="white">&#10003;</text>
+  <text x="100" y="404" text-anchor="middle" font-size="8" font-weight="600" fill="white">DONE</text>
+  <line x1="156" y1="394" x2="128" y2="394" stroke="#059669" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Time estimate -->
+  <rect x="40" y="314" width="100" height="50" rx="8" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="90" y="336" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">~15 minutes</text>
+  <text x="90" y="351" text-anchor="middle" font-size="9" fill="#15803D">start to finish</text>
+</svg>

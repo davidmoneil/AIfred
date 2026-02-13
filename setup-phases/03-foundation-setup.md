@@ -110,7 +110,47 @@ Your AIfred environment was configured on [date].
 2. [Based on discovered infrastructure]
 ```
 
-### 5. Update Session State
+### 5. Initialize Beads Task Management
+
+Set up the Beads workspace for task tracking across sessions:
+
+```bash
+# Initialize Beads in the AIfred directory
+cd [AIFRED_HOME]
+bd init
+
+# Configure from template
+cp .beads/config.yaml.template .beads/config.yaml
+```
+
+**Customize `.beads/config.yaml`** based on user's focus areas from Phase 2:
+
+- **Infrastructure focus**: Add labels `domain:infrastructure`, `domain:monitoring`
+- **Development focus**: Add labels `domain:coding`, `domain:testing`
+- **Both**: Include all domain labels
+
+**Verify Beads is working:**
+
+```bash
+# Create a test task
+bd create "AIfred setup complete" -t task -p 3 \
+  -l "domain:infrastructure,project:aifred,severity:low,source:session"
+
+# Verify it exists
+bd list --status open
+
+# Close the test task
+bd close [id] --reason "Setup verification"
+```
+
+**Set up shell aliases** (optional, for human terminal use):
+
+```bash
+# Add to user's shell profile (.bashrc or .zshrc)
+echo 'source "$HOME/Code/AIfred/scripts/beads-aliases.sh"' >> ~/.bashrc
+```
+
+### 6. Update Session State
 
 Update `.claude/context/session-state.md`:
 
@@ -134,6 +174,7 @@ Before proceeding:
 - [ ] external-sources/ structure created
 - [ ] Discovered systems documented (if any)
 - [ ] getting-started.md created
+- [ ] Beads workspace initialized and verified
 - [ ] Session state updated
 
 ---

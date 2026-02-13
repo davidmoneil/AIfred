@@ -11,6 +11,7 @@
 | Dependency | Required | Purpose |
 |------------|----------|---------|
 | Git | **Yes** | Version control, syncing |
+| Beads (`bd`) | **Yes** | Task management across sessions |
 | Docker | Recommended | MCP servers, container management |
 | Homebrew (macOS only) | Optional | Package management (NOT required for Docker) |
 
@@ -61,6 +62,33 @@ fi
 | Ubuntu/Debian | `sudo apt update && sudo apt install git` |
 | Fedora/RHEL | `sudo dnf install git` |
 | WSL | Follow Linux instructions |
+
+---
+
+### Beads Task Management (Required)
+
+```bash
+if command -v bd &> /dev/null; then
+  echo "✅ Beads installed: $(bd --version 2>/dev/null || echo 'version unknown')"
+else
+  echo "❌ Beads NOT installed"
+  BEADS_MISSING=true
+fi
+```
+
+**If Beads is missing:**
+
+```bash
+# Install via npm (Node.js required)
+npm install -g @beads/bd
+
+# Verify installation
+bd --version
+```
+
+> **Note**: Beads requires Node.js. If Node.js is not installed, install it first (see Optional Dependencies below), then install Beads.
+
+AIfred uses Beads for all task tracking, session provenance, and priority management. Without it, the task management system, session actor hook, and priority workflows will not function.
 
 ---
 
@@ -274,6 +302,7 @@ After checking, display summary:
 ╠══════════════════════════════════════════════════╣
 ║ REQUIRED                                         ║
 ║   Git:     ✅ Installed / ❌ Missing             ║
+║   Beads:   ✅ Installed / ❌ Missing             ║
 ╠══════════════════════════════════════════════════╣
 ║ RECOMMENDED                                      ║
 ║   Docker:  ✅ Running / ⚠️ Not Running / ❌ N/A  ║
@@ -292,6 +321,7 @@ After checking, display summary:
 Before moving to Phase 1:
 
 - [ ] Git is installed
+- [ ] Beads (`bd`) is installed
 - [ ] Docker decision made (installed + running, or explicitly skipped)
 - [ ] If Docker was installed, status re-validated
 

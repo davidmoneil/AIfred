@@ -19,6 +19,9 @@ set -euo pipefail
 
 # Configuration
 AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 PRIORITIES_FILE="$AIFRED_HOME/.claude/context/projects/current-priorities.md"
 SESSION_NOTES_DIR="$AIFRED_HOME/knowledge/notes"
 SESSION_STATE_FILE="$AIFRED_HOME/.claude/context/session-state.md"
@@ -86,8 +89,8 @@ session_notes() {
             if [[ -n "$file" && -f "$file" ]]; then
                 local name date_modified lines
                 name=$(basename "$file" .md)
-                date_modified=$(stat -c %Y "$file" 2>/dev/null || echo "0")
-                date_modified=$(date -d "@$date_modified" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
+                date_modified=$(compat_stat_mtime "$file" 2>/dev/null || echo "0")
+                date_modified=$(compat_date_epoch "$date_modified" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
                 lines=$(wc -l < "$file" 2>/dev/null || echo "0")
                 notes+=("{\"name\": \"$name\", \"date\": \"$date_modified\", \"lines\": $lines}")
             fi

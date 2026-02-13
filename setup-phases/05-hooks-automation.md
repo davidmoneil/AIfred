@@ -136,26 +136,41 @@ Called by `weekly-health-check.sh` to sync health status with project priorities
 
 ## Scheduled Jobs Configuration
 
-### Option A: Cron (Simple)
+### Headless Claude (Recommended for AI-Powered Jobs)
 
-Add to crontab (`crontab -e`):
+AIfred includes a Headless Claude job system for scheduled AI-powered automation. A single cron entry runs the dispatcher, which manages all job scheduling:
+
+```bash
+crontab -e
+# Add:
+*/5 * * * * $HOME/Code/AIfred/.claude/jobs/dispatcher.sh >> $HOME/Code/AIfred/.claude/logs/headless/dispatcher.log 2>&1
+```
+
+The dispatcher reads `.claude/jobs/registry.yaml` for job definitions. Template jobs are pre-configured — customize or add your own. See `.claude/jobs/README.md` for full documentation.
+
+**Optional: Telegram notifications**
+```bash
+cp .claude/jobs/.env.template .claude/jobs/.env
+# Edit with your bot token and chat ID
+```
+
+### Legacy Cron (For Deterministic Scripts)
+
+For bash scripts that don't need AI judgment:
 
 ```bash
 # ========================================
 # AIFRED AUTOMATION (Sundays)
 # ========================================
 
-# 3:00 AM - Weekly Docker restart (if using cron instead of systemd)
-# 0 3 * * 0 $HOME/Code/AIfred/scripts/weekly-docker-restart.sh >> $HOME/Code/AIfred/.claude/logs/cron.log 2>&1
-
-# 5:00 AM - Weekly health check
+# 5:00 AM - Weekly health check (bash script)
 0 5 * * 0 $HOME/Code/AIfred/scripts/weekly-health-check.sh >> $HOME/Code/AIfred/.claude/logs/cron.log 2>&1
 
-# 6:00 AM - Weekly context analysis
+# 6:00 AM - Weekly context analysis (bash script)
 0 6 * * 0 $HOME/Code/AIfred/scripts/weekly-context-analysis.sh >> $HOME/Code/AIfred/.claude/logs/cron.log 2>&1
 ```
 
-### Option B: Systemd Timer (Recommended for Docker Restart)
+### Systemd Timer (For Docker Restart)
 
 Systemd timers are more reliable for operations that interact with Docker:
 

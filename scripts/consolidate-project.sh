@@ -16,6 +16,9 @@ set -euo pipefail
 
 # Configuration
 AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 PROJECTS_DIR="$AIFRED_HOME/.claude/projects"
 CONTEXT_DIR="$AIFRED_HOME/.claude/context"
 AGENTS_DIR="$AIFRED_HOME/.claude/agents"
@@ -97,10 +100,10 @@ list_projects() {
             if [[ -d "$project_path" ]]; then
                 # Get last modified time
                 local last_modified
-                last_modified=$(find "$project_path" -type f -name "*.md" -printf '%T@\n' 2>/dev/null | sort -rn | head -1)
+                last_modified=$(compat_find_printf_mtime "$project_path" "*.md" 2>/dev/null | sort -rn | head -1)
                 local last_modified_date=""
                 if [[ -n "$last_modified" ]]; then
-                    last_modified_date=$(date -d "@${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
+                    last_modified_date=$(compat_date_epoch "${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
                 fi
 
                 # Count files
@@ -124,10 +127,10 @@ list_projects() {
             fi
 
             local last_modified
-            last_modified=$(find "$dir" -type f -name "*.md" -printf '%T@\n' 2>/dev/null | sort -rn | head -1)
+            last_modified=$(compat_find_printf_mtime "$dir" "*.md" 2>/dev/null | sort -rn | head -1)
             local last_modified_date=""
             if [[ -n "$last_modified" ]]; then
-                last_modified_date=$(date -d "@${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
+                last_modified_date=$(compat_date_epoch "${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
             fi
 
             local file_count
@@ -197,11 +200,11 @@ project_stats() {
 
     # Last activity
     local last_modified
-    last_modified=$(find "$project_path" -type f -printf '%T@\n' 2>/dev/null | sort -rn | head -1)
+    last_modified=$(compat_find_printf_mtime "$project_path" "*" 2>/dev/null | sort -rn | head -1)
     local last_modified_date=""
     local days_since_activity=0
     if [[ -n "$last_modified" ]]; then
-        last_modified_date=$(date -d "@${last_modified%.*}" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "unknown")
+        last_modified_date=$(compat_date_epoch "${last_modified%.*}" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "unknown")
         local now
         now=$(date +%s)
         days_since_activity=$(( (now - ${last_modified%.*}) / 86400 ))
@@ -366,7 +369,7 @@ check_stale() {
             [[ "$dir_name" == "_"* ]] && continue
 
             local last_modified
-            last_modified=$(find "$dir" -type f -printf '%T@\n' 2>/dev/null | sort -rn | head -1)
+            last_modified=$(compat_find_printf_mtime "$dir" "*" 2>/dev/null | sort -rn | head -1)
 
             if [[ -n "$last_modified" ]]; then
                 local now
@@ -375,7 +378,7 @@ check_stale() {
 
                 if [[ $days_since -gt $days ]]; then
                     local last_date
-                    last_date=$(date -d "@${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
+                    last_date=$(compat_date_epoch "${last_modified%.*}" "+%Y-%m-%d" 2>/dev/null || echo "unknown")
                     stale_projects+=("{\"name\": \"$dir_name\", \"days_inactive\": $days_since, \"last_modified\": \"$last_date\"}")
                 fi
             fi

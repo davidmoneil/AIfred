@@ -10,6 +10,9 @@ set -euo pipefail
 
 # Configuration
 AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 SESSION_STATE="${AIFRED_HOME}/.claude/context/session-state.md"
 
 # Colors
@@ -131,27 +134,22 @@ TEMP_FILE=$(mktemp)
 sed "s/^\*\*Status\*\*:.*/\*\*Status\*\*: checkpoint/" "$SESSION_STATE" > "$TEMP_FILE"
 
 # Update last updated line
-sed -i "s/^\*\*Last Updated\*\*:.*/\*\*Last Updated\*\*: $DATE $TIME/" "$TEMP_FILE"
+compat_sed_inplace "s/^\*\*Last Updated\*\*:.*/\*\*Last Updated\*\*: $DATE $TIME/" "$TEMP_FILE"
 
 # Check if checkpoint section exists, if not add it
 if ! grep -q "## Checkpoint" "$TEMP_FILE"; then
     # Add checkpoint section before "## Current Work" or at end
     if grep -q "## Current Work" "$TEMP_FILE"; then
-        sed -i "/## Current Work/i\\
-## Checkpoint\\
-\\
-**Timestamp**: $TIMESTAMP\\
-**Reason**: $CHECKPOINT_REASON\\
-$(if [[ -n "$MCP_NAME" ]]; then echo "**MCP Required**: $MCP_NAME"; fi)\\
-\\
-### To Resume\\
-\\
-1. Enable required MCP: \`claude mcp add $MCP_NAME\`\\
-2. Restart Claude Code\\
-3. Continue from session-state.md context\\
-\\
----\\
-" "$TEMP_FILE"
+        # Build checkpoint block and insert before "## Current Work"
+        local checkpoint_block
+        checkpoint_block="## Checkpoint\n\n**Timestamp**: $TIMESTAMP\n**Reason**: $CHECKPOINT_REASON"
+        if [[ -n "$MCP_NAME" ]]; then
+            checkpoint_block="$checkpoint_block\n**MCP Required**: $MCP_NAME"
+        fi
+        checkpoint_block="$checkpoint_block\n\n### To Resume\n\n1. Enable required MCP: \`claude mcp add $MCP_NAME\`\n2. Restart Claude Code\n3. Continue from session-state.md context\n\n---\n"
+        local tmp_insert
+        tmp_insert=$(mktemp)
+        awk -v block="$checkpoint_block" '/^## Current Work/ { printf "%s\n", block } { print }' "$TEMP_FILE" > "$tmp_insert" && mv "$tmp_insert" "$TEMP_FILE"
     else
         cat >> "$TEMP_FILE" << EOF
 
@@ -170,11 +168,11 @@ EOF
     fi
 else
     # Update existing checkpoint section
-    sed -i "s/^\*\*Timestamp\*\*:.*/\*\*Timestamp\*\*: $TIMESTAMP/" "$TEMP_FILE"
-    sed -i "s/^\*\*Reason\*\*:.*/\*\*Reason\*\*: $CHECKPOINT_REASON/" "$TEMP_FILE"
+    compat_sed_inplace "s/^\*\*Timestamp\*\*:.*/\*\*Timestamp\*\*: $TIMESTAMP/" "$TEMP_FILE"
+    compat_sed_inplace "s/^\*\*Reason\*\*:.*/\*\*Reason\*\*: $CHECKPOINT_REASON/" "$TEMP_FILE"
     if [[ -n "$MCP_NAME" ]]; then
         if grep -q "^\*\*MCP Required\*\*:" "$TEMP_FILE"; then
-            sed -i "s/^\*\*MCP Required\*\*:.*/\*\*MCP Required\*\*: $MCP_NAME/" "$TEMP_FILE"
+            compat_sed_inplace "s/^\*\*MCP Required\*\*:.*/\*\*MCP Required\*\*: $MCP_NAME/" "$TEMP_FILE"
         fi
     fi
 fi

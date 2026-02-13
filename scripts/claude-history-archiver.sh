@@ -10,6 +10,10 @@
 set -uo pipefail
 # Note: -e removed to handle find returning no results gracefully
 
+# Cross-platform compatibility
+SCRIPT_DIR_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR_LIB}/lib/platform.sh"
+
 # Configuration
 PROJECTS_DIR="$HOME/.claude/projects"
 ARCHIVE_DIR="$HOME/.claude/archive/conversations"
@@ -205,8 +209,8 @@ show_status() {
 
         # Find JSONL files
         while IFS= read -r -d '' jsonl; do
-            local file_age_days=$(( ($(date +%s) - $(stat -c %Y "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
-            local file_size_mb=$(( $(stat -c %s "$jsonl" 2>/dev/null || echo 0) / 1048576 ))
+            local file_age_days=$(( ($(date +%s) - $(compat_stat_mtime "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
+            local file_size_mb=$(( $(compat_stat_size "$jsonl" 2>/dev/null || echo 0) / 1048576 ))
 
             # Skip files younger than MIN_AGE_DAYS
             if [[ $file_age_days -lt $MIN_AGE_DAYS ]]; then
@@ -248,8 +252,8 @@ do_archive() {
 
         # Find JSONL files in this project folder
         while IFS= read -r -d '' jsonl; do
-            local file_age_days=$(( ($(date +%s) - $(stat -c %Y "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
-            local file_size_bytes=$(stat -c %s "$jsonl" 2>/dev/null || echo 0)
+            local file_age_days=$(( ($(date +%s) - $(compat_stat_mtime "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
+            local file_size_bytes=$(compat_stat_size "$jsonl" 2>/dev/null || echo 0)
             local file_size_mb=$(( file_size_bytes / 1048576 ))
             local file_size_kb=$(( file_size_bytes / 1024 ))
 
@@ -306,9 +310,9 @@ update_manifest() {
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     # Update the header values in manifest
-    sed -i "s/^last_updated:.*/last_updated: \"$timestamp\"/" "$MANIFEST"
-    sed -i "s/^total_conversations:.*/total_conversations: $count/" "$MANIFEST"
-    sed -i "s/^total_size_mb:.*/total_size_mb: $size_mb/" "$MANIFEST"
+    compat_sed_inplace "s/^last_updated:.*/last_updated: \"$timestamp\"/" "$MANIFEST"
+    compat_sed_inplace "s/^total_conversations:.*/total_conversations: $count/" "$MANIFEST"
+    compat_sed_inplace "s/^total_size_mb:.*/total_size_mb: $size_mb/" "$MANIFEST"
 
     log_success "Manifest updated: $count conversations, ${size_mb}MB"
 }
