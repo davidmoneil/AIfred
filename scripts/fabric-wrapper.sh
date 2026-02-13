@@ -129,8 +129,8 @@ run_fabric() {
 
     log_info "Running pattern '$pattern' with model '$model' (timeout: ${timeout}s)"
 
-    # Use timeout command with fabric
-    if compat_timeout "${timeout}s" "$FABRIC_BIN" \
+    # Use timeout command with fabric (compat_timeout takes plain seconds)
+    if compat_timeout "$timeout" "$FABRIC_BIN" \
         --pattern "$pattern" \
         --model "$model" \
         --stream \

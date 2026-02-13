@@ -19,6 +19,10 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+AIFRED_HOME="${AIFRED_HOME:-$PROJECT_ROOT}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 METADATA_FILE="$PROJECT_ROOT/.claude/agents/memory/entity-metadata.json"
 ARCHIVE_DIR="$PROJECT_ROOT/.claude/archive/memory"
 LOG_FILE="$PROJECT_ROOT/.claude/jobs/logs/memory-prune.log"
@@ -93,7 +97,7 @@ log_info "Mode: $([ "$DRY_RUN" = true ] && echo 'DRY RUN' || echo 'EXECUTE')"
 echo ""
 
 # Calculate cutoff date
-CUTOFF_DATE=$(date -d "$RETENTION_DAYS days ago" '+%Y-%m-%d' 2>/dev/null || date -v-${RETENTION_DAYS}d '+%Y-%m-%d')
+CUTOFF_DATE=$(compat_date_relative "$RETENTION_DAYS days ago" '+%Y-%m-%d')
 log_info "Cutoff date: $CUTOFF_DATE (entities not accessed since)"
 echo ""
 

@@ -17,6 +17,9 @@
 set -euo pipefail
 
 # Configuration
+# NOTE: This script runs commands on a remote Linux host via SSH.
+# systemctl, journalctl, /proc, /sys references are executed on the remote
+# gateway, not locally. No macOS compatibility is needed for those calls.
 UDM_HOST="${UDM_HOST:-gateway}"
 SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new"
 

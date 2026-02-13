@@ -23,6 +23,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 MESSAGES_FILE="$JOBS_DIR/messages.jsonl"
 CURSOR_FILE="$JOBS_DIR/state/msgbus-cursor.txt"
 LOCK_FILE="$JOBS_DIR/state/msgbus-cursor.lock"
@@ -368,7 +372,7 @@ cmd_health() {
     # 1. File size check
     local file_size_bytes=0
     if [ -f "$MESSAGES_FILE" ]; then
-        file_size_bytes=$(stat -c%s "$MESSAGES_FILE" 2>/dev/null || echo "0")
+        file_size_bytes=$(compat_stat_size "$MESSAGES_FILE" 2>/dev/null || echo "0")
     fi
     local file_size_kb=$((file_size_bytes / 1024))
     local file_size_mb=$((file_size_bytes / 1048576))
@@ -402,7 +406,7 @@ cmd_health() {
 
     # 3. Stuck pending messages (pending for >2 hours)
     local two_hours_ago
-    two_hours_ago=$(date -u -d "-2 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
+    two_hours_ago=$(compat_date_relative "-2 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
     local stuck_count=0
     local stuck_details=""
     if [ "$total_events" -gt 0 ]; then
@@ -422,7 +426,7 @@ cmd_health() {
 
     # 4. Unanswered questions (pending for >4 hours)
     local four_hours_ago
-    four_hours_ago=$(date -u -d "-4 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
+    four_hours_ago=$(compat_date_relative "-4 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
     local stale_questions=0
     if [ "$total_events" -gt 0 ]; then
         stale_questions=$(jq -c "select(.event_type == \"question_asked\" and .status == \"pending\" and .created_at <= \"$four_hours_ago\")" "$MESSAGES_FILE" 2>/dev/null | wc -l)
@@ -482,12 +486,12 @@ resolve_time() {
             h)   secs=$((num * 3600)) ;;
             d)   secs=$((num * 86400)) ;;
         esac
-        date -u -d "+${secs} seconds" +%Y-%m-%dT%H:%M:%SZ
+        compat_date_relative "+${secs} seconds" +%Y-%m-%dT%H:%M:%SZ
         return
     fi
 
-    # Fallback: try GNU date parsing
-    date -u -d "$input" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "$input"
+    # Fallback: try compat_date_relative parsing
+    compat_date_relative "$input" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "$input"
 }
 
 # ============================================================================

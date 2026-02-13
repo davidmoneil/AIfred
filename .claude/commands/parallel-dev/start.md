@@ -203,12 +203,12 @@ When an agent completes:
 When all tasks complete:
 
 ```bash
-# Update execution state
-sed -i 's/^status:.*/status: completed/' "$EXEC_DIR/state.yaml"
+# Update execution state (portable: temp file + mv)
+tmp=$(mktemp); sed 's/^status:.*/status: completed/' "$EXEC_DIR/state.yaml" > "$tmp" && mv "$tmp" "$EXEC_DIR/state.yaml"
 echo "completed_at: $(date -Iseconds)" >> "$EXEC_DIR/state.yaml"
 
 # Update plan status
-sed -i 's/^status:.*/status: completed/' "$PLAN_FILE"
+tmp=$(mktemp); sed 's/^status:.*/status: completed/' "$PLAN_FILE" > "$tmp" && mv "$tmp" "$PLAN_FILE"
 ```
 
 Display completion summary:

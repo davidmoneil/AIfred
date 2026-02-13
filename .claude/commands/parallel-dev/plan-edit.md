@@ -61,12 +61,12 @@ Read and parse the existing plan to understand current state.
 
 ```bash
 if [ "$ACTION" = "approve" ]; then
-    # Update status in frontmatter
-    sed -i 's/^status:.*/status: approved/' "$PLAN_FILE"
+    # Update status in frontmatter (portable: temp file + mv)
+    tmp=$(mktemp); sed 's/^status:.*/status: approved/' "$PLAN_FILE" > "$tmp" && mv "$tmp" "$PLAN_FILE"
 
     # Add approval date
     APPROVAL_DATE=$(date +%Y-%m-%d)
-    sed -i "s/\*\*Approved\*\*:.*/\*\*Approved\*\*: $APPROVAL_DATE/" "$PLAN_FILE"
+    tmp=$(mktemp); sed "s/\*\*Approved\*\*:.*/\*\*Approved\*\*: $APPROVAL_DATE/" "$PLAN_FILE" > "$tmp" && mv "$tmp" "$PLAN_FILE"
 
     echo "Plan approved: $PLAN_NAME"
     echo ""

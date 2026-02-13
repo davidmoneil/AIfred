@@ -43,11 +43,11 @@ fi
 ```bash
 TIMESTAMP=$(date -Iseconds)
 
-# Update status
-sed -i 's/^status:.*/status: paused/' "$STATE_FILE"
+# Update status (portable: temp file + mv)
+tmp=$(mktemp); sed 's/^status:.*/status: paused/' "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
 
 # Add pause timestamp
-sed -i "s/paused_at:.*/paused_at: $TIMESTAMP/" "$STATE_FILE"
+tmp=$(mktemp); sed "s/paused_at:.*/paused_at: $TIMESTAMP/" "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
 ```
 
 ### 3. Record Pause Reason

@@ -18,6 +18,9 @@ set -euo pipefail
 # ============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Cross-platform compatibility
+source "${SCRIPT_DIR}/lib/platform.sh"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 PRIORITIES_FILE="$PROJECT_DIR/.claude/context/projects/current-priorities.md"
 ARCHIVE_DIR="$PROJECT_DIR/.claude/context/archive"
@@ -185,7 +188,7 @@ check_completed_section_size() {
 check_old_dates() {
     # Find entries with dates older than threshold
     local cutoff_date old_entries
-    cutoff_date=$(date -d "-${ARCHIVE_AGE_DAYS} days" '+%Y-%m-%d')
+    cutoff_date=$(compat_date_relative "-${ARCHIVE_AGE_DAYS} days" '+%Y-%m-%d')
 
     # Look for date patterns like 2025-12-27 or (2025-12-27)
     old_entries=$(grep -oE "20[0-9]{2}-[01][0-9]-[0-3][0-9]" "$PRIORITIES_FILE" | sort -u | while read -r date; do

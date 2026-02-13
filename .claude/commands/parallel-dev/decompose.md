@@ -224,7 +224,8 @@ Next Steps:
 Update the plan file's status to `decomposed`:
 
 ```bash
-sed -i 's/^status:.*/status: decomposed/' "$PLAN_FILE"
+# Portable: temp file + mv (works on both GNU and BSD sed)
+tmp=$(mktemp); sed 's/^status:.*/status: decomposed/' "$PLAN_FILE" > "$tmp" && mv "$tmp" "$PLAN_FILE"
 ```
 
 ## Task ID Convention

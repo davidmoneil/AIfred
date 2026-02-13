@@ -16,6 +16,9 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Cross-platform compatibility
+source "${SCRIPT_DIR}/lib/platform.sh"
+
 # Source configuration if available
 if [[ -f "$SCRIPT_DIR/config.sh" ]]; then
     source "$SCRIPT_DIR/config.sh"
@@ -211,7 +214,12 @@ check_backups() {
                 fi
 
                 if [[ -n "$LAST_BACKUP" ]]; then
-                    LAST_BACKUP_EPOCH=$(date -d "$LAST_BACKUP" +%s 2>/dev/null) || LAST_BACKUP_EPOCH=0
+                    if [[ "$AIFRED_PLATFORM" == "macos" ]]; then
+                        # macOS: parse ISO 8601 timestamp
+                        LAST_BACKUP_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${LAST_BACKUP%%.*}" +%s 2>/dev/null) || LAST_BACKUP_EPOCH=0
+                    else
+                        LAST_BACKUP_EPOCH=$(date -d "$LAST_BACKUP" +%s 2>/dev/null) || LAST_BACKUP_EPOCH=0
+                    fi
                     NOW_EPOCH=$(date +%s)
                     if [[ $LAST_BACKUP_EPOCH -gt 0 ]]; then
                         AGE_HOURS=$(( (NOW_EPOCH - LAST_BACKUP_EPOCH) / 3600 ))
@@ -242,8 +250,8 @@ check_backups() {
         skip "Restic repository not configured" "restic_connectivity"
     fi
 
-    # Check systemd timer if available
-    if systemctl is-active --quiet restic-backup.timer 2>/dev/null; then
+    # Check systemd timer if available (Linux only)
+    if command -v systemctl &>/dev/null && systemctl is-active --quiet restic-backup.timer 2>/dev/null; then
         pass "Restic backup timer is active" "restic_timer"
     else
         info "Restic backup timer not configured or inactive"
@@ -587,7 +595,7 @@ check_security() {
 
     subheader "Docker Security"
 
-    PRIVILEGED=$(docker ps --quiet | xargs -r docker inspect --format '{{.Name}}: {{.HostConfig.Privileged}}' 2>/dev/null | grep -c "true" || echo "0")
+    PRIVILEGED=$(docker ps --quiet | compat_xargs_nonempty docker inspect --format '{{.Name}}: {{.HostConfig.Privileged}}' 2>/dev/null | grep -c "true" || echo "0")
     if [[ $PRIVILEGED -gt 0 ]]; then
         warn "$PRIVILEGED privileged containers running" "docker_privileged" "Review security requirements"
     else

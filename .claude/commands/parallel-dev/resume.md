@@ -124,11 +124,11 @@ For tasks marked `in_progress` without active agents:
 ```bash
 TIMESTAMP=$(date -Iseconds)
 
-# Update status
-sed -i 's/^status:.*/status: executing/' "$STATE_FILE"
+# Update status (portable: temp file + mv)
+tmp=$(mktemp); sed 's/^status:.*/status: executing/' "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
 
 # Add resume timestamp
-sed -i "s/resumed_at:.*/resumed_at: $TIMESTAMP/" "$STATE_FILE"
+tmp=$(mktemp); sed "s/resumed_at:.*/resumed_at: $TIMESTAMP/" "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
 
 # Log event
 echo "- timestamp: $TIMESTAMP" >> "$EXEC_DIR/log.jsonl"

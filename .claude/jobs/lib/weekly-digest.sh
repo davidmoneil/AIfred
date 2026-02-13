@@ -15,6 +15,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
+
+# Cross-platform compatibility
+source "${AIFRED_HOME}/scripts/lib/platform.sh"
 MSGSTORE="$JOBS_DIR/messages.jsonl"
 SEND_TELEGRAM="$SCRIPT_DIR/send-telegram.sh"
 
@@ -36,9 +40,9 @@ if [ ! -f "$MSGSTORE" ]; then
 fi
 
 # Calculate cutoff timestamp
-CUTOFF=$(date -u -d "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
+CUTOFF=$(compat_date_relative "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
 NOW_LOCAL=$(TZ="America/Denver" date '+%b %-d')
-START_LOCAL=$(TZ="America/Denver" date -d "$DAYS days ago" '+%b %-d')
+START_LOCAL=$(TZ="America/Denver" compat_date_relative "$DAYS days ago" '+%b %-d')
 
 # Query all job_completed and job_failed events in the period
 EVENTS=$(jq -c "select(
