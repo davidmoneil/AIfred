@@ -39,7 +39,7 @@ What do you need?
 │   Modes: continue (default) or --fresh
 │
 ├── Context management (JICM) → Read skills/context-management/SKILL.md
-│   Thresholds: 50% caution, 65% compress, 73% emergency, 78.5% lockout
+│   Thresholds: 50% caution, 55% compress, 73% emergency, 78.5% lockout
 │   JICM Watcher: jicm-watcher.sh (v6 stop-and-wait, polls 5s)
 │   Agent: compression-agent (sonnet, background)
 │   Hook: precompact-analyzer.js

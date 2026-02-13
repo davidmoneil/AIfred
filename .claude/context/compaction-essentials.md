@@ -72,8 +72,8 @@ Execute → Check → Review → Drift Check → Context Check → Continue/Comp
 
 | Threshold | Action |
 |-----------|--------|
-| 55% | Watcher begins warning |
-| 65% | Auto-compress triggered (`/intelligent-compress`) |
+| 50% | Watcher begins monitoring closely |
+| 55% | Auto-compress triggered (`/intelligent-compress`) |
 | 73% | Emergency `/compact` if compression stuck |
 | 78.5% | Lockout ceiling — no new work until compressed |
 

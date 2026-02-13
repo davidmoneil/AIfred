@@ -31,7 +31,7 @@ Understands three-layer (Nous/Pneuma/Soma) architecture deeply enough to correct
 
 ## Context Budget Discipline
 
-Operates within JICM constraints (65/73/78.5% thresholds) across multi-context-window sessions. Successfully completed 14-task iteration within a single context window before triggering compression.
+Operates within JICM constraints (55/73/78.5% thresholds) across multi-context-window sessions. Successfully completed 14-task iteration within a single context window before triggering compression.
 
 **Evidence**: Master Wiggum Loop Iteration 1 (14 tasks, committed before JICM trigger).
 

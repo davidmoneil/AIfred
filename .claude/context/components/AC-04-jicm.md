@@ -32,7 +32,7 @@ Jarvis Intelligent Context Management (JICM) monitors the context window via an 
 1. **Continuation, Not Exit**: Context exhaustion triggers work CONTINUATION, not session end
 2. **Event-Driven State Machine**: States transition on signal files, not polling heuristics
 3. **Two-Mechanism Resume**: Hook injection (Mechanism 1) + idle-hands keystroke injection (Mechanism 2) for reliability
-4. **Single Threshold**: One trigger point (65%) with emergency fallback (73%), not tiered warnings
+4. **Single Threshold**: One trigger point (55%) with emergency fallback (73%), not tiered warnings
 5. **Lockout Awareness**: All thresholds respect the ~78.5% hard ceiling imposed by Claude Code internals
 
 ---
@@ -42,7 +42,7 @@ Jarvis Intelligent Context Management (JICM) monitors the context window via an 
 ### Activation Conditions
 | Trigger Type | Condition | Priority |
 |--------------|-----------|----------|
-| **Threshold-Based** | Context usage >= 65% | high (COMPRESS) |
+| **Threshold-Based** | Context usage >= 55% | high (COMPRESS) |
 | **Threshold-Based** | Context usage >= 73% | critical (EMERGENCY COMPACT) |
 | **Failsafe** | "Context limit reached" in TUI | critical (AUTO-CLEAR) |
 | **Failsafe** | "Conversation too long" in TUI | critical (AUTO-CLEAR) |
@@ -56,7 +56,7 @@ Event-driven state machine (v5.6.2):
   monitoring:
     - jarvis-watcher.sh parses tmux pane statusline for token count + percentage
     - Polls every 30s (POLL_INTERVAL)
-    - At 65%: transition to compression_triggered
+    - At 55%: transition to compression_triggered
 
   compression_triggered:
     - Wait for Claude idle (spinner detection, max 30s)
@@ -75,7 +75,7 @@ Event-driven state machine (v5.6.2):
 ### Suppression Conditions
 | Condition | Behavior |
 |-----------|----------|
-| `--threshold N` flag on watcher | Override 65% default |
+| `--threshold N` flag on watcher | Override 55% default |
 | `.compression-in-progress` exists | Skip duplicate compression |
 | `.clear-sent.signal` exists | Skip duplicate /clear |
 | Watcher process not running | No automated JICM (manual /clear required) |
@@ -93,7 +93,7 @@ Event-driven state machine (v5.6.2):
 ### Optional Inputs
 | Input | Source | Default | Purpose |
 |-------|--------|---------|---------|
-| `--threshold N` | Watcher CLI flag | 65 | Override JICM trigger percentage |
+| `--threshold N` | Watcher CLI flag | 55 | Override JICM trigger percentage |
 | `.jicm-config` | Signal file | Generated | Dynamic config (threshold markers) |
 | Session state | `session-state.md` | None | Work context for compression agent |
 
@@ -194,7 +194,7 @@ Event-driven state machine (v5.6.2):
                            |
               ┌────────────┼─────────────────────────┐
               |            |                          |
-         At 65%:     At 73%:                    Failsafe:
+         At 55%:     At 73%:                    Failsafe:
    /intelligent-     Emergency              "Context limit
       compress        /compact               reached" detected
               |            |                          |
@@ -289,7 +289,7 @@ entirely when approaching lockout ceiling.
 ### Emission Format
 ```
 Watcher log entries (text, not JSONL):
-  [HH:MM:SS] Context: 65% (130000/200000 tokens) — JICM TRIGGERED
+  [HH:MM:SS] Context: 55% (110000/200000 tokens) — JICM TRIGGERED
   [HH:MM:SS] Compression done signal detected
   [HH:MM:SS] Sent /clear — transitioning to cleared state
   [HH:MM:SS] Resume prompt injected — returning to monitoring
@@ -364,14 +364,14 @@ All signal files live in `.claude/context/` and are gitignored.
 
 ### Threshold Architecture
 ```
-0%                    65%        70%       73%      78.5%    100%
+0%                    55%        70%       73%      78.5%    100%
 |──────────────────────|──────────|──────────|─────────|──────|
       Normal            JICM     Native      Emergency  LOCKOUT
       Operation        Trigger   Auto-       Compact   CEILING
                                  Compact
                                  (env var)
 
-JICM trigger:        65%  (configurable via --threshold)
+JICM trigger:        55%  (configurable via --threshold)
 Native auto-compact: 70%  (CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70)
 Emergency compact:   73%  (LOCKOUT_PCT - 5)
 Lockout ceiling:    ~78.5% ((200K - 15K - 28K) / 200K)
@@ -403,7 +403,7 @@ The watcher detects the `.idle-hands-active` flag and enters idle-hands monitori
 1. Watcher polls tmux pane, parses statusline
    └── Extracts: token count, percentage, spinner state
 
-2. At 65%: JICM triggered
+2. At 55%: JICM triggered
    ├── wait_for_idle_brief(30)  -- don't interrupt active generation
    ├── Create .compression-in-progress guard
    └── Send "/intelligent-compress" via tmux send-keys
@@ -450,6 +450,7 @@ The watcher detects the `.idle-hands-active` flag and enters idle-hands monitori
 | 2026-01-21 | Opus model for compression | Higher quality context preservation |
 | 2026-01-21 | Idle detection before trigger | Don't interrupt Claude mid-response |
 | 2026-02-05 | Lower threshold to 65% | 80% was above lockout ceiling (~78.5%) |
+| 2026-02-13 | Lower threshold to 55% | Experiment 2: JICM 100% failure at ≥74% context; 55% gives 19-point safety margin |
 | 2026-02-05 | Emergency compact at 73% | Last resort, 5% below lockout |
 | 2026-02-05 | bash 3.2 return 0 pattern | Functions must return 0 for macOS compatibility |
 | 2026-02-05 | Restrict pane parsing to tail -3 | Avoid stale token counts from scroll history |
@@ -464,7 +465,7 @@ The watcher detects the `.idle-hands-active` flag and enters idle-hands monitori
 Before marking this component as "active":
 
 - [x] All 9 specification sections completed
-- [x] Triggers tested (65% threshold, emergency 73%, lockout failsafe)
+- [x] Triggers tested (55% threshold, emergency 73%, lockout failsafe)
 - [x] Inputs/outputs validated (tmux pane parsing, signal file protocol)
 - [x] Dependencies verified (tmux, bash 3.2+, hook registration)
 - [x] Gates implemented (compression-before-clear, idle-before-send)

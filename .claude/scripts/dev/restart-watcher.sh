@@ -82,7 +82,7 @@ if [[ -f "$PID_FILE" ]]; then
     if [[ -n "$local_pid" ]] && kill -0 "$local_pid" 2>/dev/null; then
         kill "$local_pid" 2>/dev/null || true
         # Wait up to 3s for graceful exit
-        local waited=0
+        waited=0
         while [[ $waited -lt 3 ]] && kill -0 "$local_pid" 2>/dev/null; do
             sleep 1
             waited=$((waited + 1))

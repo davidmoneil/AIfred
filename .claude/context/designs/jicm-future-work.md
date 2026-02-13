@@ -109,7 +109,7 @@ No component creates this file. Remove references from:
 ### 4.1 CRITICAL: AC-04-jicm.md rewrite (v3 -> v5.6.2)
 
 The component spec is 3 major versions behind. Needs full rewrite covering:
-- Single-threshold architecture (65% trigger, 73% emergency, 78.5% lockout)
+- Single-threshold architecture (55% trigger, 73% emergency, 78.5% lockout)
 - Two-mechanism resume (hook injection + idle-hands monitor)
 - Event-driven state machine (monitoring <-> compression_triggered <-> cleared)
 - Signal file lifecycle

@@ -4,7 +4,7 @@ Skills are comprehensive workflow guides that consolidate related commands, hook
 Unlike commands (single actions), skills provide end-to-end guidance for complex workflows.
 
 **Created**: 2026-01-06
-**Last Updated**: 2026-02-08
+**Last Updated**: 2026-02-13
 **Source**: AIfred baseline af66364 (ported from AIProjects)
 
 ---

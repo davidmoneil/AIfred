@@ -38,6 +38,7 @@ Plans (Session-level work)
 |----------|---------|-------------|
 | `session-exit.md` | Clean session termination | Every session end |
 | `archon-maintenance-workflow.md` | Organizational health & integration | Large integrations, quarterly maintenance |
+| `wiggum-loop.md` | Iterative exploratory testing (5-step cycles) | Rigorous testing, experimentation, research loops |
 
 ## Usage
 

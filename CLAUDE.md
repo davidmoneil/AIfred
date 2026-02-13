@@ -8,10 +8,27 @@ Master Archon: autonomous infrastructure, development, and self-improvement agen
 
 - **Session Start (AC-01)**: Read `session-state.md` + `current-priorities.md`, begin work immediately
 - **During Work (AC-02)**: Execute → Check → Review → Drift Check → Context Check → Continue
-- **Context (AC-04 JICM)**: 65% compress, 73% emergency, 78.5% lockout ceiling
+- **Context (AC-04 JICM)**: 55% compress, 73% emergency, 78.5% lockout ceiling
 - **Session End (AC-09)**: Run `/end-session`
 
 Use **TodoWrite** for any task with 2+ steps. Iterate until verified.
+
+## Runtime Environment
+
+Jarvis runs inside a **tmux session named `jarvis`** with 6 windows. This is always true — do not hedge about tmux availability.
+
+| Window | Name | Role |
+|--------|------|------|
+| W0 | Jarvis | Primary Archon (this session, unless in dev mode) |
+| W1 | Watcher | JICM v6.1 watcher monitoring W0 |
+| W2 | Ennoia | Session orchestrator |
+| W3 | Virgil | Codebase guide |
+| W4 | Commands | Command signal handler |
+| W5 | Jarvis-dev | Autonomous test driver (dev sessions only) |
+
+- **tmux binary**: `/Users/aircannon/bin/tmux` (NOT in PATH — always use absolute path)
+- **Interact with any window**: `$HOME/bin/tmux capture-pane -t jarvis:N -p` / `send-keys -t jarvis:N`
+- **Dev scripts**: `.claude/scripts/dev/` wrap tmux calls for convenience
 
 ## Guardrails
 
@@ -23,6 +40,7 @@ Use **TodoWrite** for any task with 2+ steps. Iterate until verified.
 - Over-engineer — minimal changes for the task at hand
 - Wait passively — always suggest next action
 - Use multi-line strings with tmux `send-keys -l` (causes input buffer corruption)
+- Hedge about tmux availability — the tmux session is always running (see Runtime Environment)
 
 ### ALWAYS
 - Check `context/` before advising

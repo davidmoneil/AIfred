@@ -150,7 +150,7 @@ SIGNAL FILE                         WRITER(S)                  READER(S)        
  ┌──────────────────────────────────────────────────────────┐
  │              jarvis-watcher.sh — State Machine            │
  │                                                          │
- │  STATE: monitoring ──(65% threshold)──▶ compression_     │
+ │  STATE: monitoring ──(55% threshold)──▶ compression_     │
  │                                         triggered        │
  │                                                          │
  │  Section 3:                                              │

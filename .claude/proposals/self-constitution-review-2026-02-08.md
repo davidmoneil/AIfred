@@ -40,7 +40,7 @@ These proposal elements already exist in the current architecture:
 
 ### 2.1 JICM Thresholds (§5.7)
 **Proposal**: 50% trigger, 80% critical
-**Reality**: 65% compress, 73% emergency, 78.5% lockout ceiling (JICM v5.8.2)
+**Reality**: 55% compress, 73% emergency, 78.5% lockout ceiling (JICM v6.1, lowered from 65% per Experiment 2)
 
 The proposal references the original v5 design document thresholds. The actual watcher implementation uses different values tuned through operational experience. The `78.5% lockout ceiling` is a particularly important addition not present in the proposal.
 

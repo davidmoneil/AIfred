@@ -2,7 +2,7 @@
 
 Active tasks and priorities for Project Aion (Jarvis Archon).
 
-**Last Updated**: 2026-02-11
+**Last Updated**: 2026-02-13
 **Version**: v5.10.0
 
 ---
@@ -171,6 +171,26 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Report**: `.claude/context/designs/jicm-v6.1-implementation-report.md`
 - **Deferred**: jarvis-watcher.sh file deletion (still used for command signals)
 - **Needs**: Commit + push
+
+### Compression Timing Experiment 1 (2026-02-13) — COMPLETE
+- 5-loop Wiggum experiment: /compact vs JICM compression timing
+- 6 matched pairs (12 trials), 5 with both treatments successful
+- **Result**: JICM 2.3x slower (median 313.5s vs 140s, p=0.03125, r=0.833)
+- JICM compression agent = 73% of total time (optimization target)
+- JICM 100% reliable vs /compact 83%
+- **Report**: `.claude/reports/testing/compression-experiment-report.md`
+- **Data**: `.claude/reports/testing/compression-timing-data.jsonl`
+
+### Compression Timing Experiment 2 — Context Volume Regression (2026-02-13) — COMPLETE
+- 2×2 factorial design: treatment (compact/JICM) × context level (45%/75%)
+- 19 trials (4 pilot + 15 experiment), 4 blocks, early stopping invoked
+- **Result 1**: Context volume has NO effect on compression time (F=1.31, p=0.277)
+- **Result 2**: JICM 3.9x slower than /compact (F=122.22, p<0.001, η²=0.917 massive effect)
+- **Result 3**: JICM 100% failure at ≥74% context (0/4 success) — operational ceiling
+- 5 bugs found+fixed (B7-B11): cascading failure, macOS head, ceiling abort, plateau detection, /clear hardening
+- **Report**: `.claude/reports/testing/compression-regression-report.md`
+- **Data**: `.claude/reports/testing/compression-regression-data.jsonl`
+- **Recommendations**: Lower JICM threshold 65%→55%, Haiku compression agent, incremental checkpoints, parallel /clear
 
 ### Next: Phase C — Mac Studio Infrastructure (Wed Feb 12+)
 - Docker container deployment

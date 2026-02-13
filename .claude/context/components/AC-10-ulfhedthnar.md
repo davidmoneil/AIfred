@@ -83,7 +83,7 @@ Write partial solutions to `.claude/state/ulfhedthnar-progress.json` after each 
 | Auto-disengage | Returns to dormant after resolution or exhaustion | Detector checks `active` flag + "stand down" |
 | Cooldown | 30-minute minimum between frenzy activations | `COOLDOWN_MS=1800000` in detector |
 | User sovereignty | Cannot override user denial | Activation requires explicit "unleash" text |
-| Context injection suppression | Won't inject emergence prompt if JICM >= 65% | `isContextBudgetSafe()` reads watcher status |
+| Context injection suppression | Won't inject emergence prompt if JICM >= 55% | `isContextBudgetSafe()` reads watcher status |
 
 ## Dependencies
 

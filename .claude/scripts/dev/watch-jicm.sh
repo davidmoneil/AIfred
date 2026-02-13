@@ -82,7 +82,7 @@ output_json() {
 
     state=$(read_field "state" "UNKNOWN")
     context_pct=$(read_field "context_pct" "0")
-    tokens=$(read_field "tokens" "0")
+    tokens=$(read_field "context_tokens" "0")
     compressions=$(read_field "compressions" "0")
     errors=$(read_field "errors" "0")
     sleeping="false"
@@ -117,7 +117,7 @@ output_dashboard() {
     local state context_pct tokens compressions errors sleeping
     state=$(read_field "state" "UNKNOWN")
     context_pct=$(read_field "context_pct" "0")
-    tokens=$(read_field "tokens" "0")
+    tokens=$(read_field "context_tokens" "0")
     compressions=$(read_field "compressions" "0")
     errors=$(read_field "errors" "0")
     sleeping="false"

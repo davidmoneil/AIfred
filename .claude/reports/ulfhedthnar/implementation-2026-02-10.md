@@ -94,7 +94,7 @@ DORMANT (30 min cooldown)
 |------------|-------------|
 | No destructive override | bash-safety-guard.js PreToolUse hook |
 | AIfred baseline protection | settings.json deny rules |
-| JICM context awareness | isContextBudgetSafe() gate at 65% |
+| JICM context awareness | isContextBudgetSafe() gate at 55% |
 | Auto-disengage | "stand down" / "disengage" text detection |
 | 30-min cooldown | COOLDOWN_MS = 1,800,000 |
 | User sovereignty | Negation-aware activation ("don't unleash" ignored) |

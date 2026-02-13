@@ -775,6 +775,13 @@ do_compress() {
     COMPRESS_START_TIME=$(date +%s)
     write_state  # Ensure state file reflects COMPRESSING immediately
 
+    # Step 0: Clean up stale artifacts from prior cycles
+    # - .compression-done.signal may linger from a late background agent write
+    # - .compression-in-progress flag may persist (v6.1 doesn't own cleanup, but
+    #   /intelligent-compress command checks it and refuses to spawn if present)
+    rm -f "$COMPRESSION_SIGNAL"
+    rm -f "$PROJECT_DIR/.claude/context/.compression-in-progress"
+
     # Step 1: Export chat history
     log JICM "Exporting chat history..."
     export_chat "pre-compress"
@@ -807,8 +814,9 @@ do_clear() {
     CLEAR_START_TIME=$(date +%s)
     log JICM "Compression complete — sending /clear"
 
-    # Clean up compression signal
+    # Clean up compression artifacts
     rm -f "$COMPRESSION_SIGNAL"
+    rm -f "$PROJECT_DIR/.claude/context/.compression-in-progress"
 
     # Verify compressed context file exists
     if [[ ! -f "$COMPRESSED_FILE" ]]; then
@@ -1072,6 +1080,11 @@ main() {
                 echo -e "$(date +%H:%M:%S) ${C_DIM}· Waiting for context data...${C_RESET}"
             fi
 
+            # State file update (every 6 polls = ~30s to avoid I/O thrashing)
+            if [[ $((poll_count % 6)) -eq 0 ]]; then
+                write_state
+            fi
+
             # Check cooldown
             local now
             now=$(date +%s)
@@ -1154,6 +1167,7 @@ main() {
                 log ERROR "Compression timeout after ${age}s — reset to WATCHING"
                 emit_cycle_metrics "compress_timeout"
                 rm -f "$COMPRESSION_SIGNAL"
+                rm -f "$PROJECT_DIR/.claude/context/.compression-in-progress"
                 transition_to "WATCHING"
                 COOLDOWN_UNTIL=$(( $(date +%s) + COOLDOWN_PERIOD ))
                 ERROR_COUNT=$((ERROR_COUNT + 1))
