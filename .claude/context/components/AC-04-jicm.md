@@ -373,7 +373,8 @@ All signal files live in `.claude/context/` and are gitignored.
 
 JICM trigger:        55%  (configurable via --threshold)
 Native auto-compact: 70%  (CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70)
-Emergency compact:   73%  (LOCKOUT_PCT - 5)
+JICM ceiling:        72%  (EMERGENCY_PCT - 1; JICM cycle preempted above this)
+Emergency compact:   73%  (LOCKOUT_PCT - 5; preempts JICM in watcher main loop)
 Lockout ceiling:    ~78.5% ((200K - 15K - 28K) / 200K)
 
 Where:
@@ -451,6 +452,7 @@ The watcher detects the `.idle-hands-active` flag and enters idle-hands monitori
 | 2026-01-21 | Idle detection before trigger | Don't interrupt Claude mid-response |
 | 2026-02-05 | Lower threshold to 65% | 80% was above lockout ceiling (~78.5%) |
 | 2026-02-13 | Lower threshold to 55% | Experiment 2: JICM 100% failure at ≥74% context; 55% gives 19-point safety margin |
+| 2026-02-13 | Document 72% JICM ceiling | Emergency handler (73%) preempts JICM cycle in watcher main loop; confirmed by 13 emergency events / 0 JICM cycles in Exp 2 |
 | 2026-02-05 | Emergency compact at 73% | Last resort, 5% below lockout |
 | 2026-02-05 | bash 3.2 return 0 pattern | Functions must return 0 for macOS compatibility |
 | 2026-02-05 | Restrict pane parsing to tail -3 | Avoid stale token counts from scroll history |

@@ -152,12 +152,20 @@ No phase shows a significant relationship with token count. Clear (71s) and rest
 
 **Pattern**: In all 4 trials, the watcher detects the threshold breach, attempts to trigger compression, encounters an error, and returns to WATCHING without completing a cycle. The compressions counter stays at 0 while errors increments. This is consistent across different threshold configurations (40%, 70%), different watcher instances, and different times of day.
 
-**Root cause hypothesis**: At >=74% context, the compression agent (spawned via Task tool) may fail because:
-1. CC's own auto-compaction mechanisms interfere at high context (we observed CC auto-compacting at 73-78% during fills)
-2. The Task agent subprocess may be constrained by the parent session's remaining context budget
-3. The watcher's signal injection may compete with CC's internal context management
+**Root cause (CONFIRMED, 2026-02-13 post-experiment investigation)**:
 
-**Operational implication**: JICM has an **effective operational ceiling of ~70% context**. Above this, JICM cannot compress and the emergency /compact fallback (at 73% threshold) becomes the only option. This confirms and quantifies the "lockout" risk documented in JICM v6.1 design.
+The JICM compression cycle never starts. The watcher's main loop evaluates two sequential checks in the WATCHING state (`jicm-watcher.sh:1120-1142`):
+
+```
+CHECK 1 (line 1121): if pct >= EMERGENCY_PCT (73%)  → send /compact + 600s cooldown + continue
+CHECK 2 (line 1131): if pct >= JICM_THRESHOLD       → start JICM cycle (HALT→COMPRESS→CLEAR→RESTORE)
+```
+
+When context is at 74-78%, CHECK 1 always fires and `continue` prevents CHECK 2 from ever executing. The watcher enters a pathological loop: emergency /compact → 600s cooldown → emergency /compact → cooldown, indefinitely. The watcher log confirms this with **13 emergency events and 0 JICM cycles** across all high-context trials.
+
+The emergency /compact itself is ineffective at these levels — it reduces context by only 0-4 percentage points (e.g., 78% → 74%), which stays above EMERGENCY_PCT, causing re-triggering after each cooldown. This is NOT a compression agent failure, agent budget issue, or signal injection race — the compression agent is never spawned.
+
+**Operational implication**: JICM has an **effective operational ceiling of 72% context** (one point below EMERGENCY_PCT=73%). Above 72%, the emergency handler preempts the JICM cycle. The 55% default threshold provides a 17-point safety margin below this ceiling, which is adequate for normal operation.
 
 ### 4.6 Compression Ratios
 
@@ -246,17 +254,17 @@ JICM timing is remarkably consistent: 302s (Exp 1) vs 308s (Exp 2) across differ
 
 3. **Treatment effect confirmed**: /compact is 3.9x faster than JICM (eta-sq=0.917), confirming Experiment 1's finding with a wider context range and more statistical power.
 
-4. **JICM has a critical high-context ceiling**: 0/4 success at >=74% context. This is the experiment's most operationally important finding. JICM's effective operating range is <~70% context.
+4. **JICM has a hard architectural ceiling at 72%**: 0/4 success at >=74% context. Root cause confirmed: the emergency /compact handler (EMERGENCY_PCT=73%) preempts the JICM cycle in the watcher's main loop. JICM's effective operating range is [0%, 72%].
 
 5. **Compression phases don't scale with volume**: None of JICM's 4 phases (halt, compress, clear, restore) show significant duration increases with higher token counts.
 
 ### Recommendations
 
-1. **Lower JICM operational threshold to 55%** — provides safe margin below the 60-74% failure cliff
-2. **Set emergency /compact at 65%** — two-tier system: JICM at 55%, /compact fallback at 65%
-3. **Investigate the JICM failure mechanism** — watcher error at >=74% needs diagnosis (is it the compression agent failing to spawn, or the agent running out of budget?)
-4. **Do not optimize for context volume** — compression time is constant regardless of volume, so optimization should focus on the mechanism itself (compression agent speed, /clear overhead)
-5. **Consider Haiku for compression agent** — since compression time doesn't scale with volume, the bottleneck is the model's per-invocation overhead, which Haiku would reduce
+1. **Keep JICM threshold at 55%** (DONE) — provides 17-point safety margin below the 72% operational ceiling (EMERGENCY_PCT - 1)
+2. **Document the 72% JICM ceiling** — add to AC-04 spec and JICM design docs as a hard architectural constraint
+3. **Do not optimize for context volume** — compression time is constant regardless of volume, so optimization should focus on the mechanism itself (compression agent speed, /clear overhead)
+4. **Consider Haiku for compression agent** — since compression time doesn't scale with volume, the bottleneck is the model's per-invocation overhead, which Haiku would reduce
+5. ~~Investigate the JICM failure mechanism~~ — RESOLVED: emergency handler preempts JICM at >=73% (see §4.5 root cause analysis)
 
 ---
 

@@ -186,11 +186,11 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - 19 trials (4 pilot + 15 experiment), 4 blocks, early stopping invoked
 - **Result 1**: Context volume has NO effect on compression time (F=1.31, p=0.277)
 - **Result 2**: JICM 3.9x slower than /compact (F=122.22, p<0.001, η²=0.917 massive effect)
-- **Result 3**: JICM 100% failure at ≥74% context (0/4 success) — operational ceiling
+- **Result 3**: JICM 100% failure at ≥74% context (0/4 success) — **root cause confirmed**: emergency /compact handler (73%) preempts JICM cycle in watcher main loop; JICM ceiling is 72%
 - 5 bugs found+fixed (B7-B11): cascading failure, macOS head, ceiling abort, plateau detection, /clear hardening
 - **Report**: `.claude/reports/testing/compression-regression-report.md`
 - **Data**: `.claude/reports/testing/compression-regression-data.jsonl`
-- **Recommendations**: Lower JICM threshold 65%→55%, Haiku compression agent, incremental checkpoints, parallel /clear
+- **Actions taken**: JICM threshold lowered to 55% (17-point margin below 72% ceiling), 72% ceiling documented in AC-04 spec
 
 ### Next: Phase C — Mac Studio Infrastructure (Wed Feb 12+)
 - Docker container deployment
