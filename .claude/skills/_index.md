@@ -3,7 +3,7 @@
 Comprehensive workflow guides that consolidate related commands, hooks, and patterns.
 
 **Last Updated**: 2026-02-05
-**Total Skills**: 8
+**Total Skills**: 10
 
 ---
 
@@ -18,6 +18,8 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 | **upgrade** | Self-improvement system (discover, analyze, propose, implement) | Maintenance | No |
 | **structured-planning** | Guided conversational planning (new designs, reviews, features) | Planning | Yes |
 | **system-utilities** | Core CLI utilities (git sync, priorities, archival) | Maintenance | No |
+| **fabric** | AI text processing with local Ollama (logs, code review, commits) | Automation | No |
+| **orchestration** | Task orchestration for complex multi-phase work | Workflow | No |
 | **_template** | Code Before Prompts reference implementation | Reference | Yes |
 
 ---
@@ -34,6 +36,12 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 ### Development Workflows
 - **parallel-dev** - Advanced parallel development
 - **structured-planning** - Planning and design
+
+### Automation
+- **fabric** - AI text processing using Fabric patterns with local Ollama
+
+### Task Management
+- **orchestration** - Multi-phase task decomposition and dependency tracking
 
 ### System Maintenance
 - **upgrade** - Self-improvement and discovery

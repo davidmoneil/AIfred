@@ -171,9 +171,10 @@ Your infrastructure-specific agents with persistent memory:
 | [infrastructure-ops](@.claude/skills/infrastructure-ops/SKILL.md) | Health checks and monitoring | `/health-report`, `/agent service-troubleshooter` |
 | [parallel-dev](@.claude/skills/parallel-dev/SKILL.md) | Autonomous parallel development | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate`, `/parallel-dev:merge` |
 | [system-utilities](@.claude/skills/system-utilities/SKILL.md) | Core CLI utilities | `/link-external`, `/sync-git` |
-| [orchestration](@.claude/orchestration/README.md) | Task orchestration with fresh-context | `/orchestration:plan`, `/orchestration:status` |
+| [orchestration](@.claude/skills/orchestration/SKILL.md) | Task orchestration with fresh-context | `/orchestration:plan`, `/orchestration:status` |
 | [upgrade](@.claude/skills/upgrade/SKILL.md) | Self-improvement and discovery | `/upgrade` |
 | [structured-planning](@.claude/skills/structured-planning/SKILL.md) | Guided conversational planning | `/plan`, `/plan:new`, `/plan:review` |
+| [fabric](@.claude/skills/fabric/SKILL.md) | AI text processing with local Ollama | `/fabric`, `/fabric:analyze-logs`, `/fabric:commit-msg` |
 
 ### When to Use Skills vs Commands vs Agents
 
@@ -320,11 +321,11 @@ Check current profile: `/profile` or `node scripts/profile-loader.js --current`
 
 ---
 
-## Available Commands (48 total)
+## Available Commands (63 total)
 
 | Category | Command | Description |
 |----------|---------|-------------|
-| **Setup** | `/setup` | Initial configuration wizard |
+| **Setup** | `/setup` | Initial configuration wizard (Phases 0-8) |
 | | `/profile` | Manage environment profile layers |
 | **Session** | `/checkpoint` | Save state for MCP-required restart |
 | | `/end-session` | Clean session exit with documentation |
@@ -333,11 +334,24 @@ Check current profile: `/profile` or `node scripts/profile-loader.js --current`
 | | `/capture` | Capture learnings, decisions, research to history |
 | | `/history` | Search and browse structured history |
 | **Infrastructure** | `/health-report` | Verify system and Docker health |
+| | `/check-health` | Consolidated infrastructure health check |
+| | `/check-service` | Deep-dive health check for a single service |
+| | `/discover-docker` | Discover and document Docker containers |
 | | `/docker-restart` | Weekly Docker restart with health verification |
 | | `/backup-status` | Show Restic backup system status |
-| **Projects** | `/consolidate-project` | Consolidate project knowledge and context |
+| | `/ssh-connect` | Remote health check via SSH (optional) |
+| **Projects** | `/new-code-project` | Create new code project and register |
+| | `/register-project` | Register existing project with AIfred |
+| | `/create-project` | Create internal (non-code) project |
+| | `/code` | Coding project management with agent dispatch |
+| | `/consolidate-project` | Consolidate project knowledge and context |
 | | `/analyze-codebase` | Analyze codebase and generate context documentation |
 | | `/agent` | Launch specialized agents (docker-deployer, etc.) |
+| **AI Processing** | `/fabric` | AI text processing with local Ollama |
+| | `/fabric:analyze-logs` | AI-powered Docker log analysis |
+| | `/fabric:commit-msg` | Generate conventional commit messages |
+| | `/fabric:review-code` | AI-powered code review |
+| | `/ollama` | Manage local Ollama LLM service |
 | **Git** | `/sync-git` | Synchronize git across projects |
 | | `/commits:push-all` | Push all unpushed commits across tracked projects |
 | | `/commits:status` | Show cross-project commit status |
@@ -355,6 +369,7 @@ Check current profile: `/profile` or `node scripts/profile-loader.js --current`
 | | `/parallel-dev:start` | Begin execution of decomposed plan |
 | | `/parallel-dev:validate` | Run QA validation on completed work |
 | | `/parallel-dev:merge` | Merge completed work to main |
+| **Browser** | `/browser` | Web automation via Playwright (optional) |
 | **Utilities** | `/link-external` | Create symlink in external-sources |
 | | `/upgrade` | Self-improvement and update discovery |
 | | `/telos` | Strategic goal alignment system |
@@ -365,7 +380,7 @@ Full command list: `.claude/commands/` (includes 13 additional parallel-dev subc
 
 ---
 
-## Agents (11 total)
+## Agents (13 total)
 
 Specialized agents available via `/agent`:
 
@@ -375,6 +390,8 @@ Specialized agents available via `/agent`:
 | `service-troubleshooter` | Diagnose infrastructure issues |
 | `deep-research` | In-depth topic investigation with citations |
 | `memory-bank-synchronizer` | Sync docs with code changes (preserves user content) |
+| `ollama-manager` | Manage local Ollama LLM service |
+| `project-plan-validator` | Validate project plans against infrastructure patterns |
 | `code-analyzer` | Analyze codebase structure and patterns |
 | `code-implementer` | Write, modify, and refactor code |
 | `code-tester` | Validate changes through tests and screenshots |
@@ -391,7 +408,7 @@ All Claude Code tool executions are **automatically logged** via the hooks syste
 
 ### How It Works
 
-The `.claude/hooks/` directory contains 38 JavaScript hooks organized by lifecycle event:
+The `.claude/hooks/` directory contains 43 JavaScript hooks organized by lifecycle event:
 
 | Category | Hooks | Event |
 |----------|-------|-------|
@@ -537,5 +554,5 @@ If not yet configured, run `/setup` to get started.
 
 ---
 
-*AIfred v2.4.0 - Your Personal AI Infrastructure Assistant*
-*Updated: 2026-02-12 - v2.4: Beads task management, Headless Claude jobs, sanitized for portability*
+*AIfred v1.2.0 - Your Personal AI Infrastructure Assistant*
+*Updated: 2026-02-13 - v1.2: Feature sync (14 commands, 2 skills, 2 agents, 3 hooks, Phase 8 optional integrations)*

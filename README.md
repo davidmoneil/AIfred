@@ -91,11 +91,11 @@ node scripts/profile-loader.js --layers general,homelab,development
 
 ### Hooks Automate the Repetitive
 
-27 JavaScript hooks run automatically at key moments -- before tool calls, after edits, on session start. They handle audit logging, security checks, document protection, Docker health validation, skill routing, planning detection, and documentation reminders. You don't invoke them; they just work.
+43 JavaScript hooks run automatically at key moments -- before tool calls, after edits, on session start. They handle audit logging, security checks, document protection, Docker health validation, skill routing, planning detection, environment validation, and documentation reminders. You don't invoke them; they just work.
 
 ### Commands Give You Shortcuts
 
-49 slash commands for common operations: `/setup` to configure, `/checkpoint` to save state, `/discover-docker` to document services, `/sync-git` to push across projects, `/end-session` for clean handoffs.
+63 slash commands for common operations: `/setup` to configure, `/checkpoint` to save state, `/discover-docker` to document services, `/fabric` for AI text processing, `/ollama` for local LLM management, `/sync-git` to push across projects, `/end-session` for clean handoffs.
 
 ### Skills Guide Complex Workflows
 
@@ -130,30 +130,33 @@ Composable YAML layers that configure your entire AIfred installation:
 
 See [`profiles/README.md`](profiles/README.md) for full documentation.
 
-### Automation Hooks (38)
+### Automation Hooks (43)
 
 | Category | Examples |
 |----------|---------|
 | **Security** | Branch protection, credential guard, compose validation |
 | **Document Protection** | Document guard with 4-tier protection, credential scanning, structural checks |
 | **Operations** | Docker health checks, port conflict detection, restart loop detection |
-| **Workflow** | Skill routing, planning detection, orchestration, context tracking |
+| **Workflow** | Skill routing, planning detection, orchestration, context tracking, fabric suggestion |
+| **Validation** | Environment validation, network validation |
 | **Observability** | Audit logging, session tracking, documentation sync triggers |
 | **Task Management** | Beads actor identity, cross-project commit tracking |
 
-### Slash Commands (49)
+### Slash Commands (63)
 
 | Category | Commands |
 |----------|---------|
 | **Setup** | `/setup`, `/profile` |
 | **Session** | `/checkpoint`, `/end-session`, `/audit-log` |
-| **Infrastructure** | `/discover-docker`, `/check-health`, `/check-services` |
-| **Projects** | `/register-project`, `/new-code-project`, `/consolidate-project` |
+| **Infrastructure** | `/discover-docker`, `/check-health`, `/check-service`, `/ssh-connect` |
+| **Projects** | `/register-project`, `/new-code-project`, `/create-project`, `/code`, `/consolidate-project` |
+| **AI Processing** | `/fabric`, `/fabric:analyze-logs`, `/fabric:commit-msg`, `/fabric:review-code`, `/ollama` |
 | **Git** | `/sync-git`, `/push-all-commits` |
 | **Planning** | `/plan`, `/design-review`, `/orchestration:plan` |
 | **Development** | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate` |
+| **Browser** | `/browser` (optional — requires Playwright) |
 
-### Skills (8)
+### Skills (10)
 
 | Skill | Purpose |
 |-------|---------|
@@ -165,14 +168,18 @@ See [`profiles/README.md`](profiles/README.md) for full documentation.
 | **project-lifecycle** | Project creation, registration, and consolidation |
 | **system-utilities** | Core CLI utilities: git sync, priority cleanup, history archival |
 | **upgrade** | Self-improvement: discover and apply updates automatically |
+| **fabric** | AI-powered text processing with local Ollama |
+| **orchestration** | Task orchestration with fresh-context execution |
 
-### Agents
+### Agents (13)
 
 | Agent | Purpose |
 |-------|---------|
 | **docker-deployer** | Deploy and configure Docker services safely |
 | **service-troubleshooter** | Diagnose infrastructure issues with learned patterns |
 | **deep-research** | In-depth topic investigation with web sources and citations |
+| **ollama-manager** | Manage local Ollama LLM service |
+| **project-plan-validator** | Validate project plans against infrastructure patterns |
 
 ### Design Patterns (18+)
 
@@ -253,10 +260,10 @@ AIfred/
 │   ├── CLAUDE.md           # Claude Code instructions
 │   ├── settings.json       # Permissions (generated from profiles)
 │   ├── context/            # Knowledge base (37 files)
-│   ├── commands/           # Slash commands (49)
-│   ├── agents/             # Agent definitions
-│   ├── hooks/              # Automation hooks (38)
-│   ├── skills/             # Workflow skills (8)
+│   ├── commands/           # Slash commands (63)
+│   ├── agents/             # Agent definitions (13)
+│   ├── hooks/              # Automation hooks (43)
+│   ├── skills/             # Workflow skills (10)
 │   ├── jobs/               # Headless Claude scheduled jobs
 │   │   ├── dispatcher.sh   # Master scheduler (cron)
 │   │   ├── executor.sh     # Per-job execution engine
@@ -268,7 +275,7 @@ AIfred/
 ├── knowledge/              # Documentation and reference
 ├── external-sources/       # Symlinks to external data
 ├── paths-registry.yaml     # Source of truth for all paths
-└── setup-phases/           # 7-phase setup wizard
+└── setup-phases/           # 9-phase setup wizard (0-8)
 ```
 
 ---
@@ -284,6 +291,30 @@ AIfred/
 ---
 
 ## Changelog
+
+### v1.2.0 (2026-02-13) -- Feature Sync from AIProjects
+
+- **14 new commands**: `/check-health`, `/check-service`, `/discover-docker`, `/new-code-project`, `/register-project`, `/browser`, `/create-project`, `/code`, `/ollama`, `/ssh-connect`, `/fabric`, `/fabric:analyze-logs`, `/fabric:commit-msg`, `/fabric:review-code`
+- **2 new skills**: Fabric (AI text processing with Ollama) and Orchestration (multi-phase task tracking)
+- **2 new agents**: `ollama-manager` (local LLM management), `project-plan-validator` (architecture validation)
+- **3 new hooks**: `fabric-suggester` (suggests Fabric patterns), `env-validator` (environment checks), `network-validator` (connectivity checks)
+- **Setup wizard Phase 8**: Optional Integrations (Ollama, SSH, Playwright) — can run during setup or independently
+- **4 Fabric scripts**: `fabric-wrapper.sh`, `fabric-analyze-logs.sh`, `fabric-commit-msg.sh`, `fabric-review-code.sh`
+- All ported features generalized with zero hardcoded paths or infrastructure references
+- Total: 63 commands, 43 hooks, 10 skills, 13 agents
+
+### v1.1.0 (2026-02-12) -- Strict Versioning Baseline
+
+- Established strict semantic versioning (Major.Minor.Patch)
+- `VERSION` file as single source of truth
+- `scripts/bump-version.sh` for automated version management
+- Version banner in session-start hook (shows Claude Code + AIfred versions)
+- See [docs/VERSIONING.md](docs/VERSIONING.md) for versioning policy
+
+---
+
+<details>
+<summary>Pre-release history (informal versioning)</summary>
 
 ### v2.4.0 (2026-02-12) -- Beads + Headless Claude
 
@@ -332,6 +363,8 @@ AIfred/
 - 7 skills: upgrade, structured-planning, parallel-dev, session-management, and more
 - 16 CLI scripts with deterministic operations
 - TELOS strategic goal alignment framework
+
+</details>
 
 ---
 

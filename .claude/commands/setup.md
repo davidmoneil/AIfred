@@ -25,6 +25,7 @@ This setup process will:
 5. Install automation hooks
 6. Deploy starter agents
 7. Finalize, register projects, and document your configuration
+8. Configure optional integrations (Ollama, SSH, Playwright)
 
 ## Setup Phases
 
@@ -109,6 +110,14 @@ Complete setup:
 - Create getting-started guide
 - Optional: Initial commit and push
 
+### Phase 8: Optional Integrations
+@setup-phases/08-optional-integrations.md
+
+Configure optional tools (each independent, skip any):
+- **Ollama** — Local LLM for $0 AI processing (Fabric skill, commit messages)
+- **SSH Remote Access** — Health checks and management of remote systems
+- **Browser Automation** — Playwright for web UI testing and screenshots
+
 ## Execution
 
 **Begin with Phase 0 (Prerequisites Check)**. Ensure Git is installed and Docker is
@@ -125,6 +134,9 @@ docker info &> /dev/null && echo "✅ Docker running" || echo "❌ Docker not ru
 
 After all phases complete, provide a summary of what was configured and next steps.
 
+**Note**: Phase 8 (Optional Integrations) can also be run independently at any time
+to add Ollama, SSH, or Playwright support after initial setup.
+
 ---
 
-*AIfred Setup Wizard v1.1 - Added Phase 0 Prerequisites, Project Registration*
+*AIfred Setup Wizard v1.2 - Added Phase 8 Optional Integrations (Ollama, SSH, Playwright)*
