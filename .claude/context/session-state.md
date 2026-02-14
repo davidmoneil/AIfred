@@ -8,13 +8,13 @@
 
 ## Current Work Status
 
-**Status**: active — Experiment 2 complete, session state updated
+**Status**: active — Experiments 1-3 complete, ready for Phase C
 **Version**: v5.10.0
 **Branch**: Project_Aion
-**Last Commit**: ba67d6e (JICM exit-mode signal, dev instructions, file growth mitigation)
-**Last Pushed**: ba67d6e (to origin/Project_Aion)
+**Last Commit**: 37bc986 (JICM high-context failure root cause)
+**Last Pushed**: 37bc986 (to origin/Project_Aion)
 
-**What Was Accomplished (2026-02-13, sessions 13-16)**:
+**What Was Accomplished (2026-02-13/14, sessions 13-18)**:
 - Sessions 13-14 (W5:Jarvis-dev): Experiment 1 — Compression Timing
   - 6 matched pairs (12 trials), JICM 2.3x slower (p=0.03125, r=0.833)
   - Report: `.claude/reports/testing/compression-experiment-report.md`
@@ -26,10 +26,18 @@
     - Context volume does NOT affect compression time (F=1.31, p=0.277)
     - JICM 3.9x slower than /compact (F=122.22, p<0.001, η²=0.917)
     - JICM 100% failure at ≥74% context (0/4 success) — operational ceiling discovered
-    - /compact essentially constant time regardless of context volume
-  - Report: `.claude/reports/testing/compression-regression-report.md`
-  - Data: `.claude/reports/testing/compression-regression-data.jsonl`
-  - Recommendations: Lower JICM threshold to 55%, investigate failure mechanism at high context
+  - Root cause confirmed: emergency handler (73%) preempts JICM cycle; ceiling is 72%
+- Sessions 17-18: Experiment 3 — Context Volume (Revised, 40%/70%)
+  - 2×2 factorial: treatment × context level (40% vs 70%), 24 trials attempted, 18 successful
+  - JICM-high 4/4 SUCCESS (first ever above 70%, within 72% operational envelope)
+  - Key findings:
+    - Context volume does NOT affect compression time (F=2.33, p=0.149) — replicates Exp 2
+    - /compact 3.8x faster than JICM (F=197.1, p<0.001, η²=0.934)
+    - JICM negative trend: faster at higher context (Spearman rho=-0.706, p=0.034)
+    - Compression ratios scale with volume: JICM-high 3.8:1 vs JICM-low 2.3:1
+  - 6 trial failures due to tmux pane staleness (infrastructure, not treatment)
+  - Report: `.claude/reports/testing/experiment-3-report.md`
+  - Data: `.claude/reports/testing/compression-exp3-data.jsonl`
 
 **What Was Accomplished (2026-02-12, sessions 10-12)**:
 - Session 10: Launcher UUID fix (34d137a), dev-ops docs (10c1239), /export-dev + /dev-chat (955e2bb)
@@ -63,11 +71,10 @@
 - Stream 1: research-ops v2.1.0 — 8 scripts, 12/12 tests (ffe9bf0)
 
 **Next Session Pickup:**
-1. Commit experiment results (reports, data, scripts, bug fixes)
-2. Implement JICM threshold change: 65% → 55% (Experiment 2 recommendation)
-3. Phase C: Mac Studio Infrastructure
-4. Phase E.1: Memory System Comparative Analysis
-5. Phase F.4-F.6: Multi-Agent Coordination
+1. Phase C: Mac Studio Infrastructure
+2. Phase E.1: Memory System Comparative Analysis
+3. Phase F.4-F.6: Multi-Agent Coordination
+4. Consider JICM negative trend investigation (Exp 3 recommendation #4)
 
 ---
 
@@ -103,4 +110,4 @@ Previous session histories have been archived. For full details, see:
 
 ---
 
-*Session state updated 2026-02-12 16:45 MST — Wiggum Loop 1 complete, Loops 2-10 planned*
+*Session state updated 2026-02-13 22:22 MST — Experiments 1-3 complete, JICM ceiling validated*

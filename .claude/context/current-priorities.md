@@ -192,6 +192,19 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Data**: `.claude/reports/testing/compression-regression-data.jsonl`
 - **Actions taken**: JICM threshold lowered to 55% (17-point margin below 72% ceiling), 72% ceiling documented in AC-04 spec
 
+### Compression Timing Experiment 3 — Context Volume Revised (2026-02-13/14) — COMPLETE
+- 2×2 factorial: treatment (compact/JICM) × context level (40% vs 70%), revised from Exp 2
+- 24 trials attempted, 18 successful (6 failed due to tmux pane staleness)
+- **Result 1**: Context volume has NO effect on compression time (F=2.33, p=0.149) — replicates Exp 2
+- **Result 2**: /compact 3.8x faster than JICM (F=197.1, p<0.001, η²=0.934) — replicates Exps 1+2
+- **Result 3**: JICM-high 4/4 SUCCESS at 67-72% context — first ever above 70%, validates 72% ceiling
+- **Result 4**: JICM negative trend — faster at higher context (Spearman rho=-0.706, p=0.034)
+- **Result 5**: Compression ratios scale with volume (JICM-high 3.8:1, /compact-high 2.4:1)
+- **Report**: `.claude/reports/testing/experiment-3-report.md`
+- **Data**: `.claude/reports/testing/compression-exp3-data.jsonl`
+- **Protocol**: `.claude/reports/testing/experiment-3-protocol.md`
+- **Recommendations**: Keep threshold at 55%, no volume optimization needed, consider Haiku for compress agent, investigate negative JICM trend
+
 ### Next: Phase C — Mac Studio Infrastructure (Wed Feb 12+)
 - Docker container deployment
 - Multi-agent orchestration infrastructure
