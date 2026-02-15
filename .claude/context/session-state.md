@@ -8,11 +8,25 @@
 
 ## Current Work Status
 
-**Status**: active — Experiments 1-3 complete, ready for Phase C
+**Status**: active — Experiments 4-5-6 infrastructure complete, ready for execution
 **Version**: v5.10.0
 **Branch**: Project_Aion
-**Last Commit**: 37bc986 (JICM high-context failure root cause)
-**Last Pushed**: 37bc986 (to origin/Project_Aion)
+**Last Commit**: d020627 (Experiment 3 results)
+**Last Pushed**: d020627 (to origin/Project_Aion)
+
+**What Was Accomplished (2026-02-14, session 19)**:
+- Experiments 4-5-6 Infrastructure — JICM Compression Optimization
+  - Modified `/intelligent-compress` command: `--model` and `--preassemble` flags
+  - Modified watcher `do_compress()`: signal file protocol for model/thinking/preassemble overrides
+  - Modified watcher `do_restore()`: thinking mode cleanup + override signal cleanup
+  - Created `compression-agent-preassembled.md`: single-file-input agent variant (max_turns: 10)
+  - Created `preassemble-compression-input.sh`: RTK-inspired preprocessing (tested: 1013 lines, ~11K tokens)
+  - Created `run-experiment-4.sh`: model selection (24 trials, 6 blocks, 4 treatments)
+  - Created `run-experiment-5.sh`: thinking mode (16 trials, 8 blocks, 2 treatments)
+  - Created `run-experiment-6.sh`: preprocessing (16 trials, 8 blocks, 2 treatments)
+  - All scripts syntax-checked and dry-run verified
+  - Protocol: `.claude/reports/testing/experiment-4-5-6-protocol.md`
+  - Fixed bash 3.2 `local` outside function in preassemble script
 
 **What Was Accomplished (2026-02-13/14, sessions 13-18)**:
 - Sessions 13-14 (W5:Jarvis-dev): Experiment 1 — Compression Timing
@@ -71,10 +85,12 @@
 - Stream 1: research-ops v2.1.0 — 8 scripts, 12/12 tests (ffe9bf0)
 
 **Next Session Pickup:**
-1. Phase C: Mac Studio Infrastructure
-2. Phase E.1: Memory System Comparative Analysis
-3. Phase F.4-F.6: Multi-Agent Coordination
-4. Consider JICM negative trend investigation (Exp 3 recommendation #4)
+1. Run Experiment 4: Model Selection (~4.9h in W5:Jarvis-dev)
+2. Run Experiment 5: Thinking Mode (~2.7h in W5:Jarvis-dev)
+3. Run Experiment 6: Preprocessing (~2.7h in W5:Jarvis-dev)
+4. Combined analysis report → update JICM config if warranted
+5. Phase C: Mac Studio Infrastructure (blocked until hardware arrives)
+6. Phase E.1: Memory System Comparative Analysis
 
 ---
 

@@ -205,6 +205,15 @@ All 3 Wiggum Loops + code reviews complete. Bulk replacement re-executed success
 - **Protocol**: `.claude/reports/testing/experiment-3-protocol.md`
 - **Recommendations**: Keep threshold at 55%, no volume optimization needed, consider Haiku for compress agent, investigate negative JICM trend
 
+### Compression Optimization Experiments 4-5-6 — INFRASTRUCTURE COMPLETE (2026-02-14)
+- **Experiment 4**: Model selection (Haiku/Sonnet/Opus) — 24 trials, 6 blocks
+- **Experiment 5**: Thinking mode (on/off) — 16 trials, 8 blocks
+- **Experiment 6**: Preprocessing (standard/pre-assembled) — 16 trials, 8 blocks
+- **Infrastructure**: 3 experiment scripts, preprocessing script, preassembled agent, modified watcher + command
+- **Protocol**: `.claude/reports/testing/experiment-4-5-6-protocol.md`
+- **RTK Assessment**: Learn from patterns, don't fork (domain mismatch, 8-14 days effort)
+- **Status**: Ready for execution (~10.2 hours across 3 experiments)
+
 ### Next: Phase C — Mac Studio Infrastructure (Wed Feb 12+)
 - Docker container deployment
 - Multi-agent orchestration infrastructure

@@ -790,7 +790,47 @@ do_compress() {
     # Step 2: Wait for idle after export
     wait_for_idle 30
 
-    # Step 3: Spawn compression agent
+    # Step 3: Read experiment override signals (if present)
+    # These files are written by experiment scripts (run-experiment-4/5/6.sh)
+    # to control model selection, thinking mode, and preprocessing.
+    local model_flag=""
+    local preassemble_flag=""
+    local model_override_file="$PROJECT_DIR/.claude/context/.jicm-model-override"
+    local thinking_override_file="$PROJECT_DIR/.claude/context/.jicm-thinking-override"
+    local preassemble_override_file="$PROJECT_DIR/.claude/context/.jicm-preassemble-override"
+
+    if [[ -f "$model_override_file" ]]; then
+        local model_val
+        model_val=$(cat "$model_override_file" | tr -d '[:space:]')
+        if [[ "$model_val" =~ ^(haiku|sonnet|opus)$ ]]; then
+            model_flag=" --model $model_val"
+            log JICM "Model override: $model_val"
+        else
+            log WARN "Invalid model override: '$model_val' — using default"
+        fi
+    fi
+
+    if [[ -f "$preassemble_override_file" ]]; then
+        preassemble_flag=" --preassemble"
+        log JICM "Preassemble override: enabled"
+    fi
+
+    # Step 3b: Thinking mode override (env var injection via tmux)
+    if [[ -f "$thinking_override_file" ]]; then
+        local thinking_val
+        thinking_val=$(cat "$thinking_override_file" | tr -d '[:space:]')
+        if [[ "$thinking_val" == "off" ]]; then
+            log JICM "Thinking override: off (setting MAX_THINKING_TOKENS=0)"
+            tmux_send_escape
+            sleep 0.2
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "export MAX_THINKING_TOKENS=0"
+            sleep 0.3
+            "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+            sleep 2
+        fi
+    fi
+
+    # Step 4: Spawn compression agent
     # PROMPT DESIGN: The spawn prompt must produce an exact Task tool call.
     # - Uses /intelligent-compress skill (pre-validated, handles flag+spawn+cleanup)
     # - Falls back to direct Task tool call if skill unavailable
@@ -799,8 +839,18 @@ do_compress() {
     tmux_send_escape
     sleep 0.3
 
-    local spawn_prompt="[JICM-COMPRESS] Run /intelligent-compress NOW. Do NOT update session files. Do NOT read additional files. After spawning, say ONLY: Compression spawned."
+    local spawn_prompt="[JICM-COMPRESS] Run /intelligent-compress${model_flag}${preassemble_flag} NOW. Do NOT update session files. Do NOT read additional files. After spawning, say ONLY: Compression spawned."
     tmux_send_prompt "$spawn_prompt"
+
+    # Step 5: Clean up thinking override (restore default)
+    if [[ -f "$thinking_override_file" ]]; then
+        local thinking_val
+        thinking_val=$(cat "$thinking_override_file" | tr -d '[:space:]')
+        if [[ "$thinking_val" == "off" ]]; then
+            # Deferred cleanup: unset after compression completes (in do_restore)
+            touch "$PROJECT_DIR/.claude/context/.jicm-thinking-cleanup-pending"
+        fi
+    fi
 
     log JICM "Waiting for compression agent to finish..."
     # Polling for .compression-done.signal is handled in main loop
@@ -854,6 +904,24 @@ do_restore() {
     # - "Do NOT ask" prevents clarification loops
     local resume_prompt='[JICM-RESUME] Context compressed and cleared. Read .claude/context/.compressed-context-ready.md then CLAUDE.md then resume work immediately. Do NOT greet. Do NOT ask what to work on.'
     tmux_send_prompt "$resume_prompt"
+
+    # Clean up thinking mode override if it was set during compression
+    local thinking_cleanup="$PROJECT_DIR/.claude/context/.jicm-thinking-cleanup-pending"
+    if [[ -f "$thinking_cleanup" ]]; then
+        log JICM "Restoring thinking mode (unsetting MAX_THINKING_TOKENS)"
+        sleep 3
+        tmux_send_escape
+        sleep 0.2
+        "$TMUX_BIN" send-keys -t "$TMUX_TARGET" -l "unset MAX_THINKING_TOKENS"
+        sleep 0.3
+        "$TMUX_BIN" send-keys -t "$TMUX_TARGET" C-m
+        rm -f "$thinking_cleanup"
+    fi
+
+    # Clean up experiment override signal files
+    rm -f "$PROJECT_DIR/.claude/context/.jicm-model-override"
+    rm -f "$PROJECT_DIR/.claude/context/.jicm-thinking-override"
+    rm -f "$PROJECT_DIR/.claude/context/.jicm-preassemble-override"
 
     transition_to "RESTORING"
 }
