@@ -1,9 +1,9 @@
 ---
 argument-hint: <path-or-github-url>
-description: Register an existing project with this hub
+description: Register an existing project with AIfred
 skill: project-lifecycle
 allowed-tools:
-  - Bash(scripts/register-project.sh:*)
+  - Bash(~/Scripts/register-project.sh:*)
   - Edit
 ---
 
@@ -22,7 +22,7 @@ Register an existing project using `register-project.sh`.
 Run the script:
 
 ```bash
-scripts/register-project.sh $ARGUMENTS
+~/Scripts/register-project.sh $ARGUMENTS
 ```
 
 After running, **manually update paths-registry.yaml** with the entry shown in the output.
@@ -31,7 +31,7 @@ After running, **manually update paths-registry.yaml** with the entry shown in t
 
 ```bash
 /register-project ~/Code/existing-project
-/register-project github.com/user/some-repo
+/register-project github.com/davidmoneil/some-repo
 /register-project https://github.com/user/repo
 ```
 
@@ -46,16 +46,34 @@ After running, **manually update paths-registry.yaml** with the entry shown in t
 
 ### For GitHub URLs
 1. Parses repo name from URL
-2. Clones to projects directory
+2. Clones to `~/Code/<repo-name>`
 3. Auto-detects language and type
 4. Creates context file
 5. Outputs registry entry
 
+## Auto-Detection
+
+| File | Language |
+|------|----------|
+| `package.json` + `tsconfig.json` | TypeScript |
+| `package.json` | JavaScript |
+| `requirements.txt` / `pyproject.toml` | Python |
+| `go.mod` | Go |
+| `Cargo.toml` | Rust |
+
+| File | Type |
+|------|------|
+| `docker-compose.yml` | docker |
+| `next.config.*` / `vite.config.*` | web-app |
+| `setup.py` / `pyproject.toml` | library |
+| `bin/` directory | cli |
+
 ## Script Location
 
-`scripts/register-project.sh`
+`~/Scripts/register-project.sh`
 
 ## Related
 
-- Script: @scripts/register-project.sh
+- Script: @Scripts/register-project.sh
 - `/new-code-project` - Create new project from scratch
+- Pattern: @.claude/context/patterns/capability-layering-pattern.md

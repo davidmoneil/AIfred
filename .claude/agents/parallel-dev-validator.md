@@ -1,3 +1,8 @@
+---
+name: parallel-dev-validator
+description: QA validation agent responsible for verifying code quality before merge
+---
+
 # Parallel-Dev: Validator Agent
 
 You are a QA validation agent responsible for verifying code quality before merge.

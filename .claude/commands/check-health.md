@@ -3,14 +3,14 @@ description: Run Infrastructure Health Check
 argument-hint: [section]
 skill: infrastructure-ops
 allowed-tools:
-  - Bash(scripts/weekly-health-check.sh:*)
+  - Bash(~/Scripts/weekly-health-check.sh:*)
   - Bash(docker:*)
   - Read
 ---
 
 # /check-health - Run Infrastructure Health Check
 
-Run the infrastructure health check for immediate system validation.
+Run the weekly infrastructure health check manually for immediate system validation.
 
 ## Usage
 
@@ -33,7 +33,7 @@ Run the infrastructure health check for immediate system validation.
 Run the health check script with the specified section:
 
 ```bash
-scripts/weekly-health-check.sh --section ${1:-all}
+~/Scripts/weekly-health-check.sh --section ${1:-all}
 ```
 
 After running, report the summary:
@@ -46,19 +46,20 @@ After running, report the summary:
 
 ```bash
 # Full check (interactive)
-scripts/weekly-health-check.sh
+~/Scripts/weekly-health-check.sh
 
 # Quick docker check
-scripts/weekly-health-check.sh --section docker
+~/Scripts/weekly-health-check.sh --section docker
 
 # Check backup status
-scripts/weekly-health-check.sh --section backup
+~/Scripts/weekly-health-check.sh --section backup
 
 # JSON output for automation
-scripts/weekly-health-check.sh --json --quiet
+~/Scripts/weekly-health-check.sh --json --quiet
 ```
 
 ## Related
 
-- `/check-service <name>` - Deep dive on individual service
-- Pattern: @.claude/context/patterns/capability-layering-pattern.md
+- Documentation: @.claude/context/systems/weekly-health-check.md
+- Systemd timer: `systemctl --user status weekly-health-check.timer`
+- Reports: `~/logs/weekly-health/`

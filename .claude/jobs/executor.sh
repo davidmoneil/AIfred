@@ -11,7 +11,7 @@
 #   executor.sh --job plex-troubleshoot --param issue="won't start" --param safety_mode=safe-fixes
 #   executor.sh --job upgrade-discover --answer "Approve upgrade"
 #
-
+# Design: Obsidian 05-AI/Projects/Headless-Claude/
 
 set -euo pipefail
 
@@ -23,8 +23,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # ============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-PROJECT_DIR="${PROJECT_DIR:-$AIFRED_HOME}"
+PROJECT_DIR="${PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 JOBS_DIR="$SCRIPT_DIR"
 REGISTRY="$JOBS_DIR/registry.yaml"
 PERSONAS_DIR="$JOBS_DIR/personas"
@@ -106,12 +105,34 @@ reg_get() {
 }
 
 # Determine notification severity from output content and exit code
-# Uses phrase patterns to avoid false positives from headings like "Critical Services"
+# Priority: exit code > explicit SEVERITY line > regex content analysis
+# Two-pass approach: match critical patterns, then exclude negated phrases
 determine_severity() {
     local exit_code="$1" response="$2"
+
+    # 1. Non-zero exit code is always critical
     if [ "$exit_code" -ne 0 ]; then
         echo "critical"
-    elif echo "$response" | grep -qiP '(CRITICAL\s*(alert|error|failure|issue|finding|problem)|URGENT|SECURITY\s*(vuln|issue|alert|breach)|❌\s*(DEGRADED|FAIL|DOWN|CRITICAL))'; then
+        return
+    fi
+
+    # 2. Explicit SEVERITY line from job output (most reliable)
+    local explicit
+    explicit=$(echo "$response" | grep -oiP '^\s*SEVERITY:\s*\K(critical|warning|info)' | head -1)
+    if [ -n "$explicit" ]; then
+        echo "${explicit,,}"
+        return
+    fi
+
+    # 3. Regex content analysis (two-pass to avoid false positives)
+    #    Pass 1: find lines with critical keywords
+    #    Pass 2: exclude lines where "critical" is negated (no/none/not/without)
+    local critical_lines
+    critical_lines=$(echo "$response" | grep -iP 'CRITICAL\s*(alert|error|failure|issue|finding|problem)' | grep -viP '\b(no|none|not|without|zero)\b.*critical' || true)
+
+    if [ -n "$critical_lines" ]; then
+        echo "critical"
+    elif echo "$response" | grep -qiP 'URGENT\s*:|SECURITY\s*(vulnerability|breach)|❌\s*(DEGRADED|FAIL|DOWN|CRITICAL)'; then
         echo "critical"
     elif echo "$response" | grep -qiP '(WARNING\s*:|action required|needs?\s+(fix|attention|restart)|QUESTION:|❌\s*(DEGRADED|DOWN))'; then
         echo "warning"

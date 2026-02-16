@@ -2,7 +2,7 @@
 description: Run browser automation in isolated Claude session (saves ~15k context tokens)
 argument-hint: <task-description>
 standalone: true
-note: Requires Playwright MCP setup (optional integration - configure in Phase 8 of /setup)
+note: Isolated session for Playwright MCP operations
 allowed-tools:
   - Task
 ---
@@ -10,8 +10,6 @@ allowed-tools:
 # Browser Automation Task
 
 **Task**: $ARGUMENTS
-
-**Note**: This command requires Playwright MCP to be configured. If not set up, run `/setup` and enable browser automation in the Optional Integrations phase.
 
 ## Execute
 

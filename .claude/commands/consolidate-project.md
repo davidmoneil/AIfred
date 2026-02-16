@@ -1,6 +1,7 @@
 ---
 argument-hint: [project-name | --infrastructure | --analyze | --all]
 description: Consolidate project knowledge or infrastructure context, create git commit
+skill: project-lifecycle
 allowed-tools:
   - Bash(~/Scripts/consolidate-project.sh:*)
   - Bash(git:*)

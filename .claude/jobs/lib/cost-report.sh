@@ -16,10 +16,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
-
-# Cross-platform compatibility
-source "${AIFRED_HOME}/scripts/lib/platform.sh"
 NOTIFICATIONS_FILE="$JOBS_DIR/notifications.jsonl"
 MSGBUS="$SCRIPT_DIR/msgbus.sh"
 
@@ -99,7 +95,7 @@ load_notifications() {
 aggregate_daily() {
     local days="$1"
     local cutoff
-    cutoff=$(compat_date_relative "$days days ago" +%Y-%m-%d)
+    cutoff=$(date -d "$days days ago" +%Y-%m-%d 2>/dev/null || date -v-${days}d +%Y-%m-%d 2>/dev/null)
 
     jq -r --arg cutoff "$cutoff" '
         [.[] | select(.timestamp >= $cutoff)]
@@ -129,7 +125,7 @@ aggregate_weekly() {
     local weeks="$1"
     local cutoff_days=$((weeks * 7))
     local cutoff
-    cutoff=$(compat_date_relative "$cutoff_days days ago" +%Y-%m-%d)
+    cutoff=$(date -d "$cutoff_days days ago" +%Y-%m-%d 2>/dev/null || date -v-${cutoff_days}d +%Y-%m-%d 2>/dev/null)
 
     jq -r --arg cutoff "$cutoff" '
         [.[] | select(.timestamp >= $cutoff)]

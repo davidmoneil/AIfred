@@ -9,7 +9,7 @@
 set -uo pipefail
 
 # Configuration
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 AUDIT_LOG="${AIFRED_HOME}/.claude/logs/audit.jsonl"
 
 # Colors

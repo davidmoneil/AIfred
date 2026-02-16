@@ -1,7 +1,7 @@
 /**
  * Document Guard Configuration
  *
- * Defines protection rules for files in your AIfred environment.
+ * Defines protection rules for files in this project.
  * Rules are matched by glob pattern, most specific wins.
  *
  * Tiers:
@@ -25,7 +25,7 @@ module.exports = {
       structuralChecks: true,   // section/heading/key/frontmatter/shebang
     },
     v2: {
-      enabled: false,           // Semantic checks (requires local Ollama - opt in)
+      enabled: true,            // Semantic checks (enabled)
       ollamaUrl: 'http://localhost:11434',
       model: 'qwen2.5:7b-instruct',
       timeout: 5000,            // Hard timeout in ms
@@ -87,6 +87,12 @@ module.exports = {
       checks: ['key_deletion_protection'],
     },
     {
+      name: 'Beads config - protect conventions',
+      pattern: '.beads/config.yaml',
+      tier: 'critical',
+      checks: ['key_deletion_protection'],
+    },
+    {
       name: 'Feature registry - protect structure',
       pattern: '.claude/config/feature-registry.yaml',
       tier: 'critical',
@@ -113,7 +119,7 @@ module.exports = {
       pattern: '.claude/context/session-state.md',
       tier: 'high',
       checks: ['section_preservation'],
-      protectedSections: ['Current Work Status'],
+      protectedSections: ['Current Work Status', 'Task Management'],
     },
     {
       name: 'Compaction essentials - protect structure',
@@ -161,18 +167,12 @@ module.exports = {
       checks: ['section_preservation', 'semantic_relevance'],
       purpose: 'Reusable architectural patterns and decision frameworks',
     },
-    {
-      name: 'Profile definitions - protect structure',
-      pattern: 'profiles/*.yaml',
-      tier: 'high',
-      checks: ['key_deletion_protection'],
-    },
 
     // ===== MEDIUM TIER =====
 
     {
       name: 'Scripts - protect shebang',
-      pattern: 'scripts/**/*.sh',
+      pattern: 'Scripts/*.sh',
       tier: 'medium',
       checks: ['shebang_preservation'],
     },

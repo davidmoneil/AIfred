@@ -2,6 +2,7 @@
 name: backup-status
 description: Show status of Restic backup system
 usage: /backup-status [--list N] [--stats] [--check]
+skill: system-utilities
 allowed-tools:
   - Bash(~/Scripts/backup-status.sh:*)
 ---
@@ -56,7 +57,7 @@ Run the CLI script:
               BACKUP STATUS
 ═══════════════════════════════════════════════════
 
-Repository: sftp:BackupServer:/path/to/backups
+Repository: sftp:MediaServer:D:/Restic/AIServer-Backups
 
 ✓ Backups healthy
 
@@ -71,8 +72,8 @@ Total Snapshots: 45
 
 ID        Time                 Host     Tags
 ───────────────────────────────────────────
-a1b2c3d4  2026-01-20 03:00    MyServer
-b2c3d4e5  2026-01-19 03:00    MyServer
+a1b2c3d4  2026-01-20 03:00    AIServer
+b2c3d4e5  2026-01-19 03:00    AIServer
 ...
 
 ═══════════════════════════════════════════════════
@@ -93,7 +94,7 @@ Manual backup: ~/Scripts/restic-backup.sh
 ## Script Details
 
 **Location**: `~/Scripts/backup-status.sh`
-**Repository**: `sftp:BackupServer:/path/to/backups`
+**Repository**: `sftp:MediaServer:D:/Restic/AIServer-Backups`
 **Exit Codes**:
 - 0: Backups healthy
 - 1: Configuration issue

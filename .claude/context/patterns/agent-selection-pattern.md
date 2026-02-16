@@ -8,7 +8,7 @@
 
 ## Overview
 
-This pattern provides a structured approach to selecting the right automation mechanism for any task. AIfred offers multiple automation options with different characteristics:
+This pattern provides a structured approach to selecting the right automation mechanism for any task. Your hub infrastructure offers multiple automation options with different characteristics:
 
 1. **Custom Agents** (`/agent <name>`) - Your specialized agents with persistent memory
 2. **Built-in Subagents** (Task tool) - Claude Code plugin-based specialized agents
@@ -53,13 +53,23 @@ These are **automatically available** via the Task tool (invoked when appropriat
 | `feature-dev:code-explorer` | Analyze existing features | Understanding code before modifying |
 | `feature-dev:code-reviewer` | Review code quality | After significant code changes |
 
-### Other Plugins
+### Hookify Plugin
 
 | Agent | Purpose | When Used |
 |-------|---------|-----------|
 | `hookify:conversation-analyzer` | Find behaviors for hooks | Creating prevention rules from patterns |
+
+### Agent SDK Development
+
+| Agent | Purpose | When Used |
+|-------|---------|-----------|
 | `agent-sdk-dev:agent-sdk-verifier-py` | Verify Python SDK apps | After creating/modifying Python agents |
 | `agent-sdk-dev:agent-sdk-verifier-ts` | Verify TypeScript SDK apps | After creating/modifying TypeScript agents |
+
+### Infrastructure Validation
+
+| Agent | Purpose | When Used |
+|-------|---------|-----------|
 | `project-plan-validator` | Validate plans against infrastructure | Before major infrastructure changes |
 
 ---
@@ -73,8 +83,11 @@ These are **your specialized agents** in `.claude/agents/`:
 | `deep-research` | Web research with multi-source validation | `/agent deep-research "topic"` |
 | `service-troubleshooter` | Systematic service diagnosis | `/agent service-troubleshooter "issue"` |
 | `docker-deployer` | Guided Docker deployment | `/agent docker-deployer "service"` |
-
-*Add more agents as you create them for your specific needs.*
+| `ollama-manager` | Local Ollama LLM management | `/agent ollama-manager` |
+| `plex-troubleshoot` | Plex Media Server diagnosis | `/agent plex-troubleshoot` |
+| `code-analyzer` | Code analysis | `/agent code-analyzer` |
+| `code-implementer` | Code implementation | `/agent code-implementer` |
+| `code-tester` | Test generation | `/agent code-tester` |
 
 ---
 
@@ -135,23 +148,37 @@ Task Received
 - System automatically uses `feature-dev:code-architect`
 **Why**: Specialized for feature design with blueprint output
 
+**Scenario**: "Review the code I just wrote for security issues"
+- System automatically uses `feature-dev:code-reviewer`
+**Why**: Confidence-based filtering for high-priority issues
+
 **Scenario**: "Find all files that handle API routing"
 - System automatically uses `Explore` subagent
 **Why**: Fast pattern matching and codebase navigation
 
 ### Use Skill/Slash Command
 
-**Scenario**: "End my session cleanly"
+**Scenario**: "Create a commit for my changes"
 ```bash
-/end-session
+/commit
 ```
 **Why**: Quick, single-purpose operation
+
+**Scenario**: "Check infrastructure health"
+```bash
+/check-health
+```
+**Why**: Defined workflow, immediate result needed
 
 ### Use Direct Tools
 
 **Scenario**: "Show me the docker containers"
-- Direct use of `docker ps`
+- Direct use of `mcp__docker__docker` or `docker ps`
 **Why**: Simple query, no processing needed
+
+**Scenario**: "Read the config file at /path/to/config.yaml"
+- Direct use of `Read` tool
+**Why**: Single operation, immediate result
 
 ---
 
@@ -161,8 +188,17 @@ During the **Assess** phase of PARC, consider agent selection:
 
 1. **Check if task matches a built-in subagent** - code work → feature-dev:*
 2. **Check if custom agent exists** - service issues → service-troubleshooter
-3. **Check for existing skill** - /discover, /health-check, etc.
+3. **Check for existing skill** - /discover-docker, /check-health, etc.
 4. **Fall back to direct tools** for simple operations
+
+Add to your PARC checklist:
+```
+□ ASSESS:
+  □ Is there a built-in subagent for this? (feature-dev, Explore, Plan)
+  □ Is there a custom agent? (/agent list)
+  □ Is there a skill/slash command? (/help)
+  □ Or should I use direct tools?
+```
 
 ---
 
@@ -183,10 +219,32 @@ cp .claude/agents/_template-agent.md .claude/agents/my-new-agent.md
 
 ---
 
+## Combining Agents
+
+Agents can work together:
+
+1. **Sequential**: Use Explore → then feature-dev:code-architect → then custom agent for deployment
+2. **Nested**: Custom agent can invoke `/agent` for sub-tasks
+3. **Parallel**: Launch multiple agents for independent work
+
+Example workflow:
+```
+1. Explore agent finds relevant code
+2. feature-dev:code-explorer analyzes the patterns
+3. You design with feature-dev:code-architect
+4. /agent docker-deployer handles deployment
+5. feature-dev:code-reviewer validates the result
+```
+
+---
+
 ## Related Documentation
 
-- @.claude/context/systems/agent-system.md - Custom agent system details (if created)
+- @.claude/context/systems/agent-system.md - Custom agent system details
+- @.claude/agents/AGENT-ROADMAP.md - Agent planning and roadmap
 - @.claude/context/patterns/prompt-design-review.md - PARC pattern integration
+- @.claude/context/integrations/workflow-patterns.md - Workflow patterns
+- @.claude/commands/agent.md - /agent slash command
 
 ---
 

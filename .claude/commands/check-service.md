@@ -3,9 +3,11 @@ argument-hint: <service-name>
 description: Health check for infrastructure service
 skill: infrastructure-ops
 allowed-tools:
-  - Bash(scripts/check-service.sh:*)
+  - Bash(~/Scripts/check-service.sh:*)
   - Bash(docker:*)
   - Read
+  - mcp__mcp-gateway__create_entities
+  - mcp__mcp-gateway__create_relations
 ---
 
 # /check-service
@@ -23,7 +25,7 @@ Health check a Docker service using `check-service.sh`.
 Run the check script:
 
 ```bash
-scripts/check-service.sh $ARGUMENTS
+~/Scripts/check-service.sh $ARGUMENTS
 ```
 
 Report the results to the user.
@@ -47,12 +49,29 @@ Pass through to script:
 /check-service caddy --full
 ```
 
+## Memory MCP Integration (Optional)
+
+If issues are found, store in Memory MCP:
+
+```javascript
+// Only if service degraded/down
+mcp__mcp-gateway__create_entities([{
+  name: "Issue: [Service] Health Check",
+  entityType: "Infrastructure Issue",
+  observations: [
+    "Date: [date]",
+    "Status: [degraded/down]",
+    "Symptoms: [from script output]"
+  ]
+}])
+```
+
 ## Script Location
 
-`scripts/check-service.sh`
+`~/Scripts/check-service.sh`
 
 ## Related
 
-- Script: @scripts/check-service.sh
-- `/check-health` - Full infrastructure health check
+- Script: @Scripts/check-service.sh
+- `/check-services` - Check all services
 - Pattern: @.claude/context/patterns/capability-layering-pattern.md

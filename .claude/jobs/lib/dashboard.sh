@@ -16,10 +16,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
-
-# Cross-platform compatibility
-source "${AIFRED_HOME}/scripts/lib/platform.sh"
 REGISTRY="$JOBS_DIR/registry.yaml"
 STATE_DIR="$JOBS_DIR/state"
 LAST_RUN_FILE="$STATE_DIR/last-run.json"
@@ -152,7 +148,7 @@ print_job_table() {
         if [ "$last_run" -eq 0 ]; then
             last_str="never"
         else
-            last_str=$(compat_date_epoch "$last_run" '+%m-%d %H:%M' 2>/dev/null || echo "?")
+            last_str=$(date -d "@$last_run" '+%m-%d %H:%M' 2>/dev/null || echo "?")
         fi
 
         # Status
@@ -261,8 +257,8 @@ print_cost_summary() {
     local today today_cost week_cost month_cost
     today=$(date +%Y-%m-%d)
     local week_ago month_ago
-    week_ago=$(compat_date_relative "7 days ago" +%Y-%m-%d)
-    month_ago=$(compat_date_relative "30 days ago" +%Y-%m-%d)
+    week_ago=$(date -d "7 days ago" +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d 2>/dev/null)
+    month_ago=$(date -d "30 days ago" +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d 2>/dev/null)
 
     today_cost=$(jq -s --arg d "$today" \
         '[.[] | select(.timestamp[:10] == $d and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0 | tostring | .[0:6]' \
@@ -298,8 +294,8 @@ cost_summary_json() {
 
     local today week_ago month_ago
     today=$(date +%Y-%m-%d)
-    week_ago=$(compat_date_relative "7 days ago" +%Y-%m-%d)
-    month_ago=$(compat_date_relative "30 days ago" +%Y-%m-%d)
+    week_ago=$(date -d "7 days ago" +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d 2>/dev/null)
+    month_ago=$(date -d "30 days ago" +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d 2>/dev/null)
 
     jq -s --arg today "$today" --arg week "$week_ago" --arg month "$month_ago" '{
         today: ([.[] | select(.timestamp[:10] == $today and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0),

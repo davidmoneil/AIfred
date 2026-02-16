@@ -14,6 +14,8 @@ allowed-tools:
   - Bash(docker:*)
   - Bash(ssh:*)
   - Bash(curl:*)
+  - mcp__docker-mcp__list-containers
+  - mcp__docker-mcp__get-logs
   - mcp__mcp-gateway__create_entities
   - mcp__mcp-gateway__add_observations
   - mcp__mcp-gateway__create_relations
@@ -29,8 +31,9 @@ Comprehensive infrastructure health monitoring and container operations manageme
 
 This skill consolidates infrastructure operations including:
 - **Service Health Checks**: Validate running services and containers
+- **Gateway Monitoring**: UDM Pro and network device health
 - **Container Discovery**: Document and track Docker containers
-- **System Diagnostics**: Health validation
+- **System Diagnostics**: Weekly health validation
 
 **Value**: Unified approach to infrastructure monitoring with consistent status reporting and issue tracking.
 
@@ -40,9 +43,10 @@ This skill consolidates infrastructure operations including:
 
 | Need | Action | Reference |
 |------|--------|---------|
-| Check Docker health | `/health-report` | @.claude/commands/health-report.md |
-| Discover new container | Manual inspection | See workflow below |
-| Troubleshoot service | `/agent service-troubleshooter` | @.claude/agents/service-troubleshooter.md |
+| Check single service | `/check-service <name>` | @.claude/commands/check-service.md |
+| Check UDM Pro gateway | `/check-gateway` | @.claude/commands/check-gateway.md |
+| Run full health check | `/check-health [section]` | @.claude/commands/check-health.md |
+| Discover Docker container | `/discover-docker <name>` | @.claude/commands/discover-docker.md |
 | Query task metrics | `/metrics <command>` | @.claude/commands/metrics.md |
 
 ---
@@ -54,21 +58,27 @@ INFRASTRUCTURE MONITORING
 =========================
 
 QUICK CHECK (single service)
-  docker inspect <container>
+  /check-service <name>
     - Container running status
-    - Recent logs (docker logs)
+    - Recent logs (last 50 lines)
     - Configuration verification
     - Issue storage (Memory MCP if problems found)
 
-FULL CHECK (regular)
-  /health-report
-    - Docker container status
-    - System resource usage
-    - Service connectivity
+NETWORK CHECK (gateway)
+  /check-gateway
+    - UDM Pro system status
+    - Service health (unifi-core, etc.)
+    - Network interface status
+    - Recent issues and health assessment
+
+FULL CHECK (weekly)
+  /check-health [section]
+    - all | backup | docker | credentials
+    - logging | network | storage | security
     - Generate report with pass/warn/fail counts
 
 DISCOVERY (new containers)
-  docker inspect <name>
+  /discover-docker <name>
     - Container inspection
     - Configuration discovery
     - Documentation creation
@@ -82,12 +92,14 @@ DISCOVERY (new containers)
 **Always use MCP tools first, fallback to bash if MCP fails.**
 
 ### Docker Operations
-1. MCP tools if Docker MCP is configured
-2. Fallback: `docker ps`, `docker logs`, `docker inspect`
+1. `mcp__docker-mcp__list-containers` - List all containers
+2. `mcp__docker-mcp__get-logs` - Retrieve container logs
+3. Fallback: `docker ps`, `docker logs`, `docker inspect`
 
 ### SSH Operations (for remote checks)
-1. `mcp__ssh__runRemoteCommand` if SSH MCP is configured
-2. Fallback: `ssh <host> "<command>"`
+1. `mcp__ssh__runRemoteCommand` - Single remote command
+2. `mcp__ssh__runCommandBatch` - Multiple commands
+3. Fallback: `ssh <host> "<command>"`
 
 ---
 
@@ -95,8 +107,8 @@ DISCOVERY (new containers)
 
 Use consistent severity indicators across all checks:
 
-| Indicator | Meaning |
-|-----------|---------|
+| Indicator | Status | Meaning |
+|-----------|--------|---------|
 | `[X]` CRITICAL | Immediate action required |
 | `[!]` HIGH | Address within 24h |
 | `[~]` MEDIUM | Address this week |
@@ -133,19 +145,19 @@ Relations:
 
 ```javascript
 mcp__mcp-gateway__create_entities([{
-  name: "Issue: my-service Restart Loop",
+  name: "Issue: postgres_secondary Restart Loop",
   entityType: "Infrastructure Issue",
   observations: [
     "Date: 2026-01-16",
     "Status: Container restarting every 5 seconds",
-    "Symptom: Permission denied error",
+    "Symptom: Permission denied on /var/lib/postgresql/data",
     "Severity: High"
   ]
 }])
 
 mcp__mcp-gateway__create_relations([{
-  from: "Issue: my-service Restart Loop",
-  to: "my-service",
+  from: "Issue: postgres_secondary Restart Loop",
+  to: "postgres_secondary",
   relationType: "affects"
 }])
 ```
@@ -171,19 +183,19 @@ mcp__mcp-gateway__create_relations([{
 
 ## Common Workflows
 
-### Quick Docker Check
+### Daily Quick Check
 
 ```
-1. docker ps                    # Check container status
-2. docker logs <name> --tail 50 # Check recent logs
+1. /check-service n8n         # Check primary automation service
+2. /check-service openwebui   # Check AI interface
 3. Review any warnings/errors
 4. Add critical issues to priorities if found
 ```
 
-### Full Health Check
+### Weekly Full Health Check
 
 ```
-1. /health-report               # Run comprehensive check
+1. /check-health all          # Run comprehensive check
 2. Review pass/warn/fail counts
 3. Address any HIGH or CRITICAL items immediately
 4. Create orchestration for complex fixes if needed
@@ -193,9 +205,9 @@ mcp__mcp-gateway__create_relations([{
 ### New Container Discovery
 
 ```
-1. docker inspect <name>        # Inspect container
-2. Document in paths-registry.yaml
-3. Create context file if complex service
+1. /discover-docker <name>    # Discover container config
+2. Review generated documentation
+3. Verify paths-registry.yaml updated
 4. Add to monitoring rotation
 ```
 
@@ -219,10 +231,10 @@ Track token usage, tool counts, and performance for all Task tool (agent/subagen
 
 ## Troubleshooting
 
-### Docker not responding?
-- Check Docker daemon: `systemctl status docker`
-- Check socket permissions
-- Try: `docker info`
+### MCP Docker not responding?
+- Verify Docker socket permissions
+- Check MCP Gateway health: `/check-gateway`
+- Fallback to bash: `docker ps`
 
 ### SSH connection failures?
 - Verify SSH keys: `ssh-add -l`
@@ -239,11 +251,20 @@ Track token usage, tool counts, and performance for all Task tool (agent/subagen
 ## Related Documentation
 
 ### Commands
-- @.claude/commands/health-report.md - Health check
+- @.claude/commands/check-service.md - Single service health check
+- @.claude/commands/check-gateway.md - UDM Pro gateway check
+- @.claude/commands/check-health.md - Full infrastructure health check
+- @.claude/commands/discover-docker.md - Container discovery
+
+### Context Files
+- @.claude/context/systems/docker/ - Docker service documentation
+- @.claude/context/systems/_template-service.md - Service doc template
+- @.claude/context/systems/udm-pro-operations.md - UDM Pro operations
+
+### MCP References
+- @knowledge/reference/mcp/docker-mcp.md - Docker MCP usage
+- @.claude/context/integrations/memory-mcp-usage.md - Memory MCP patterns
 
 ### Agents
 - @.claude/agents/service-troubleshooter.md - Systematic service diagnosis
 - @.claude/agents/docker-deployer.md - Guided Docker deployment
-
-### Patterns
-- @.claude/context/patterns/memory-storage-pattern.md - Memory MCP patterns

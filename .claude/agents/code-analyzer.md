@@ -1,3 +1,8 @@
+---
+name: code-analyzer
+description: Understand codebase structure, identify tech stack, find patterns, and prepare for implementation tasks
+---
+
 # Agent: Code Analyzer
 
 ## Metadata
@@ -20,19 +25,19 @@ These are the status updates the agent will display as it works:
 - "Generating analysis report..."
 
 ## Expected Output
-- **Results Location**: `.claude/agents/results/code-analyzer/`
-- **Session Logs**: `.claude/agents/sessions/`
+- **Results Location**: `.claude/agent-output/results/code-analyzer/`
+- **Session Logs**: `.claude/agent-output/sessions/`
 - **Summary Format**: Tech stack, key findings, recommended approach, potential blockers
 
 ## Usage Examples
 ```bash
-/agent code-analyzer <project-path>
+/code analyze <project>
 ```
 
 Examples:
-- `/agent code-analyzer ~/Code/my-project` - Full analysis
-- `/agent code-analyzer ~/Code/my-project --focus auth` - Focus on authentication code
-- `/agent code-analyzer ~/Code/my-project --task "add user roles"` - Analyze with specific task in mind
+- `/code analyze grc-platform` - Full analysis of GRC Platform
+- `/code analyze grc-platform --focus auth` - Focus on authentication code
+- `/code analyze grc-platform --task "add user roles"` - Analyze with specific task in mind
 
 ---
 
@@ -58,7 +63,7 @@ As the Code Analyzer, you are the first step in any coding task. Your job is to:
 - **File Location**: Locate files relevant to a specific task
 - **Test Discovery**: Find existing test files and coverage
 - **Memory Integration**: Query and update Memory MCP with patterns/issues
-- **Context Loading**: Load project-specific context from `.claude/context/projects/`
+- **Context Loading**: Load project-specific context from `.claude/context/coding/`
 
 ### Tools Available
 
@@ -73,8 +78,8 @@ As the Code Analyzer, you are the first step in any coding task. Your job is to:
 ### Your Workflow
 
 #### Phase 1: Context Loading
-1. Check if project exists in paths-registry.yaml under `projects`
-2. Load project context file from `.claude/context/projects/{project}.md` if exists
+1. Check if project exists in paths-registry.yaml under `coding.projects`
+2. Load project context file from `.claude/context/coding/{project}.md`
 3. Query Memory MCP for project entity and related patterns
 4. Load learnings from `.claude/agents/memory/code-analyzer/learnings.json`
 
@@ -152,13 +157,13 @@ Memory schema for local learnings:
 
 ### Output Requirements
 
-1. **Session Log** (`.claude/agents/sessions/YYYY-MM-DD_code-analyzer_{project}.md`)
+1. **Session Log** (`.claude/agent-output/sessions/YYYY-MM-DD_code-analyzer_{project}.md`)
    - Full transcript of analysis
    - Files examined
    - Patterns identified
    - Memory queries made
 
-2. **Results File** (`.claude/agents/results/code-analyzer/YYYY-MM-DD_{project}_analysis.md`)
+2. **Results File** (`.claude/agent-output/results/code-analyzer/YYYY-MM-DD_{project}_analysis.md`)
 
    Structure:
    ```markdown

@@ -85,61 +85,61 @@ This skill provides **end-to-end autonomous development** by:
 ## Complete Workflow
 
 ```
-+---------------------------------------------------------------------+
-|                    PARALLEL-DEV WORKFLOW                             |
-+---------------------------------------------------------------------+
-|  PHASE 1: PLANNING                                                   |
-|  +-- /parallel-dev:plan <name>                                       |
-|     +-- Vision & Goals questions                                     |
-|     +-- Features & Scope questions                                   |
-|     +-- Technical Decisions questions                                |
-|     +-- Generates: plans/{name}.md                                   |
-+---------------------------------------------------------------------+
-|  PHASE 2: APPROVAL                                                   |
-|  +-- /parallel-dev:plan-show <name>  (review)                        |
-|  +-- /parallel-dev:plan-edit <name>  (adjust if needed)              |
-|  +-- /parallel-dev:plan-edit <name> --approve                        |
-+---------------------------------------------------------------------+
-|  PHASE 3: DECOMPOSITION                                              |
-|  +-- /parallel-dev:decompose <name>                                  |
-|     +-- Breaks into phases (Foundation, Core, Integration, Test)     |
-|     +-- Creates tasks with dependencies                              |
-|     +-- Identifies parallelization opportunities                     |
-|     +-- Generates: plans/{name}-tasks.yaml                           |
-+---------------------------------------------------------------------+
-|  PHASE 4: EXECUTION                                                  |
-|  +-- /parallel-dev:start <name>                                      |
-|     +-- Creates worktree at {worktreeBase}/{project}/{name}          |
-|     +-- Creates feature branch: feature/{name}                       |
-|     +-- Spawns parallel agents (up to maxParallelAgents)             |
-|     |   +-- Implementer agents (database, api, frontend)             |
-|     |   +-- Tester agents                                            |
-|     |   +-- Documenter agents                                        |
-|     +-- Tracks progress in executions/{name}/state.yaml              |
-|     +-- Continues until all tasks complete                           |
-|                                                                      |
-|  During execution:                                                   |
-|  +-- /parallel-dev:status         (monitor progress)                 |
-|  +-- /parallel-dev:pause <name>   (graceful pause)                   |
-|  +-- /parallel-dev:resume <name>  (continue work)                    |
-+---------------------------------------------------------------------+
-|  PHASE 5: VALIDATION                                                 |
-|  +-- /parallel-dev:validate <name>                                   |
-|     +-- Static Analysis (lint, typecheck, format)                    |
-|     +-- Testing (unit tests, integration tests, coverage)            |
-|     +-- Build Verification (production build)                        |
-|     +-- Acceptance Criteria (verify each criterion)                  |
-+---------------------------------------------------------------------+
-|  PHASE 6: MERGE                                                      |
-|  +-- /parallel-dev:conflicts <name>  (preview conflicts)             |
-|  +-- /parallel-dev:merge <name>                                      |
-|     +-- Merges feature branch to main                                |
-|     +-- Runs post-merge validation                                   |
-|     +-- Pushes to remote                                             |
-|     +-- Removes worktree                                             |
-|     +-- Deletes feature branch                                       |
-|     +-- Archives execution                                           |
-+---------------------------------------------------------------------+
+┌─────────────────────────────────────────────────────────────────┐
+│                    PARALLEL-DEV WORKFLOW                         │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 1: PLANNING                                               │
+│  └─ /parallel-dev:plan <name>                                    │
+│     ├─ Vision & Goals questions                                  │
+│     ├─ Features & Scope questions                                │
+│     ├─ Technical Decisions questions                             │
+│     └─ Generates: plans/{name}.md                                │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 2: APPROVAL                                               │
+│  ├─ /parallel-dev:plan-show <name>  (review)                     │
+│  ├─ /parallel-dev:plan-edit <name>  (adjust if needed)           │
+│  └─ /parallel-dev:plan-edit <name> --approve                     │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 3: DECOMPOSITION                                          │
+│  └─ /parallel-dev:decompose <name>                               │
+│     ├─ Breaks into phases (Foundation, Core, Integration, Test)  │
+│     ├─ Creates tasks with dependencies                           │
+│     ├─ Identifies parallelization opportunities                  │
+│     └─ Generates: plans/{name}-tasks.yaml                        │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 4: EXECUTION                                              │
+│  └─ /parallel-dev:start <name>                                   │
+│     ├─ Creates worktree at ~/tmp/worktrees/{project}/{name}      │
+│     ├─ Creates feature branch: feature/{name}                    │
+│     ├─ Spawns parallel agents (up to 3 by default)               │
+│     │   ├─ Implementer agents (database, api, frontend)          │
+│     │   ├─ Tester agents                                         │
+│     │   └─ Documenter agents                                     │
+│     ├─ Tracks progress in executions/{name}/state.yaml           │
+│     └─ Continues until all tasks complete                        │
+│                                                                  │
+│  During execution:                                               │
+│  ├─ /parallel-dev:status         (monitor progress)              │
+│  ├─ /parallel-dev:pause <name>   (graceful pause)                │
+│  └─ /parallel-dev:resume <name>  (continue work)                 │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 5: VALIDATION                                             │
+│  └─ /parallel-dev:validate <name>                                │
+│     ├─ Static Analysis (lint, typecheck, format)                 │
+│     ├─ Testing (unit tests, integration tests, coverage)         │
+│     ├─ Build Verification (production build)                     │
+│     └─ Acceptance Criteria (verify each criterion)               │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 6: MERGE                                                  │
+│  ├─ /parallel-dev:conflicts <name>  (preview conflicts)          │
+│  └─ /parallel-dev:merge <name>                                   │
+│     ├─ Merges feature branch to main                             │
+│     ├─ Runs post-merge validation                                │
+│     ├─ Pushes to remote                                          │
+│     ├─ Removes worktree                                          │
+│     ├─ Deletes feature branch                                    │
+│     └─ Archives execution                                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -186,7 +186,7 @@ This skill provides **end-to-end autonomous development** by:
 | `.claude/parallel-dev/executions/{name}/state.yaml` | Execution tracking |
 | `.claude/parallel-dev/executions/{name}/validation.yaml` | Validation results |
 | `.claude/parallel-dev/archive/` | Completed executions |
-| `{worktreeBase}/{project}/{name}/` | Isolated worktree storage |
+| `~/tmp/worktrees/{project}/{name}/` | Isolated worktree storage |
 | `.claude/skills/parallel-dev/config.json` | Skill configuration |
 
 ### Templates
@@ -235,15 +235,15 @@ This skill provides **end-to-end autonomous development** by:
 
 **What happens when you run `/parallel-dev:start auth-system`**:
 
-1. **Creates worktree**: Isolated git worktree at `{worktreeBase}/{project}/auth-system`
+1. **Creates worktree**: Isolated git worktree at `~/tmp/worktrees/{project}/auth-system`
 2. **Creates branch**: `feature/auth-system`
 3. **Initializes execution state**: Tracks progress in `state.yaml`
 4. **Identifies ready tasks**: Tasks with no unmet dependencies
-5. **Spawns agents** (up to configured max parallel):
+5. **Spawns agents** (up to 3 parallel):
    ```
-   Agent 1 -> T1.1: Database schema (stream: database)
-   Agent 2 -> T1.2: Environment config (stream: infra)
-   Agent 3 -> T1.3: Project scaffolding (stream: core)
+   Agent 1 → T1.1: Database schema (stream: database)
+   Agent 2 → T1.2: Environment config (stream: infra)
+   Agent 3 → T1.3: Project scaffolding (stream: core)
    ```
 6. **Coordinates completion**:
    - When Agent 1 completes T1.1, dependent tasks (T2.1, T2.2) become ready
@@ -285,7 +285,7 @@ This skill provides **end-to-end autonomous development** by:
   "registryPath": ".claude/parallel-dev/registry.json",
   "plansPath": ".claude/parallel-dev/plans",
   "executionsPath": ".claude/parallel-dev/executions",
-  "maxParallelAgents": 5,
+  "maxParallelAgents": 3,
   "staleThresholdMinutes": 30,
   "autoCleanupWorktrees": true,
   "portPool": { "start": 8100, "end": 8199 },
@@ -299,8 +299,7 @@ This skill provides **end-to-end autonomous development** by:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `worktreeBase` | `~/tmp/worktrees` | Base directory for worktrees |
-| `maxParallelAgents` | 5 | Maximum concurrent agents |
+| `maxParallelAgents` | 3 | Maximum concurrent agents |
 | `staleThresholdMinutes` | 30 | When to check on stale agents |
 | `autoCleanupWorktrees` | true | Remove worktrees after merge |
 | `agentModel` | sonnet | Model for implementation agents |
@@ -309,6 +308,16 @@ This skill provides **end-to-end autonomous development** by:
 ---
 
 ## Integration Points
+
+### With Existing AIfred Infrastructure
+
+| Component | How Parallel-Dev Uses It |
+|-----------|--------------------------|
+| Git worktrees | Isolation pattern from `worktree-shell-functions.md` |
+| Orchestration system | Task decomposition patterns |
+| Custom agents | Specialized execution agents |
+| Built-in subagents | Task tool for spawning |
+| Session management | State tracking across sessions |
 
 ### With Session Management Skill
 
@@ -392,7 +401,7 @@ Claude: "Plan created at .claude/parallel-dev/plans/auth-system.md"
 ### Execution won't start?
 - Ensure plan status is `approved` or `decomposed`
 - Check tasks file exists: `.claude/parallel-dev/plans/{name}-tasks.yaml`
-- Verify worktree base directory exists
+- Verify worktree base directory exists: `~/tmp/worktrees/`
 
 ### Agents seem stuck?
 - Check `/parallel-dev:status` for details

@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 # Beads Shell Aliases for AIfred
 # Source this file in ~/.bashrc or ~/.zshrc:
-#   source /path/to/aifred/scripts/beads-aliases.sh
+#   source scripts/beads-aliases.sh
 
 # ========================================
 # Domain Views (zero tokens)
 # ========================================
-alias bd-hooks='bd list --status open --label domain:hooks'
-alias bd-skills='bd list --status open --label domain:skills'
-alias bd-profiles='bd list --status open --label domain:profiles'
-alias bd-docs='bd list --status open --label domain:documentation'
 alias bd-infra='bd list --status open --label domain:infrastructure'
+alias bd-coding='bd list --status open --label domain:coding'
+alias bd-creative='bd list --status open --label domain:creative'
+alias bd-research='bd list --status open --label domain:research'
+
+# ========================================
+# Project Views (zero tokens)
+# ========================================
+alias bd-aiprojects='bd list --status open --label project:aiprojects'
+alias bd-aifred='bd list --status open --label project:aifred'
+alias bd-ciso='bd list --status open --label project:ciso-expert'
 
 # ========================================
 # Status Views (zero tokens)
@@ -32,21 +38,23 @@ alias bd-urgent='bd list --label-any severity:critical,severity:high --status op
 # Quick Actions (zero tokens)
 # ========================================
 # Usage: bd-add "Task title" domain priority
-# Example: bd-add "Fix session hook" hooks 1
+# Example: bd-add "Fix auth bug" infrastructure 1
 bd-add() {
     local title="$1"
     local domain="${2:-ad-hoc}"
     local priority="${3:-2}"
+    local project="${4:-aiprojects}"
 
     if [ -z "$title" ]; then
-        echo "Usage: bd-add 'Task title' [domain] [priority 0-4]"
-        echo "  Domains: hooks, skills, profiles, documentation, infrastructure"
+        echo "Usage: bd-add 'Task title' [domain] [priority 0-4] [project]"
+        echo "  Domains: infrastructure, coding, creative, research"
         echo "  Priority: 0=CRITICAL, 1=HIGH, 2=MEDIUM, 3=LOW, 4=Backlog"
+        echo "  Projects: aiprojects, aifred, ciso-expert, my-ai-plugin"
         return 1
     fi
 
     bd create "$title" -t task -p "$priority" \
-        -l "domain:${domain},agent:human,source:ad-hoc" \
+        -l "domain:${domain},project:${project},agent:human,source:ad-hoc" \
         --json | jq -r '"Created: \(.id) - \(.title)"'
 }
 

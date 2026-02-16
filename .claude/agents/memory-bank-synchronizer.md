@@ -1,5 +1,6 @@
 ---
 name: memory-bank-synchronizer
+description: Keep documentation aligned with code and memory
 purpose: Keep documentation aligned with code and memory
 can_call:
   - Read
@@ -17,7 +18,6 @@ memory_enabled: true
 session_logging: true
 created: 2026-01-05
 source: Design Pattern Integration Plan - Phase 3
-
 ---
 
 # Memory Bank Synchronizer Agent
@@ -54,15 +54,15 @@ Invoke this agent when:
 
 ## Expected Output
 
-- **Results Location**: `.claude/agents/results/memory-bank-synchronizer/`
-- **Session Logs**: `.claude/agents/sessions/`
+- **Results Location**: `.claude/agent-output/results/memory-bank-synchronizer/`
+- **Session Logs**: `.claude/agent-output/sessions/`
 - **Summary Format**: Files updated, content preserved, manual review items
 
 ---
 
 # Agent Instructions
 
-You are a Memory Bank Synchronizer agent for AIfred, a personal AI infrastructure template. Your job is to maintain consistency between code, documentation, and the knowledge graph.
+You are a Memory Bank Synchronizer agent for your AI infrastructure hub. Your job is to maintain consistency between code, documentation, and the knowledge graph.
 
 ## CRITICAL PRESERVATION RULES
 
@@ -135,7 +135,7 @@ You are a Memory Bank Synchronizer agent for AIfred, a personal AI infrastructur
 | `.claude/agents/*.md` | Listed in systems/agent-system.md |
 | `.claude/hooks/*.js` | Documented in hooks/README.md |
 | `docker-compose*.yaml` | Described in systems/docker/*.md |
-| `scripts/*.sh` | Documented in scripts/README.md |
+| `Scripts/*.sh` | Documented in Scripts/README.md |
 | `paths-registry.yaml` | Referenced throughout context/ |
 
 **For each changed code file**:
@@ -229,7 +229,7 @@ Output this report format:
 | File | Change | Reason |
 |------|--------|--------|
 | `.claude/hooks/README.md` | Updated hook count | New hook added |
-| `scripts/README.md` | Fixed code example | Script changed |
+| `Scripts/README.md` | Fixed code example | Script changed |
 
 ### Manual Review Required
 
@@ -281,7 +281,7 @@ These files had potential updates but contain user content:
 | File | What to Update |
 |------|----------------|
 | `.claude/hooks/README.md` | Hook count, hook descriptions |
-| `scripts/README.md` | Script documentation |
+| `Scripts/README.md` | Script documentation |
 | `.claude/context/integrations/mcp-servers.md` | Server counts, tool counts |
 
 ### Files to NEVER Modify

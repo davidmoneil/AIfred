@@ -8,11 +8,11 @@
 
 ## Overview
 
-Tracks git commits across multiple projects during a Claude Code session, providing visibility into work spread across your infrastructure.
+Tracks git commits across multiple projects during a Claude Code session, providing visibility into work spread across the infrastructure.
 
-**Problem**: Claude Code sessions often touch multiple repositories, making it hard to track what was committed where.
+**Problem**: Claude Code sessions often touch multiple repositories (hub, myDocker, ~/Code/* projects), making it hard to track what was committed where.
 
-**Solution**: A PostToolUse hook captures all commits and logs them to a central file, with slash commands to view status and push.
+**Solution**: A PostToolUse hook captures all commits and logs them to a central file, with a slash command to view the status.
 
 ---
 
@@ -23,13 +23,13 @@ Tracks git commits across multiple projects during a Claude Code session, provid
 │                 CROSS-PROJECT COMMIT TRACKING                        │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│  Claude Code Session                                                │
+│  Claude Code Session (running in hub)                        │
 │  ┌───────────────────────────────────────────────────────────────┐  │
 │  │  Makes commits to multiple repos:                              │  │
 │  │                                                                │  │
-│  │  ~/Projects         → git commit (local)                       │  │
-│  │  ~/Docker           → git -C ~/Docker commit                   │  │
-│  │  ~/Code/my-app      → git -C ~/Code/my-app commit              │  │
+│  │  $AIFRED_HOME       → git commit (local)                      │  │
+│  │  ~/Docker/mydocker  → git -C ~/Docker/mydocker commit         │  │
+│  │  ~/Code/grc-platform→ git -C ~/Code/grc-platform commit       │  │
 │  └───────────────────────────────────────────────────────────────┘  │
 │                              │                                       │
 │                              ▼                                       │
@@ -51,8 +51,8 @@ Tracks git commits across multiple projects during a Claude Code session, provid
 │  │    "sessions": {                                               │  │
 │  │      "2026-01-06_My-Session": {                               │  │
 │  │        "projects": {                                           │  │
-│  │          "MainProject": { "commits": [...] },                  │  │
-│  │          "my-app": { "commits": [...] }                        │  │
+│  │          "hub": { "commits": [...] },                   │  │
+│  │          "grc-platform": { "commits": [...] }                  │  │
 │  │        }                                                       │  │
 │  │      }                                                         │  │
 │  │    }                                                           │  │
@@ -84,12 +84,15 @@ Tracks git commits across multiple projects during a Claude Code session, provid
 - `git -C <path> commit` for remote path commits
 - `mcp__git__git_commit` via Git MCP
 
-**Project Mappings** (customize for your setup):
+**Project Mappings**:
 ```javascript
 const PROJECT_MAPPINGS = [
-  { pathPattern: /^\/home\/user\/Projects/, name: 'Projects', github: 'my-projects', type: 'hub' },
-  { pathPattern: /^\/home\/user\/Docker/, name: 'Docker', github: null, type: 'infrastructure' },
-  { pathPattern: /^\/home\/user\/Code\/([^/]+)/, name: null, github: null, type: 'code' }, // Auto-detect
+  { pathPattern: new RegExp('^' + process.cwd()), name: 'hub', github: '<your-repo>', type: 'hub' },
+  { pathPattern: /^\/home\/user\/docker/, name: 'docker', github: '<docker-repo>', type: 'infrastructure' },
+  { pathPattern: /^\/home\/davidmoneil\/Code\/grc-platform/, name: 'grc-platform', github: 'grc-platform', type: 'code' },
+  { pathPattern: /^\/home\/davidmoneil\/Code\/time-scheduler/, name: 'bishop-scheduler', github: 'time-scheduler', type: 'code' },
+  { pathPattern: /^\/home\/davidmoneil\/Code\/AIfred/, name: 'AIfred', github: 'AIfred', type: 'code' },
+  { pathPattern: /^\/home\/davidmoneil\/Code\/([^/]+)/, name: null, github: null, type: 'code' }, // Auto-detect
 ];
 ```
 
@@ -114,23 +117,23 @@ const PROJECT_MAPPINGS = [
   "createdAt": "2026-01-06T10:00:00Z",
   "lastUpdated": "2026-01-06T15:30:00Z",
   "sessions": {
-    "2026-01-06_My-Session": {
+    "2026-01-06_Infrastructure-Updates": {
       "date": "2026-01-06",
-      "sessionName": "My Session",
+      "sessionName": "Infrastructure Updates",
       "startedAt": "2026-01-06T10:00:00Z",
       "lastActivity": "2026-01-06T15:30:00Z",
       "projects": {
-        "MainProject": {
-          "github": "my-repo",
+        "hub": {
+          "github": "mybrain",
           "type": "hub",
-          "path": "/home/user/Projects",
+          "path": "$AIFRED_HOME",
           "commits": [
             {
               "hash": "abc123def456...",
               "shortHash": "abc123d",
               "message": "Update session state",
               "branch": "main",
-              "author": { "name": "User", "email": "..." },
+              "author": { "name": "David Moneil", "email": "..." },
               "timestamp": "2026-01-06T10:30:00Z"
             }
           ]
@@ -147,12 +150,12 @@ const PROJECT_MAPPINGS = [
 
 | Type | Badge | Examples |
 |------|-------|----------|
-| hub | `[hub]` | Main projects directory |
-| infrastructure | `[infra]` | Docker configs |
-| code | `[code]` | ~/Code/* projects |
-| creative | `[creative]` | Creative projects |
-| research | `[research]` | Research initiatives |
-| unknown | `[?]` | Unregistered projects |
+| hub | `[hub]` | hub |
+| infrastructure | `[infra]` | myDocker |
+| code | `[code]` | grc-platform, AIfred, time-scheduler |
+| creative | `[creative]` | CreativeProjects |
+| research | `[research]` | claude-code-research |
+| unknown | `[?]` | Unregistered ~/Code/* projects |
 
 ---
 
@@ -183,7 +186,19 @@ cat .claude/logs/cross-project-commits.json | jq '.sessions[].projects | to_entr
 
 ### With Session Exit
 - `/commits:status` useful before session exit to verify work
-- `/commits:summary` generates markdown for session notes
+- Future: Auto-include in session summary
+
+---
+
+## Implementation Status
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| `/commits:status` | ✅ Complete | Show commits per project |
+| `/commits:summary` | ✅ Complete | Generate markdown for session notes |
+| `/commits:push-all` | ✅ Complete | Push all unpushed commits |
+| Session-start injection | ✅ Complete | Show commit summary from last session |
+| Push status tracking | ⏳ Future | Track pushed vs unpushed in UI |
 
 ---
 
@@ -191,4 +206,6 @@ cat .claude/logs/cross-project-commits.json | jq '.sessions[].projects | to_entr
 
 - @.claude/hooks/cross-project-commit-tracker.js - Hook implementation
 - @.claude/commands/commits/README.md - Command group docs
+- @.claude/commands/commits/status.md - Status command
 - @.claude/context/patterns/worktree-shell-functions.md - Worktree pattern
+- @paths-registry.yaml - Project path definitions

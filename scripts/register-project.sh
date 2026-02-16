@@ -10,7 +10,7 @@ set -euo pipefail
 
 # Configuration
 CODE_DIR="${HOME}/Code"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
 CONTEXT_DIR="${AIFRED_HOME}/.claude/context/projects"
 
@@ -44,7 +44,7 @@ What It Does:
 
 Examples:
     $(basename "$0") ~/Code/existing-project
-    $(basename "$0") github.com/your-username/some-repo
+    $(basename "$0") github.com/davidmoneil/some-repo
     $(basename "$0") https://github.com/user/repo
 
 Exit Codes:

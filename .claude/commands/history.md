@@ -1,3 +1,13 @@
+---
+description: Search and browse the structured history system
+argument-hint: <subcommand> [args]
+skill: session-management
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+---
+
 # /history Command
 
 Search and browse the structured history system.

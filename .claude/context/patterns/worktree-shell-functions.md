@@ -2,7 +2,7 @@
 
 **Created**: 2026-01-03
 **Status**: Active
-**Source**: Design Pattern Integration
+**Source**: Design Pattern Integration from claude-code-research
 
 ---
 
@@ -47,6 +47,8 @@ Add these to your `~/.bashrc` or `~/.zshrc`:
 ```bash
 # ============================================
 # Claude Code Worktree Functions
+# Created: 2026-01-03
+# Source: AIfred design pattern integration
 # ============================================
 
 # clx - Create worktree and launch Claude Code
@@ -171,6 +173,41 @@ cxs() {
 
 ---
 
+## Integration with Hooks
+
+### worktree-manager.js (PostToolUse)
+
+The hook automatically:
+1. **Detects worktree** on every file operation
+2. **Saves state** to `.claude/logs/.worktree-state.json`
+3. **Warns** if you try to access files in a different worktree
+
+State file format:
+```json
+{
+  "timestamp": "2026-01-03T14:30:00Z",
+  "current": {
+    "isWorktree": true,
+    "toplevel": "/home/user/Code/project-feature-auth",
+    "branch": "feature-auth",
+    "mainRepo": "/home/user/Code/project"
+  },
+  "allWorktrees": [
+    { "path": "/home/user/Code/project", "branch": "main" },
+    { "path": "/home/user/Code/project-feature-auth", "branch": "feature-auth" }
+  ]
+}
+```
+
+### session-start.js (SessionStart)
+
+When Claude Code starts in a worktree:
+1. Hook detects worktree context
+2. Injects branch information into session
+3. Notes other available worktrees
+
+---
+
 ## Use Cases
 
 ### Parallel Feature Development
@@ -220,7 +257,7 @@ cxd hotfix-urgent        # Clean up
 2. **Reload shell**: `source ~/.bashrc`
 3. **Verify**: Run `cxl` to list worktrees
 
-**Note**: The `worktree-manager.js` hook handles tracking. The shell functions are optional convenience wrappers.
+**Note**: The `worktree-manager.js` hook is already installed in AIfred. The shell functions are optional convenience wrappers.
 
 ---
 
@@ -244,7 +281,7 @@ git worktree add ../existing-branch existing-branch
 ```
 
 ### Cross-worktree warning from hook
-This is intentional - the hook warns when you're editing files that belong to a different worktree. Switch to that worktree first:
+This is intentional - the hook warns when you're editing files that belong to a different worktree. Usually you want to switch to that worktree first:
 ```bash
 cx other-worktree
 ```
@@ -255,3 +292,8 @@ cx other-worktree
 
 - @.claude/hooks/worktree-manager.js - Hook source code
 - @.claude/hooks/session-start.js - Session startup hook
+- @.claude/logs/.worktree-state.json - Runtime state file
+
+---
+
+**Maintained by**: Claude Code

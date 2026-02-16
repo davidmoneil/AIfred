@@ -3,7 +3,7 @@
 **Status**: Active
 **Created**: 2026-01-22
 **Source**: snarktank/ralph (6.7k stars)
-**Implementation**: `scripts/fresh-context-loop.sh`
+**Implementation**: `Scripts/fresh-context-loop.sh`
 
 ## Overview
 
@@ -88,7 +88,7 @@ Or inline tasks:
 
 ### 2. Loop Controller
 
-`scripts/fresh-context-loop.sh` manages the iteration:
+`Scripts/fresh-context-loop.sh` manages the iteration:
 
 1. Parse task source
 2. Find first `pending` or `in_progress` task
@@ -196,7 +196,7 @@ This is intentionally minimal - tasks should be self-contained.
 | **Orchestration** | Uses orchestration YAML as task source |
 | **Parallel-Dev** | Can run in worktrees for isolation |
 | **Git** | Each task creates a commit (rollback points) |
-| **Autonomous Execution** | Shares patterns with scheduled Claude execution |
+| **Autonomous Execution** | Shares patterns with `claude-scheduled.sh` |
 
 ## Comparison: Fresh vs Accumulated Context
 
@@ -240,6 +240,8 @@ Cons:                            Cons:
 
 ## Related
 
+- @.claude/commands/fresh-context.md - Command reference
 - @.claude/orchestration/README.md - Task decomposition
 - @.claude/context/patterns/autonomous-execution-pattern.md - Scheduled execution
-- @scripts/fresh-context-loop.sh - Implementation
+- @.claude/context/designs/fresh-context-agent-mode.md - Original design doc
+- @Scripts/fresh-context-loop.sh - Implementation

@@ -1,6 +1,6 @@
 #!/bin/bash
 # fabric-analyze-logs.sh - AI-powered log analysis for Docker containers
-# Part of CLI capability layer
+# Part of AIfred CLI capability layer
 #
 # Analyzes container logs using fabric's analyze_logs pattern to identify:
 # - Patterns and trends

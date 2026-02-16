@@ -1,6 +1,8 @@
 ---
 argument-hint: <agent-name> [args]
 description: Launch a specialized agent to work independently
+standalone: true
+note: Meta-command for launching custom agents
 allowed-tools:
   - Read
   - Write
@@ -59,8 +61,8 @@ Construct the full agent prompt by combining:
 [The specific task based on arguments]
 
 ### File Paths For This Session
-- Session Log: .claude/agents/sessions/[session-id].md
-- Results: .claude/agents/results/[agent-name]/YYYY-MM-DD_[descriptive-name].md
+- Session Log: .claude/agent-output/sessions/[session-id].md
+- Results: .claude/agent-output/results/[agent-name]/YYYY-MM-DD_[descriptive-name].md
 - Memory: .claude/agents/memory/[agent-name]/learnings.json
 
 ### Memory from Previous Runs
@@ -97,8 +99,8 @@ When the agent completes:
 # Launch deep research agent
 /agent deep-research "Docker networking best practices"
 
-# Launch code analyzer
-/agent code-analyzer my-project
+# Launch log analyzer (future agent)
+/agent analyze-logs /var/log/nginx/error.log
 
 # List available agents
 /agent

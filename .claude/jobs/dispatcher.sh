@@ -14,9 +14,9 @@
 #   dispatcher.sh --check            # Check which jobs are due right now
 #
 # Cron entry:
-#   */5 * * * * /path/to/aifred/.claude/jobs/dispatcher.sh >> /path/to/aifred/.claude/logs/headless/dispatcher.log 2>&1
+#   */5 * * * * ${PROJECT_DIR:-$PWD}/.claude/jobs/dispatcher.sh >> ${PROJECT_DIR:-$PWD}/.claude/logs/headless/dispatcher.log 2>&1
 #
-
+# Design: Obsidian 05-AI/Projects/Headless-Claude/
 
 set -euo pipefail
 
@@ -25,11 +25,7 @@ set -euo pipefail
 # ============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-
-# Cross-platform compatibility
-source "${AIFRED_HOME}/scripts/lib/platform.sh"
-PROJECT_DIR="${PROJECT_DIR:-$AIFRED_HOME}"
+PROJECT_DIR="${PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 REGISTRY="$SCRIPT_DIR/registry.yaml"
 EXECUTOR="$SCRIPT_DIR/executor.sh"
 STATE_DIR="$SCRIPT_DIR/state"
@@ -403,7 +399,7 @@ list_jobs() {
         if [ "$last_run" -eq 0 ]; then
             last_run_str="never"
         else
-            last_run_str=$(compat_date_epoch "$last_run" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "unknown")
+            last_run_str=$(date -d "@$last_run" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "unknown")
         fi
 
         case "$schedule_type" in
@@ -448,7 +444,7 @@ show_status() {
         if [ "$last_run" -eq 0 ]; then
             last_run_str="never"
         else
-            last_run_str=$(compat_date_epoch "$last_run" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
+            last_run_str=$(date -d "@$last_run" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
         fi
 
         # Check status
@@ -495,7 +491,7 @@ check_due() {
             last_run=$(get_last_run "$job")
             local last_str="never"
             if [ "$last_run" -gt 0 ]; then
-                last_str=$(compat_date_epoch "$last_run" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "unknown")
+                last_str=$(date -d "@$last_run" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "unknown")
             fi
             echo -e "  ${GREEN}DUE${NC}: $job (last run: $last_str)"
             any_due=true

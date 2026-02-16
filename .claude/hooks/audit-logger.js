@@ -146,11 +146,10 @@ function detectPatterns(toolName, params) {
     }
   }
 
-  // Cross-Project Pattern - working outside the hub directory
+  // Cross-Project Pattern - working outside hub
   if (toolName === 'Read' || toolName === 'Write' || toolName === 'Edit') {
     const filePath = params?.file_path || '';
-    const hubDir = path.basename(process.cwd());
-    if (filePath.includes('/Code/') && !filePath.includes(hubDir)) {
+    if (filePath.includes('/Code/') && !filePath.includes(process.cwd())) {
       patterns.push('cross-project-work');
     }
   }

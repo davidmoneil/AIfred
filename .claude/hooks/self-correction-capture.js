@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Self-Correction Capture Hook
  *
@@ -11,6 +12,7 @@
  * - "Correction:"
  *
  * Created: 2026-01-03
+ * Fixed: 2026-01-21 - Converted to stdin/stdout executable hook
  * Source: grapeot/devin.cursorrules research
  */
 
@@ -158,70 +160,93 @@ async function getRecentCorrectionsCount() {
 }
 
 /**
- * UserPromptSubmit Hook - Detect corrections
+ * Main handler logic
  */
-module.exports = {
-  name: 'self-correction-capture',
-  description: 'Detect user corrections and capture lessons learned',
-  event: 'UserPromptSubmit',
+async function handleHook(context) {
+  const { prompt } = context;
 
-  async handler(context) {
-    const { prompt } = context;
-
-    if (!prompt || prompt.length < 5) {
-      return { proceed: true };
-    }
-
-    try {
-      const detection = detectCorrection(prompt);
-
-      if (detection.isCorrection) {
-        // Log the correction
-        await logCorrection(prompt, detection);
-
-        // Get context about recent corrections
-        const recentCount = await getRecentCorrectionsCount();
-
-        // Build context for Claude
-        const contextParts = [];
-
-        contextParts.push('\n--- Correction Detected ---');
-        contextParts.push(`Severity: ${detection.severity.toUpperCase()}`);
-
-        if (recentCount > 2) {
-          contextParts.push(`⚠️ Note: ${recentCount} corrections in the last hour`);
-        }
-
-        // Severity-specific suggestions
-        if (detection.severity === 'high') {
-          contextParts.push('\n💡 This seems important. Consider:');
-          contextParts.push('1. Acknowledging the mistake clearly');
-          contextParts.push('2. Asking: "Should I save this as a lesson learned?"');
-          contextParts.push('3. Explaining what you\'ll do differently');
-        } else if (detection.severity === 'medium') {
-          contextParts.push('\n💡 Consider asking if this should be documented as a lesson.');
-        }
-
-        // Add instruction hint
-        contextParts.push('\nTo save a lesson: Create entry in `.claude/context/lessons/corrections.md`');
-
-        console.log(`[self-correction] Detected ${detection.severity} correction`);
-
-        return {
-          proceed: true,
-          hookSpecificOutput: {
-            hookEventName: 'UserPromptSubmit',
-            isCorrection: true,
-            severity: detection.severity,
-            additionalContext: contextParts.join('\n')
-          }
-        };
-      }
-
-    } catch (err) {
-      console.error(`[self-correction] Error: ${err.message}`);
-    }
-
+  if (!prompt || prompt.length < 5) {
     return { proceed: true };
   }
-};
+
+  try {
+    const detection = detectCorrection(prompt);
+
+    if (detection.isCorrection) {
+      // Log the correction
+      await logCorrection(prompt, detection);
+
+      // Get context about recent corrections
+      const recentCount = await getRecentCorrectionsCount();
+
+      // Build context for Claude
+      const contextParts = [];
+
+      contextParts.push('\n--- Correction Detected ---');
+      contextParts.push(`Severity: ${detection.severity.toUpperCase()}`);
+
+      if (recentCount > 2) {
+        contextParts.push(`Note: ${recentCount} corrections in the last hour`);
+      }
+
+      // Severity-specific suggestions
+      if (detection.severity === 'high') {
+        contextParts.push('\nThis seems important. Consider:');
+        contextParts.push('1. Acknowledging the mistake clearly');
+        contextParts.push('2. Asking: "Should I save this as a lesson learned?"');
+        contextParts.push('3. Explaining what you\'ll do differently');
+      } else if (detection.severity === 'medium') {
+        contextParts.push('\nConsider asking if this should be documented as a lesson.');
+      }
+
+      // Add instruction hint
+      contextParts.push('\nTo save a lesson: Create entry in `.claude/context/lessons/corrections.md`');
+
+      console.error(`[self-correction] Detected ${detection.severity} correction`);
+
+      return {
+        proceed: true,
+        hookSpecificOutput: {
+          hookEventName: 'UserPromptSubmit',
+          isCorrection: true,
+          severity: detection.severity,
+          additionalContext: contextParts.join('\n')
+        }
+      };
+    }
+
+  } catch (err) {
+    console.error(`[self-correction] Error: ${err.message}`);
+  }
+
+  return { proceed: true };
+}
+
+/**
+ * Main function - reads from stdin, processes, outputs to stdout
+ */
+async function main() {
+  // Read JSON from stdin
+  const chunks = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
+  }
+  const input = Buffer.concat(chunks).toString('utf8');
+
+  let context;
+  try {
+    context = JSON.parse(input);
+  } catch (err) {
+    // If we can't parse input, just allow to proceed
+    console.log(JSON.stringify({ proceed: true }));
+    return;
+  }
+
+  const result = await handleHook(context);
+  console.log(JSON.stringify(result));
+}
+
+main().catch(err => {
+  console.error(`[self-correction] Fatal error: ${err.message}`);
+  console.log(JSON.stringify({ proceed: true }));
+});

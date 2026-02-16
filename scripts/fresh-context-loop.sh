@@ -21,8 +21,7 @@ set -euo pipefail
 # Configuration
 # ============================================================================
 
-# Auto-detect project directory (use git root if available, else PWD)
-PROJECT_DIR="${PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")}"
+PROJECT_DIR="${PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 LOG_DIR="$PROJECT_DIR/.claude/logs/fresh-context"
 STATE_FILE="$LOG_DIR/.loop-state.json"
 
@@ -117,6 +116,7 @@ notify() {
 
 # Find yq binary
 find_yq() {
+    # Check common locations
     for yq_path in "yq" "$HOME/.local/bin/yq" "/usr/local/bin/yq" "/snap/bin/yq"; do
         if command -v "$yq_path" &>/dev/null 2>&1 || [ -x "$yq_path" ]; then
             echo "$yq_path"
@@ -136,6 +136,7 @@ parse_orchestration_yaml() {
         exit 1
     }
 
+    # Extract pending tasks as JSON array (mikefarah/yq syntax)
     "$yq_bin" -o=json '[.phases[].tasks[] | select(.status == "pending" or .status == "in_progress")]' "$yaml_file" 2>/dev/null || echo "[]"
 }
 
@@ -152,8 +153,10 @@ update_task_status() {
         return 1
     }
 
+    # Update status (mikefarah/yq syntax)
     "$yq_bin" -i "(.phases[].tasks[] | select(.id == \"$task_id\")).status = \"$new_status\"" "$yaml_file" 2>/dev/null
 
+    # Add commit hash if provided
     if [ -n "$commit_hash" ]; then
         "$yq_bin" -i "(.phases[].tasks[] | select(.id == \"$task_id\")).commits += [\"$commit_hash\"]" "$yaml_file" 2>/dev/null
     fi
@@ -182,6 +185,7 @@ update_state() {
     local value="$2"
 
     if [ -f "$STATE_FILE" ]; then
+        # Use jq if available, otherwise simple sed
         if command -v jq &>/dev/null; then
             local tmp=$(mktemp)
             jq ".$key = $value" "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
@@ -243,10 +247,14 @@ execute_task() {
         return 0
     fi
 
+    # Change to project directory
     cd "$PROJECT_DIR"
 
+    # Define allowed tools for autonomous execution
+    # This gives Claude permission to do the work without prompts
     local ALLOWED_TOOLS="Read,Glob,Grep,Edit,Write,Bash(mkdir:*),Bash(git add:*),Bash(git commit:*),Bash(git status:*),Bash(ls:*),Bash(cat:*),mcp__filesystem__*,mcp__git__*"
 
+    # Execute Claude in fresh instance
     local result
     if result=$(claude -p "$prompt" \
         --max-turns "$MAX_TURNS" \
@@ -257,6 +265,7 @@ execute_task() {
 
         echo "$result" > "$output_file"
 
+        # Check for completion indicators
         if echo "$result" | grep -qi "TASK COMPLETED\|task completed successfully"; then
             log_success "Task completed: $task_id"
             return 0
@@ -264,6 +273,7 @@ execute_task() {
             log_warning "Task blocked: $task_id"
             return 2
         else
+            # Ambiguous result - check if changes were made
             if git -C "$PROJECT_DIR" status --porcelain | grep -q .; then
                 log_success "Task appears complete (changes detected)"
                 return 0
@@ -283,6 +293,7 @@ execute_task() {
 # Main Logic
 # ============================================================================
 
+# Parse arguments
 MAX_ITERATIONS="$DEFAULT_MAX_ITERATIONS"
 MAX_TURNS="$DEFAULT_MAX_TURNS"
 MAX_BUDGET="$DEFAULT_MAX_BUDGET"
@@ -338,6 +349,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Validate inputs
 if [ -z "$TASK_SOURCE" ] && [ -z "$INLINE_TASKS" ]; then
     log_error "No task source provided"
     show_help
@@ -349,23 +361,26 @@ if [ -n "$TASK_SOURCE" ] && [ ! -f "$TASK_SOURCE" ]; then
     exit 1
 fi
 
+# Initialize
 mkdir -p "$LOG_DIR"
 LOOP_LOG="$LOG_DIR/loop-$(date +%Y%m%d-%H%M%S).log"
 
 echo "" | tee -a "$LOOP_LOG"
-log "========================================" | tee -a "$LOOP_LOG"
-log "Fresh Context Loop Starting"             | tee -a "$LOOP_LOG"
-log "========================================" | tee -a "$LOOP_LOG"
-log "Project: $PROJECT_DIR"                   | tee -a "$LOOP_LOG"
-log "Max iterations: $MAX_ITERATIONS"         | tee -a "$LOOP_LOG"
-log "Max turns per task: $MAX_TURNS"          | tee -a "$LOOP_LOG"
-log "Fail threshold: $FAIL_THRESHOLD"         | tee -a "$LOOP_LOG"
-log "Dry run: $DRY_RUN"                       | tee -a "$LOOP_LOG"
+log "========================================"  | tee -a "$LOOP_LOG"
+log "Fresh Context Loop Starting"              | tee -a "$LOOP_LOG"
+log "========================================"  | tee -a "$LOOP_LOG"
+log "Max iterations: $MAX_ITERATIONS"          | tee -a "$LOOP_LOG"
+log "Max turns per task: $MAX_TURNS"           | tee -a "$LOOP_LOG"
+log "Fail threshold: $FAIL_THRESHOLD"          | tee -a "$LOOP_LOG"
+log "Dry run: $DRY_RUN"                        | tee -a "$LOOP_LOG"
 
+# Initialize state
 init_state "${TASK_SOURCE:-inline}"
 
+# Track failures per task
 declare -A TASK_FAILURES
 
+# Main loop
 ITERATION=0
 COMPLETED=0
 FAILED=0
@@ -375,7 +390,12 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
     log "" | tee -a "$LOOP_LOG"
     log "--- Iteration $ITERATION of $MAX_ITERATIONS ---" | tee -a "$LOOP_LOG"
 
+    # Get next pending task
     if [ -n "$INLINE_TASKS" ]; then
+        # Parse inline tasks (pipe-separated)
+        # Format: "description1|description2|description3"
+        # For inline, we track completion in state file
+
         IFS='|' read -ra TASK_ARRAY <<< "$INLINE_TASKS"
         TASK_DESC=""
         TASK_ID=""
@@ -385,6 +405,7 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
             task_id="inline-$i"
             failures="${TASK_FAILURES[$task_id]:-0}"
 
+            # Check if already completed or too many failures
             if grep -q "\"$task_id\"" "$STATE_FILE" 2>/dev/null; then
                 continue
             fi
@@ -398,6 +419,7 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
             break
         done
     else
+        # Parse from YAML
         TASKS_JSON=$(parse_orchestration_yaml "$TASK_SOURCE")
 
         if [ -z "$TASKS_JSON" ] || [ "$TASKS_JSON" = "[]" ]; then
@@ -405,6 +427,7 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
             break
         fi
 
+        # Get first pending task
         if command -v jq &>/dev/null; then
             TASK_ID=$(echo "$TASKS_JSON" | jq -r '.[0].id // empty' 2>/dev/null || echo "")
             TASK_DESC=$(echo "$TASKS_JSON" | jq -r '.[0].description // empty' 2>/dev/null || echo "")
@@ -415,6 +438,7 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
         fi
     fi
 
+    # Check if we have a task to do
     if [ -z "$TASK_DESC" ]; then
         log_success "All tasks completed or skipped!" | tee -a "$LOOP_LOG"
         break
@@ -423,39 +447,48 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
     log "Task ID: $TASK_ID" | tee -a "$LOOP_LOG"
     log "Task: $TASK_DESC" | tee -a "$LOOP_LOG"
 
+    # Update state
     update_state "iterations" "$ITERATION"
     update_state "current_task" "\"$TASK_ID\""
 
+    # Mark task as in_progress in YAML (skip in dry run)
     if [ "$DRY_RUN" != "true" ] && [ -n "$TASK_SOURCE" ] && [ -f "$TASK_SOURCE" ]; then
         update_task_status "$TASK_SOURCE" "$TASK_ID" "in_progress"
     fi
 
+    # Execute the task
     RESULT=0
     execute_task "$TASK_DESC" "${DONE_CRITERIA:-Task completed successfully}" "$TASK_ID" || RESULT=$?
 
     case $RESULT in
         0)
+            # Success
             COMPLETED=$((COMPLETED + 1))
             log_success "Task $TASK_ID completed (iteration $ITERATION)" | tee -a "$LOOP_LOG"
 
+            # Update YAML status (skip in dry run)
             if [ "$DRY_RUN" != "true" ] && [ -n "$TASK_SOURCE" ] && [ -f "$TASK_SOURCE" ]; then
+                # Get latest commit hash
                 COMMIT_HASH=$(git -C "$PROJECT_DIR" rev-parse HEAD 2>/dev/null || echo "")
                 update_task_status "$TASK_SOURCE" "$TASK_ID" "completed" "$COMMIT_HASH"
             fi
 
+            # Mark inline task as complete in state (skip in dry run)
             if [ "$DRY_RUN" != "true" ]; then
                 update_state "completed_tasks" "(.completed_tasks + [\"$TASK_ID\"])"
             fi
             ;;
         2)
+            # Blocked - don't count as failure, but skip
             log_warning "Task $TASK_ID blocked - will skip" | tee -a "$LOOP_LOG"
-            TASK_FAILURES[$TASK_ID]=$FAIL_THRESHOLD
+            TASK_FAILURES[$TASK_ID]=$FAIL_THRESHOLD  # Skip immediately
 
             if [ "$DRY_RUN" != "true" ] && [ -n "$TASK_SOURCE" ] && [ -f "$TASK_SOURCE" ]; then
                 update_task_status "$TASK_SOURCE" "$TASK_ID" "blocked"
             fi
             ;;
         *)
+            # Failure
             TASK_FAILURES[$TASK_ID]=$((${TASK_FAILURES[$TASK_ID]:-0} + 1))
             local failures="${TASK_FAILURES[$TASK_ID]}"
 
@@ -470,6 +503,7 @@ while [ "$ITERATION" -lt "$MAX_ITERATIONS" ]; do
     esac
 done
 
+# Final summary
 echo "" | tee -a "$LOOP_LOG"
 log "========================================" | tee -a "$LOOP_LOG"
 log "Fresh Context Loop Complete" | tee -a "$LOOP_LOG"
@@ -479,6 +513,7 @@ log "Completed tasks: $COMPLETED" | tee -a "$LOOP_LOG"
 log "Failed tasks: $FAILED" | tee -a "$LOOP_LOG"
 log "Log file: $LOOP_LOG" | tee -a "$LOOP_LOG"
 
+# Desktop notification
 if [ "$COMPLETED" -gt 0 ] && [ "$FAILED" -eq 0 ]; then
     notify "Fresh Context Loop Complete" "All $COMPLETED tasks completed successfully!"
 elif [ "$FAILED" -gt 0 ]; then
@@ -487,6 +522,7 @@ else
     notify "Fresh Context Loop Complete" "No tasks were executed"
 fi
 
+# Exit code based on results
 if [ "$FAILED" -gt 0 ]; then
     exit 1
 elif [ "$COMPLETED" -eq 0 ] && [ "$ITERATION" -ge "$MAX_ITERATIONS" ]; then

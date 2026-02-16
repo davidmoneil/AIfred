@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A systematic process for evaluating external tools, Claude Code projects, and GitHub repositories to determine what patterns or features are worth adopting into your project.
+A systematic process for evaluating external tools, Claude Code projects, and GitHub repositories to determine what patterns or features are worth adopting into your hub.
 
 **Goal**: Extract value without unnecessary complexity. Adopt patterns, not entire systems.
 
@@ -28,7 +28,7 @@ A systematic process for evaluating external tools, Claude Code projects, and Gi
 | What problem does it solve? | _specific pain point_ |
 | Do we have that problem? | _yes/no/sometimes_ |
 
-**If "no" to the problem question -> Stop here. Log and move on.**
+**If "no" to the problem question → Stop here. Log and move on.**
 
 ### Step 2: Pattern Extraction (15-30 minutes)
 
@@ -128,6 +128,28 @@ sources:
 
 ---
 
+## Examples
+
+### Example: Ralph Evaluation (2026-01-22)
+
+**Quick Assessment**:
+- What it does: Autonomous AI loop with fresh context per task
+- Problem: Context pollution in long sessions
+- Do we have that problem? Sometimes (long sessions)
+
+**Patterns**:
+| Pattern | Worth Adopting? | Reasoning |
+|---------|-----------------|-----------|
+| Fresh context per task | **YES** | Solves real problem, we don't have it |
+| Lettered questions | **PARTIAL** | Nice UX, low effort, not critical |
+| progress.txt | **NO** | Redundant with session-state.md |
+| Hard task sizing | **MAYBE** | Could warn on large tasks |
+| Loop until complete | **PARTIAL** | Depends on fresh context |
+
+**Outcome**: One pattern worth adopting (fresh context), rest tracked or skipped.
+
+---
+
 ## Anti-Patterns
 
 ### Don't Do This
@@ -152,3 +174,4 @@ sources:
 
 - @.claude/skills/upgrade/SKILL.md - Monitoring external sources
 - @.claude/context/patterns/capability-layering-pattern.md - Integration approach
+- @.claude/context/designs/ - Where adoption plans go

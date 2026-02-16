@@ -1,6 +1,6 @@
 #!/bin/bash
 # fabric-review-code.sh - AI-powered code review
-# Part of CLI capability layer
+# Part of AIfred CLI capability layer
 #
 # Provides quick code review feedback using fabric's review_code pattern.
 # Identifies issues, suggests improvements, and prioritizes recommendations.

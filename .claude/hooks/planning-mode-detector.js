@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Planning Mode Detector Hook
  *
@@ -16,7 +15,7 @@
  * orchestration fires for execution tracking needs.
  *
  * Created: 2026-01-19
- * Converted to stdin/stdout executable hook
+ * Part of: Structured Planning Skill
  */
 
 const fs = require('fs').promises;
@@ -37,10 +36,12 @@ const AUTO_THRESHOLD = 6;       // Score >= 6: Auto-invoke planning
 const MODE_PATTERNS = {
   new_design: {
     strong: [
+      // Explicit "build/create new" patterns
       /\b(from scratch|brand new|greenfield)\b/i,
       /\b(build|create|design|architect)\s+(a|an|the|my)\s+new\b/i,
       /\b(start|begin|kick off)\s+(building|developing|creating|designing)\b/i,
       /\bnew\s+(system|project|application|app|service|platform)\b/i,
+      // Natural language patterns (high priority)
       /\bI\s+want\s+to\s+(build|create|make|design)\b/i,
       /\bI('d| would)\s+like\s+to\s+(build|create|make|design)\b/i,
       /\bhelp\s+me\s+(build|create|design|plan)\b/i,
@@ -117,11 +118,14 @@ function calculateModeScores(prompt) {
   };
 
   for (const [mode, patterns] of Object.entries(MODE_PATTERNS)) {
+    // Check strong patterns
     for (const pattern of patterns.strong) {
       if (pattern.test(prompt)) {
         scores[mode] += patterns.weight.strong;
       }
     }
+
+    // Check moderate patterns
     for (const pattern of patterns.moderate) {
       if (pattern.test(prompt)) {
         scores[mode] += patterns.weight.moderate;
@@ -136,6 +140,7 @@ function determineMode(scores) {
   const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
   if (totalScore === 0) return null;
 
+  // Find highest scoring mode
   const sorted = Object.entries(scores)
     .sort(([, a], [, b]) => b - a);
 
@@ -160,64 +165,78 @@ function shouldSkip(prompt) {
 async function logDetection(entry) {
   try {
     await fs.mkdir(LOG_DIR, { recursive: true });
-    await fs.appendFile(DETECTION_LOG, JSON.stringify(entry) + '\n');
-  } catch {
+    await fs.appendFile(
+      DETECTION_LOG,
+      JSON.stringify(entry) + '\n'
+    );
+  } catch (error) {
     // Silently fail - logging shouldn't break the hook
   }
 }
 
 // ============================================================
-// MAIN HANDLER
+// HOOK EXPORT
 // ============================================================
 
-async function handleHook(context) {
-  const prompt = context.prompt || '';
+module.exports = {
+  name: 'planning-mode-detector',
+  event: 'UserPromptSubmit',
 
-  if (shouldSkip(prompt)) {
-    return { proceed: true };
-  }
+  async handler(context) {
+    const prompt = context.prompt || '';
 
-  if (prompt.length < 15) {
-    return { proceed: true };
-  }
+    // Skip if prompt matches skip patterns
+    if (shouldSkip(prompt)) {
+      return { proceed: true };
+    }
 
-  const scores = calculateModeScores(prompt);
-  const result = determineMode(scores);
+    // Skip very short prompts
+    if (prompt.length < 15) {
+      return { proceed: true };
+    }
 
-  if (!result || result.score < SUGGEST_THRESHOLD) {
-    return { proceed: true };
-  }
+    // Calculate mode scores
+    const scores = calculateModeScores(prompt);
+    const result = determineMode(scores);
 
-  await logDetection({
-    timestamp: new Date().toISOString(),
-    prompt: prompt.substring(0, 200),
-    mode: result.mode,
-    score: result.score,
-    action: result.score >= AUTO_THRESHOLD ? 'auto' : 'suggest',
-    scores: result.scores
-  });
+    // No planning detected (score too low)
+    if (!result || result.score < SUGGEST_THRESHOLD) {
+      return { proceed: true };
+    }
 
-  const modeNames = {
-    new_design: 'New Design',
-    system_review: 'System Review',
-    feature_planning: 'Feature Planning'
-  };
+    // Log detection
+    await logDetection({
+      timestamp: new Date().toISOString(),
+      prompt: prompt.substring(0, 200),
+      mode: result.mode,
+      score: result.score,
+      action: result.score >= AUTO_THRESHOLD ? 'auto' : 'suggest',
+      scores: result.scores
+    });
 
-  const modeDescriptions = {
-    new_design: 'building something new from scratch',
-    system_review: 'reviewing and improving an existing system',
-    feature_planning: 'adding a feature to an existing project'
-  };
+    // Format mode name for display
+    const modeNames = {
+      new_design: 'New Design',
+      system_review: 'System Review',
+      feature_planning: 'Feature Planning'
+    };
 
-  const modeName = modeNames[result.mode];
-  const modeDesc = modeDescriptions[result.mode];
+    const modeDescriptions = {
+      new_design: 'building something new from scratch',
+      system_review: 'reviewing and improving an existing system',
+      feature_planning: 'adding a feature to an existing project'
+    };
 
-  let message;
+    const modeName = modeNames[result.mode];
+    const modeDesc = modeDescriptions[result.mode];
 
-  if (result.score >= AUTO_THRESHOLD) {
-    message = `
+    let message;
+
+    // HIGH SCORE: Auto-invoke planning
+    if (result.score >= AUTO_THRESHOLD) {
+      message = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Planning Detected: ${modeName} Mode (Score: ${result.score})
+📋 PLANNING DETECTED: ${modeName} Mode (Score: ${result.score})
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 This looks like ${modeDesc}.
@@ -228,59 +247,35 @@ create a specification document, and generate an orchestration plan.
 
 Use the conversational flow from the /plan command:
 1. Confirm the detected mode with the user
-2. Ask vision/scope/technical questions
+2. Ask vision/scope/technical questions from question-bank.yaml
 3. Use dynamic depth based on complexity signals
 4. Generate spec at .claude/planning/specs/
 5. Generate orchestration at .claude/orchestration/
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
-  } else {
-    message = `
+    }
+    // MODERATE SCORE: Suggest planning
+    else {
+      message = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Planning Suggestion (Score: ${result.score})
+📋 Planning Suggestion (Score: ${result.score})
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 This might benefit from structured planning (${modeName} mode).
 
 If you want guided planning, I can:
-- Ask discovery questions to clarify requirements
-- Create a specification document
-- Generate an orchestration plan for execution
+• Ask discovery questions to clarify requirements
+• Create a specification document
+• Generate an orchestration plan for execution
 
 Would you like me to start the planning workflow?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+    }
+
+    return {
+      proceed: true,
+      outputToUser: message.trim()
+    };
   }
-
-  return {
-    proceed: true,
-    outputToUser: message.trim()
-  };
-}
-
-/**
- * Main function - reads from stdin, processes, outputs to stdout
- */
-async function main() {
-  const chunks = [];
-  for await (const chunk of process.stdin) {
-    chunks.push(chunk);
-  }
-  const input = Buffer.concat(chunks).toString('utf8');
-
-  let context;
-  try {
-    context = JSON.parse(input);
-  } catch {
-    console.log(JSON.stringify({ proceed: true }));
-    return;
-  }
-
-  const result = await handleHook(context);
-  console.log(JSON.stringify(result));
-}
-
-main().catch(err => {
-  console.error(`[planning-mode-detector] Fatal error: ${err.message}`);
-  console.log(JSON.stringify({ proceed: true }));
-});
+};

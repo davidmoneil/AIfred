@@ -2,7 +2,7 @@
 
 **Created**: 2026-01-02
 **Status**: Active
-**Applies To**: All Claude Code projects
+**Applies To**: AIfred and all Claude Code projects
 
 ---
 
@@ -27,13 +27,13 @@ MCP (Model Context Protocol) servers consume context tokens when loaded. This pa
 │  (if enabled)             (spawn new process)                    │
 │                                                                  │
 │  ┌─────────┐              ┌─────────┐            ┌─────────┐    │
-│  │ Memory  │              │ n8n-MCP │            │Playwright│    │
-│  │ Git     │              │ GitHub  │            │ (21 tools│    │
-│  │ Fetch   │              │ SSH     │            │  ~15k)   │    │
-│  │Filesys  │              │ Docker  │            └─────────┘    │
-│  └─────────┘              └─────────┘                 │          │
-│       │                        │                      │          │
-│       ▼                        ▼                      ▼          │
+│  │ Memory  │              │ GitHub  │            │Playwright│    │
+│  │ Git     │              │ SSH     │            │ (~15k)   │    │
+│  │ Fetch   │              │ Docker  │            ├─────────┤    │
+│  │Filesys  │              │Promeths │            │ n8n-MCP │    │
+│  └─────────┘              │ Grafana │            │ (~28k)  │    │
+│       │                   └─────────┘            └─────────┘    │
+│       ▼                        │                      │          │
 │  IN MAIN CONTEXT          IN MAIN CONTEXT        SEPARATE       │
 │  (~25k tokens)            (+tokens when on)      PROCESS        │
 │                                                  (0 tokens)      │
@@ -54,7 +54,7 @@ MCP (Model Context Protocol) servers consume context tokens when loaded. This pa
 | Toggle mid-session | No |
 | Best for | Core functionality used in 80%+ of sessions |
 
-**Current Always-On MCPs **:
+**Current Always-On MCPs (your hub)**:
 - **MCP Gateway** (Memory, Fetch, Docker) - ~15k tokens
 - **Git MCP** - ~6k tokens
 - **Filesystem MCP** - ~8k tokens
@@ -83,8 +83,7 @@ MCP (Model Context Protocol) servers consume context tokens when loaded. This pa
 | Session end behavior | **Auto-disable** (returns to default off) |
 | Best for | Task-specific functionality, heavy token cost |
 
-**Current On-Demand MCPs **:
-- **n8n-MCP** - ~28k tokens (42 tools) - Default: OFF
+**Current On-Demand MCPs (your hub)**:
 - **GitHub MCP** - ~15k tokens - Default: OFF
 - **SSH MCP** - ~5k tokens - Default: OFF
 - **Prometheus MCP** - ~8k tokens - Default: OFF
@@ -148,8 +147,9 @@ claude mcp add <server-name>
 | Toggle mid-session | N/A (each call is fresh process) |
 | Best for | Heavy token cost, infrequent use, context isolation needed |
 
-**Current Isolated MCPs **:
+**Current Isolated MCPs (your hub)**:
 - **Playwright MCP** - ~15k tokens (21 tools) - Via `/browser` skill
+- **n8n-MCP** - ~28k tokens (42 tools) - Via `/n8n` skill
 
 **Implementation Pattern**:
 ```bash
@@ -213,7 +213,7 @@ claude \
 
 ---
 
-## Current State 
+## Current State (your hub)
 
 ```
 DEFAULT SESSION (~22k tokens - lean)
@@ -223,14 +223,14 @@ DEFAULT SESSION (~22k tokens - lean)
 │   └── Filesystem MCP ~8k
 │
 ├── On-Demand (Default: OFF, auto-revert after use)
-│   ├── n8n-MCP (~28k tokens)
 │   ├── GitHub MCP (~15k tokens)
 │   ├── SSH MCP (~5k tokens)
 │   ├── Prometheus MCP (~8k tokens)
 │   └── Grafana MCP (~10k tokens)
 │
 └── Isolated (Separate Process)
-    └── Playwright MCP (via /browser skill)
+    ├── Playwright MCP (via /browser skill)
+    └── n8n-MCP (via /n8n skill)
 ```
 
 ---
@@ -272,13 +272,23 @@ When Claude needs an unavailable On-Demand MCP:
 
 ## Related Documentation
 
+- @.claude/context/integrations/mcp-servers.md - Current MCP inventory
+- @.claude/context/workflows/dynamic-mcp-management.md - Historical context
+- @knowledge/docs/architecture-overview.md - Architecture overview
+- @.claude/commands/browser.md - Isolated Playwright MCP implementation
+- @.claude/commands/n8n.md - Isolated n8n-MCP implementation
 - @.claude/commands/checkpoint.md - Checkpoint command for MCP transitions
-- @.claude/context/workflows/session-exit.md - Session exit with MCP auto-disable
-- @profiles/README.md - Environment profiles (may affect MCP configuration)
+- @.claude/context/workflows/session-exit-procedure.md - Session exit with MCP auto-disable
 
 ---
 
 ## Changelog
+
+- **2026-01-02**: Moved n8n-MCP to Isolated strategy
+  - Created `/n8n` skill for isolated n8n workflow sessions
+  - Added `~/.claude/mcp-profiles/n8n.json` and `n8n-settings.json`
+  - n8n at ~28k tokens benefits from context isolation
+  - Follows same pattern as Playwright `/browser` skill
 
 - **2026-01-02**: Added On-Demand auto-revert pattern
   - On-Demand MCPs now default to OFF

@@ -1,11 +1,11 @@
 ---
 name: system-utilities
 version: 1.0.0
-description: Core system utilities for file operations, git sync, priority maintenance, and conversation archival
-category: maintenance
+description: Core system utilities for file operations, backups, git sync, and service registration
+category: infrastructure
 tags: [utilities, system-ops, cli-backed]
-created: 2026-02-05
-updated: 2026-02-05
+created: 2026-01-22
+updated: 2026-01-22
 context: shared
 ---
 
@@ -21,7 +21,7 @@ Core system utilities that don't fit into domain-specific skills. These are CLI-
 |--------|-------------|
 | Purpose | Provide CLI-backed utilities for system operations |
 | Pattern | Type 1: CLI-Backed (Deterministic) |
-| When to Use | File linking, git sync, priority maintenance, history archival |
+| When to Use | File linking, backup checks, git sync, service registration |
 
 ---
 
@@ -29,10 +29,10 @@ Core system utilities that don't fit into domain-specific skills. These are CLI-
 
 | Need | Command | Script |
 |------|---------|--------|
-| Link external source | `/link-external <path> [name]` | `scripts/link-external.sh` |
-| Sync git to remote | `/sync-git [project]` | `scripts/sync-git.sh` |
-| Check priority health | `/update-priorities review` | `scripts/priority-cleanup.sh` |
-| Archive old conversations | Run directly | `scripts/claude-history-archiver.sh` |
+| Link external source | `/link-external <path> [name]` | `~/Scripts/link-external.sh` |
+| Check backup status | `/backup-status` | `~/Scripts/backup-status.sh` |
+| Sync git to remote | `/sync-git [project]` | `~/Scripts/sync-git.sh` |
+| Register new service | `/register-service <name>` | `~/Scripts/register-service.sh` |
 
 ---
 
@@ -44,14 +44,27 @@ Create a symlink in `external-sources/` with documentation.
 
 ```bash
 # Link a Docker compose file
-/link-external ~/docker/my-service/docker-compose.yml my-service-compose
+/link-external ~/Docker/mydocker/logging/docker-compose.yml logging-compose
 
 # Link with auto-generated name
 /link-external /etc/nginx/nginx.conf
 ```
 
-**Script**: `scripts/link-external.sh`
+**Script**: `~/Scripts/link-external.sh`
 **Output**: Creates symlink + updates paths-registry.yaml
+
+---
+
+### `/backup-status`
+
+Show status of Restic backup system.
+
+```bash
+/backup-status
+```
+
+**Script**: `~/Scripts/backup-status.sh`
+**Output**: Last backup time, repository health, any warnings
 
 ---
 
@@ -64,60 +77,24 @@ Sync repository to GitHub with automatic commit.
 /sync-git
 
 # Sync specific project
-/sync-git my-project
+/sync-git voice-character-system
 ```
 
-**Script**: `scripts/sync-git.sh`
+**Script**: `~/Scripts/sync-git.sh`
 **Output**: Commits unpushed changes, pushes to origin
 
 ---
 
-## Maintenance Scripts
+### `/register-service`
 
-### Priority Cleanup
-
-Detects issues with current-priorities.md and suggests cleanup.
+Register a new infrastructure service for monitoring.
 
 ```bash
-# Check for issues
-./scripts/priority-cleanup.sh
-
-# Preview what would be done
-./scripts/priority-cleanup.sh --dry-run
-
-# Verbose output
-./scripts/priority-cleanup.sh --verbose
-
-# Force Claude review even if no issues
-./scripts/priority-cleanup.sh --force-claude
+/register-service homepage
 ```
 
-**Detects**: Oversized file, stale items, completed items in wrong sections, old dates
-**Action**: Reports issues and suggests Claude review for cleanup
-
----
-
-### Conversation History Archiver
-
-Archives old/large Claude conversation files with keyword-rich filenames.
-
-```bash
-# Show current status
-./scripts/claude-history-archiver.sh --status
-
-# Preview what would be archived
-./scripts/claude-history-archiver.sh --dry-run
-
-# Archive eligible files
-./scripts/claude-history-archiver.sh --archive
-```
-
-**Policy** (configurable via environment):
-- `ARCHIVE_AGE_DAYS`: Archive files older than N days (default: 7)
-- `ARCHIVE_SIZE_MB`: Archive files larger than N MB (default: 5)
-- `MIN_AGE_DAYS`: Never archive files younger than N days (default: 1)
-
-**Output**: Moves old JSONL files to `~/.claude/archive/conversations/` with descriptive filenames
+**Script**: `~/Scripts/register-service.sh`
+**Output**: Adds to services registry, creates context file
 
 ---
 

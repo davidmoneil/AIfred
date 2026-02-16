@@ -1,3 +1,14 @@
+---
+description: Systematically analyze a codebase and generate modification-ready context documentation
+argument-hint: <project-name> [options]
+skill: structured-planning
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Task
+---
+
 # /analyze-codebase
 
 Systematically analyze a codebase and generate modification-ready context documentation.

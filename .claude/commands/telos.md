@@ -1,6 +1,13 @@
 ---
 description: TELOS goal alignment system - view, update, and review strategic goals
+argument-hint: [view|update|review|add] [args]
 model: sonnet
+standalone: true
+note: Strategic goal system - above current-priorities.md
+allowed-tools:
+  - Read
+  - Write
+  - Edit
 ---
 
 # /telos Command

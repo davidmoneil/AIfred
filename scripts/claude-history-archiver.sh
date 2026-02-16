@@ -5,24 +5,17 @@
 # Usage:
 #   ./claude-history-archiver.sh [--dry-run] [--archive] [--status]
 #
-# AIfred history archiver
+# Part of: Conversation History Archive System
+# Docs: .claude/context/projects/conversation-history-archive-plan.md
 
 set -uo pipefail
 # Note: -e removed to handle find returning no results gracefully
 
-# Cross-platform compatibility
-SCRIPT_DIR_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR_LIB}/lib/platform.sh"
-
 # Configuration
 PROJECTS_DIR="$HOME/.claude/projects"
 ARCHIVE_DIR="$HOME/.claude/archive/conversations"
-
-# Optional: project-local manifest/index (set via environment or auto-detect)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-MANIFEST="${MANIFEST:-$PROJECT_DIR/.claude/context/archive/conversations/manifest.yaml}"
-INDEX="${INDEX:-$PROJECT_DIR/.claude/context/archive/conversations/_index.md}"
+MANIFEST="${AIFRED_HOME:-$PWD}/.claude/context/archive/conversations/manifest.yaml"
+INDEX="${AIFRED_HOME:-$PWD}/.claude/context/archive/conversations/_index.md"
 
 # Archive policy (can be overridden via environment)
 ARCHIVE_AGE_DAYS="${ARCHIVE_AGE_DAYS:-7}"
@@ -73,8 +66,6 @@ while [[ $# -gt 0 ]]; do
             echo "  ARCHIVE_AGE_DAYS  Archive files older than N days (default: 7)"
             echo "  ARCHIVE_SIZE_MB   Archive files larger than N MB (default: 5)"
             echo "  MIN_AGE_DAYS      Never archive files younger than N days (default: 1)"
-            echo "  MANIFEST          Path to manifest.yaml (default: auto-detect)"
-            echo "  INDEX             Path to _index.md (default: auto-detect)"
             exit 0
             ;;
         *)
@@ -88,12 +79,12 @@ done
 mkdir -p "$ARCHIVE_DIR"
 
 # Extract project name from folder path
-# Input: -home-username-Code-my-project
-# Output: my-project
+# Input: -home-davidmoneil-Code-context-structure-research
+# Output: context-structure-research
 extract_project_name() {
     local folder="$1"
     # Remove common prefixes and extract meaningful name
-    echo "$folder" | sed -E 's/^-home-[^-]+-//' | sed -E 's/^(Code|Docker)-?//' | tr '[:upper:]' '[:lower:]' | sed 's/^-//'
+    echo "$folder" | sed -E 's/^-home-[^-]+-//' | sed -E 's/^(Code|Docker|Hub|CreativeProjects)-?//' | tr '[:upper:]' '[:lower:]' | sed 's/^-//'
 }
 
 # Extract keywords from first user message in JSONL
@@ -209,8 +200,8 @@ show_status() {
 
         # Find JSONL files
         while IFS= read -r -d '' jsonl; do
-            local file_age_days=$(( ($(date +%s) - $(compat_stat_mtime "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
-            local file_size_mb=$(( $(compat_stat_size "$jsonl" 2>/dev/null || echo 0) / 1048576 ))
+            local file_age_days=$(( ($(date +%s) - $(stat -c %Y "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
+            local file_size_mb=$(( $(stat -c %s "$jsonl" 2>/dev/null || echo 0) / 1048576 ))
 
             # Skip files younger than MIN_AGE_DAYS
             if [[ $file_age_days -lt $MIN_AGE_DAYS ]]; then
@@ -252,8 +243,8 @@ do_archive() {
 
         # Find JSONL files in this project folder
         while IFS= read -r -d '' jsonl; do
-            local file_age_days=$(( ($(date +%s) - $(compat_stat_mtime "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
-            local file_size_bytes=$(compat_stat_size "$jsonl" 2>/dev/null || echo 0)
+            local file_age_days=$(( ($(date +%s) - $(stat -c %Y "$jsonl" 2>/dev/null || echo 0)) / 86400 ))
+            local file_size_bytes=$(stat -c %s "$jsonl" 2>/dev/null || echo 0)
             local file_size_mb=$(( file_size_bytes / 1048576 ))
             local file_size_kb=$(( file_size_bytes / 1024 ))
 
@@ -295,8 +286,8 @@ do_archive() {
     else
         log_success "Archived: $archived files (~$((archived_size / 1024))MB)"
 
-        # Update manifest if we archived anything and manifest exists
-        if [[ $archived -gt 0 ]] && [[ -f "$MANIFEST" ]]; then
+        # Update manifest if we archived anything
+        if [[ $archived -gt 0 ]]; then
             log_info "Updating manifest..."
             update_manifest
         fi
@@ -310,9 +301,9 @@ update_manifest() {
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     # Update the header values in manifest
-    compat_sed_inplace "s/^last_updated:.*/last_updated: \"$timestamp\"/" "$MANIFEST"
-    compat_sed_inplace "s/^total_conversations:.*/total_conversations: $count/" "$MANIFEST"
-    compat_sed_inplace "s/^total_size_mb:.*/total_size_mb: $size_mb/" "$MANIFEST"
+    sed -i "s/^last_updated:.*/last_updated: \"$timestamp\"/" "$MANIFEST"
+    sed -i "s/^total_conversations:.*/total_conversations: $count/" "$MANIFEST"
+    sed -i "s/^total_size_mb:.*/total_size_mb: $size_mb/" "$MANIFEST"
 
     log_success "Manifest updated: $count conversations, ${size_mb}MB"
 }

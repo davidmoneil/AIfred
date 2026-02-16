@@ -9,7 +9,7 @@
 set -euo pipefail
 
 # Configuration
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 EXTERNAL_DIR="${AIFRED_HOME}/external-sources"
 REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
 

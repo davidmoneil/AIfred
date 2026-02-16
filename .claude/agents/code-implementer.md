@@ -1,3 +1,8 @@
+---
+name: code-implementer
+description: Write, modify, and refactor code following established patterns with full git workflow
+---
+
 # Agent: Code Implementer
 
 ## Metadata
@@ -20,19 +25,19 @@ These are the status updates the agent will display as it works:
 - "Creating pull request..."
 
 ## Expected Output
-- **Results Location**: `.claude/agents/results/code-implementer/`
-- **Session Logs**: `.claude/agents/sessions/`
+- **Results Location**: `.claude/agent-output/results/code-implementer/`
+- **Session Logs**: `.claude/agent-output/sessions/`
 - **Summary Format**: Changes made, files modified, git status, PR link if created
 
 ## Usage Examples
 ```bash
-/agent code-implementer <project-path> "<task>"
+/code implement <project> "<task>"
 ```
 
 Examples:
-- `/agent code-implementer ~/Code/my-app "Add user role management"` - Implement a feature
-- `/agent code-implementer ~/Code/my-app "Fix login redirect loop"` - Fix a bug
-- `/agent code-implementer ~/Code/my-app "Refactor auth middleware"` - Refactor code
+- `/code implement grc-platform "Add user role management"` - Implement a feature
+- `/code implement grc-platform "Fix login redirect loop"` - Fix a bug
+- `/code implement grc-platform "Refactor auth middleware"` - Refactor code
 
 ---
 
@@ -83,7 +88,7 @@ As the Code Implementer, you:
 ### Your Workflow
 
 #### Phase 1: Context Loading
-1. Load project context from `.claude/context/projects/{project}.md` if exists
+1. Load project context from `.claude/context/coding/{project}.md`
 2. Read code-analyzer results if available
 3. Query Memory MCP for applicable patterns
 4. Load learnings from `.claude/agents/memory/code-implementer/learnings.json`
@@ -211,13 +216,13 @@ Local memory schema:
 
 ### Output Requirements
 
-1. **Session Log** (`.claude/agents/sessions/YYYY-MM-DD_code-implementer_{project}_{task-slug}.md`)
+1. **Session Log** (`.claude/agent-output/sessions/YYYY-MM-DD_code-implementer_{project}_{task-slug}.md`)
    - Full transcript of implementation
    - Git commands executed
    - Files modified
    - Any decisions made
 
-2. **Results File** (`.claude/agents/results/code-implementer/YYYY-MM-DD_{project}_{task-slug}.md`)
+2. **Results File** (`.claude/agent-output/results/code-implementer/YYYY-MM-DD_{project}_{task-slug}.md`)
 
    Structure:
    ```markdown

@@ -1,128 +1,328 @@
 # Headless Claude Job Registry
+# All scheduled and on-demand headless jobs are defined here.
+# The dispatcher reads this file every cycle to determine what to run.
 #
-# Defines all scheduled and on-demand jobs for headless execution.
-# Each job specifies a persona, schedule, prompt, and resource limits.
+# Adding a new job: add an entry below and create/select a persona.
+# The dispatcher will pick it up automatically.
 #
-# Usage:
-#   dispatcher.sh --list           # Show all jobs
-#   dispatcher.sh --run <job>      # Force-run a job
-#   executor.sh --job <job> --dry-run  # Preview execution
-#
-# Personas: investigator (read-only), analyst (read+write), troubleshooter (diag+fix)
-# Engines: claude-code (default), ollama (local, $0 cost)
-# Schedules: interval (every_hours), weekly (day+hour), on-demand
+# Engine field (optional):
+#   engine: claude-code   # Default. Uses claude -p with persona tools/permissions.
+#   engine: ollama        # Uses local Ollama API. Free, fast, no tools.
+#   Resolution order: job.engine > persona config engine.default > defaults.engine > "claude-code"
+#   Ollama jobs use the 'model' field for the Ollama model name (e.g., "llama3.2", "qwen2.5").
 
-# ============================================================================
-# Defaults (applied when job doesn't specify a value)
-# ============================================================================
+version: 1
+
+quiet_hours:
+  timezone: "America/Denver"
+  weekday:
+    start: 22    # 10 PM
+    end: 7       # 7 AM
+  weekend:
+    start: 23    # 11 PM
+    end: 9       # 9 AM
+  severity_bypass:
+    - critical   # Critical always delivers immediately
+  batch_release: true  # Send queued messages when DND ends
 
 defaults:
-  persona: investigator
-  model: sonnet
   engine: claude-code
+  model: sonnet
   max_turns: 10
   max_budget_usd: 2.00
   timeout_minutes: 10
-  enabled: true
-
-# ============================================================================
-# Quiet Hours (DND for non-critical notifications)
-# ============================================================================
-
-quiet_hours:
-  timezone: "America/Denver"      # Change to your timezone
-  weekday:
-    start: 22                     # 10 PM
-    end: 7                        # 7 AM
-  weekend:
-    start: 23                     # 11 PM
-    end: 9                        # 9 AM
-  severity_bypass:
-    - critical                    # Critical alerts always deliver
-
-# ============================================================================
-# Jobs
-# ============================================================================
+  session_persist: false
 
 jobs:
-  # ------------------------------------------------------------------
-  # health-summary: Quick infrastructure health check
-  # ------------------------------------------------------------------
   health-summary:
-    description: "Check infrastructure health — Docker containers, services, disk space"
+    description: "Quick infrastructure health check"
     persona: investigator
-    model: sonnet
-    engine: claude-code
-    max_turns: 5
-    max_budget_usd: 1.00
-    timeout_minutes: 5
     schedule:
       type: interval
-      every_hours: 12
-    prompt: |
-      Run a quick infrastructure health check:
-      1. Check Docker container status (docker ps, any unhealthy/exited)
-      2. Check disk space (df -h, flag if any mount > 85%)
-      3. Check system load (uptime)
-      4. Check key service endpoints if configured in paths-registry.yaml
-
-      Format output as a concise health report with:
-      - Overall status (HEALTHY / DEGRADED / CRITICAL)
-      - Per-check status with details
-      - Any recommended actions
-
-  # ------------------------------------------------------------------
-  # doc-sync-check: Check if docs are stale vs code changes
-  # ------------------------------------------------------------------
-  doc-sync-check:
-    description: "Compare code changes against documentation, flag stale docs"
-    persona: investigator
-    model: sonnet
-    engine: claude-code
-    max_turns: 5
+      every_hours: 6
+    enabled: true
+    max_turns: 10
     max_budget_usd: 1.00
+    prompt: |
+      Check infrastructure health. Run `docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.State}}'`
+      to get all container statuses in one command. Verify critical services are
+      running: n8n, grafana, prometheus, caddy, mcp-gateway. If any service is
+      down, unhealthy, or missing, use docker inspect for details. Output a brief
+      health summary listing each critical service and its status. Keep it concise.
+
+  upgrade-discover:
+    description: "Check for Claude Code, MCP, and watched upgrade tasks"
+    persona: analyst
     schedule:
       type: weekly
       day: sunday
       hour: 6
+    enabled: true
+    max_turns: 20
+    max_budget_usd: 4.00
     prompt: |
-      Check if documentation is stale compared to recent code changes:
-      1. Look at git log for the past week (files changed)
-      2. Compare against .claude/context/ and .claude/hooks/README.md
-      3. Flag any documentation that references outdated information
+      Run the upgrade discovery workflow in two phases.
 
-      Output a brief report: files changed vs docs that may need updates.
+      PHASE 1 — Claude Code & MCP Updates:
+      Check external sources (GitHub releases at
+      https://github.com/anthropics/claude-code/releases, documentation at
+      https://docs.anthropic.com/en/docs/claude-code, Anthropic blog) for Claude
+      Code and MCP updates. Compare findings against the baselines in
+      .claude/skills/upgrade/data/baselines.json. Store any new discoveries in
+      .claude/skills/upgrade/data/pending-upgrades.json with proper IDs and
+      metadata. If you find new updates, create a Beads task:
+      bd create "Upgrade: [component] to [version]" -t task -p 2
+      -l "domain:infrastructure,project:aiprojects,severity:medium,source:headless,waiting:external"
+      -d "Discovered via headless upgrade-discover. Details: [release notes URL]"
 
-  # ------------------------------------------------------------------
-  # ollama-test: Template for Ollama-powered jobs ($0 cost)
-  # ------------------------------------------------------------------
-  ollama-test:
-    description: "Template job using local Ollama instead of Claude API"
-    persona: investigator
-    model: llama3.2:3b
-    engine: ollama
-    enabled: false                # Enable after configuring Ollama
-    timeout_minutes: 5
+      PHASE 2 — Watched Upgrade Tasks:
+      Query Beads for tasks waiting on external releases:
+      bd list --status open --label waiting:external
+      For each task found:
+      1. Read the task description to understand what release/update is being tracked
+      2. Search the web for the current status of that release (version numbers,
+         release dates, changelogs, compatibility notes)
+      3. Prepare upgrade content: release summary, breaking changes, compatibility
+         with our environment, recommended migration steps
+      4. Update the task description with your findings using:
+         bd update <id> -d "Original: <existing description>\n\n---\n## Upgrade Research (<date>)\n<your findings>"
+      5. Add the review:ready label to signal the task has been researched:
+         bd update <id> --add-label "review:ready"
+      Do NOT close these tasks — they are ready for human review and implementation.
+
+      Generate a discovery report summarizing both phases.
+
+  plex-troubleshoot:
+    description: "Diagnose and fix Plex issues on MediaServer"
+    persona: troubleshooter
     schedule:
       type: on-demand
+    enabled: true
+    max_turns: 20
+    max_budget_usd: 5.00
+    trigger:
+      webhook: true
+      parameters:
+        - name: issue
+          default: "full diagnostic"
+        - name: safety_mode
+          default: "readonly"
     prompt: |
-      This is a test job running on the local Ollama engine.
-      Summarize the current date and time, and confirm you are running locally.
+      You are troubleshooting Plex Media Server on MediaServer (Windows, 192.168.1.179).
 
-  # ------------------------------------------------------------------
-  # Add your custom jobs below
-  # ------------------------------------------------------------------
-  # my-custom-job:
-  #   description: "What this job does"
-  #   persona: analyst           # investigator | analyst | troubleshooter
-  #   model: sonnet              # sonnet | haiku | llama3.2:3b (for ollama)
-  #   engine: claude-code        # claude-code | ollama
-  #   max_turns: 10
-  #   max_budget_usd: 2.00
-  #   schedule:
-  #     type: interval           # interval | weekly | on-demand
-  #     every_hours: 24          # for interval
-  #     # day: monday            # for weekly
-  #     # hour: 6                # for weekly
-  #   prompt: |
-  #     Your job instructions here...
+      Connect via SSH: ssh mediaserver
+      Plex runs as an application (NOT a Windows service). Only PlexUpdateService is a service.
+      Logs: C:\Users\MediaServer\AppData\Local\Plex Media Server\Logs\
+      Database: C:\Users\MediaServer\AppData\Local\Plex Media Server\Plug-in Support\Databases\
+      Transcode cache: C:\Users\MediaServer\AppData\Local\Plex Media Server\Cache\Transcode\
+      Loki logs: curl 'http://localhost:3100/loki/api/v1/query_range' --data-urlencode 'query={job="plex"}'
+
+      Workflow:
+      1. Check Beads for existing Plex issues: bd list --label source:headless
+      2. Connect to MediaServer via SSH
+      3. Check Plex process status (Get-Process *Plex*)
+      4. Read recent logs for errors
+      5. Check system resources (disk, memory, CPU)
+      6. Check database health (lock files)
+      7. Test network connectivity (port 32400)
+      8. Diagnose based on findings
+      9. Apply safe fixes if safety_mode allows
+      10. Write report to .claude/agent-output/results/plex-troubleshoot/
+      11. Update Beads tasks (create new or close resolved)
+
+      IMPORTANT: Check the safety_mode parameter. In readonly mode, only diagnose
+      and recommend. In safe-fixes mode, you may restart Plex and clear caches.
+      For reboots or data deletion, use the QUESTION protocol to ask for approval.
+
+  doc-sync-check:
+    description: "Check if documentation needs sync with code changes"
+    persona: investigator
+    schedule:
+      type: interval
+      every_hours: 24
+    enabled: true
+    max_turns: 6
+    max_budget_usd: 0.50
+    prompt: |
+      Read .claude/logs/.doc-sync-state.json (if it exists). This file is
+      created by the doc-sync-trigger hook and tracks code changes. If the
+      file exists and has 5+ changes in its "changes" array from the last
+      24 hours, list which documentation files may need updating. If fewer
+      than 5 changes, the file doesn't exist, or the changes array is empty,
+      simply output "No sync needed — no significant changes detected." and
+      stop. Do not modify any files. Do not search for alternative files.
+
+  priority-review:
+    description: "Review Beads tasks and flag stale items"
+    persona: investigator
+    schedule:
+      type: weekly
+      day: monday
+      hour: 7
+    enabled: true
+    max_turns: 15
+    max_budget_usd: 1.50
+    prompt: |
+      Review current task state using Beads. Run:
+      - bd list --status open (all open tasks)
+      - bd list --status in_progress (active work)
+      Read .claude/context/session-state.md for current status. Identify tasks
+      that appear stale or that have been in_progress for a long time without
+      activity. Output a summary of recommendations. Do not modify any files
+      or tasks.
+
+  abs-librarian:
+    description: "AudioBookShelf library cleanup and naming enforcement"
+    persona: librarian
+    schedule:
+      type: interval
+      every_hours: 6
+    enabled: true
+    max_turns: 20
+    max_budget_usd: 3.00
+    timeout_minutes: 15
+    trigger:
+      parameters:
+        - name: permission_profile
+          default: "standard"
+    prompt: |
+      Scan the AudioBooks library at /mnt/synology_nas/AudioBooks/ for new files
+      since last run. Use state file .claude/jobs/state/abs-librarian-last-check.timestamp
+      with find -newer for change detection.
+
+      Your permission profile for this run is specified in the Parameters section
+      below (defaults to "standard" if not provided). Check your persona's
+      Permission Profiles table to see which action types you may auto-fix.
+
+      Follow your persona workflow steps in order:
+      1. Detect new files (find -newer state file). If none, update timestamp and exit.
+      2. Scan & classify all issues with action types (delete-junk, delete-empty,
+         delete-partial, rename-safe, restructure, sort-loose, delete-content, transform).
+      3. For each issue: dedup against existing Beads tasks, create a new task with
+         the action:<type> label, then auto-fix + close if the action is within your
+         current permission profile, or leave open if not.
+      4. If any changes were made, trigger ABS library scan via API.
+      5. Update state timestamp and write summary report (auto-fixed, queued, skipped).
+
+  sync-discovery:
+    description: "Compare hub components against sync-manifest.yaml for drift"
+    persona: investigator
+    schedule:
+      type: weekly
+      day: sunday
+      hour: 5
+    enabled: true
+    max_turns: 10
+    max_budget_usd: 0.75
+    prompt: |
+      Run scripts/sync-discovery.sh and analyze the output.
+      If new untracked components are found, list them and recommend sync
+      policies (always/prompt/never) based on whether they are generic
+      (always), require user config (prompt), or personal (never).
+      If changed components are found, recommend running sync-apply.sh.
+      Output a brief summary. Do not modify any files.
+
+  # Example Ollama job (disabled) — for testing engine routing
+  ollama-test:
+    description: "Test Ollama engine routing (lightweight summary)"
+    engine: ollama
+    model: "llama3.2"
+    persona: investigator
+    schedule:
+      type: on-demand
+    enabled: false
+    timeout_minutes: 5
+    prompt: |
+      Summarize the current date and time, and respond with a brief system
+      status message. This is a test job for validating Ollama engine routing.
+      Keep the response under 100 words.
+
+  creative-sync-check:
+    description: "Detect drift between hub and other projects reusable components"
+    persona: analyst
+    schedule:
+      type: weekly
+      day: sunday
+      hour: 6
+    enabled: true
+    max_turns: 15
+    max_budget_usd: 2.00
+    prompt: |
+      Compare reusable components between hub and other projects to detect
+      drift. Focus ONLY on components that are universal (not infrastructure-specific).
+
+      STEP 1 — Compare shared hooks for version drift:
+      For each hook that exists in BOTH projects, diff the files:
+        diff ./.claude/hooks/<hook>.js ~/CreativeProjects/.claude/hooks/<hook>.js
+      Shared hooks to check: audit-logger.js, pre-compact.js, session-start.js
+      Report any that differ.
+
+      STEP 2 — Check for new reusable components in the hub:
+      Run these comparisons (list files in each, find items only in the hub):
+        Hooks: ls ./.claude/hooks/*.js vs ~/CreativeProjects/.claude/hooks/*.js
+        Skills: ls ./.claude/skills/ vs ~/CreativeProjects/.claude/skills/
+        Commands: ls ./.claude/commands/*.md vs ~/CreativeProjects/.claude/commands/*.md
+        Patterns: ls ./.claude/context/patterns/*.md vs ~/CreativeProjects/.claude/context/patterns/*.md
+        Agents: ls ./.claude/agents/*.md vs ~/CreativeProjects/.claude/agents/*.md
+
+      STEP 3 — Filter for relevance:
+      SKIP infrastructure-specific items (these are NOT sync candidates):
+        - Docker hooks: compose-validator, docker-health-check, docker-validator,
+          network-validator, port-conflict-detector, restart-loop-detector
+        - Service hooks: health-monitor, paths-registry-sync, service-registration-detector
+        - Infrastructure commands: check-health, check-gateway, check-services,
+          discover-docker, backup-status, ssh-connect, register-service, n8n,
+          link-external, metrics, new-code-project, analyze-codebase
+        - Infrastructure agents: docker-deployer, plex-troubleshoot, service-troubleshooter,
+          parallel-dev-*, code-analyzer, code-implementer, code-tester
+        - Infrastructure skills: infrastructure-ops, system-utilities, project-lifecycle
+        - Infrastructure patterns: aiprojects-aifred-sync, authentik-automation,
+          health-endpoint, service-architecture, cross-project-commit-tracking
+        - Beads-specific: beads-actor.sh, beads-aliases.sh, priority-validator
+
+      Everything else that exists in the hub but NOT in CreativeProjects is a
+      sync candidate.
+
+      STEP 4 — Check git log for recent changes to shared components:
+      Run: git -C ./ log --oneline --since="7 days ago" -- .claude/hooks/ .claude/skills/ .claude/commands/ .claude/context/patterns/ .claude/agents/
+      Flag any recently modified shared components.
+
+      STEP 5 — Output:
+      If sync candidates or drifted shared hooks are found:
+        1. Dedup against existing Beads tasks:
+           bd list --status open --label project:aiprojects | grep -i "creative"
+        2. If no existing task covers these findings, create ONE summary Beads task:
+           bd create "CreativeProjects sync needed — N new components available" \
+             -t task -p 3 \
+             -l "domain:infrastructure,project:aiprojects,severity:low,source:headless" \
+             -d "Weekly sync check found drift. New sync candidates: <list>. Drifted shared hooks: <list>. Run full sync review to propagate."
+      If nothing new found: output "CreativeProjects sync: no new drift detected" and stop.
+
+      Do NOT modify any source files. Only create Beads tasks if drift is found.
+
+  backup-validate:
+    description: "Validate backup systems and log ingestion pipelines"
+    persona: investigator
+    schedule:
+      type: interval
+      every_hours: 12
+    enabled: true
+    max_turns: 10
+    max_budget_usd: 1.00
+    prompt: |
+      Run scripts/validate-backups-and-logs.sh --json --quiet
+      Read the JSON output and summarize.
+
+      IMPORTANT: Your FIRST output line must be an explicit severity tag based
+      on the validation score:
+        - Score >= 80: output "SEVERITY: info"
+        - Score 50-79: output "SEVERITY: warning"
+        - Score < 50 or any FAILED checks: output "SEVERITY: critical"
+
+      Then provide a brief summary:
+        - If all checks passed with no warnings: "All healthy (score/100)"
+        - If warnings only: "Score: X/100 — N warnings" followed by a
+          one-line summary of each warning
+        - If failures: list each failure with check ID and remediation
+
+      Keep output concise. Do NOT modify anything.

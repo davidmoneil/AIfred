@@ -2,8 +2,10 @@
 name: docker-restart
 description: Weekly Docker restart with health verification
 usage: /docker-restart [--dry-run] [--skip-restart] [--verbose]
+skill: infrastructure-ops
 allowed-tools:
   - Bash(scripts/weekly-docker-restart.sh:*)
+  - Bash(~/Scripts/weekly-docker-restart.sh:*)
 ---
 
 # /docker-restart - Docker Restart with Health Verification
@@ -64,7 +66,7 @@ scripts/weekly-docker-restart.sh $ARGUMENTS
 The script runs automatically via cron:
 
 ```
-0 3 * * 0 $AIFRED_HOME/scripts/weekly-docker-restart.sh
+0 3 * * 0 scripts/weekly-docker-restart.sh
 ```
 
 (Every Sunday at 3 AM)

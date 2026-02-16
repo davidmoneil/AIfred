@@ -1,16 +1,12 @@
-#!/usr/bin/env node
 /**
  * Context Usage Tracker Hook
  *
  * Estimates token usage per tool call and tracks cumulative session usage.
  * Creates daily summary files for analysis.
  *
- * Useful for non-Max users to understand context/token consumption.
- *
  * Log location: .claude/logs/context-usage/
  *
  * Created: 2025-12-26
- * Converted to stdin/stdout executable hook with file persistence
  */
 
 const fs = require('fs').promises;
@@ -22,6 +18,15 @@ const SESSION_FILE = path.join(__dirname, '..', 'logs', '.current-session');
 
 // Simple token estimation (roughly 4 chars per token)
 const CHARS_PER_TOKEN = 4;
+
+// Track session stats in memory
+let sessionStats = {
+  startTime: new Date().toISOString(),
+  toolCalls: 0,
+  estimatedTokensIn: 0,
+  estimatedTokensOut: 0,
+  toolBreakdown: {}
+};
 
 /**
  * Estimate tokens from a string or object
@@ -52,114 +57,75 @@ function getDateString() {
 }
 
 /**
- * Load or create session stats
+ * Ensure log directory exists
  */
-async function loadStats() {
+async function ensureLogDir() {
   try {
     await fs.mkdir(LOG_DIR, { recursive: true });
-    const sessionName = await getSessionName();
-    const dateStr = getDateString();
-    const fileName = `${dateStr}-${sessionName}.json`;
-    const filePath = path.join(LOG_DIR, fileName);
-
-    const data = await fs.readFile(filePath, 'utf8');
-    return { stats: JSON.parse(data), filePath };
-  } catch {
-    return {
-      stats: {
-        startTime: new Date().toISOString(),
-        toolCalls: 0,
-        estimatedTokensIn: 0,
-        estimatedTokensOut: 0,
-        toolBreakdown: {}
-      },
-      filePath: null
-    };
+  } catch (err) {
+    if (err.code !== 'EEXIST') throw err;
   }
 }
 
 /**
- * Save stats to file
+ * Save current stats to file
  */
-async function saveStats(stats) {
+async function saveStats() {
   try {
-    await fs.mkdir(LOG_DIR, { recursive: true });
+    await ensureLogDir();
     const sessionName = await getSessionName();
     const dateStr = getDateString();
     const fileName = `${dateStr}-${sessionName}.json`;
     const filePath = path.join(LOG_DIR, fileName);
 
-    stats.endTime = new Date().toISOString();
-    stats.sessionName = sessionName;
+    // Update end time
+    sessionStats.endTime = new Date().toISOString();
+    sessionStats.sessionName = sessionName;
 
-    const startMs = new Date(stats.startTime).getTime();
-    const endMs = new Date(stats.endTime).getTime();
-    stats.durationMinutes = Math.round((endMs - startMs) / 60000);
+    // Calculate duration
+    const startMs = new Date(sessionStats.startTime).getTime();
+    const endMs = new Date(sessionStats.endTime).getTime();
+    sessionStats.durationMinutes = Math.round((endMs - startMs) / 60000);
 
-    await fs.writeFile(filePath, JSON.stringify(stats, null, 2));
+    await fs.writeFile(filePath, JSON.stringify(sessionStats, null, 2));
   } catch (err) {
     console.error(`[context-usage-tracker] Failed to save: ${err.message}`);
   }
 }
 
-/**
- * Main handler
- */
-async function handleHook(context) {
-  const { tool, parameters } = context;
+module.exports = {
+  name: 'context-usage-tracker',
+  description: 'Track estimated token/context usage per session',
+  event: 'PreToolUse',
 
-  try {
-    const { stats } = await loadStats();
+  async handler(context) {
+    const { tool, parameters } = context;
 
-    // Estimate tokens for this call
-    const inputTokens = estimateTokens(parameters);
+    try {
+      // Estimate tokens for this call
+      const inputTokens = estimateTokens(parameters);
 
-    // Update stats
-    stats.toolCalls++;
-    stats.estimatedTokensIn += inputTokens;
+      // Update session stats
+      sessionStats.toolCalls++;
+      sessionStats.estimatedTokensIn += inputTokens;
 
-    // Track per-tool breakdown
-    if (!stats.toolBreakdown[tool]) {
-      stats.toolBreakdown[tool] = { calls: 0, tokens: 0 };
+      // Track per-tool breakdown
+      if (!sessionStats.toolBreakdown[tool]) {
+        sessionStats.toolBreakdown[tool] = { calls: 0, tokens: 0 };
+      }
+      sessionStats.toolBreakdown[tool].calls++;
+      sessionStats.toolBreakdown[tool].tokens += inputTokens;
+
+      // Save stats every 10 calls (to avoid excessive I/O)
+      if (sessionStats.toolCalls % 10 === 0) {
+        await saveStats();
+      }
+
+    } catch (err) {
+      // Don't block on tracking failures
+      console.error(`[context-usage-tracker] Error: ${err.message}`);
     }
-    stats.toolBreakdown[tool].calls++;
-    stats.toolBreakdown[tool].tokens += inputTokens;
 
-    // Save stats every 10 calls to avoid excessive I/O
-    if (stats.toolCalls % 10 === 0) {
-      await saveStats(stats);
-    }
-
-  } catch (err) {
-    console.error(`[context-usage-tracker] Error: ${err.message}`);
+    return { proceed: true };
   }
-
-  return { proceed: true };
-}
-
-/**
- * Main function - reads from stdin, processes, outputs to stdout
- */
-async function main() {
-  const chunks = [];
-  for await (const chunk of process.stdin) {
-    chunks.push(chunk);
-  }
-  const input = Buffer.concat(chunks).toString('utf8');
-
-  let context;
-  try {
-    context = JSON.parse(input);
-  } catch {
-    console.log(JSON.stringify({ proceed: true }));
-    return;
-  }
-
-  const result = await handleHook(context);
-  console.log(JSON.stringify(result));
-}
-
-main().catch(err => {
-  console.error(`[context-usage-tracker] Fatal error: ${err.message}`);
-  console.log(JSON.stringify({ proceed: true }));
-});
+};

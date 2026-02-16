@@ -1,6 +1,6 @@
 #!/bin/bash
 # fabric-commit-msg.sh - Generate conventional commit messages from git diffs
-# Part of CLI capability layer
+# Part of AIfred CLI capability layer
 #
 # Uses fabric's summarize_git_diff pattern to create clean commit messages
 # from staged changes or provided diff content.

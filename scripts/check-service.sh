@@ -9,7 +9,7 @@
 set -uo pipefail  # Don't exit on error, we want to report status
 
 # Configuration
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 REGISTRY_FILE="${AIFRED_HOME}/.claude/context/registries/services.yaml"
 
 # Colors

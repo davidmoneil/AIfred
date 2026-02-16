@@ -1,88 +1,126 @@
 /**
  * Session Exit Enforcer Hook
  *
- * Tracks session activity and reminds about exit procedures.
+ * Detects when user signals session end and reminds about exit procedure.
+ * Tracks which exit checklist items have been completed.
  *
- * Created: AIfred v1.0
+ * Priority: MEDIUM (Documentation Quality)
+ * Created: 2025-12-06
  */
 
 const fs = require('fs').promises;
 const path = require('path');
 
-const STATE_FILE = path.join(__dirname, '..', 'logs', '.session-activity');
+// Patterns that indicate session end
+const END_SESSION_PATTERNS = [
+  /\bend\s+session\b/i,
+  /\bsession\s+end\b/i,
+  /\bexit\s+session\b/i,
+  /\bwrap\s+up\b/i,
+  /\bclosing\s+out\b/i,
+  /\bsigning\s+off\b/i,
+  /\bdone\s+for\s+(?:today|now)\b/i,
+  /\bthat's\s+(?:it|all)\s+for\s+(?:today|now)\b/i
+];
 
-// Tracked activities
-const TRACKED_ACTIVITIES = {
-  'Write': 'file_modified',
-  'Edit': 'file_modified',
-  'Bash': 'command_executed',
-  'mcp__mcp-gateway__create_entities': 'memory_updated',
-  'mcp__mcp-gateway__add_observations': 'memory_updated'
-};
+// Exit checklist items to track
+const CHECKLIST_ITEMS = [
+  { id: 'session_state', file: '.claude/context/session-state.md', description: 'Update session-state.md' },
+  { id: 'priorities', file: '.claude/context/projects/current-priorities.md', description: 'Update current-priorities.md' },
+  { id: 'git_status', command: 'git status', description: 'Check git status clean' },
+  { id: 'git_commit', pattern: /git commit/, description: 'Commit any changes' },
+  { id: 'git_push', pattern: /git push/, description: 'Push to GitHub' }
+];
 
-async function loadState() {
-  try {
-    const content = await fs.readFile(STATE_FILE, 'utf8');
-    return JSON.parse(content);
-  } catch {
-    return {
-      session_start: new Date().toISOString(),
-      activities: [],
-      files_modified: [],
-      memory_updates: 0,
-      commands_run: 0
-    };
-  }
+// Track what's been done this session
+const sessionActions = new Set();
+
+/**
+ * Check if message indicates session end
+ */
+function isSessionEndMessage(message) {
+  if (!message) return false;
+  return END_SESSION_PATTERNS.some(pattern => pattern.test(message));
 }
 
-async function saveState(state) {
-  const dir = path.dirname(STATE_FILE);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(STATE_FILE, JSON.stringify(state, null, 2));
+/**
+ * Check if action matches checklist item
+ */
+function matchesChecklistItem(tool, parameters, item) {
+  if (item.command && tool === 'Bash') {
+    return parameters?.command?.includes(item.command);
+  }
+  if (item.pattern && tool === 'Bash') {
+    return item.pattern.test(parameters?.command || '');
+  }
+  if (item.file && (tool === 'Write' || tool === 'Edit')) {
+    const filePath = parameters?.file_path || '';
+    return filePath.includes(item.file);
+  }
+  return false;
+}
+
+/**
+ * Get checklist status
+ */
+function getChecklistStatus() {
+  return CHECKLIST_ITEMS.map(item => ({
+    ...item,
+    done: sessionActions.has(item.id)
+  }));
+}
+
+/**
+ * Format checklist for display
+ */
+function formatChecklist(status) {
+  const lines = ['Session Exit Checklist:', '─'.repeat(40)];
+
+  status.forEach(item => {
+    const check = item.done ? '✓' : '○';
+    lines.push(`  ${check} ${item.description}`);
+  });
+
+  lines.push('─'.repeat(40));
+
+  const completed = status.filter(i => i.done).length;
+  const total = status.length;
+  lines.push(`Progress: ${completed}/${total} items`);
+
+  if (completed < total) {
+    lines.push('\nRemaining items should be completed before ending session.');
+    lines.push('See: .claude/context/workflows/session-exit-procedure.md');
+  } else {
+    lines.push('\n✓ All checklist items complete - safe to end session');
+  }
+
+  return lines.join('\n');
 }
 
 module.exports = {
   name: 'session-exit-enforcer',
-  description: 'Track session activity for exit procedures',
-  event: 'PostToolUse',
+  description: 'Track and enforce session exit checklist',
+  event: 'PreToolUse',
 
   async handler(context) {
-    const { tool, parameters, result } = context;
+    const { tool, parameters } = context;
 
-    const activityType = TRACKED_ACTIVITIES[tool];
-    if (!activityType) return { proceed: true };
-
-    try {
-      const state = await loadState();
-
-      if (activityType === 'file_modified') {
-        const filePath = parameters?.file_path || parameters?.path;
-        if (filePath && !state.files_modified.includes(filePath)) {
-          state.files_modified.push(filePath);
-        }
-      } else if (activityType === 'memory_updated') {
-        state.memory_updates++;
-      } else if (activityType === 'command_executed') {
-        state.commands_run++;
+    // Track actions that match checklist items
+    CHECKLIST_ITEMS.forEach(item => {
+      if (matchesChecklistItem(tool, parameters, item)) {
+        sessionActions.add(item.id);
       }
+    });
 
-      state.activities.push({
-        tool,
-        type: activityType,
-        timestamp: new Date().toISOString()
-      });
-
-      // Keep only last 100 activities
-      if (state.activities.length > 100) {
-        state.activities = state.activities.slice(-100);
-      }
-
-      await saveState(state);
-
-    } catch (err) {
-      // Silent failure - don't disrupt workflow
-    }
+    // For Notification events, check for session end signals
+    // Note: This hook uses PreToolUse but we can check for patterns in user messages
+    // when they trigger tool calls
 
     return { proceed: true };
   }
 };
+
+// Also export utility for external use
+module.exports.getChecklistStatus = getChecklistStatus;
+module.exports.formatChecklist = formatChecklist;
+module.exports.isSessionEndMessage = isSessionEndMessage;

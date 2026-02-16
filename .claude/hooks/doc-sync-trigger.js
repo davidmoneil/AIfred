@@ -13,7 +13,6 @@
  * Priority: LOW (Background Tracking)
  * Created: 2026-01-05
  * Source: Design Pattern Integration Plan - Phase 3
- * AIfred documentation sync trigger
  */
 
 const fs = require('fs').promises;
@@ -30,10 +29,10 @@ const SIGNIFICANT_PATTERNS = [
   /^\.claude\/commands\//,       // Slash commands
   /^\.claude\/agents\//,         // Agent definitions
   /^\.claude\/hooks\/[^/]+\.js$/,// Hook implementations (not subdirs)
-  /^\.claude\/skills\//,         // Skills
+  /^\.claude\/skills\//,         // Skills (future)
   /^src\//,                      // Source code
   /^lib\//,                      // Library code
-  /^scripts\//,                  // Scripts (lowercase for AIfred)
+  /^Scripts\//,                  // Scripts
   /docker-compose.*\.ya?ml$/,    // Docker compose files
   /^external-sources\//          // External source configs
 ];
@@ -56,7 +55,7 @@ const EXCLUDE_PATTERNS = [
 function isSignificantFile(filePath) {
   // Normalize path (remove absolute prefix if present)
   const normalized = filePath
-    .replace(/^\/home\/[^/]+\/Code\/AIfred\//, '')
+    .replace(new RegExp('^' + (process.env.AIFRED_HOME || process.cwd()).replace(/[.*+?${}()|[\]\]/g, '\\$&') + '/'), '')
     .replace(/^\.\//, '');
 
   // Check exclusions first
@@ -139,7 +138,7 @@ function formatSuggestion(changeCount, changes) {
   const displayFiles = uniqueFiles.slice(0, 5);
   displayFiles.forEach(f => {
     // Shorten path for display
-    const short = f.replace(/^\/home\/[^/]+\/Code\/AIfred\//, '');
+    const short = f.replace(new RegExp('^' + (process.env.AIFRED_HOME || process.cwd()).replace(/[.*+?${}()|[\]\]/g, '\\$&') + '/'), '');
     lines.push(`  • ${short}`);
   });
 

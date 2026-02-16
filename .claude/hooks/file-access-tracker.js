@@ -41,13 +41,12 @@ function shouldTrack(filePath) {
 }
 
 /**
- * Get relative path from hub root
+ * Get relative path from project root
  */
 function getRelativePath(filePath) {
-  // Get project root dynamically (hook lives at .claude/hooks/)
-  const projectRoot = path.resolve(__dirname, '..', '..') + '/';
-  if (filePath.startsWith(projectRoot)) {
-    return filePath.substring(projectRoot.length);
+  const aiProjectsRoot = process.cwd() + '/';
+  if (filePath.startsWith(aiProjectsRoot)) {
+    return filePath.substring(aiProjectsRoot.length);
   }
   return filePath;
 }

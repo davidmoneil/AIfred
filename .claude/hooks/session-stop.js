@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Session Stop Hook
  *
@@ -10,6 +11,7 @@
  * - Windows: PowerShell (built-in)
  *
  * Created: 2026-01-03
+ * Fixed: 2026-01-21 - Converted to stdin/stdout executable hook
  * Source: my-claude-code-setup research project
  */
 
@@ -89,47 +91,70 @@ async function sendNotification(title, message) {
     case 'win32':
       return notifyWindows(title, message);
     default:
-      console.log(`[session-stop] Notifications not supported on ${platform}`);
+      console.error(`[session-stop] Notifications not supported on ${platform}`);
       return false;
   }
 }
 
 /**
- * Stop Hook - Sends notification when session ends
+ * Main handler logic
  */
-module.exports = {
-  name: 'session-stop',
-  description: 'Desktop notification when Claude session ends',
-  event: 'Stop',
+async function handleHook(context) {
+  try {
+    // Get session info if available
+    const stopReason = context?.reason || 'completed';
 
-  async handler(context) {
-    try {
-      // Get session info if available
-      const stopReason = context?.reason || 'completed';
+    let title = 'Claude Code Complete';
+    let message = 'Session finished successfully';
 
-      let title = '✅ Claude Code Complete';
-      let message = 'Session finished successfully';
-
-      // Customize message based on stop reason
-      if (stopReason === 'error') {
-        title = '⚠️ Claude Code Stopped';
-        message = 'Session ended with an error';
-      } else if (stopReason === 'user_cancelled') {
-        title = '🛑 Claude Code Cancelled';
-        message = 'Session cancelled by user';
-      }
-
-      const sent = await sendNotification(title, message);
-
-      if (sent) {
-        console.log(`[session-stop] Notification sent: ${title}`);
-      }
-
-    } catch (err) {
-      // Don't fail on notification errors
-      console.error(`[session-stop] Notification error: ${err.message}`);
+    // Customize message based on stop reason
+    if (stopReason === 'error') {
+      title = 'Claude Code Stopped';
+      message = 'Session ended with an error';
+    } else if (stopReason === 'user_cancelled') {
+      title = 'Claude Code Cancelled';
+      message = 'Session cancelled by user';
     }
 
-    return {};
+    const sent = await sendNotification(title, message);
+
+    if (sent) {
+      console.error(`[session-stop] Notification sent: ${title}`);
+    }
+
+  } catch (err) {
+    // Don't fail on notification errors
+    console.error(`[session-stop] Notification error: ${err.message}`);
   }
-};
+
+  return {};
+}
+
+/**
+ * Main function - reads from stdin, processes, outputs to stdout
+ */
+async function main() {
+  // Read JSON from stdin
+  const chunks = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
+  }
+  const input = Buffer.concat(chunks).toString('utf8');
+
+  let context;
+  try {
+    context = JSON.parse(input);
+  } catch (err) {
+    // If we can't parse input, just return empty
+    console.log(JSON.stringify({}));
+    return;
+  }
+
+  const result = await handleHook(context);
+  console.log(JSON.stringify(result));
+}
+
+main().catch(err => {
+  console.error(`[session-stop] Fatal error: ${err.message}`);
+  console.log(JSON.stringify({}));
+});

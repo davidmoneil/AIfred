@@ -22,17 +22,15 @@ let lastCheck = 0;
 const CHECK_INTERVAL = 30000; // 30 seconds
 
 // Critical containers that should always be healthy
-// Can be customized via environment variable CRITICAL_CONTAINERS (comma-separated)
-// Default: Common infrastructure services
-const CRITICAL_CONTAINERS = process.env.CRITICAL_CONTAINERS
-  ? process.env.CRITICAL_CONTAINERS.split(',').map(s => s.trim())
-  : [
-      'caddy',
-      'n8n',
-      'loki',
-      'grafana',
-      'promtail'
-    ];
+const CRITICAL_CONTAINERS = [
+  'caddy',
+  'n8n',
+  'open-webui',
+  'loki',
+  'grafana',
+  'promtail',
+  'homepage'
+];
 
 /**
  * Get all container health status

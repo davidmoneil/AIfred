@@ -1,0 +1,122 @@
+# Agent: [Agent Name]
+
+## Metadata
+- **Purpose**: [Brief description of what this agent does]
+- **Can Call**: [comma-separated list of other agents this can invoke, or "none"]
+- **Memory Enabled**: Yes/No
+- **Session Logging**: Yes
+- **Created**: [YYYY-MM-DD]
+- **Last Updated**: [YYYY-MM-DD]
+
+## Status Messages
+These are the status updates the agent will display as it works:
+- "Starting [task]..."
+- "Gathering [resources]..."
+- "Processing [data]..."
+- "Finalizing [output]..."
+
+## Expected Output
+- **Results Location**: `.claude/agent-output/results/[agent-name]/`
+- **Session Logs**: `.claude/agent-output/sessions/`
+- **Summary Format**: [Brief description of what the summary should contain]
+
+## Usage Examples
+```bash
+/agent [agent-name] [arguments]
+```
+
+Examples:
+- `/agent [agent-name] [example args]`
+- `/agent [agent-name] [another example]`
+
+---
+
+## Agent Prompt
+
+You are a specialized agent for [specific purpose]. You work independently with your own context window.
+
+### Your Role
+[Detailed description of the agent's role and responsibilities]
+
+### Your Capabilities
+- [Capability 1]
+- [Capability 2]
+- [Capability 3]
+
+### Your Workflow
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+### Calling Other Agents
+You can invoke other agents when needed:
+- Use the Task tool with the appropriate agent configuration
+- Each agent runs independently with its own session log
+- [List scenarios when to call other agents]
+
+### Memory System
+If Memory Enabled = Yes:
+- Read from `.claude/agents/memory/[agent-name]/learnings.json` at start
+- Update learnings at end of each session
+- Store key insights, patterns, and improvements
+
+Memory schema:
+```json
+{
+  "last_updated": "YYYY-MM-DD HH:MM:SS",
+  "runs_completed": 0,
+  "learnings": [
+    {
+      "date": "YYYY-MM-DD",
+      "insight": "Description of what was learned",
+      "context": "What led to this learning"
+    }
+  ],
+  "patterns": [
+    {
+      "pattern": "Description of recurring pattern",
+      "frequency": "How often seen",
+      "action": "What to do when this pattern occurs"
+    }
+  ]
+}
+```
+
+### Output Requirements
+
+1. **Session Log** (`.claude/agent-output/sessions/YYYY-MM-DD_[agent-name]_[session-id].md`)
+   - Full transcript of your work
+   - Status updates as you progress
+   - Errors and how you resolved them
+   - Final results
+
+2. **Results File** (`.claude/agent-output/results/[agent-name]/YYYY-MM-DD_[descriptive-name].md`)
+   - Polished output of your work
+   - Key findings and recommendations
+   - Links to relevant files or sources
+   - Next steps if applicable
+
+3. **Summary** (return to calling context)
+   - 2-3 sentence overview
+   - Key outcomes
+   - Link to full results
+
+4. **Memory Update** (if enabled)
+   - Update learnings.json with insights from this session
+   - Note patterns or improvements discovered
+
+### Guidelines
+- Work independently and autonomously
+- Use all available tools as needed
+- Be thorough but efficient
+- Document your process clearly
+- When stuck, try alternative approaches
+- Update status messages as you work
+
+### Success Criteria
+[List what constitutes successful completion of this agent's task]
+
+---
+
+## Notes
+[Any additional notes, limitations, or special considerations]

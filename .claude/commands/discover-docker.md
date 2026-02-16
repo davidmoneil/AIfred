@@ -50,8 +50,8 @@ This returns JSON with:
 Based on the gathered data:
 
 1. **Evaluate Watchtower status**:
-   - Complete: Has both `enable=true` AND `scope=prod|dev`
-   - Incomplete: Missing labels
+   - ✅ **Complete**: Has both `enable=true` AND `scope=prod|dev`
+   - ⚠️ **Incomplete**: Missing labels
    - If missing/incomplete, suggest fix
 
 2. **Check for issues**:
@@ -66,13 +66,33 @@ Based on the gathered data:
 ### Step 3: Create/Update Documentation
 
 If documentation doesn't exist:
-1. Create context file at `.claude/context/systems/docker/<container>.md`
-2. Use template from `.claude/context/systems/_template-service.md`
-3. Fill in discovered information
+
+1. **Create context file** at `.claude/context/systems/docker/<container>.md`
+2. **Use template** from `.claude/context/systems/_template-service.md`
+3. **Fill in discovered information**:
+   - Container name, image, ports
+   - Volume mounts and paths
+   - Access URLs
+   - Compose file location
+   - Common commands
+
+If documentation exists but needs updates:
+- Update image version
+- Update port mappings if changed
+- Note any new volumes/networks
 
 ### Step 4: Update Registry
 
-Add/update entry in `paths-registry.yaml`.
+Add/update entry in `paths-registry.yaml`:
+
+```yaml
+docker:
+  containers:
+    <container-name>:
+      compose: <compose-file-path>
+      data: <data-volume-path>
+      config: <config-path>
+```
 
 ### Step 5: Suggest Follow-ups
 
@@ -84,20 +104,98 @@ Add/update entry in `paths-registry.yaml`.
 
 ## Section B: List Containers
 
+If user asks for list or provides no container name:
+
 ```bash
 scripts/discover-docker.sh --list
 ```
 
+Present containers with status and offer to discover specific one.
+
+---
+
 ## Section C: Quick Checks
+
+### Watchtower Check Only
 
 ```bash
 scripts/discover-docker.sh --watchtower <container>
+```
+
+### Compose File Only
+
+```bash
 scripts/discover-docker.sh --compose <container>
+```
+
+### Recent Logs Only
+
+```bash
 scripts/discover-docker.sh --logs <container> [count]
 ```
 
+---
+
+## CLI Script Reference
+
+```bash
+# Full discovery
+scripts/discover-docker.sh --full <container>
+
+# Container info only
+scripts/discover-docker.sh --info <container>
+
+# Watchtower label check
+scripts/discover-docker.sh --watchtower <container>
+
+# Find compose file
+scripts/discover-docker.sh --compose <container>
+
+# Recent logs
+scripts/discover-docker.sh --logs <container> [count]
+
+# List all containers
+scripts/discover-docker.sh --list [filter]
+```
+
+---
+
+## Watchtower Auto-Update Labels
+
+### Required Labels
+
+```yaml
+labels:
+  - "com.centurylinklabs.watchtower.enable=true"
+  - "com.centurylinklabs.watchtower.scope=prod"  # prod=4hr, dev=30min
+```
+
+### Status Evaluation
+
+| Status | Condition | Action |
+|--------|-----------|--------|
+| ✅ Complete | Has enable + scope | None needed |
+| ⚠️ Incomplete | Has scope only | Add enable=true |
+| ❌ Missing | No Watchtower labels | Add both labels |
+
+---
+
+## Memory MCP Storage (Issues Only)
+
+Only store in Memory MCP if container has issues:
+- Unhealthy status or restart loops
+- Configuration issues detected
+- Missing expected volumes/networks
+- Errors in recent logs
+
+Healthy containers: Document only, don't store in Memory.
+
+---
+
 ## Related
 
-- Script: @scripts/discover-docker.sh
+- Script: @Scripts/discover-docker.sh
 - Service Template: @.claude/context/systems/_template-service.md
+- Paths Registry: @paths-registry.yaml
 - Pattern: @.claude/context/patterns/capability-layering-pattern.md
+- Docker Best Practices: @.claude/context/systems/docker/best-practices.md

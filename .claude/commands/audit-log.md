@@ -1,3 +1,14 @@
+---
+description: Audit Log Management
+argument-hint: [session|verbosity|status|view|query]
+skill: session-management
+allowed-tools:
+  - Bash(~/Scripts/audit-log-query.sh:*)
+  - Read
+  - Bash(cat:*)
+  - Bash(grep:*)
+---
+
 # Audit Log Management
 
 Manage Claude Code audit logging system - configure verbosity, set sessions, view logs, and query history.

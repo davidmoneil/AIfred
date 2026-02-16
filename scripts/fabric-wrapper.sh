@@ -1,6 +1,6 @@
 #!/bin/bash
 # fabric-wrapper.sh - Robust fabric execution with health check and model fallback
-# Part of CLI capability layer
+# Part of AIfred CLI capability layer
 #
 # Features:
 #   - Ollama health check before execution
@@ -20,9 +20,6 @@
 set -euo pipefail
 
 # Configuration
-SCRIPT_DIR_FW="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR_FW}/lib/platform.sh"
-
 FABRIC_BIN="${FABRIC_BIN:-$HOME/bin/fabric}"
 OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
 PRIMARY_MODEL="${FABRIC_PRIMARY_MODEL:-qwen2.5:7b-instruct}"
@@ -79,8 +76,8 @@ check_ollama_health() {
 restart_ollama() {
     log_warn "Attempting to restart Ollama..."
 
-    # Try systemctl first (if running as service, Linux only)
-    if [[ "$AIFRED_PLATFORM" != "macos" ]] && systemctl is-active --quiet ollama 2>/dev/null; then
+    # Try systemctl first (if running as service)
+    if systemctl is-active --quiet ollama 2>/dev/null; then
         sudo systemctl restart ollama 2>/dev/null && return 0
     fi
 
@@ -129,8 +126,8 @@ run_fabric() {
 
     log_info "Running pattern '$pattern' with model '$model' (timeout: ${timeout}s)"
 
-    # Use timeout command with fabric (compat_timeout takes plain seconds)
-    if compat_timeout "$timeout" "$FABRIC_BIN" \
+    # Use timeout command with fabric
+    if timeout --signal=KILL "${timeout}s" "$FABRIC_BIN" \
         --pattern "$pattern" \
         --model "$model" \
         --stream \

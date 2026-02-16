@@ -1,22 +1,28 @@
-#!/usr/bin/env node
 /**
+ * @deprecated Use docker-validator.js instead (consolidated 2025-12-24)
+ *
  * Compose Validator Hook
  *
  * Validates docker-compose files before deployment:
- * - YAML syntax validation (via docker-compose config)
- * - Security pattern checks (privileged, host network, docker socket)
- * - Common issues (hardcoded passwords, missing restart policy)
+ * - YAML syntax validation
+ * - Required fields check
+ * - Volume mount validation
+ * - Network configuration check
  *
  * Priority: MEDIUM (Infrastructure Safety)
  * Created: 2025-12-06
- * Converted to stdin/stdout executable hook
  */
 
 const { exec } = require('child_process');
 const util = require('util');
 const execAsync = util.promisify(exec);
-const fs = require('fs').promises;
 const path = require('path');
+
+// Required fields for services
+const REQUIRED_FIELDS = ['image', 'container_name'];
+
+// Recommended fields (warn if missing)
+const RECOMMENDED_FIELDS = ['restart', 'networks'];
 
 // Dangerous patterns to warn about
 const DANGEROUS_PATTERNS = [
@@ -28,18 +34,27 @@ const DANGEROUS_PATTERNS = [
 ];
 
 /**
- * Validate compose file syntax with docker compose
+ * Check if file is a docker-compose file
+ */
+function isComposeFile(filePath) {
+  const basename = path.basename(filePath);
+  return (
+    basename === 'docker-compose.yml' ||
+    basename === 'docker-compose.yaml' ||
+    basename.startsWith('docker-compose.') && (basename.endsWith('.yml') || basename.endsWith('.yaml')) ||
+    basename.startsWith('compose.') && (basename.endsWith('.yml') || basename.endsWith('.yaml'))
+  );
+}
+
+/**
+ * Validate compose file syntax with docker-compose
  */
 async function validateSyntax(filePath) {
   try {
-    // Try newer 'docker compose' first, fall back to 'docker-compose'
-    try {
-      await execAsync(`docker compose -f "${filePath}" config --quiet 2>&1`);
-    } catch {
-      await execAsync(`docker-compose -f "${filePath}" config --quiet 2>&1`);
-    }
+    await execAsync(`docker-compose -f "${filePath}" config --quiet 2>&1`);
     return { valid: true, errors: [] };
   } catch (err) {
+    // Parse error messages
     const errors = err.stderr?.split('\n').filter(line => line.trim()) || [];
     return { valid: false, errors };
   }
@@ -50,11 +65,13 @@ async function validateSyntax(filePath) {
  */
 function checkDangerousPatterns(content) {
   const warnings = [];
+
   DANGEROUS_PATTERNS.forEach(({ pattern, message }) => {
     if (pattern.test(content)) {
       warnings.push(message);
     }
   });
+
   return warnings;
 }
 
@@ -64,102 +81,116 @@ function checkDangerousPatterns(content) {
 function checkCommonIssues(content) {
   const issues = [];
 
+  // Check for version (deprecated but often expected)
+  if (content.includes('version:')) {
+    // This is actually fine, just informational
+  }
+
+  // Check for hardcoded passwords
   if (/password:\s*["']?[^${\s]+["']?$/mi.test(content)) {
     issues.push('Hardcoded password detected - use environment variables');
   }
 
+  // Check for missing restart policy
   if (!content.includes('restart:')) {
     issues.push('No restart policy defined - containers may not restart on failure');
   }
 
-  if (/volumes:[\s\S]*?-\s*\/etc:/m.test(content)) {
-    issues.push('/etc mount detected - ensure this is intentional');
+  // Check for absolute path volumes
+  if (/volumes:[\s\S]*?-\s*\/[^:]+:[^:]+/m.test(content)) {
+    // Absolute paths are fine, but check for system directories
+    if (/volumes:[\s\S]*?-\s*\/etc:/m.test(content)) {
+      issues.push('/etc mount detected - ensure this is intentional');
+    }
   }
 
   return issues;
 }
 
-/**
- * Main handler
- */
-async function handleHook(context) {
-  const { tool, parameters } = context;
+module.exports = {
+  name: 'compose-validator',
+  description: 'Validate docker-compose files before deployment',
+  event: 'PreToolUse',
 
-  if (tool !== 'Bash') return { proceed: true };
+  async handler(context) {
+    const { tool, parameters } = context;
 
-  const command = parameters?.command || '';
+    // Check for compose operations
+    if (tool !== 'Bash') return { proceed: true };
 
-  // Look for docker compose up/start/restart
-  const composeMatch = command.match(/docker(?:-compose| compose)\s+(?:-f\s+["']?([^"'\s]+)["']?\s+)?(?:up|start|restart)/i);
+    const command = parameters?.command || '';
 
-  if (!composeMatch) return { proceed: true };
+    // Look for docker-compose up/start/restart
+    const composeMatch = command.match(/docker(?:-compose| compose)\s+(?:-f\s+["']?([^"'\s]+)["']?\s+)?(?:up|start|restart)/i);
 
-  let composePath = composeMatch[1] || 'docker-compose.yml';
+    if (!composeMatch) return { proceed: true };
 
-  console.error('[compose-validator] Validating compose file: ' + composePath);
+    // Get compose file path
+    let composePath = composeMatch[1];
 
-  try {
-    const syntaxResult = await validateSyntax(composePath);
-
-    if (!syntaxResult.valid) {
-      const errorMsg = syntaxResult.errors[0] || 'Unknown syntax error';
-      return {
-        proceed: false,
-        message: `Compose file has syntax errors: ${errorMsg}. Fix syntax errors before deploying.`
-      };
+    if (!composePath) {
+      // Try to find docker-compose.yml in current directory
+      composePath = 'docker-compose.yml';
     }
 
-    // Read file for additional checks
-    let content;
+    console.log('\n[compose-validator] Validating compose file...');
+    console.log('─'.repeat(50));
+    console.log(`File: ${composePath}`);
+
     try {
-      content = await fs.readFile(composePath, 'utf-8');
-    } catch {
-      return { proceed: true };
-    }
+      // Validate syntax
+      const syntaxResult = await validateSyntax(composePath);
 
-    const dangerWarnings = checkDangerousPatterns(content);
-    const issues = checkCommonIssues(content);
+      if (!syntaxResult.valid) {
+        console.log('\n❌ SYNTAX ERRORS:');
+        syntaxResult.errors.forEach(err => console.log(`  • ${err}`));
+        console.log('─'.repeat(50));
+        console.log('[compose-validator] Fix syntax errors before deploying\n');
 
-    if (dangerWarnings.length > 0 || issues.length > 0) {
-      let warning = '[compose-validator] Validation warnings:\n';
+        return {
+          proceed: false,
+          message: `Compose file has syntax errors: ${syntaxResult.errors[0]}`
+        };
+      }
+
+      console.log('✓ Syntax valid');
+
+      // Read file for additional checks
+      const fs = require('fs').promises;
+      let content;
+      try {
+        content = await fs.readFile(composePath, 'utf-8');
+      } catch {
+        // Can't read file, just proceed with syntax validation
+        console.log('─'.repeat(50) + '\n');
+        return { proceed: true };
+      }
+
+      // Check for dangerous patterns
+      const dangerWarnings = checkDangerousPatterns(content);
       if (dangerWarnings.length > 0) {
-        warning += 'Security: ' + dangerWarnings.join(', ') + '\n';
+        console.log('\n⚠️  SECURITY WARNINGS:');
+        dangerWarnings.forEach(w => console.log(`  • ${w}`));
       }
+
+      // Check for common issues
+      const issues = checkCommonIssues(content);
       if (issues.length > 0) {
-        warning += 'Issues: ' + issues.join(', ') + '\n';
+        console.log('\n⚠️  RECOMMENDATIONS:');
+        issues.forEach(i => console.log(`  • ${i}`));
       }
-      console.error(warning);
+
+      if (dangerWarnings.length === 0 && issues.length === 0) {
+        console.log('✓ No warnings');
+      }
+
+      console.log('─'.repeat(50) + '\n');
+
+    } catch (err) {
+      console.log(`[compose-validator] Warning: Could not validate: ${err.message}`);
+      console.log('─'.repeat(50) + '\n');
     }
-  } catch (err) {
-    console.error(`[compose-validator] Warning: Could not validate: ${err.message}`);
+
+    return { proceed: true };
   }
-
-  return { proceed: true };
-}
-
-/**
- * Main function - reads from stdin, processes, outputs to stdout
- */
-async function main() {
-  const chunks = [];
-  for await (const chunk of process.stdin) {
-    chunks.push(chunk);
-  }
-  const input = Buffer.concat(chunks).toString('utf8');
-
-  let context;
-  try {
-    context = JSON.parse(input);
-  } catch {
-    console.log(JSON.stringify({ proceed: true }));
-    return;
-  }
-
-  const result = await handleHook(context);
-  console.log(JSON.stringify(result));
-}
-
-main().catch(err => {
-  console.error(`[compose-validator] Fatal error: ${err.message}`);
-  console.log(JSON.stringify({ proceed: true }));
-});
+};

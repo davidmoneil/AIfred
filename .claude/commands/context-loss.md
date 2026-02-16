@@ -1,3 +1,13 @@
+---
+description: Document when Claude forgets context after compaction
+argument-hint: "<description of what was forgotten>"
+skill: session-management
+allowed-tools:
+  - Write
+  - Edit
+  - Read
+---
+
 # /context-loss
 
 Document when Claude forgets context after compaction. Builds evidence for improving compaction-essentials.md.
@@ -11,7 +21,7 @@ Document when Claude forgets context after compaction. Builds evidence for impro
 ## Examples
 
 ```
-/context-loss "forgot that projects live in projects_root"
+/context-loss "forgot that projects live in ~/Code"
 /context-loss "asked me to run docker command instead of executing"
 /context-loss "didn't use MCP tools for git operations"
 /context-loss "forgot PARC pattern before implementation"
@@ -46,14 +56,15 @@ When invoked:
 ## Review Process
 
 Periodically review logs to identify:
-- Frequently forgotten context -> add to compaction-essentials.md
-- One-off losses -> may not need action
-- Pattern changes -> update essentials when workflows evolve
+- Frequently forgotten context → add to compaction-essentials.md
+- One-off losses → may not need action
+- Pattern changes → update essentials when workflows evolve
 
 ## Related
 
 - `.claude/context/compaction-essentials.md` - Core context preserved after compaction
 - `.claude/hooks/pre-compact.js` - Hook that injects preserved context
+- `.claude/context/CLAUDE-troubleshooting.md` - General troubleshooting
 
 ---
 

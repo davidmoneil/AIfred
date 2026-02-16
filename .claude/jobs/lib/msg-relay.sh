@@ -126,7 +126,16 @@ status_emoji() {
     esac
 }
 
-# Format a message event for Telegram delivery
+# Escape HTML special characters for Telegram
+escape_html() {
+    local text="$1"
+    text="${text//&/&amp;}"
+    text="${text//</&lt;}"
+    text="${text//>/&gt;}"
+    echo "$text"
+}
+
+# Format a message event for Telegram delivery (HTML mode)
 format_telegram_message() {
     local event="$1"
     local event_type severity job
@@ -147,43 +156,56 @@ format_telegram_message() {
             duration=$(echo "$event" | jq -r '.data.duration_secs // "?"')
             exit_code=$(echo "$event" | jq -r '.data.exit_code // 0')
 
+            # Escape HTML in dynamic content
+            summary=$(escape_html "$summary")
+            details=$(escape_html "$details")
+
             # Format duration human-readable
             local dur_fmt="${duration}s"
             if [ "$duration" != "?" ] && [ "$duration" -ge 60 ] 2>/dev/null; then
                 dur_fmt="$((duration / 60))m$((duration % 60))s"
             fi
 
-            # Build message body
-            local body="${summary}"
+            # Header line
+            local msg="${emoji} <b>${job}</b>"
+            if [ "$event_type" = "job_failed" ]; then
+                msg="${msg} <i>failed</i> (exit ${exit_code})"
+            fi
+
+            # Summary
+            msg="${msg}
+${summary}"
+
+            # Details on separate lines (if present)
             if [ -n "$details" ]; then
-                body="${summary}
+                msg="${msg}
+
 ${details}"
             fi
 
-            if [ "$event_type" = "job_failed" ]; then
-                echo "${emoji} ${job} failed (exit $exit_code)
-${body}
-${dur_fmt} | \$${cost}"
-            else
-                echo "${emoji} ${job}
-${body}
-${dur_fmt} | \$${cost}"
-            fi
+            # Footer with metrics
+            msg="${msg}
+
+<code>${dur_fmt} · \$${cost}</code>"
+
+            echo "$msg"
             ;;
         question_asked)
             local question
             question=$(echo "$event" | jq -r '.data.question // "?"')
-            echo "${emoji} ${job}
+            question=$(escape_html "$question")
+            echo "${emoji} <b>${job}</b>
 ${question}"
             ;;
         reminder_due)
             local original_q
             original_q=$(echo "$event" | jq -r '.data.original_question // .data.summary // "Reminder"')
-            echo "${emoji} Reminder: ${job}
+            original_q=$(escape_html "$original_q")
+            echo "${emoji} <b>Reminder:</b> ${job}
 ${original_q}"
             ;;
         *)
-            echo "${emoji} ${event_type} — ${job}"
+            echo "${emoji} <b>${event_type}</b> — ${job}"
             ;;
     esac
 }
@@ -211,9 +233,9 @@ deliver_event() {
             "$SEND_TELEGRAM" --question "$question" --job "$job" --options "$options" 2>/dev/null || true
         fi
     else
-        # Send pre-formatted text (no --job to avoid send-telegram adding its own header)
+        # Send HTML-formatted text (no --job to avoid send-telegram adding its own header)
         if [ -x "$SEND_TELEGRAM" ]; then
-            "$SEND_TELEGRAM" --message "$text" --parse-mode "" 2>/dev/null || true
+            "$SEND_TELEGRAM" --message "$text" --parse-mode "HTML" 2>/dev/null || true
         fi
     fi
 

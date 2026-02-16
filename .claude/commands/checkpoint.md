@@ -1,6 +1,7 @@
 ---
 description: Save session state for MCP-required restart (preserves context for continuation)
 argument-hint: [--mcp <name>] [reason]
+skill: session-management
 allowed-tools:
   - Bash(~/Scripts/checkpoint.sh:*)
 ---

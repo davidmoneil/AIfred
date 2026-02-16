@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Pre-Compact Hook
  *
@@ -8,6 +9,7 @@
  * - In-progress work
  *
  * Created: 2026-01-03
+ * Updated: 2026-01-22 (converted to stdin/stdout pattern)
  * Source: hooks-mastery research project
  */
 
@@ -96,60 +98,84 @@ function extractKeyInfo(sessionContent) {
 }
 
 /**
- * PreCompact Hook - Preserves critical context before compaction
+ * Main handler logic
  */
-module.exports = {
-  name: 'pre-compact',
-  description: 'Preserve critical context before conversation compaction',
-  event: 'PreCompact',
+async function handleHook(context) {
+  const preservedParts = [];
 
-  async handler(context) {
-    const preservedParts = [];
+  try {
+    // Load and extract key info from context files
+    for (const file of PRESERVE_FILES) {
+      const fullPath = path.join(PROJECT_ROOT, file.path);
+      const content = await readFileSafe(fullPath, file.maxChars);
 
-    try {
-      // Load and extract key info from context files
-      for (const file of PRESERVE_FILES) {
-        const fullPath = path.join(PROJECT_ROOT, file.path);
-        const content = await readFileSafe(fullPath, file.maxChars);
-
-        if (content) {
-          // Some files should be included as-is, others need key extraction
-          const finalContent = file.extractKey ? extractKeyInfo(content) : content;
-          if (finalContent.trim().length > 0) {
-            preservedParts.push(`--- ${file.label} (preserved) ---`);
-            preservedParts.push(finalContent);
-          }
+      if (content) {
+        // Some files should be included as-is, others need key extraction
+        const finalContent = file.extractKey ? extractKeyInfo(content) : content;
+        if (finalContent.trim().length > 0) {
+          preservedParts.push(`--- ${file.label} (preserved) ---`);
+          preservedParts.push(finalContent);
         }
       }
-
-      // Check for recent blockers
-      const blockers = await getRecentBlockers();
-      if (blockers) {
-        preservedParts.push('\n--- Recent Blockers (preserved) ---');
-        preservedParts.push(blockers);
-      }
-
-      // Add compaction marker
-      preservedParts.push('\n--- Context Compacted ---');
-      preservedParts.push(`Time: ${new Date().toLocaleString()}`);
-      preservedParts.push('Note: Some earlier context may have been summarized.');
-
-    } catch (err) {
-      console.error(`[pre-compact] Error preserving context: ${err.message}`);
-      // Still add marker even if preservation failed
-      preservedParts.push('--- Context Compacted (preservation partial) ---');
     }
 
-    // Return preserved context
-    if (preservedParts.length > 0) {
-      return {
-        hookSpecificOutput: {
-          hookEventName: 'PreCompact',
-          preservedContext: preservedParts.join('\n')
-        }
-      };
+    // Check for recent blockers
+    const blockers = await getRecentBlockers();
+    if (blockers) {
+      preservedParts.push('\n--- Recent Blockers (preserved) ---');
+      preservedParts.push(blockers);
     }
 
-    return {};
+    // Add compaction marker
+    preservedParts.push('\n--- Context Compacted ---');
+    preservedParts.push(`Time: ${new Date().toLocaleString()}`);
+    preservedParts.push('Note: Some earlier context may have been summarized.');
+
+  } catch (err) {
+    console.error(`[pre-compact] Error preserving context: ${err.message}`);
+    // Still add marker even if preservation failed
+    preservedParts.push('--- Context Compacted (preservation partial) ---');
   }
-};
+
+  // Return preserved context
+  if (preservedParts.length > 0) {
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreCompact',
+        preservedContext: preservedParts.join('\n')
+      }
+    };
+  }
+
+  return {};
+}
+
+/**
+ * Main function - reads from stdin, processes, outputs to stdout
+ */
+async function main() {
+  // Read JSON from stdin
+  const chunks = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
+  }
+  const input = Buffer.concat(chunks).toString('utf8');
+
+  let context = {};
+  try {
+    if (input.trim()) {
+      context = JSON.parse(input);
+    }
+  } catch (err) {
+    // If we can't parse input, continue with empty context
+    console.error(`[pre-compact] Warning: Could not parse input JSON`);
+  }
+
+  const result = await handleHook(context);
+  console.log(JSON.stringify(result));
+}
+
+main().catch(err => {
+  console.error(`[pre-compact] Fatal error: ${err.message}`);
+  console.log(JSON.stringify({}));
+});

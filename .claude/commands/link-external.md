@@ -1,6 +1,7 @@
 ---
 argument-hint: <source-path> <category/link-name>
 description: Create symlink in external-sources with documentation
+skill: system-utilities
 allowed-tools:
   - Bash(~/Scripts/link-external.sh:*)
   - Read

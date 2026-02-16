@@ -2,6 +2,7 @@
 
 **Purpose**: Encrypt secrets at rest in git, decrypt only during deployment.
 **Tool**: SOPS + age encryption
+**Location**: `~/Docker/mydocker/.sops.yaml` (configuration)
 
 ---
 
@@ -21,10 +22,10 @@ This allows version control of secrets without exposing them.
 
 | Scenario | Solution |
 |----------|----------|
-| New service needs secrets | Create `.env`, encrypt with SOPS |
-| Deploying service | Decrypt `.env.enc`, run `docker compose up` |
-| Editing existing secrets | Use `sops` in-place edit |
-| Viewing encrypted values | Decrypt to temp `.env` |
+| New service needs secrets | Create `.env`, encrypt with `/secrets:encrypt` |
+| Deploying service | Use `/secrets:deploy` (auto-decrypts) |
+| Editing existing secrets | Use `/secrets:edit` (in-place SOPS edit) |
+| Viewing encrypted values | Use `/secrets:decrypt` (creates temp `.env`) |
 | Rotating keys | Re-encrypt all services after key change |
 
 ---
@@ -34,73 +35,49 @@ This allows version control of secrets without exposing them.
 ### Initial Setup (One-time)
 
 ```bash
-# 1. Install tools
-# On Ubuntu/Debian:
-sudo apt install age
-# Or download from https://github.com/FiloSottile/age/releases
+# 1. Install tools (~/bin/)
+age --version   # v1.2.0
+sops --version  # v3.8.1
 
-# Install SOPS:
-# https://github.com/getsops/sops/releases
-# Place binary in ~/bin/ or /usr/local/bin/
+# 2. Key location
+~/.config/sops/age/keys.txt  # Private key (chmod 600)
 
-# 2. Generate encryption key
-age-keygen -o ~/.config/sops/age/keys.txt
-chmod 600 ~/.config/sops/age/keys.txt
-
-# 3. Note the public key (starts with "age1...")
-grep "public key" ~/.config/sops/age/keys.txt
-
-# 4. Create SOPS config in your Docker directory
-cat > ${DOCKER_ROOT:-.}/.sops.yaml << 'EOF'
-creation_rules:
-  - path_regex: \.env\.enc$
-    age: >-
-      YOUR_PUBLIC_KEY_HERE
-EOF
-
-# 5. Backup your private key securely!
-# - Password manager
-# - Encrypted backup drive
-# - Never commit keys.txt to git
+# 3. Backup locations
+/mnt/synology_nas/main/backups/credentials/sops-age-key.txt
+# Also in password manager
 ```
 
 ### Encrypting a Service
 
 ```bash
 # 1. Create or edit plaintext .env
-vim myservice/.env
+vim ~/Docker/mydocker/caddy/.env
 
-# 2. Encrypt with SOPS
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
-sops --encrypt myservice/.env > myservice/.env.enc
+# 2. Encrypt
+/secrets:encrypt caddy
+# Creates: ~/Docker/mydocker/caddy/.env.enc
+# Removes: ~/Docker/mydocker/caddy/.env (plaintext)
 
-# 3. Remove plaintext, keep encrypted
-rm myservice/.env
-
-# 4. Commit encrypted file
-git add myservice/.env.enc && git commit -m "Add encrypted secrets for myservice"
+# 3. Commit encrypted file
+cd ~/Docker/mydocker && git add caddy/.env.enc && git commit
 ```
 
 ### Deploying a Service
 
 ```bash
-# 1. Decrypt
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
-sops --decrypt myservice/.env.enc > myservice/.env
+# Option A: Full deploy (decrypt + compose up)
+/secrets:deploy caddy
 
-# 2. Deploy
-cd myservice && docker compose up -d
-
-# 3. Optional: remove plaintext after deploy
-rm myservice/.env
+# Option B: Dry run first
+/secrets:deploy caddy --dry-run
 ```
 
 ### Editing Secrets
 
 ```bash
-# Opens encrypted file in $EDITOR, re-encrypts on save
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
-sops myservice/.env.enc
+# Opens encrypted file in $EDITOR
+/secrets:edit caddy
+# Decrypts in memory, re-encrypts on save
 ```
 
 ---
@@ -108,7 +85,7 @@ sops myservice/.env.enc
 ## File Structure
 
 ```
-<docker-root>/
+~/Docker/mydocker/
 ├── .sops.yaml           # SOPS configuration (public key)
 ├── .gitignore           # Ignores .env, allows .env.enc
 └── <service>/
@@ -135,8 +112,8 @@ services:
       - API_KEY=${API_KEY}
 ```
 
-Deploy workflow:
-1. Decrypts `.env.enc` -> `.env`
+Deploy script:
+1. Decrypts `.env.enc` → `.env`
 2. Runs `docker compose up -d`
 3. Optionally removes `.env` after deployment
 
@@ -149,13 +126,13 @@ Deploy workflow:
 | Asset | Location | Protection |
 |-------|----------|------------|
 | Private key | `~/.config/sops/age/keys.txt` | chmod 600, user only |
-| Key backup | Password manager + encrypted backup | Secure storage |
+| Key backup | NAS + password manager | Encrypted storage |
 | Public key | `.sops.yaml` (committed) | Public, safe to share |
 
 ### Access Control
 
-- Private key should exist only on deployment machines
-- Backups in secure locations (password manager, encrypted drive)
+- Private key exists only on AIServer
+- Backups in secure locations (NAS, password manager)
 - Never commit plaintext `.env` files (gitignored by default)
 
 ### Key Rotation
@@ -167,10 +144,9 @@ age-keygen -o ~/.config/sops/age/keys-new.txt
 # 2. Update .sops.yaml with new public key
 
 # 3. Re-encrypt all services
-for service in service1 service2; do
-  sops --decrypt $service/.env.enc > $service/.env
-  sops --encrypt $service/.env > $service/.env.enc
-  rm $service/.env
+for service in caddy n8n authentik; do
+  /secrets:decrypt $service
+  /secrets:encrypt $service  # Uses new key from .sops.yaml
 done
 
 # 4. Backup new key, retire old key
@@ -178,17 +154,12 @@ done
 
 ---
 
-## .gitignore Setup
+## Related Files
 
-Add to your Docker directory's `.gitignore`:
-
-```gitignore
-# Secret management
-.env
-!.env.enc
-*.key
-*.pem
-```
+- **Configuration**: `~/Docker/mydocker/.sops.yaml`
+- **Skill**: `.claude/skills/secrets-management/SKILL.md`
+- **Commands**: `.claude/commands/secrets/*.md`
+- **Scripts**: `Scripts/secrets-*.sh`
 
 ---
 
@@ -196,16 +167,15 @@ Add to your Docker directory's `.gitignore`:
 
 ### "no key found"
 ```bash
-# Ensure SOPS_AGE_KEY_FILE is set
+# Check SOPS_AGE_KEY_FILE
 export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 ```
 
 ### "could not decrypt"
 ```bash
 # Verify key matches
-grep "public key" ~/.config/sops/age/keys.txt  # Your public key
-cat .sops.yaml                                   # Key in config
-# They should match
+cat ~/.config/sops/age/keys.txt | head -2  # Check public key
+cat ~/Docker/mydocker/.sops.yaml          # Compare public key
 ```
 
 ### "mac mismatch"
@@ -213,3 +183,4 @@ File was modified after encryption. Re-encrypt from plaintext.
 
 ---
 
+*Created: 2026-01-26*

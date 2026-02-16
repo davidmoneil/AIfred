@@ -19,7 +19,7 @@ const fs = require('fs').promises;
 
 // Known networks that should exist
 const KNOWN_NETWORKS = [
-  'proxy-network',
+  'caddy-network',
   'logging',
   'bridge',
   'host',
@@ -158,7 +158,7 @@ module.exports = {
         const usesKnownNetwork = composeNetworks.referenced.some(n => KNOWN_NETWORKS.includes(n));
 
         if (!usesKnownNetwork && composeNetworks.referenced.length > 0) {
-          warnings.push('No standard network (proxy-network, logging) detected');
+          warnings.push('No standard network (caddy-network, logging) detected');
         }
 
         if (issues.length > 0) {

@@ -143,10 +143,11 @@ function calculateComplexityScore(prompt) {
     }
   }
 
-  // Explicit complexity (+3 each, max 6)
+  // Explicit complexity (+3, but capped at ONE match to prevent synonym stacking)
+  // "complex comprehensive robust" should only count once, not 3x
   let explicitCount = 0;
   for (const pattern of EXPLICIT_COMPLEXITY) {
-    if (pattern.test(prompt) && explicitCount < 2) {
+    if (pattern.test(prompt) && explicitCount < 1) {
       score += 3;
       explicitCount++;
       signals.push('explicit_complexity');

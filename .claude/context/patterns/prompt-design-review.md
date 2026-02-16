@@ -91,6 +91,52 @@ Implement with patterns in mind:
 
 ---
 
+## Task Type Classification
+
+Different task types require different pattern considerations:
+
+### New Feature / Capability
+
+```
+□ Check for similar implementations in codebase
+□ Review relevant context files
+□ Consider extraction for reuse
+□ Plan for documentation
+□ Consider slash command if repeatable
+```
+
+### Bug Fix / Issue Resolution
+
+```
+□ Check if issue pattern exists in Memory MCP
+□ Look for similar past fixes
+□ Consider root cause vs symptom fix
+□ Document lesson if non-obvious solution
+□ Update relevant context if config-related
+```
+
+### Infrastructure Change
+
+```
+□ Review system documentation first
+□ Check paths-registry.yaml for affected paths
+□ Consider impact on dependent services
+□ Plan rollback approach
+□ Document new configuration patterns
+```
+
+### Automation / Script
+
+```
+□ Check existing slash commands for similarity
+□ Follow workflow template structure
+□ Include Memory MCP storage pattern
+□ Reference appropriate context files
+□ Consider error handling patterns
+```
+
+---
+
 ## Quick Reference Checklist
 
 Before implementing ANY significant task:
@@ -102,7 +148,6 @@ PARC Checklist:
   □ Searched .claude/context/patterns/ for relevant patterns
   □ Checked .claude/context/workflows/ for applicable workflow
   □ Searched Memory MCP for similar past work
-  □ Considered agent selection (custom vs built-in vs skill vs direct)
 □ RELATE:
   □ Considered scope (specific vs generalizable)
   □ Identified reuse opportunities
@@ -143,12 +188,24 @@ For light tasks, mentally run through PARC in seconds:
 
 ---
 
+## Integration with Other Patterns
+
+| Pattern | Integration Point |
+|---------|-------------------|
+| Agent Selection Pattern | Choose automation approach in Assess phase |
+| Memory Storage Pattern | Store new patterns discovered during PARC |
+| Session Exit Procedure | Document PARC findings in session notes |
+| Workflow Template | PARC is implicit in workflow structure |
+| Severity/Status System | Use when classifying PARC findings |
+
+---
+
 ## Slash Command
 
 Use `/design-review` to explicitly invoke PARC analysis before a task:
 
 ```
-/design-review "Add caching to the API calls"
+/design-review "Add caching to the n8n API calls"
 ```
 
 This will walk through all PARC phases with structured output.
@@ -159,25 +216,36 @@ This will walk through all PARC phases with structured output.
 
 ### Example 1: New Slash Command Request
 
-**Prompt**: "Create a command to check service status"
+**Prompt**: "Create a command to check Plex status"
 
 **PARC Analysis**:
-- **Assess**: Check if similar command exists (maybe `/health-check`)
+- **Assess**: Found `/check-service` pattern already exists
 - **Relate**: This is a specific instance of service health check
-- **Create**: Use existing command as template, customize
+- **Create**: Use `/check-service` as template, customize for Plex
 
-**Result**: Followed existing pattern, avoided reinventing
+**Result**: Followed existing pattern, created `/plex-troubleshoot` based on template
 
 ### Example 2: Script Automation Request
 
 **Prompt**: "Write a script to backup config files"
 
 **PARC Analysis**:
-- **Assess**: Is there an existing backup approach?
-- **Relate**: Should integrate with existing backup infrastructure
-- **Create**: Extend existing approach rather than create new system
+- **Assess**: No backup pattern exists, but restic is already used
+- **Relate**: Should integrate with existing restic infrastructure
+- **Create**: Extend restic approach rather than create new system
 
-**Result**: Used existing infrastructure, avoided tool sprawl
+**Result**: Used existing backup infrastructure, avoided tool sprawl
+
+### Example 3: Bug Fix
+
+**Prompt**: "Fix the n8n workflow timeout issue"
+
+**PARC Analysis**:
+- **Assess**: Searched Memory MCP for past n8n timeout issues - found one
+- **Relate**: Past issue was different root cause, but similar symptoms
+- **Create**: Investigate fresh but reference past lesson
+
+**Result**: Found new root cause, stored as new Lesson entity
 
 ---
 
@@ -185,6 +253,9 @@ This will walk through all PARC phases with structured output.
 
 - @.claude/context/patterns/agent-selection-pattern.md - Choose between agents/subagents/skills/tools
 - @.claude/context/patterns/memory-storage-pattern.md - When to store findings
+- @.claude/context/integrations/workflow-patterns.md - Workflow patterns
+- @.claude/commands/design-review.md - Slash command for explicit invocation
+- @knowledge/docs/claude-code-best-practices.md - General best practices
 
 ---
 

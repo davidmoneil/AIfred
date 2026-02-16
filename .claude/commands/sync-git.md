@@ -1,6 +1,7 @@
 ---
 argument-hint: [commit-message]
 description: Sync repository to GitHub with automatic commit
+skill: system-utilities
 allowed-tools:
   - Bash(git:*)
   - Bash(~/Scripts/sync-git.sh:*)

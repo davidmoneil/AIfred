@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Priority Validator Hook
  *
@@ -7,19 +6,22 @@
  * - Collects evidence from git commits, file changes
  * - Assists with /update-priorities validation
  *
- * Uses file-based persistence so evidence survives across hook invocations.
- *
  * Priority: LOW (Workflow Enhancement)
  * Created: 2025-12-06
- * Converted to stdin/stdout executable hook with file persistence
  */
 
 const fs = require('fs').promises;
 const path = require('path');
 
-// Configuration
-const LOG_DIR = path.join(__dirname, '..', 'logs');
-const EVIDENCE_FILE = path.join(LOG_DIR, 'priority-evidence.json');
+const PRIORITIES_FILE = path.join(process.cwd(), '.claude/context/projects/current-priorities.md');
+
+// Track evidence for current session
+const evidence = {
+  commits: [],
+  filesModified: [],
+  servicesChanged: [],
+  commandsRun: []
+};
 
 // Patterns to detect work categories
 const WORK_PATTERNS = {
@@ -46,43 +48,12 @@ const WORK_PATTERNS = {
 };
 
 /**
- * Load evidence from file
- */
-async function loadEvidence() {
-  try {
-    const data = await fs.readFile(EVIDENCE_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch {
-    return {
-      sessionStart: new Date().toISOString(),
-      commits: [],
-      filesModified: [],
-      servicesChanged: [],
-      commandsRun: [],
-      significantActions: 0
-    };
-  }
-}
-
-/**
- * Save evidence to file
- */
-async function saveEvidence(evidence) {
-  try {
-    await fs.mkdir(LOG_DIR, { recursive: true });
-    await fs.writeFile(EVIDENCE_FILE, JSON.stringify(evidence, null, 2));
-  } catch (err) {
-    console.error(`[priority-validator] Failed to save evidence: ${err.message}`);
-  }
-}
-
-/**
  * Detect work category from command
  */
 function detectCategory(command) {
-  for (const [, { pattern, category }] of Object.entries(WORK_PATTERNS)) {
+  for (const [name, { pattern }] of Object.entries(WORK_PATTERNS)) {
     if (pattern.test(command)) {
-      return category;
+      return name;
     }
   }
   return null;
@@ -109,7 +80,7 @@ function extractServiceName(command) {
 /**
  * Record evidence from tool execution
  */
-function recordEvidence(evidence, tool, parameters) {
+function recordEvidence(tool, parameters) {
   if (tool === 'Bash') {
     const command = parameters?.command || '';
     const category = detectCategory(command);
@@ -120,10 +91,6 @@ function recordEvidence(evidence, tool, parameters) {
         category,
         timestamp: new Date().toISOString()
       });
-      // Keep last 50 commands
-      if (evidence.commandsRun.length > 50) {
-        evidence.commandsRun = evidence.commandsRun.slice(-50);
-      }
 
       const service = extractServiceName(command);
       if (service && !evidence.servicesChanged.includes(service)) {
@@ -147,10 +114,6 @@ function recordEvidence(evidence, tool, parameters) {
     const filePath = parameters?.file_path || '';
     if (filePath && !evidence.filesModified.includes(filePath)) {
       evidence.filesModified.push(filePath);
-      // Keep last 100 files
-      if (evidence.filesModified.length > 100) {
-        evidence.filesModified = evidence.filesModified.slice(-100);
-      }
     }
   }
 }
@@ -158,25 +121,25 @@ function recordEvidence(evidence, tool, parameters) {
 /**
  * Generate evidence summary
  */
-function generateSummary(evidence) {
-  const lines = ['Session Evidence Summary:', String.fromCharCode(9472).repeat(40)];
+function generateSummary() {
+  const lines = ['Session Evidence Summary:', '─'.repeat(40)];
 
   if (evidence.commits.length > 0) {
     lines.push(`\nCommits (${evidence.commits.length}):`);
     evidence.commits.slice(-5).forEach(c => {
-      lines.push(`  - ${c.message}`);
+      lines.push(`  • ${c.message}`);
     });
   }
 
   if (evidence.servicesChanged.length > 0) {
     lines.push(`\nServices Modified (${evidence.servicesChanged.length}):`);
-    evidence.servicesChanged.forEach(s => lines.push(`  - ${s}`));
+    evidence.servicesChanged.forEach(s => lines.push(`  • ${s}`));
   }
 
   if (evidence.filesModified.length > 0) {
     lines.push(`\nFiles Changed (${evidence.filesModified.length}):`);
     evidence.filesModified.slice(-10).forEach(f => {
-      lines.push(`  - ${path.basename(f)}`);
+      lines.push(`  • ${path.basename(f)}`);
     });
   }
 
@@ -189,74 +152,46 @@ function generateSummary(evidence) {
   if (Object.keys(categories).length > 0) {
     lines.push('\nWork Categories:');
     Object.entries(categories).forEach(([cat, count]) => {
-      lines.push(`  - ${cat}: ${count} operations`);
+      lines.push(`  • ${cat}: ${count} operations`);
     });
   }
 
-  lines.push(String.fromCharCode(9472).repeat(40));
+  lines.push('─'.repeat(40));
   return lines.join('\n');
 }
 
-/**
- * Main handler
- */
-async function handleHook(context) {
-  const { tool, parameters } = context;
+module.exports = {
+  name: 'priority-validator',
+  description: 'Track evidence for priority completion',
+  event: 'PostToolUse',
 
-  const evidence = await loadEvidence();
+  async handler(context) {
+    const { tool, parameters } = context;
 
-  // Record evidence
-  recordEvidence(evidence, tool, parameters);
+    // Record evidence
+    recordEvidence(tool, parameters);
 
-  // Track significant actions
-  const newSignificant = evidence.commits.length +
-    evidence.servicesChanged.length +
-    Math.floor(evidence.filesModified.length / 5);
+    // Periodically show summary (every 20 significant actions)
+    const significantActions = evidence.commits.length +
+                              evidence.servicesChanged.length +
+                              Math.floor(evidence.filesModified.length / 5);
 
-  const shouldShowSummary = newSignificant > 0 &&
-    newSignificant !== evidence.significantActions &&
-    newSignificant % 20 === 0;
+    if (significantActions > 0 && significantActions % 20 === 0) {
+      console.log('\n[priority-validator] 📊 SESSION ACTIVITY SUMMARY');
+      console.log(generateSummary());
+      console.log('\nUse /update-priorities to validate completions\n');
+    }
 
-  evidence.significantActions = newSignificant;
-
-  // Save updated evidence
-  await saveEvidence(evidence);
-
-  if (shouldShowSummary) {
-    return {
-      proceed: true,
-      outputToUser: '\n[priority-validator] Session Activity Summary\n' +
-        generateSummary(evidence) +
-        '\nUse /update-priorities to validate completions\n'
-    };
+    return { proceed: true };
   }
+};
 
-  return { proceed: true };
-}
-
-/**
- * Main function - reads from stdin, processes, outputs to stdout
- */
-async function main() {
-  const chunks = [];
-  for await (const chunk of process.stdin) {
-    chunks.push(chunk);
-  }
-  const input = Buffer.concat(chunks).toString('utf8');
-
-  let context;
-  try {
-    context = JSON.parse(input);
-  } catch {
-    console.log(JSON.stringify({ proceed: true }));
-    return;
-  }
-
-  const result = await handleHook(context);
-  console.log(JSON.stringify(result));
-}
-
-main().catch(err => {
-  console.error(`[priority-validator] Fatal error: ${err.message}`);
-  console.log(JSON.stringify({ proceed: true }));
-});
+// Export for external use
+module.exports.getEvidence = () => JSON.parse(JSON.stringify(evidence));
+module.exports.getSummary = generateSummary;
+module.exports.clearEvidence = () => {
+  evidence.commits = [];
+  evidence.filesModified = [];
+  evidence.servicesChanged = [];
+  evidence.commandsRun = [];
+};

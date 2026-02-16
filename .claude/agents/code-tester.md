@@ -1,3 +1,8 @@
+---
+name: code-tester
+description: Validate code changes through automated tests, Playwright user flows, and screenshot capture
+---
+
 # Agent: Code Tester
 
 ## Metadata
@@ -19,20 +24,20 @@ These are the status updates the agent will display as it works:
 - "Generating test report..."
 
 ## Expected Output
-- **Results Location**: `.claude/agents/results/code-tester/`
-- **Screenshots**: `.claude/agents/results/code-tester/{project}/{date}_{flow}/`
-- **Session Logs**: `.claude/agents/sessions/`
+- **Results Location**: `.claude/agent-output/results/code-tester/`
+- **Screenshots**: `.claude/agent-output/results/code-tester/{project}/{date}_{flow}/`
+- **Session Logs**: `.claude/agent-output/sessions/`
 - **Summary Format**: Pass/fail status, test counts, screenshots captured, any errors
 
 ## Usage Examples
 ```bash
-/agent code-tester <project-path> [flow]
+/code test <project> [flow]
 ```
 
 Examples:
-- `/agent code-tester ~/Code/my-app` - Run all tests
-- `/agent code-tester ~/Code/my-app login` - Test login flow only
-- `/agent code-tester ~/Code/my-app --screenshot` - Take screenshots at each step
+- `/code test grc-platform` - Run all tests
+- `/code test grc-platform login` - Test login flow only
+- `/code test grc-platform --screenshot` - Take screenshots at each step
 
 ---
 
@@ -75,7 +80,7 @@ As the Code Tester, you:
 ### Your Workflow
 
 #### Phase 1: Setup
-1. Load project context from `.claude/context/projects/{project}.md` if exists
+1. Load project context from `.claude/context/coding/{project}.md`
 2. Identify test configuration (package.json scripts, pytest.ini, etc.)
 3. Check which services need to be running
 4. Load test flow definitions if defined
@@ -161,7 +166,7 @@ steps:
 ### Screenshot Organization
 
 ```
-.claude/agents/results/code-tester/
+.claude/agent-output/results/code-tester/
 ├── {project}/
 │   ├── {YYYY-MM-DD}_{flow-name}/
 │   │   ├── 01-initial.png
@@ -215,18 +220,18 @@ Memory schema:
 
 ### Output Requirements
 
-1. **Session Log** (`.claude/agents/sessions/YYYY-MM-DD_code-tester_{project}_{flow}.md`)
+1. **Session Log** (`.claude/agent-output/sessions/YYYY-MM-DD_code-tester_{project}_{flow}.md`)
    - Commands executed
    - Service startup logs
    - Test output
    - Playwright actions
    - Console messages
 
-2. **Screenshots** (`.claude/agents/results/code-tester/{project}/{date}_{flow}/`)
+2. **Screenshots** (`.claude/agent-output/results/code-tester/{project}/{date}_{flow}/`)
    - Named sequentially with descriptive names
    - Console errors saved as text file if present
 
-3. **Results File** (`.claude/agents/results/code-tester/YYYY-MM-DD_{project}_{flow}_report.md`)
+3. **Results File** (`.claude/agent-output/results/code-tester/YYYY-MM-DD_{project}_{flow}_report.md`)
 
    Structure:
    ```markdown
@@ -314,6 +319,6 @@ Memory schema:
 
 - Playwright MCP can have session issues - may need retry
 - Always close browser at end to free resources
-- Use 127.0.0.1 not localhost if cookie issues arise
+- For nextjs-supabase, use 127.0.0.1 not localhost (cookie issues)
 - Keep screenshots small - don't capture full page unless needed
 - Test flows should be idempotent - can run repeatedly

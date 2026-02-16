@@ -12,13 +12,13 @@
  * - Detects standalone commands (no skill parent)
  *
  * Created: 2026-01-22
- * AIfred skill router
+ * Pattern: Skill Standardization Initiative
  */
 
 const fs = require('fs').promises;
 const path = require('path');
 
-// Configuration - uses __dirname for portability
+// Configuration
 const COMMANDS_DIR = path.join(__dirname, '..', 'commands');
 const SKILLS_DIR = path.join(__dirname, '..', 'skills');
 const LOG_DIR = path.join(__dirname, '..', 'logs');
@@ -273,6 +273,7 @@ async function handleHook(context) {
  * Main function - reads from stdin, processes, outputs to stdout
  */
 async function main() {
+  // Read JSON from stdin
   const chunks = [];
   for await (const chunk of process.stdin) {
     chunks.push(chunk);
@@ -283,6 +284,7 @@ async function main() {
   try {
     context = JSON.parse(input);
   } catch {
+    // If we can't parse input, just allow to proceed
     console.log(JSON.stringify({ proceed: true }));
     return;
   }

@@ -1,9 +1,9 @@
 ---
 argument-hint: <name> [--type TYPE] [--lang LANG] [--github]
-description: Create a new code project and register with this hub
+description: Create a new code project in ~/Code and register with AIfred
 skill: project-lifecycle
 allowed-tools:
-  - Bash(scripts/new-code-project.sh:*)
+  - Bash(~/Scripts/new-code-project.sh:*)
   - Edit
 ---
 
@@ -22,7 +22,7 @@ Create a new code project using the `new-code-project.sh` script.
 Run the script:
 
 ```bash
-scripts/new-code-project.sh $ARGUMENTS
+~/Scripts/new-code-project.sh $ARGUMENTS
 ```
 
 After running, **manually update paths-registry.yaml** with the entry shown in the output.
@@ -45,7 +45,7 @@ After running, **manually update paths-registry.yaml** with the entry shown in t
 
 ## What It Creates
 
-**In the projects directory:**
+**In ~/Code/<name>:**
 ```
 <name>/
 ├── .git/
@@ -56,15 +56,15 @@ After running, **manually update paths-registry.yaml** with the entry shown in t
 └── [type-specific files]
 ```
 
-**In this hub:**
+**In AIfred:**
 - Context file: `.claude/context/projects/<name>.md`
 - Registry entry: (manual update to paths-registry.yaml)
 
 ## Script Location
 
-`scripts/new-code-project.sh`
+`~/Scripts/new-code-project.sh`
 
 ## Related
 
-- Script: @scripts/new-code-project.sh
+- Script: @Scripts/new-code-project.sh
 - Pattern: @.claude/context/patterns/capability-layering-pattern.md

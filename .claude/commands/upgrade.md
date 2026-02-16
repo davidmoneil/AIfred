@@ -1,3 +1,16 @@
+---
+description: Self-improvement system for discovering and applying updates to your hub
+argument-hint: [subcommand] [args]
+skill: upgrade
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - WebFetch
+  - WebSearch
+  - Glob
+---
+
 # /upgrade Command
 
 Self-improvement system for discovering and applying updates to your hub.
@@ -35,7 +48,7 @@ Sources checked: 6 | New discoveries: 2
 Evaluate pending upgrades for relevance to your hub.
 
 **Process**:
-1. Read current hub state (hooks, skills, MCP config)
+1. Read hub current state (hooks, skills, MCP config)
 2. Score each upgrade by relevance, impact, complexity
 3. Prioritize by value/effort ratio
 4. Update pending-upgrades.json with scores
@@ -45,6 +58,41 @@ Evaluate pending upgrades for relevance to your hub.
 - Recency (+2 max): Newer items score higher
 - Security (+3): Security-related updates
 - Breaking Changes (-2): Penalty for breaking changes
+
+### /upgrade adopt [id]
+
+Map new features from a Claude Code upgrade to concrete hub infrastructure changes.
+
+**Arguments**:
+- `id` (optional): Specific upgrade ID (e.g., UP-033)
+- If omitted, checks all recently analyzed Claude feature upgrades
+
+**When to use**: After `/upgrade analyze` for Claude Code upgrades that include new features (not just bug fixes). This phase bridges "upgrade installed" and "capabilities leveraged."
+
+**Process**:
+1. Read the analysis report for the upgrade
+2. Map each new feature against hub infrastructure (hooks, skills, commands, agents, scheduled jobs, MCPs, session workflow)
+3. Classify adoption effort: Immediate / Short-term / Evaluation
+4. Generate concrete file changes needed
+5. Create Beads tasks for each adoption item
+6. Update baselines with adoption status
+
+**Example**:
+```
+/upgrade adopt UP-033
+
+UP-033 Adoption Plan
+====================
+Feature: Fast Mode (v2.1.36)
+  Adopt: Update claude-scheduled.sh with --fast flag
+  Effort: Immediate
+  Beads: Created BD-xxx
+
+Feature: Agent Teams (v2.1.32)
+  Adopt: Evaluate for parallel-dev integration
+  Effort: Evaluation
+  Beads: Created BD-xxx
+```
 
 ### /upgrade propose [id]
 
@@ -122,6 +170,7 @@ Defer an upgrade for later.
 # Weekly routine
 /upgrade discover              # Find new updates
 /upgrade analyze               # Score them
+/upgrade adopt UP-033          # Map features to infrastructure (Claude upgrades)
 /upgrade propose               # Review top proposal
 /upgrade implement UP-001      # Apply if approved
 

@@ -1,11 +1,13 @@
 ---
 name: session-management
-version: 1.0.0
+version: 1.1.0
 description: Manage Claude Code sessions effectively - starting, tracking, checkpointing, and exiting with proper documentation
 category: workflow
 tags: [session, context, continuity, priorities, audit]
 created: 2026-01-05
-
+updated: 2026-01-16
+context: fork
+agent: general-purpose
 ---
 
 # Session Management Skill
@@ -208,6 +210,17 @@ See @.claude/context/workflows/session-exit-procedure.md for 19-step process.
 - `doc-sync-trigger.js` tracks code changes during session
 - After 5+ significant changes, suggests sync
 - `/agent memory-bank-synchronizer` aligns docs with code
+
+### With Obsidian Skill
+
+The obsidian skill provides document operations for session artifacts:
+
+- **Create session notes**: `/obsidian:new session "Topic" --folder="AI-Sessions"`
+- **Update inbox**: `/obsidian:update "_inbox.md" --section="Pending" --content="..." --append`
+- **Query past sessions**: `/obsidian:query --type=session --folder="AI-Sessions"`
+- **Update frontmatter**: `/obsidian:update "session.md" --frontmatter="status:completed"`
+
+See @.claude/skills/obsidian/SKILL.md for full command reference.
 
 ---
 

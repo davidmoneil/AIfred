@@ -17,5 +17,4 @@ fi
 export BEADS_ACTOR="claude-${SESSION_DATE}-${SESSION_ID}"
 
 # Ensure bd can find the beads directory when running from any location
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-export BEADS_WORKING_DIR="${BEADS_WORKING_DIR:-$AIFRED_HOME}"
+export BEADS_WORKING_DIR="${BEADS_WORKING_DIR:-$PWD}"

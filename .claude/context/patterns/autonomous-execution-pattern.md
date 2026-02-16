@@ -1,8 +1,15 @@
 # Autonomous Execution Pattern
 
-**Status**: Active
+**Status**: Superseded (reference only)
 **Created**: 2026-01-20
+**Superseded**: 2026-02-08 by **Headless Claude** framework
 **Purpose**: Enable scheduled, headless Claude Code execution with safety controls
+
+> **Note (2026-02-08)**: This pattern has been superseded by the **Headless Claude** framework.
+> The permission tiers and CLI reference below are still valid and used by the new system.
+> For the full framework (dispatcher, personas, queue, Beads integration), see:
+> - Design: Obsidian `05-AI/Projects/Headless-Claude/Headless Claude - Design Specification.md`
+> - Implementation: `.claude/jobs/` (dispatcher.sh, executor.sh, registry.yaml, personas/)
 
 ## Overview
 
@@ -177,7 +184,7 @@ claude -p "Extract data" --output-format json --json-schema '{"type":"object"}'
 set -euo pipefail
 
 # Configuration
-PROJECT_DIR="${PROJECT_DIR:-<project_root>}"
+PROJECT_DIR="${PROJECT_DIR:-${AIFRED_HOME:-$HOME/AIfred}}"
 LOG_DIR="$PROJECT_DIR/.claude/logs/scheduled"
 JOBS_DIR="$PROJECT_DIR/.claude/jobs"
 
@@ -367,13 +374,13 @@ Output recommendations only - do not modify files.
 # Runs in hub directory to load context
 
 # Weekly upgrade discovery (Sunday 6:00 AM)
-0 6 * * 0 <project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover >> <project_root>/.claude/logs/scheduled/cron.log 2>&1
+0 6 * * 0 ${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh upgrade-discover >> ${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/cron.log 2>&1
 
 # Daily health summary (6:00 AM)
-0 6 * * * <project_root>/.claude/jobs/claude-scheduled.sh health-summary >> <project_root>/.claude/logs/scheduled/cron.log 2>&1
+0 6 * * * ${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh health-summary >> ${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/cron.log 2>&1
 
 # Weekly priority review (Monday 7:00 AM)
-0 7 * * 1 <project_root>/.claude/jobs/claude-scheduled.sh priority-review >> <project_root>/.claude/logs/scheduled/cron.log 2>&1
+0 7 * * 1 ${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh priority-review >> ${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/cron.log 2>&1
 ```
 
 ### Systemd Timer (Alternative)
@@ -400,11 +407,11 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-User=<your-username>
-WorkingDirectory=<project_root>
-ExecStart=<project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover
-StandardOutput=append:<project_root>/.claude/logs/scheduled/systemd.log
-StandardError=append:<project_root>/.claude/logs/scheduled/systemd.log
+User=davidmoneil
+WorkingDirectory=${AIFRED_HOME:-$HOME/AIfred}
+ExecStart=${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh upgrade-discover
+StandardOutput=append:${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/systemd.log
+StandardError=append:${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/systemd.log
 
 [Install]
 WantedBy=multi-user.target
@@ -463,7 +470,7 @@ fi
       "name": "Execute Claude Job",
       "type": "n8n-nodes-base.executeCommand",
       "parameters": {
-        "command": "<project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover"
+        "command": "${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh upgrade-discover"
       }
     },
     {

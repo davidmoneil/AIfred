@@ -34,6 +34,7 @@ A **self-improvement system** that monitors external sources for updates to Clau
 |------|--------|---------|
 | Find updates | Check sources for new releases | `/upgrade discover` |
 | Evaluate relevance | Score and prioritize discoveries | `/upgrade analyze` |
+| Adopt features | Map new capabilities to infrastructure | `/upgrade adopt` |
 | Get proposal | Generate implementation plan | `/upgrade propose` |
 | Apply upgrade | Implement approved change | `/upgrade implement <id>` |
 | Check status | View pending/recent upgrades | `/upgrade status` |
@@ -57,10 +58,18 @@ A **self-improvement system** that monitors external sources for updates to Clau
 +---------------------------------------------------------------------+
 |  PHASE 2: ANALYZE                                                    |
 |  /upgrade analyze                                                    |
-|     - Read current hub state (.claude/*, CLAUDE.md)           |
+|     - Read hub current state (.claude/*, CLAUDE.md)           |
 |     - Evaluate each discovery for relevance                          |
 |     - Score impact (1-10) and complexity (Low/Med/High)              |
 |     - Prioritize by value/effort ratio                               |
++---------------------------------------------------------------------+
+|  PHASE 2.5: ADOPT (Feature Upgrades Only)                            |
+|  /upgrade adopt [id]                                                 |
+|     - Triggered after Analyze for Claude feature-rich upgrades       |
+|     - Map new features against hub infrastructure             |
+|     - Identify specific files/configs that should change             |
+|     - Generate concrete Beads tasks for adoption work                |
+|     - Separate "upgrade installed" from "capabilities leveraged"     |
 +---------------------------------------------------------------------+
 |  PHASE 3: PROPOSE                                                    |
 |  /upgrade propose [id]                                               |
@@ -180,6 +189,67 @@ Run /upgrade analyze to evaluate relevance.
 - 6-7: High - Include in next session
 - 4-5: Medium - Include in weekly review
 - 1-3: Low - Log but don't notify
+
+---
+
+## Adopt Workflow (Feature Upgrades)
+
+**When to trigger**: After analyzing a Claude Code upgrade that introduces new features (not just bug fixes or security patches). The Analyze phase identifies *what's available*; the Adopt phase determines *how to leverage it*.
+
+### Adopt Checklist
+
+For each new feature in a Claude Code upgrade:
+
+1. **Map to infrastructure**: Which hub components could use this feature?
+   - Hooks, skills, commands, agents, scheduled jobs, MCPs, session workflow
+2. **Identify concrete changes**: What specific files need modification?
+   - Config files, documentation, scripts, CLAUDE.md
+3. **Classify adoption effort**:
+   - **Immediate** (config/docs update, <5 min)
+   - **Short-term** (script changes, testing needed, <1 session)
+   - **Evaluation** (experimental feature, needs research first)
+4. **Create Beads tasks**: One task per adoption item with labels
+   ```bash
+   bd create "Adopt <feature> in <component>" -t task -p <priority> \
+     -l "domain:infrastructure,project:aiprojects,severity:<severity>,source:upgrade"
+   ```
+5. **Update baselines**: Mark features as "adopted" vs "available" vs "active"
+
+### Feature-to-Infrastructure Map
+
+Reference table for mapping Claude Code features to hub components:
+
+| Feature Type | Check These Components |
+|-------------|----------------------|
+| Model changes | `model-selection.md`, CLAUDE.md, agent configs |
+| New CLI flags | `claude-scheduled.sh`, autonomous-execution-pattern |
+| Agent/subagent features | `parallel-dev/SKILL.md`, agent definitions, orchestration |
+| Memory features | `session-state.md` workflow, `memory-storage-pattern.md` |
+| MCP improvements | `mcp-servers.md`, gateway config, MCP loading strategy |
+| Security fixes | `claude-scheduled.sh` permissions, hooks, sandbox config |
+| Skill/context features | `_index.md`, skill definitions, compaction-essentials |
+
+### Example Adopt Output
+
+```
+UP-033 Adoption Plan
+====================
+Feature: Fast Mode (v2.1.36)
+  Status: Available (requires /extra-usage)
+  Adopt: Update claude-scheduled.sh with --fast flag
+  Files: .claude/jobs/claude-scheduled.sh
+  Effort: Immediate
+  Beads: Created BD-xxx
+
+Feature: Agent Teams (v2.1.32)
+  Status: Available (experimental)
+  Adopt: Evaluate for parallel-dev integration
+  Files: .claude/skills/parallel-dev/SKILL.md
+  Effort: Evaluation
+  Beads: Created BD-xxx
+```
+
+---
 
 ### Impact Levels
 
@@ -391,7 +461,7 @@ cat ~/.claude/logs/scheduled/upgrade-discover-*.json | tail -1 | jq '.result'
 
 ```bash
 # Weekly discovery - Sunday 6:00 AM
-0 6 * * 0 <project_root>/.claude/jobs/claude-scheduled.sh upgrade-discover
+0 6 * * 0 ${AIFRED_HOME}/.claude/jobs/claude-scheduled.sh upgrade-discover
 ```
 
 ### How It Works

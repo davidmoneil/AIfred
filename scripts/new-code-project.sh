@@ -10,7 +10,7 @@ set -euo pipefail
 
 # Configuration
 CODE_DIR="${HOME}/Code"
-AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "$0")/.." && pwd)}"
+AIFRED_HOME="${AIFRED_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 REGISTRY_FILE="${AIFRED_HOME}/paths-registry.yaml"
 CONTEXT_DIR="${AIFRED_HOME}/.claude/context/projects"
 
@@ -361,8 +361,7 @@ if [[ "$GITHUB" == true ]]; then
     if command -v gh &> /dev/null; then
         log_info "Creating GitHub repository..."
         if gh repo create "$NAME" --private --source=. --push 2>/dev/null; then
-            GH_USER=$(gh api user -q '.login' 2>/dev/null || echo "your-username")
-            log_success "Created GitHub repo: github.com/${GH_USER}/${NAME}"
+            log_success "Created GitHub repo: github.com/davidmoneil/${NAME}"
         else
             log_warning "GitHub repo creation failed - may already exist or auth issue"
         fi
@@ -396,7 +395,7 @@ echo "  🔧 Language: ${LANG:-Not specified}"
 echo "  📝 Context:  .claude/context/projects/${NAME}.md"
 echo "  📊 Registry: paths-registry.yaml (update needed)"
 if [[ "$GITHUB" == true ]]; then
-echo "  🐙 GitHub:   github.com/${GH_USER:-your-username}/${NAME}"
+echo "  🐙 GitHub:   github.com/davidmoneil/${NAME}"
 fi
 echo "═══════════════════════════════════════════════════"
 echo ""

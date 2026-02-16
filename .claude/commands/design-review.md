@@ -1,6 +1,7 @@
 ---
 argument-hint: "<task description>"
 description: Apply PARC pattern to review task design before implementation
+skill: structured-planning
 allowed-tools:
   - Read
   - Grep

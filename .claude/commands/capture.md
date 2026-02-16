@@ -1,3 +1,14 @@
+---
+description: Capture learnings, decisions, sessions, and research to structured history
+argument-hint: <type> "<title>" [options]
+skill: session-management
+allowed-tools:
+  - Write
+  - Edit
+  - Read
+  - Glob
+---
+
 # /capture Command
 
 Quickly capture learnings, decisions, sessions, and research to the structured history system.

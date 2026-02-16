@@ -26,7 +26,7 @@ input=$(cat)
 # ============================================================================
 
 # Your main project directory (where Claude Code launches)
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$HOME/AIProjects}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 # Directory where code projects live
 CODE_DIR="$HOME/Code"

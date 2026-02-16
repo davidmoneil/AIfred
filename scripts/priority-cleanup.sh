@@ -9,6 +9,7 @@
 #
 # Usage: ./priority-cleanup.sh [--dry-run] [--verbose] [--force-claude]
 #
+# Created: 2026-01-22
 # Pattern: Capability Layering (bash detection + auto-archive, Claude for judgment)
 
 set -euo pipefail
@@ -18,12 +19,9 @@ set -euo pipefail
 # ============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Cross-platform compatibility
-source "${SCRIPT_DIR}/lib/platform.sh"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-PRIORITIES_FILE="$PROJECT_DIR/.claude/context/projects/current-priorities.md"
-ARCHIVE_DIR="$PROJECT_DIR/.claude/context/archive"
+AIPROJECTS_DIR="$(dirname "$SCRIPT_DIR")"
+PRIORITIES_FILE="$AIPROJECTS_DIR/.claude/context/projects/current-priorities.md"
+ARCHIVE_DIR="$AIPROJECTS_DIR/.claude/context/archive"
 TIMESTAMP=$(date '+%Y-%m-%d')
 MONTH_STAMP=$(date '+%Y-%m')
 
@@ -188,7 +186,7 @@ check_completed_section_size() {
 check_old_dates() {
     # Find entries with dates older than threshold
     local cutoff_date old_entries
-    cutoff_date=$(compat_date_relative "-${ARCHIVE_AGE_DAYS} days" '+%Y-%m-%d')
+    cutoff_date=$(date -d "-${ARCHIVE_AGE_DAYS} days" '+%Y-%m-%d')
 
     # Look for date patterns like 2025-12-27 or (2025-12-27)
     old_entries=$(grep -oE "20[0-9]{2}-[01][0-9]-[0-3][0-9]" "$PRIORITIES_FILE" | sort -u | while read -r date; do
@@ -278,8 +276,6 @@ main() {
     # Verify file exists
     if [[ ! -f "$PRIORITIES_FILE" ]]; then
         error "Priorities file not found: $PRIORITIES_FILE"
-        log "Expected at: $PRIORITIES_FILE"
-        log "This script expects .claude/context/projects/current-priorities.md in the project root."
         exit 1
     fi
 

@@ -1,6 +1,6 @@
 # Health Endpoint Pattern
 
-Standard contract for service health endpoints in hub infrastructure.
+Standard contract for service health endpoints in your infrastructure.
 
 ## Overview
 

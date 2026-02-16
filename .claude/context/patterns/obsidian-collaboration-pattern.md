@@ -357,7 +357,7 @@ Example: `/mnt/synology_nas/Obsidian/Master/AI-Sessions/2026/01/02-obsidian-inte
 | **Project context** | Hub `.claude/context/projects/` | Technical project docs |
 | **Session state** | Hub `.claude/context/session-state.md` | Claude's working memory |
 
-**Rule**: Default documentation goes to the hub unless explicitly requested for Obsidian.
+**Rule**: Default documentation goes to your hub unless explicitly requested for Obsidian.
 
 ---
 
@@ -381,8 +381,45 @@ Example: `/mnt/synology_nas/Obsidian/Master/AI-Sessions/2026/01/02-obsidian-inte
 
 ---
 
+## Obsidian Skill Integration
+
+The **obsidian skill** provides programmatic document operations for session collaboration:
+
+### Quick Commands
+
+```bash
+# Create session notes
+/obsidian:new session "2026-01-29 Planning" --folder="AI-Sessions"
+
+# Update inbox with response
+/obsidian:update "_inbox.md" --section="Current Response" --content="..." --append
+
+# Create question document
+/obsidian:new question "Architecture Decision" --folder="AI-Sessions/2026/01/questions"
+
+# Create decision record
+/obsidian:new decision "Use PostgreSQL" --folder="AI-Sessions/2026/01/decisions"
+
+# Query past sessions
+/obsidian:query --type=session --folder="AI-Sessions" --format=table
+
+# Update frontmatter on session close
+/obsidian:update "session.md" --frontmatter="status:complete"
+```
+
+### Skill Reference
+
+See @.claude/skills/obsidian/SKILL.md for full command documentation including:
+- Document creation with templates
+- Canvas file operations
+- Frontmatter queries
+- Database schema detection
+
+---
+
 ## Related Documentation
 
+- **Obsidian Skill**: `.claude/skills/obsidian/SKILL.md`
 - **Documentation Location Standard**: `.claude/context/standards/documentation-location.md`
 - **Session Exit Procedure**: `.claude/context/workflows/session-exit-procedure.md`
 - **Memory Storage Pattern**: `.claude/context/patterns/memory-storage-pattern.md`

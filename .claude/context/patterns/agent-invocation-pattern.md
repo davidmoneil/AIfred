@@ -191,8 +191,8 @@ Some skills invoke agents for specific operations.
 
 | Output | Location | Description |
 |--------|----------|-------------|
-| Results | `.claude/agents/results/<agent>/` | Main output |
-| Session | `.claude/agents/sessions/` | Session log |
+| Results | `.claude/agent-output/results/<agent>/` | Main output |
+| Session | `.claude/agent-output/sessions/` | Session log |
 | Memory | `.claude/agents/memory/<agent>/` | Learnings |
 
 ---
@@ -379,7 +379,7 @@ Agent troubleshoots the same issue repeatedly without learning
 
 ```markdown
 # BAD - Too narrow
-/agent check-nginx-port-80-on-myserver
+/agent check-nginx-port-80-on-aiserver
 ```
 
 **Fix**: Generalize to `/agent service-troubleshooter "nginx on aiserver"`.

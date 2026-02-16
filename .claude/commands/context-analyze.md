@@ -2,8 +2,10 @@
 name: context-analyze
 description: Analyze Claude Code context usage and suggest optimizations
 usage: /context-analyze [--test] [--no-reduce]
+skill: session-management
 allowed-tools:
   - Bash(scripts/weekly-context-analysis.sh:*)
+  - Bash(~/Scripts/weekly-context-analysis.sh:*)
 ---
 
 # /context-analyze - Context Usage Analysis
