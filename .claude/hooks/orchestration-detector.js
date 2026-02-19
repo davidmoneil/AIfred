@@ -94,7 +94,10 @@ const SKIP_PATTERNS = [
   /^(show|display|list|find|search|look)/i, // Read-only ops
   /^(help|explain|describe)\b/i,  // Informational
   /^(commit|push|pull|merge|checkout)\b/i, // Git ops
-  /^(run|execute|test)\s+(the\s+)?(tests?|build|linter)/i // Simple commands
+  /^(run|execute|test)\s+(the\s+)?(tests?|build|linter)/i, // Simple commands
+  /^<task-notification>/i,        // System task notifications
+  /^<system-reminder>/i,          // System reminders
+  /^#\s+\w+\s+Persona/i           // Headless Claude persona prompts
 ];
 
 /**

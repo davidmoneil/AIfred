@@ -56,11 +56,21 @@ standards/
 - ✅ **Severity/Status System**: `[X] CRITICAL` / `[!] HIGH` / `[~] MEDIUM` / `[-] LOW`
 - ✅ **Model Selection**: Opus for architecture, Sonnet for dev, Haiku for quick checks
 
+### Tools (CLI & Service References)
+```
+tools/
+└── beads-reference.md           # Beads task management CLI reference
+```
+
+**Purpose**: Reference docs for CLI tools and services used by the hub.
+
 ### Patterns (Reusable Implementations)
 ```
 patterns/
 ├── _index.md                    # Patterns directory index
 ├── agent-selection-pattern.md   # Choose agents vs subagents vs skills vs tools
+├── automation-routing.md        # Scheduling/cron decision tree
+├── clarification-pattern.md     # When/how to clarify ambiguous requests
 ├── memory-storage-pattern.md    # When/how to store in Memory MCP
 └── prompt-design-review.md      # PARC pattern for design review
 ```
@@ -68,10 +78,12 @@ patterns/
 **Purpose**: Extracted patterns from recurring practices. Reference when implementing similar functionality.
 
 **Active Patterns**:
-- ✅ **Agent Selection**: Choose between custom agents, built-in subagents, skills, and direct tools
-- ✅ **Memory Storage Pattern**: Decision framework for Memory MCP storage
-- ✅ **PARC Design Review**: Prompt → Assess → Relate → Create pre-implementation check
-- ✅ **Environment Profiles**: Composable layers (homelab, development, production)
+- **Agent Selection**: Choose between custom agents, built-in subagents, skills, and direct tools
+- **Automation Routing**: Decision tree for scheduling/cron/headless work
+- **Clarification**: When to clarify scope vs proceed directly
+- **Memory Storage Pattern**: Decision framework for Memory MCP storage
+- **PARC Design Review**: Prompt -> Assess -> Relate -> Create pre-implementation check
+- **Environment Profiles**: Composable layers (homelab, development, production)
 
 ### Designs (Architecture Documents)
 ```
@@ -158,20 +170,17 @@ After setup, discovered systems will appear in the `systems/` directory.
 
 ## Recent Updates
 
-**2026-02-05**: Environment Profile System (v2.2)
-- ✅ Added composable profile layers (general, homelab, development, production)
-- ✅ Profile loader generates settings.json from YAML definitions
-- ✅ 5 new hooks: docker-validator, mcp-enforcer, port-conflict-detector, paths-registry-sync, service-registration-detector
-- ✅ /profile command for layer management
-- ✅ Profile-driven setup wizard
+**2026-02-18**: Context Optimization (v2.5 alignment)
+- CLAUDE.md reduced from 558 to 79 lines (86% reduction)
+- 16 low-value hooks archived, 3 re-enabled, settings.json cleaned
+- parallel-dev and upgrade SKILL.md split with references/ directories
+- New extraction files: beads-reference.md, automation-routing.md, clarification-pattern.md
+- Compaction instructions added to CLAUDE.md
 
-**2026-01-01**: Standards and Patterns
-- ✅ Added standards directory with severity-status-system.md and model-selection.md
-- ✅ Added patterns directory with agent-selection, memory-storage, and PARC patterns
-- ✅ Created designs directory for architecture documents
-- ✅ Added /design-review command for explicit PARC invocation
-- ✅ Updated CLAUDE.md with Quick Links, Built-in Subagents, Advanced Task Patterns
+**2026-02-05**: Environment Profile System (v2.2)
+- Composable profile layers (general, homelab, development, production)
+- Profile loader generates settings.json from YAML definitions
 
 ---
 
-*Last Updated: 2026-02-05*
+*Last Updated: 2026-02-18*

@@ -38,8 +38,106 @@ const UPGRADE_PENDING_FILE = '.claude/skills/upgrade/data/pending-upgrades.json'
 // Issues file for automated health check findings
 const ISSUES_FILE = '.claude/context/registries/detected-issues.yaml';
 
+// Session state trimming config
+const SESSION_STATE_FILE = '.claude/context/session-state.md';
+const SESSION_STATE_MAX_BYTES = 8192; // 8KB threshold
+const SESSION_ARCHIVE_DIR = 'knowledge/notes';
+
+// Settings.local.json cleanup nudge
+const SETTINGS_LOCAL_FILE = '.claude/settings.local.json';
+const SETTINGS_LOCAL_MAX_BYTES = 10240; // 10KB threshold
+
 // Project root (where .claude folder lives)
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
+
+/**
+ * Trim session-state.md if it exceeds the size threshold.
+ * Keeps: header, current status, current session summary, 1 previous session, next steps, blockers.
+ * Archives: all older session summaries to knowledge/notes/session-archive-YYYY-MM.md.
+ */
+async function trimSessionState() {
+  try {
+    const filePath = path.join(PROJECT_ROOT, SESSION_STATE_FILE);
+    const stat = await fs.stat(filePath);
+
+    if (stat.size <= SESSION_STATE_MAX_BYTES) {
+      return; // File is small enough, skip
+    }
+
+    const content = await fs.readFile(filePath, 'utf8');
+    const lines = content.split('\n');
+
+    // Find the second occurrence of "**Previous Session Summary**"
+    // Everything before it is kept; everything from it onward is archived.
+    let previousCount = 0;
+    let cutIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('**Previous Session Summary**')) {
+        previousCount++;
+        if (previousCount === 2) {
+          cutIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (cutIndex === -1) {
+      console.error('[session-start] trimSessionState: could not find trim boundary, skipping');
+      return;
+    }
+
+    const keepLines = lines.slice(0, cutIndex);
+    const archiveLines = lines.slice(cutIndex);
+
+    if (archiveLines.join('').trim().length === 0) {
+      return;
+    }
+
+    // Build archive file path: session-archive-YYYY-MM.md
+    const now = new Date();
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const archivePath = path.join(PROJECT_ROOT, SESSION_ARCHIVE_DIR, `session-archive-${yearMonth}.md`);
+
+    // Ensure archive dir exists
+    await fs.mkdir(path.dirname(archivePath), { recursive: true });
+
+    // Append to archive (create if needed)
+    const archiveHeader = `\n\n---\n\n## Archived ${now.toISOString().split('T')[0]}\n\n`;
+    await fs.appendFile(archivePath, archiveHeader + archiveLines.join('\n'), 'utf8');
+
+    // Rewrite session-state.md with kept content
+    await fs.writeFile(filePath, keepLines.join('\n') + '\n', 'utf8');
+
+    const archivedBytes = Buffer.byteLength(archiveLines.join('\n'), 'utf8');
+    console.error(`[session-start] Trimmed session-state.md: archived ${archiveLines.length} lines (${(archivedBytes / 1024).toFixed(1)}KB) to ${path.basename(archivePath)}`);
+  } catch (err) {
+    console.error(`[session-start] trimSessionState error: ${err.message}`);
+  }
+}
+
+/**
+ * Check if settings.local.json has grown too large and nudge for cleanup.
+ */
+async function checkSettingsLocalSize() {
+  try {
+    const filePath = path.join(PROJECT_ROOT, SETTINGS_LOCAL_FILE);
+    const stat = await fs.stat(filePath);
+
+    if (stat.size <= SETTINGS_LOCAL_MAX_BYTES) {
+      return null;
+    }
+
+    const content = await fs.readFile(filePath, 'utf8');
+    const data = JSON.parse(content);
+    const entryCount = data.permissions?.allow?.length || 0;
+    const sizeKB = (stat.size / 1024).toFixed(1);
+
+    return `Warning: settings.local.json is ${sizeKB}KB with ${entryCount} permission entries. Consider cleaning one-off commands.`;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Read a file safely, returning null if not found
@@ -369,6 +467,9 @@ async function getWorktreeInfo() {
  * Main handler logic - uses Promise.allSettled for error isolation
  */
 async function handleHook(context) {
+  // Trim session-state.md before loading (keeps file small across sessions)
+  await trimSessionState();
+
   const contextParts = [];
 
   // Load all data sources in parallel with error isolation
@@ -380,7 +481,8 @@ async function handleHook(context) {
     getLastSessionCommits(),
     getDetectedIssues(),
     getTelosSummary(),
-    getUpgradeReminder()
+    getUpgradeReminder(),
+    checkSettingsLocalSize()
   ]);
 
   // Extract values (null for rejected promises)
@@ -391,7 +493,8 @@ async function handleHook(context) {
     lastCommitsResult,
     detectedIssuesResult,
     telosSummaryResult,
-    upgradeReminderResult
+    upgradeReminderResult,
+    settingsCleanupResult
   ] = results;
 
   const branch = branchResult.status === 'fulfilled' ? branchResult.value : null;
@@ -401,6 +504,7 @@ async function handleHook(context) {
   const detectedIssues = detectedIssuesResult.status === 'fulfilled' ? detectedIssuesResult.value : null;
   const telosSummary = telosSummaryResult.status === 'fulfilled' ? telosSummaryResult.value : null;
   const upgradeReminder = upgradeReminderResult.status === 'fulfilled' ? upgradeReminderResult.value : null;
+  const settingsCleanup = settingsCleanupResult.status === 'fulfilled' ? settingsCleanupResult.value : null;
 
   // Log any failures for debugging (to stderr, not visible to user)
   const failures = results.filter(r => r.status === 'rejected');
@@ -442,6 +546,11 @@ async function handleHook(context) {
   // Add upgrade discovery reminder if needed
   if (upgradeReminder) {
     contextParts.push(upgradeReminder);
+  }
+
+  // Add settings.local.json cleanup nudge if needed
+  if (settingsCleanup) {
+    contextParts.push(settingsCleanup);
   }
 
   // Load context files (these are critical, so handle individually)
