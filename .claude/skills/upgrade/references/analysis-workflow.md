@@ -1,4 +1,4 @@
-# Upgrade: Analysis & Adopt Workflow
+# Upgrade: Analysis & Adopt Workflows
 
 ## Relevance Scoring Criteria
 
@@ -16,33 +16,34 @@
 - 4-5: Medium - Include in weekly review
 - 1-3: Low - Log but don't notify
 
-## Impact Levels
+## Impact & Complexity Levels
 
-| Level | Description | Example |
-|-------|-------------|---------|
+| Impact Level | Description | Example |
+|-------------|-------------|---------|
 | CRITICAL | Security vulnerability, data loss risk | CVE patch |
 | HIGH | Significant functionality improvement | New hook events |
 | MEDIUM | Useful enhancement | Performance improvement |
 | LOW | Nice to have | Documentation update |
 
-## Complexity Levels
-
-| Level | Description | Effort |
-|-------|-------------|--------|
+| Complexity | Description | Effort |
+|-----------|-------------|--------|
 | LOW | Config change only | < 5 min |
 | MEDIUM | Code/file modifications | 15-30 min |
 | HIGH | Architectural changes | > 1 hour |
 
 ## Adopt Workflow (Feature Upgrades)
 
-**When to trigger**: After analyzing a Claude Code upgrade that introduces new features. Analyze identifies *what's available*; Adopt determines *how to leverage it*.
+**When to trigger**: After analyzing a Claude Code upgrade that introduces new features (not just bug fixes or security patches).
 
 ### Adopt Checklist
 
-1. **Map to infrastructure**: Which hub components could use this feature?
+For each new feature in a Claude Code upgrade:
+
+1. **Map to infrastructure**: Which project components could use this feature?
+   - Hooks, skills, commands, agents, scheduled jobs, MCPs, session workflow
 2. **Identify concrete changes**: What specific files need modification?
-3. **Classify adoption effort**: Immediate (<5 min) / Short-term (<1 session) / Evaluation (research needed)
-4. **Create Beads tasks**: One task per adoption item with labels
+3. **Classify adoption effort**: Immediate (<5 min) / Short-term (<1 session) / Evaluation (needs research)
+4. **Create Beads tasks**: One task per adoption item with `source:upgrade` label
 5. **Update baselines**: Mark features as "adopted" vs "available" vs "active"
 
 ### Feature-to-Infrastructure Map

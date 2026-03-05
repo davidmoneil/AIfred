@@ -31,7 +31,7 @@ After running, **manually update paths-registry.yaml** with the entry shown in t
 
 ```bash
 /register-project ~/Code/existing-project
-/register-project github.com/davidmoneil/some-repo
+/register-project github.com/user/some-repo
 /register-project https://github.com/user/repo
 ```
 

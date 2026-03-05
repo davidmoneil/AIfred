@@ -1,0 +1,32 @@
+# Persona: _template
+# Tier: [discovery|analyze|implement]
+# Description: Template - copy and customize for new personas
+
+persona: _template
+tier: discovery
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Add more as needed
+
+denied_tools:
+  - Edit
+  - Write
+  # Add tools to explicitly block
+
+# Bash commands this persona can run
+allowed_bash:
+  - "bd list:*"
+  - "bd show:*"
+
+# Actions requiring human approval via the question queue
+approval_required:
+  - action: "example action"
+    reason: "Why this needs approval"
+
+# Actions pre-approved (no human needed)
+pre_approved:
+  - "Read any file"

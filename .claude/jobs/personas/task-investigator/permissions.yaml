@@ -1,0 +1,57 @@
+# Persona: task-investigator
+# Tier: investigate (read + Beads label updates + report writes)
+# Purpose: Evaluate auto:candidate tasks, promote to auto:ready or mark auto:blocked.
+#          Cannot execute fixes — investigation only.
+
+persona: task-investigator
+tier: investigate
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Write (for reports only — no code/config edits)
+  - Write
+  # Git (read-only)
+  - mcp__git__git_status
+  - mcp__git__git_log
+  - mcp__git__git_diff
+  - mcp__git__git_show
+  # Filesystem (read + write for reports)
+  - mcp__filesystem__read_text_file
+  - mcp__filesystem__read_file
+  - mcp__filesystem__list_directory
+  - mcp__filesystem__list_directory_with_sizes
+  - mcp__filesystem__directory_tree
+  - mcp__filesystem__get_file_info
+  - mcp__filesystem__search_files
+  - mcp__filesystem__write_file
+
+denied_tools:
+  # No editing existing files — investigation only
+  - Edit
+  - mcp__filesystem__edit_file
+  - mcp__filesystem__move_file
+  - mcp__filesystem__create_directory
+  # No git write operations
+  - mcp__git__git_add
+  - mcp__git__git_commit
+  - mcp__git__git_create_branch
+  - mcp__git__git_checkout
+  # No web access — investigation is local verification
+  - WebFetch
+  - WebSearch
+  # No task spawning
+  - Task
+
+# Bash: wildcard allowed for bd commands, ls, stat, file checks.
+# Safety enforced by prompt constraints (no docker, no ssh, no file edits).
+allowed_bash:
+  - "*"
+
+pre_approved:
+  - "Read any file"
+  - "Write reports to .claude/agent-output/results/task-investigator/"
+  - "Run bd show, bd update, bd list commands"
+  - "Run ls, stat, file, test for path verification"

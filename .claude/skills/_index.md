@@ -2,8 +2,8 @@
 
 Comprehensive workflow guides that consolidate related commands, hooks, and patterns.
 
-**Last Updated**: 2026-02-05
-**Total Skills**: 10
+**Last Updated**: 2026-03-05
+**Total Skills**: 11
 
 ---
 
@@ -20,6 +20,7 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 | **system-utilities** | Core CLI utilities (git sync, priorities, archival) | Maintenance | No |
 | **fabric** | AI text processing with local Ollama (logs, code review, commits) | Automation | No |
 | **orchestration** | Task orchestration for complex multi-phase work | Workflow | No |
+| **task-dashboard** | Formatted task views with label categorization | Task Management | Yes |
 | **_template** | Code Before Prompts reference implementation | Reference | Yes |
 
 ---
@@ -41,6 +42,7 @@ Comprehensive workflow guides that consolidate related commands, hooks, and patt
 - **fabric** - AI text processing using Fabric patterns with local Ollama
 
 ### Task Management
+- **task-dashboard** - Formatted Beads task views with label categorization
 - **orchestration** - Multi-phase task decomposition and dependency tracking
 
 ### System Maintenance
@@ -62,6 +64,7 @@ Skills with `tools/` directories follow the Code Before Prompts pattern:
 **Skills with tools/**:
 - parallel-dev
 - structured-planning
+- task-dashboard
 - _template
 
 **Next to convert**:
@@ -101,4 +104,4 @@ Need autonomous COMPLEX task execution?
 
 ---
 
-*AIfred Skills v2.1 - Added system-utilities, orchestration fresh-context (2026-02-05)*
+*AIfred Skills v2.2 - Added task-dashboard, updated parallel-dev, upgrade (2026-03-05)*

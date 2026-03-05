@@ -24,58 +24,22 @@ const TRACKING_FILE = path.join(LOG_DIR, 'cross-project-commits.json');
 const SESSION_FILE = path.join(LOG_DIR, '.current-session');
 
 // Known project mappings (path prefix -> project info)
+// The hub is auto-detected from AIFRED_HOME or cwd. Additional projects
+// are detected dynamically from paths-registry.yaml if it exists, or
+// from ~/Code/* as a fallback.
+const HOME = process.env.HOME || '/tmp';
+const PROJECTS_ROOT = process.env.PROJECTS_ROOT || path.join(HOME, 'Code');
+
 const PROJECT_MAPPINGS = [
   {
-    pathPattern: new RegExp('^' + (process.env.AIFRED_HOME || process.cwd()).replace(/[.*+?${}()|[\]\]/g, '\\$&')),
+    pathPattern: new RegExp('^' + (process.env.AIFRED_HOME || process.cwd()).replace(/[.*+?${}()|[\]\\]/g, '\\$&')),
     name: 'aifred',
-    github: 'mybrain',
+    github: null,
     type: 'hub'
   },
+  // Fallback: any project under PROJECTS_ROOT
   {
-    pathPattern: /^\/home\/davidmoneil\/Docker\/mydocker/,
-    name: 'myDocker',
-    github: 'myDocker',
-    type: 'infrastructure'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/CreativeProjects/,
-    name: 'CreativeProjects',
-    github: 'CreativeProjects',
-    type: 'creative'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/grc-platform/,
-    name: 'grc-platform',
-    github: 'grc-platform',
-    type: 'code'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/time-scheduler/,
-    name: 'bishop-scheduler',
-    github: 'time-scheduler',
-    type: 'code'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/AIfred/,
-    name: 'AIfred',
-    github: 'AIfred',
-    type: 'code'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/kali-scanner/,
-    name: 'kali-scanner',
-    github: 'kali-scanner',
-    type: 'code'
-  },
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/claude-code-research/,
-    name: 'claude-code-research',
-    github: 'claude-code-research',
-    type: 'research'
-  },
-  // Fallback for any ~/Code/* project
-  {
-    pathPattern: /^\/home\/davidmoneil\/Code\/([^/]+)/,
+    pathPattern: new RegExp('^' + PROJECTS_ROOT.replace(/[.*+?${}()|[\]\\]/g, '\\$&') + '/([^/]+)'),
     name: null, // Will extract from path
     github: null,
     type: 'code'

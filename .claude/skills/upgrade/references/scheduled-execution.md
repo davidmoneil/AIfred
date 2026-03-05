@@ -19,7 +19,7 @@ cat ~/.claude/logs/scheduled/upgrade-discover-*.json | tail -1 | jq '.result'
 
 ```bash
 # Weekly discovery - Sunday 6:00 AM
-0 6 * * 0 ${AIFRED_HOME}/.claude/jobs/claude-scheduled.sh upgrade-discover
+0 6 * * 0 $CLAUDE_PROJECT_DIR/.claude/jobs/claude-scheduled.sh upgrade-discover
 ```
 
 ## How It Works
@@ -27,18 +27,18 @@ cat ~/.claude/logs/scheduled/upgrade-discover-*.json | tail -1 | jq '.result'
 1. **Wrapper script** (`claude-scheduled.sh`) configures environment and permissions
 2. **Claude Code CLI** runs with `-p` flag (non-interactive mode)
 3. **Permission tier** limits to "analyze" (read + write data files)
-4. **Output** captured as JSON and logged
-5. **Discoveries** written to `pending-upgrades.json`
+4. **Output** is captured as JSON and logged
+5. **Discoveries** are written to `pending-upgrades.json`
 6. **Next session** shows pending discoveries via session-start hook
 
 ## Permission Tier: Analyze
 
-Allowed:
+The scheduled job uses the "analyze" tier which allows:
 - Reading files (baselines, config, existing data)
 - Fetching external sources (GitHub, docs, blogs)
 - Writing to data files (pending-upgrades.json)
 
-NOT allowed:
+It does NOT allow:
 - Editing code files
 - Git commits
 - Implementing upgrades

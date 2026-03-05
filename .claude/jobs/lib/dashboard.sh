@@ -1,8 +1,8 @@
 #!/bin/bash
-# dashboard.sh - Headless Claude observability dashboard
+# dashboard.sh - Headless job observability dashboard
 #
-# Part of the Headless Claude system (Phase 4: Observability).
 # Terminal dashboard for job status, costs, and health at a glance.
+# Backed by SQLite (jobs.db).
 #
 # Usage:
 #   dashboard.sh                  # Full dashboard
@@ -17,56 +17,31 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
 REGISTRY="$JOBS_DIR/registry.yaml"
+
+# Shared utilities (colors, logging, require_yq, reg_get)
+source "$SCRIPT_DIR/common.sh"
 STATE_DIR="$JOBS_DIR/state"
-LAST_RUN_FILE="$STATE_DIR/last-run.json"
 LOCKS_DIR="$STATE_DIR/locks"
-NOTIFICATIONS_FILE="$JOBS_DIR/notifications.jsonl"
+JOBSDB="$SCRIPT_DIR/jobsdb.py"
 COST_REPORT="$SCRIPT_DIR/cost-report.sh"
 OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
 PUSHGATEWAY_URL="${PUSHGATEWAY_URL:-http://localhost:9091}"
 
-# Colors
+# SQLite helper
+_db() { python3 "$JOBSDB" "$@"; }
+
+# Colors, logging, require_yq, reg_get loaded from common.sh
+# Extra dashboard-specific colors
 JSON_MODE=false
 if [ -t 1 ]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[1;33m'
-    BLUE='\033[0;34m'
-    CYAN='\033[0;36m'
     BOLD='\033[1m'
     DIM='\033[2m'
-    NC='\033[0m'
 else
-    RED='' GREEN='' YELLOW='' BLUE='' CYAN='' BOLD='' DIM='' NC=''
+    BOLD='' DIM=''
 fi
 
-# Find yq
-YQ=""
-for yq_path in "yq" "$HOME/.local/bin/yq" "/usr/local/bin/yq" "/snap/bin/yq"; do
-    if command -v "$yq_path" &>/dev/null 2>&1 || [ -x "$yq_path" ]; then
-        YQ="$yq_path"
-        break
-    fi
-done
-if [ -z "$YQ" ]; then
-    echo "Error: yq not found" >&2
-    exit 1
-fi
-
-# Read a value from registry for a job, falling back to defaults
-reg_get() {
-    local job="$1" key="$2" default="${3:-}"
-    local val
-    val=$("$YQ" ".jobs.${job}.${key}" "$REGISTRY" 2>/dev/null)
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        val=$("$YQ" ".defaults.${key}" "$REGISTRY" 2>/dev/null)
-    fi
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        echo "$default"
-    else
-        echo "$val"
-    fi
-}
+# Set up yq
+YQ=$(require_yq)
 
 # ============================================================================
 # Section: Engine Status
@@ -75,14 +50,12 @@ reg_get() {
 check_engine_status() {
     local claude_status ollama_status pushgw_status
 
-    # Claude CLI
     if command -v claude &>/dev/null; then
         claude_status="${GREEN}available${NC}"
     else
         claude_status="${RED}not found${NC}"
     fi
 
-    # Ollama
     if curl -s --max-time 3 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then
         local model_count
         model_count=$(curl -s --max-time 3 "$OLLAMA_URL/api/tags" 2>/dev/null | jq '.models | length' 2>/dev/null || echo "?")
@@ -91,7 +64,6 @@ check_engine_status() {
         ollama_status="${RED}unreachable${NC}"
     fi
 
-    # Pushgateway
     if curl -s --max-time 3 "$PUSHGATEWAY_URL/-/healthy" >/dev/null 2>&1; then
         pushgw_status="${GREEN}healthy${NC}"
     else
@@ -143,7 +115,8 @@ print_job_table() {
 
         engine=$(reg_get "$job" "engine" "claude-code")
         enabled=$(reg_get "$job" "enabled" "true")
-        last_run=$(jq -r --arg job "$job" '.[$job] // 0' "$LAST_RUN_FILE" 2>/dev/null || echo "0")
+        last_run=$(_db exec-scalar "SELECT COALESCE(last_run, 0) FROM job_state WHERE job = ?" "$job")
+        last_run="${last_run:-0}"
 
         if [ "$last_run" -eq 0 ]; then
             last_str="never"
@@ -166,18 +139,20 @@ print_job_table() {
             status_icon="${GREEN}ready${NC}"
         fi
 
-        # Last run result from notifications
+        # Last run result from events
         cost_str="--"
         result_str="--"
-        if [ -f "$NOTIFICATIONS_FILE" ] && [ "$last_run" -gt 0 ]; then
+        if [ "$last_run" -gt 0 ]; then
             local last_notif
-            last_notif=$(grep "\"$job\"" "$NOTIFICATIONS_FILE" 2>/dev/null | tail -1)
+            last_notif=$(_db exec-raw \
+                "SELECT COALESCE(json_extract(data, '$.cost_usd'), 'unknown'), severity FROM events WHERE event_type = 'job_completed' AND json_extract(data, '$.job') = ? ORDER BY id DESC LIMIT 1" \
+                "$job")
             if [ -n "$last_notif" ]; then
-                cost_str=$(echo "$last_notif" | jq -r '.cost_usd // "--"' 2>/dev/null)
+                local cost sev
+                IFS=$'\t' read -r cost sev <<< "$last_notif"
+                cost_str="$cost"
                 [ "$cost_str" != "--" ] && [ "$cost_str" != "unknown" ] && cost_str="\$$cost_str"
                 [ "$cost_str" = "unknown" ] && cost_str="--"
-                local sev
-                sev=$(echo "$last_notif" | jq -r '.severity // "info"' 2>/dev/null)
                 case "$sev" in
                     critical) result_str="${RED}critical${NC}" ;;
                     warning)  result_str="${YELLOW}warning${NC}" ;;
@@ -201,9 +176,9 @@ job_table_json() {
 
         engine=$(reg_get "$job" "engine" "claude-code")
         enabled=$(reg_get "$job" "enabled" "true")
-        last_run=$(jq -r --arg job "$job" '.[$job] // 0' "$LAST_RUN_FILE" 2>/dev/null || echo "0")
+        last_run=$(_db exec-scalar "SELECT COALESCE(last_run, 0) FROM job_state WHERE job = ?" "$job")
+        last_run="${last_run:-0}"
 
-        # Status
         if [ "$enabled" = "false" ]; then
             status="disabled"
         elif [ -f "$lock_file" ]; then
@@ -218,16 +193,16 @@ job_table_json() {
             status="ready"
         fi
 
-        # Last notification
         cost_str="0"
         severity="unknown"
-        if [ -f "$NOTIFICATIONS_FILE" ] && [ "$last_run" -gt 0 ]; then
+        if [ "$last_run" -gt 0 ]; then
             local last_notif
-            last_notif=$(grep "\"$job\"" "$NOTIFICATIONS_FILE" 2>/dev/null | tail -1)
+            last_notif=$(_db exec-raw \
+                "SELECT COALESCE(json_extract(data, '$.cost_usd'), '0'), severity FROM events WHERE event_type = 'job_completed' AND json_extract(data, '$.job') = ? ORDER BY id DESC LIMIT 1" \
+                "$job")
             if [ -n "$last_notif" ]; then
-                cost_str=$(echo "$last_notif" | jq -r '.cost_usd // "0"' 2>/dev/null)
+                IFS=$'\t' read -r cost_str severity <<< "$last_notif"
                 [ "$cost_str" = "unknown" ] && cost_str="0"
-                severity=$(echo "$last_notif" | jq -r '.severity // "unknown"' 2>/dev/null)
             fi
         fi
 
@@ -249,28 +224,26 @@ print_cost_summary() {
     echo -e "${BOLD}Cost Summary${NC}"
     echo "────────────"
 
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo "  No cost data yet."
-        return
-    fi
-
     local today today_cost week_cost month_cost
     today=$(date +%Y-%m-%d)
     local week_ago month_ago
     week_ago=$(date -d "7 days ago" +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d 2>/dev/null)
     month_ago=$(date -d "30 days ago" +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d 2>/dev/null)
 
-    today_cost=$(jq -s --arg d "$today" \
-        '[.[] | select(.timestamp[:10] == $d and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0 | tostring | .[0:6]' \
-        "$NOTIFICATIONS_FILE" 2>/dev/null -r || echo "0")
+    today_cost=$(_db exec-scalar \
+        "SELECT COALESCE(SUBSTR(CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT), 1, 6), '0') FROM events WHERE event_type = 'job_completed' AND SUBSTR(created_at, 1, 10) = ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$today")
+    today_cost="${today_cost:-0}"
 
-    week_cost=$(jq -s --arg d "$week_ago" \
-        '[.[] | select(.timestamp >= $d and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0 | tostring | .[0:6]' \
-        "$NOTIFICATIONS_FILE" 2>/dev/null -r || echo "0")
+    week_cost=$(_db exec-scalar \
+        "SELECT COALESCE(SUBSTR(CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT), 1, 6), '0') FROM events WHERE event_type = 'job_completed' AND created_at >= ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$week_ago")
+    week_cost="${week_cost:-0}"
 
-    month_cost=$(jq -s --arg d "$month_ago" \
-        '[.[] | select(.timestamp >= $d and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0 | tostring | .[0:6]' \
-        "$NOTIFICATIONS_FILE" 2>/dev/null -r || echo "0")
+    month_cost=$(_db exec-scalar \
+        "SELECT COALESCE(SUBSTR(CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT), 1, 6), '0') FROM events WHERE event_type = 'job_completed' AND created_at >= ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$month_ago")
+    month_cost="${month_cost:-0}"
 
     printf "  %-10s %s\n" "Today:" "\$$today_cost"
     printf "  %-10s %s\n" "7 days:" "\$$week_cost"
@@ -279,32 +252,54 @@ print_cost_summary() {
     # Engine breakdown (30 days)
     echo ""
     echo "  By engine (30 days):"
-    jq -s --arg d "$month_ago" '
-        [.[] | select(.timestamp >= $d and .cost_usd != null and .cost_usd != "unknown")]
-        | group_by(.engine // "claude-code")
-        | map("    " + (.[0].engine // "claude-code") + ": $" + (map(.cost_usd | tostring | tonumber) | add // 0 | tostring | .[0:6]) + " (" + (length | tostring) + " runs)")
-        | .[]' "$NOTIFICATIONS_FILE" 2>/dev/null -r || true
+    _db exec-raw \
+        "SELECT COALESCE(json_extract(data, '$.engine'), 'claude-code') as engine,
+                SUBSTR(CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT), 1, 6) as cost,
+                COUNT(*) as runs
+         FROM events
+         WHERE event_type = 'job_completed' AND created_at >= ?
+           AND json_extract(data, '$.cost_usd') IS NOT NULL
+           AND json_extract(data, '$.cost_usd') != 'unknown'
+         GROUP BY engine ORDER BY engine" \
+        "$month_ago" | \
+    while IFS=$'\t' read -r eng cost runs; do
+        echo "    ${eng}: \$${cost} (${runs} runs)"
+    done
 }
 
 cost_summary_json() {
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo '{"today": 0, "week": 0, "month": 0, "by_engine": []}'
-        return
-    fi
-
     local today week_ago month_ago
     today=$(date +%Y-%m-%d)
     week_ago=$(date -d "7 days ago" +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d 2>/dev/null)
     month_ago=$(date -d "30 days ago" +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d 2>/dev/null)
 
-    jq -s --arg today "$today" --arg week "$week_ago" --arg month "$month_ago" '{
-        today: ([.[] | select(.timestamp[:10] == $today and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0),
-        week: ([.[] | select(.timestamp >= $week and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0),
-        month: ([.[] | select(.timestamp >= $month and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0),
-        by_engine: ([.[] | select(.timestamp >= $month and .cost_usd != null and .cost_usd != "unknown")]
-            | group_by(.engine // "claude-code")
-            | map({engine: (.[0].engine // "claude-code"), cost: (map(.cost_usd | tostring | tonumber) | add // 0), runs: length}))
-    }' "$NOTIFICATIONS_FILE" 2>/dev/null || echo '{"today":0,"week":0,"month":0,"by_engine":[]}'
+    local tc wc mc
+    tc=$(_db exec-scalar \
+        "SELECT COALESCE(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)), 0) FROM events WHERE event_type = 'job_completed' AND SUBSTR(created_at, 1, 10) = ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$today")
+    wc=$(_db exec-scalar \
+        "SELECT COALESCE(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)), 0) FROM events WHERE event_type = 'job_completed' AND created_at >= ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$week_ago")
+    mc=$(_db exec-scalar \
+        "SELECT COALESCE(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)), 0) FROM events WHERE event_type = 'job_completed' AND created_at >= ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$month_ago")
+
+    # Engine breakdown
+    local engines="[]"
+    while IFS=$'\t' read -r eng cost runs; do
+        [ -z "$eng" ] && continue
+        engines=$(echo "$engines" | jq --arg e "$eng" --arg c "$cost" --argjson r "$runs" \
+            '. + [{engine: $e, cost: ($c | tonumber), runs: $r}]')
+    done < <(_db exec-raw \
+        "SELECT COALESCE(json_extract(data, '$.engine'), 'claude-code'),
+                CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT),
+                COUNT(*)
+         FROM events WHERE event_type = 'job_completed' AND created_at >= ?
+           AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'
+         GROUP BY 1" "$month_ago")
+
+    jq -nc --argjson t "${tc:-0}" --argjson w "${wc:-0}" --argjson m "${mc:-0}" --argjson e "$engines" \
+        '{today: $t, week: $w, month: $m, by_engine: $e}'
 }
 
 # ============================================================================
@@ -316,7 +311,9 @@ print_recent_activity() {
     echo -e "${BOLD}Recent Activity${NC}"
     echo "───────────────"
 
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
+    local count
+    count=$(_db exec-scalar "SELECT COUNT(*) FROM events WHERE event_type = 'job_completed'")
+    if [ "$count" = "0" ]; then
         echo "  No activity yet."
         return
     fi
@@ -324,8 +321,13 @@ print_recent_activity() {
     printf "  %-10s %-18s %-22s %-8s %s\n" "SEVERITY" "TIMESTAMP" "JOB" "COST" "SUMMARY"
     printf "  %-10s %-18s %-22s %-8s %s\n" "────────" "─────────" "───" "────" "───────"
 
-    tail -10 "$NOTIFICATIONS_FILE" | jq -r \
-        '[.severity, .timestamp, .job, (.cost_usd // "--"), (.summary // "")[0:50]] | @tsv' 2>/dev/null | \
+    _db exec-raw \
+        "SELECT severity, created_at, json_extract(data, '$.job'),
+                COALESCE(json_extract(data, '$.cost_usd'), '--'),
+                SUBSTR(COALESCE(json_extract(data, '$.summary'), ''), 1, 50)
+         FROM events WHERE event_type = 'job_completed'
+         ORDER BY id DESC LIMIT 10" | \
+    tac | \
     while IFS=$'\t' read -r sev ts job cost summary; do
         local sev_display ts_short cost_display
         case "$sev" in
@@ -343,11 +345,13 @@ print_recent_activity() {
 }
 
 recent_activity_json() {
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo "[]"
-        return
-    fi
-    tail -10 "$NOTIFICATIONS_FILE" | jq -s '.' 2>/dev/null || echo "[]"
+    _db exec \
+        "SELECT CAST(id AS TEXT) as id, created_at as timestamp,
+                json_extract(data, '$.job') as job, severity,
+                COALESCE(json_extract(data, '$.summary'), '') as summary,
+                COALESCE(json_extract(data, '$.cost_usd'), 'unknown') as cost_usd
+         FROM events WHERE event_type = 'job_completed'
+         ORDER BY id DESC LIMIT 10" | jq -s 'reverse' 2>/dev/null || echo "[]"
 }
 
 # ============================================================================
@@ -355,34 +359,34 @@ recent_activity_json() {
 # ============================================================================
 
 print_alerts() {
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        return
-    fi
-
-    local unacked
-    unacked=$(jq -s '[.[] | select(.acknowledged == false and (.severity == "critical" or .severity == "warning"))]' \
-        "$NOTIFICATIONS_FILE" 2>/dev/null)
     local count
-    count=$(echo "$unacked" | jq 'length' 2>/dev/null || echo "0")
+    count=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE event_type = 'job_completed' AND status NOT IN ('delivered', 'acknowledged') AND severity IN ('critical', 'warning')")
 
     if [ "$count" -gt 0 ]; then
         echo ""
         echo -e "${BOLD}${RED}Unacknowledged Alerts ($count)${NC}"
         echo "─────────────────────────────"
-        echo "$unacked" | jq -r '.[] |
-            "  [" + .severity + "] " + .job + ": " + (.summary // "no summary")[0:60] + " (id: " + .id + ")"' 2>/dev/null
+        _db exec-raw \
+            "SELECT severity, json_extract(data, '$.job'), SUBSTR(COALESCE(json_extract(data, '$.summary'), 'no summary'), 1, 60), id
+             FROM events WHERE event_type = 'job_completed' AND status NOT IN ('delivered', 'acknowledged') AND severity IN ('critical', 'warning')
+             ORDER BY id" | \
+        while IFS=$'\t' read -r sev job summary eid; do
+            echo "  [$sev] $job: $summary (id: $eid)"
+        done
         echo ""
         echo -e "  ${DIM}Acknowledge: dispatcher.sh --ack <id>${NC}"
     fi
 }
 
 alerts_json() {
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo "[]"
-        return
-    fi
-    jq -s '[.[] | select(.acknowledged == false and (.severity == "critical" or .severity == "warning"))]' \
-        "$NOTIFICATIONS_FILE" 2>/dev/null || echo "[]"
+    _db exec \
+        "SELECT CAST(id AS TEXT) as id, json_extract(data, '$.job') as job, severity,
+                COALESCE(json_extract(data, '$.summary'), '') as summary
+         FROM events WHERE event_type = 'job_completed'
+           AND status NOT IN ('delivered', 'acknowledged')
+           AND severity IN ('critical', 'warning')
+         ORDER BY id" | jq -s '.' 2>/dev/null || echo "[]"
 }
 
 # ============================================================================
@@ -395,18 +399,16 @@ print_summary() {
     job_count=$("$YQ" '.jobs | keys | length' "$REGISTRY" 2>/dev/null || echo "0")
     running_count=$(find "$LOCKS_DIR" -name "*.lock" 2>/dev/null | wc -l)
 
-    if [ -f "$NOTIFICATIONS_FILE" ]; then
-        alert_count=$(jq -s '[.[] | select(.acknowledged == false and (.severity == "critical" or .severity == "warning"))] | length' \
-            "$NOTIFICATIONS_FILE" 2>/dev/null || echo "0")
-        local today
-        today=$(date +%Y-%m-%d)
-        today_cost=$(jq -s --arg d "$today" \
-            '[.[] | select(.timestamp[:10] == $d and .cost_usd != null and .cost_usd != "unknown") | .cost_usd | tostring | tonumber] | add // 0 | tostring | .[0:5]' \
-            "$NOTIFICATIONS_FILE" 2>/dev/null -r || echo "0")
-    else
-        alert_count=0
-        today_cost="0"
-    fi
+    alert_count=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE event_type = 'job_completed' AND status NOT IN ('delivered', 'acknowledged') AND severity IN ('critical', 'warning')")
+    alert_count="${alert_count:-0}"
+
+    local today
+    today=$(date +%Y-%m-%d)
+    today_cost=$(_db exec-scalar \
+        "SELECT COALESCE(SUBSTR(CAST(SUM(CAST(json_extract(data, '$.cost_usd') AS REAL)) AS TEXT), 1, 5), '0') FROM events WHERE event_type = 'job_completed' AND SUBSTR(created_at, 1, 10) = ? AND json_extract(data, '$.cost_usd') IS NOT NULL AND json_extract(data, '$.cost_usd') != 'unknown'" \
+        "$today")
+    today_cost="${today_cost:-0}"
 
     if [ "$JSON_MODE" = "true" ]; then
         jq -nc --argjson jobs "$job_count" --argjson running "$running_count" \
@@ -417,7 +419,7 @@ print_summary() {
         if [ "$alert_count" -gt 0 ]; then
             alert_display=" ${RED}${alert_count} alerts${NC}"
         fi
-        echo -e "Headless: ${job_count} jobs, ${running_count} running, \$${today_cost} today${alert_display}"
+        echo -e "Jobs: ${job_count} jobs, ${running_count} running, \$${today_cost} today${alert_display}"
     fi
 }
 
@@ -442,7 +444,6 @@ done
 
 # Ensure state
 mkdir -p "$STATE_DIR" "$LOCKS_DIR"
-[ ! -f "$LAST_RUN_FILE" ] && echo '{}' > "$LAST_RUN_FILE"
 
 case "$MODE" in
     summary)
@@ -469,7 +470,7 @@ case "$MODE" in
         else
             echo ""
             echo -e "${BOLD}════════════════════════════════════════${NC}"
-            echo -e "${BOLD}  Headless Claude Dashboard${NC}"
+            echo -e "${BOLD}  AIfred Jobs Dashboard${NC}"
             echo -e "${BOLD}════════════════════════════════════════${NC}"
             echo -e "  ${DIM}$(date '+%Y-%m-%d %H:%M:%S')${NC}"
             echo ""

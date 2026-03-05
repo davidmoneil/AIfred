@@ -10,13 +10,20 @@
 #   executor.sh --job health-summary
 #   executor.sh --job plex-troubleshoot --param issue="won't start" --param safety_mode=safe-fixes
 #   executor.sh --job upgrade-discover --answer "Approve upgrade"
-#
-# Design: Obsidian 05-AI/Projects/Headless-Claude/
 
 set -euo pipefail
 
 # Ensure claude CLI is on PATH (cron uses minimal PATH)
 export PATH="$HOME/.local/bin:$PATH"
+
+# Source nvm only if claude is not already on PATH
+if ! command -v claude &>/dev/null; then
+    export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+fi
+
+# Allow headless execution from within a Claude Code session (e.g., manual --run)
+unset CLAUDECODE 2>/dev/null || true
 
 # ============================================================================
 # Configuration
@@ -26,30 +33,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="${PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 JOBS_DIR="$SCRIPT_DIR"
 REGISTRY="$JOBS_DIR/registry.yaml"
+
+# Shared utilities (colors, logging, require_yq, reg_get)
+source "$JOBS_DIR/lib/common.sh"
 PERSONAS_DIR="$JOBS_DIR/personas"
 QUEUE_FILE="$JOBS_DIR/queue.json"
 LOG_DIR="$PROJECT_DIR/.claude/logs/headless"
 EXEC_LOG_DIR="$LOG_DIR/executions"
-NOTIFICATIONS_FILE="$JOBS_DIR/notifications.jsonl"
 SEND_TELEGRAM="$JOBS_DIR/lib/send-telegram.sh"
 MSGBUS="$JOBS_DIR/lib/msgbus.sh"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
 # ============================================================================
-# Functions
+# Functions (colors, logging, require_yq, reg_get loaded from lib/common.sh)
 # ============================================================================
 
-log() { echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
-log_info() { log "${BLUE}INFO${NC}: $1"; }
-log_success() { log "${GREEN}OK${NC}: $1"; }
-log_warning() { log "${YELLOW}WARN${NC}: $1"; }
-log_error() { log "${RED}ERROR${NC}: $1"; }
+# Override log() to respect --quiet flag
+log() { [ "$QUIET" = "true" ] && return; echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
 
 show_help() {
     cat << 'EOF'
@@ -62,8 +61,16 @@ OPTIONS:
     --job <name>          Job name (must exist in registry.yaml)
     --param key=value     Pass parameter to job (repeatable)
     --answer "text"       Provide answer from question queue
+    --session <id>        Session ID for conversation continuity
+    --quiet               Suppress log output, print only JSON result
     --dry-run             Show what would execute without running
     --verbose             Show full prompt and config
+    --persona <name>      Override persona (used by team-runner)
+    --model-override <m>  Override model (used by team-runner)
+    --max-budget-override <n>  Override max budget USD
+    --max-turns-override <n>   Override max turns
+    --timeout-override <n>     Override timeout minutes
+    --suppress-notification  Skip writing notification (used by team-runner)
     -h, --help            Show this help
 
 EXAMPLES:
@@ -71,38 +78,11 @@ EXAMPLES:
     executor.sh --job plex-troubleshoot --param issue="high cpu" --param safety_mode=safe-fixes
     executor.sh --job upgrade-discover --dry-run
     executor.sh --job plex-troubleshoot --answer "Approve reboot"
+    executor.sh --job agent-general --param prompt="Check Docker" --session abc123 --quiet
 EOF
 }
 
-# Check for yq
-require_yq() {
-    for yq_path in "yq" "$HOME/.local/bin/yq" "/usr/local/bin/yq" "/snap/bin/yq"; do
-        if command -v "$yq_path" &>/dev/null 2>&1 || [ -x "$yq_path" ]; then
-            echo "$yq_path"
-            return 0
-        fi
-    done
-    log_error "yq is required. Install: wget -qO ~/.local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && chmod +x ~/.local/bin/yq"
-    exit 1
-}
-
-# Read a value from registry.yaml for a given job
-# Note: Uses explicit null check instead of yq's // operator,
-# because // treats 'false' as falsy and skips it.
-reg_get() {
-    local job="$1" key="$2" default="${3:-}"
-    local val
-    val=$("$YQ" ".jobs.${job}.${key}" "$REGISTRY" 2>/dev/null)
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        # Try defaults
-        val=$("$YQ" ".defaults.${key}" "$REGISTRY" 2>/dev/null)
-    fi
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        echo "$default"
-    else
-        echo "$val"
-    fi
-}
+# require_yq() and reg_get() — loaded from lib/common.sh
 
 # Determine notification severity from output content and exit code
 # Priority: exit code > explicit SEVERITY line > regex content analysis
@@ -200,12 +180,13 @@ extract_details() {
 }
 
 # Write a notification to the message bus (relay handles Telegram delivery)
-# Args: job severity title summary exit_code cost duration output_file [details] [engine]
+# Args: job severity title summary exit_code cost duration output_file [details] [engine] [model_usage_json]
 write_notification() {
     local job="$1" severity="$2" title="$3" summary="$4"
     local exit_code="$5" cost="$6" duration="$7" output_file="$8"
     local details="${9:-}"
     local engine="${10:-${ENGINE:-claude-code}}"
+    local model_usage="${11:-\{\}}"
     local event_type="job_completed"
     [ "$exit_code" -ne 0 ] 2>/dev/null && event_type="job_failed"
 
@@ -223,6 +204,7 @@ write_notification() {
                 --arg dur "$duration" \
                 --arg out "$output_file" \
                 --arg eng "$engine" \
+                --argjson mu "$model_usage" \
                 '{
                     job: $job,
                     title: $title,
@@ -232,22 +214,13 @@ write_notification() {
                     cost_usd: $cost,
                     duration_secs: ($dur | tonumber),
                     output_file: $out,
-                    engine: $eng
+                    engine: $eng,
+                    model_usage: $mu
                 }')" > /dev/null 2>&1 || true
     fi
 
-    # Legacy dual-write (remove after migration validation)
-    local id="${job}-$(date +%s)"
-    local timestamp
-    timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    local record
-    record=$(jq -nc \
-        --arg id "$id" --arg ts "$timestamp" --arg job "$job" \
-        --arg sev "$severity" --arg title "$title" --arg sum "$summary" \
-        --argjson ec "${exit_code:-0}" --arg cost "$cost" --arg dur "$duration" \
-        --arg out "$output_file" --arg eng "$engine" \
-        '{id:$id,timestamp:$ts,job:$job,severity:$sev,title:$title,summary:$sum,exit_code:$ec,cost_usd:$cost,duration_secs:($dur|tonumber),output_file:$out,engine:$eng,notified:false,acknowledged:false}')
-    echo "$record" >> "$NOTIFICATIONS_FILE"
+    # Legacy dual-write removed (Phase 3 migration complete)
+    # All consumers now read from messages.jsonl via normalization layer
 }
 
 # Push metrics to Prometheus Pushgateway
@@ -309,6 +282,19 @@ build_allowed_tools() {
         fi
     done
 
+    # Validate: warn if any tool appears in both allowed_tools and denied_tools
+    local denied_count
+    denied_count=$("$YQ" '.denied_tools | length' "$perms_file" 2>/dev/null || echo "0")
+    if [ "$denied_count" -gt 0 ]; then
+        for ((j=0; j<denied_count; j++)); do
+            local denied_tool
+            denied_tool=$("$YQ" ".denied_tools[$j]" "$perms_file" 2>/dev/null)
+            if echo ",$tools," | grep -q ",$denied_tool,"; then
+                log_warning "Persona $(basename "$persona_dir"): '$denied_tool' appears in BOTH allowed_tools and denied_tools — it WILL be granted"
+            fi
+        done
+    fi
+
     # Read allowed_bash and convert to Bash() patterns
     local bash_count
     bash_count=$("$YQ" '.allowed_bash | length' "$perms_file" 2>/dev/null || echo "0")
@@ -326,18 +312,22 @@ build_allowed_tools() {
     echo "$tools"
 }
 
-# Build the full prompt from persona + job + params + answer
+# Build the full prompt from persona + job + params + session + answer
 build_prompt() {
     local persona_dir="$1"
     local job_prompt="$2"
     local params="$3"
     local answer="$4"
+    local session_id="$5"
     local prompt_file="$persona_dir/prompt.md"
 
     local persona_prompt=""
     if [ -f "$prompt_file" ]; then
         persona_prompt=$(cat "$prompt_file")
     fi
+
+    local session_label="headless-${JOB_NAME}-$(date +%Y%m%d-%H%M%S)"
+    [ -n "$session_id" ] && session_label="$session_id"
 
     local full_prompt="$persona_prompt
 
@@ -346,11 +336,43 @@ build_prompt() {
 
 **Job**: $JOB_NAME
 **Execution Time**: $(date '+%Y-%m-%d %H:%M:%S')
-**Session ID**: headless-${JOB_NAME}-$(date +%Y%m%d-%H%M%S)
+**Session ID**: $session_label
 **Invoked by**: Headless Claude dispatcher
 
 ### Task
 $job_prompt"
+
+    # Add session history if session_id provided
+    if [ -n "$session_id" ]; then
+        # Source session library
+        local sessions_lib="$JOBS_DIR/lib/sessions.sh"
+        if [ -f "$sessions_lib" ]; then
+            source "$sessions_lib"
+            local history
+            history=$(session_get_history "$session_id" 10)
+            if [ -n "$history" ]; then
+                # Guard: truncate session history if it would push prompt past 100K chars
+                local current_len=${#full_prompt}
+                local history_len=${#history}
+                local max_prompt_chars=100000
+                if [ $((current_len + history_len)) -gt $max_prompt_chars ]; then
+                    local allowed=$((max_prompt_chars - current_len - 200))
+                    if [ $allowed -gt 0 ]; then
+                        history="${history:0:$allowed}
+...[session history truncated to fit context limit]"
+                    else
+                        history="[session history omitted — prompt already near context limit]"
+                    fi
+                fi
+                full_prompt="$full_prompt
+
+### Session History (previous interactions in this conversation)
+$history
+
+You are continuing an ongoing conversation. Use context from previous interactions."
+            fi
+        fi
+    fi
 
     # Add parameters if any
     if [ -n "$params" ]; then
@@ -487,6 +509,35 @@ execute_engine() {
     esac
 }
 
+# Detect transient API errors that are worth retrying
+# Returns 0 if the error looks transient, 1 otherwise
+is_transient_error() {
+    local exit_code="$1" output="$2"
+
+    # Non-zero exit + known transient API patterns
+    if [ "$exit_code" -ne 0 ]; then
+        if echo "$output" | grep -qiP '(500.*Internal server error|"type":\s*"api_error"|502 Bad Gateway|503 Service Unavailable|529.*Overloaded|rate.limit|ECONNRESET|ETIMEDOUT|socket hang up)'; then
+            return 0
+        fi
+    fi
+
+    # Also catch 500s in JSON output even on exit 0 (some wrappers don't propagate)
+    if echo "$output" | grep -qiP '"error".*"api_error".*"Internal server error"'; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Random sleep between min and max seconds (inclusive)
+random_sleep() {
+    local min="$1" max="$2"
+    local range=$((max - min + 1))
+    local delay=$((RANDOM % range + min))
+    log_info "Waiting ${delay}s before retry..." | tee -a "$LOG_FILE"
+    sleep "$delay"
+}
+
 # Check message bus for answered questions for this job
 check_queue_answers() {
     local job="$1"
@@ -553,8 +604,16 @@ write_question_to_queue() {
 JOB_NAME=""
 PARAMS=""
 ANSWER=""
+SESSION_ID=""
 DRY_RUN=false
 VERBOSE=false
+QUIET=false
+PERSONA_OVERRIDE=""
+MODEL_OVERRIDE=""
+BUDGET_OVERRIDE=""
+TURNS_OVERRIDE=""
+TIMEOUT_OVERRIDE=""
+SUPPRESS_NOTIF=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -570,8 +629,16 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --answer) ANSWER="$2"; shift 2 ;;
+        --session) SESSION_ID="$2"; shift 2 ;;
+        --quiet) QUIET=true; shift ;;
         --dry-run) DRY_RUN=true; shift ;;
         --verbose) VERBOSE=true; shift ;;
+        --persona) PERSONA_OVERRIDE="$2"; shift 2 ;;
+        --model-override) MODEL_OVERRIDE="$2"; shift 2 ;;
+        --max-budget-override) BUDGET_OVERRIDE="$2"; shift 2 ;;
+        --max-turns-override) TURNS_OVERRIDE="$2"; shift 2 ;;
+        --timeout-override) TIMEOUT_OVERRIDE="$2"; shift 2 ;;
+        --suppress-notification) SUPPRESS_NOTIF=true; shift ;;
         *) log_error "Unknown option: $1"; show_help; exit 1 ;;
     esac
 done
@@ -608,7 +675,15 @@ MAX_TURNS=$(reg_get "$JOB_NAME" "max_turns" "10")
 MAX_BUDGET=$(reg_get "$JOB_NAME" "max_budget_usd" "2.00")
 MODEL=$(reg_get "$JOB_NAME" "model" "sonnet")
 TIMEOUT_MINUTES=$(reg_get "$JOB_NAME" "timeout_minutes" "10")
+API_RETRIES=$(reg_get "$JOB_NAME" "api_retries" "3")
 JOB_PROMPT=$("$YQ" ".jobs.${JOB_NAME}.prompt" "$REGISTRY" 2>/dev/null || echo "")
+
+# Apply CLI overrides (used by team-runner.py for per-member config)
+[ -n "${PERSONA_OVERRIDE:-}" ] && PERSONA_NAME="$PERSONA_OVERRIDE" && PERSONA_DIR="$PERSONAS_DIR/$PERSONA_NAME"
+[ -n "${MODEL_OVERRIDE:-}" ] && MODEL="$MODEL_OVERRIDE"
+[ -n "${BUDGET_OVERRIDE:-}" ] && MAX_BUDGET="$BUDGET_OVERRIDE"
+[ -n "${TURNS_OVERRIDE:-}" ] && MAX_TURNS="$TURNS_OVERRIDE"
+[ -n "${TIMEOUT_OVERRIDE:-}" ] && TIMEOUT_MINUTES="$TIMEOUT_OVERRIDE"
 
 # Validate persona exists
 if [ ! -d "$PERSONA_DIR" ]; then
@@ -648,7 +723,7 @@ if [ -z "$ANSWER" ]; then
 fi
 
 # Build full prompt
-FULL_PROMPT=$(build_prompt "$PERSONA_DIR" "$JOB_PROMPT" "$PARAMS" "$ANSWER")
+FULL_PROMPT=$(build_prompt "$PERSONA_DIR" "$JOB_PROMPT" "$PARAMS" "$ANSWER" "$SESSION_ID")
 
 # Setup logging
 mkdir -p "$EXEC_LOG_DIR"
@@ -720,41 +795,83 @@ if [ "$ENGINE" = "claude-code" ] && ! command -v claude &>/dev/null; then
     exit 1
 fi
 
-log_info "Executing via $ENGINE ..." | tee -a "$LOG_FILE"
+log_info "Executing via $ENGINE (api_retries=$API_RETRIES) ..." | tee -a "$LOG_FILE"
 
 EXEC_START=$(date +%s)
 EXEC_EXIT_CODE=0
+ATTEMPT=0
 
-if [ "$ENGINE" = "claude-code" ]; then
-    RESULT=$(execute_engine "$ENGINE" "$FULL_PROMPT" "$MODEL" \
-        --model "$MODEL" \
-        --allowedTools "$ALLOWED_TOOLS" \
-        --max-turns "$MAX_TURNS" \
-        --output-format json \
-        --no-session-persistence \
-        $ADD_DIR_FLAGS \
-        2>&1) || {
-        EXEC_EXIT_CODE=$?
-    }
-else
-    RESULT=$(execute_engine "$ENGINE" "$FULL_PROMPT" "$MODEL" 2>&1) || {
-        EXEC_EXIT_CODE=$?
-    }
-fi
+while true; do
+    ATTEMPT=$((ATTEMPT + 1))
+    EXEC_EXIT_CODE=0
 
-if [ "$EXEC_EXIT_CODE" -ne 0 ]; then
-    log_error "Execution failed (engine: $ENGINE)" | tee -a "$LOG_FILE"
+    if [ "$ENGINE" = "claude-code" ]; then
+        # Call claude directly (not via execute_engine function) so that
+        # `timeout` can find the executable — timeout uses execvp which
+        # cannot resolve bash functions, only actual commands on PATH.
+        RESULT=$(timeout "${TIMEOUT_MINUTES}m" \
+            claude -p "$FULL_PROMPT" \
+            --model "$MODEL" \
+            --allowedTools "$ALLOWED_TOOLS" \
+            --max-turns "$MAX_TURNS" \
+            --max-budget-usd "$MAX_BUDGET" \
+            --output-format json \
+            --no-session-persistence \
+            $ADD_DIR_FLAGS \
+            2>&1) || {
+            EXEC_EXIT_CODE=$?
+            # timeout returns 124 on timeout
+            if [ "$EXEC_EXIT_CODE" -eq 124 ]; then
+                log_warning "Job timed out after ${TIMEOUT_MINUTES} minutes" | tee -a "$LOG_FILE"
+            fi
+        }
+    else
+        RESULT=$(execute_engine "$ENGINE" "$FULL_PROMPT" "$MODEL" 2>&1) || {
+            EXEC_EXIT_CODE=$?
+        }
+    fi
+
+    # Success — break out
+    if [ "$EXEC_EXIT_CODE" -eq 0 ] && ! is_transient_error 0 "$RESULT"; then
+        break
+    fi
+
+    # Check if this is a transient error worth retrying
+    if is_transient_error "$EXEC_EXIT_CODE" "$RESULT" && [ "$ATTEMPT" -lt "$API_RETRIES" ]; then
+        log_warning "Transient API error on attempt $ATTEMPT/$API_RETRIES (exit=$EXEC_EXIT_CODE)" | tee -a "$LOG_FILE"
+        echo "$RESULT" | head -5 >> "$LOG_FILE"
+        # Random backoff: 60-300s (1-5 minutes)
+        random_sleep 60 300
+        continue
+    fi
+
+    # Non-transient error or retries exhausted — fail
+    break
+done
+
+if [ "$EXEC_EXIT_CODE" -ne 0 ] || is_transient_error "$EXEC_EXIT_CODE" "$RESULT"; then
+    FAIL_REASON="Execution failed"
+    if [ "$ATTEMPT" -gt 1 ]; then
+        FAIL_REASON="Execution failed after $ATTEMPT attempts (transient API errors)"
+    fi
+    log_error "$FAIL_REASON (engine: $ENGINE)" | tee -a "$LOG_FILE"
     echo "$RESULT" >> "$LOG_FILE"
-    echo "{\"status\":\"error\",\"job\":\"$JOB_NAME\",\"engine\":\"$ENGINE\",\"error\":\"execution_failed\"}" > "$OUTPUT_FILE"
+    echo "{\"status\":\"error\",\"job\":\"$JOB_NAME\",\"engine\":\"$ENGINE\",\"error\":\"execution_failed\",\"attempts\":$ATTEMPT}" > "$OUTPUT_FILE"
 
-    # Write failure notification
+    # Write failure notification (unless suppressed)
     EXEC_END=$(date +%s)
     EXEC_DURATION=$((EXEC_END - EXEC_START))
-    write_notification "$JOB_NAME" "critical" "$JOB_NAME failed" \
-        "Execution failed with exit code $EXEC_EXIT_CODE (engine: $ENGINE)" \
-        "$EXEC_EXIT_CODE" "unknown" "$EXEC_DURATION" "$OUTPUT_FILE"
+    if [ "$SUPPRESS_NOTIF" != "true" ]; then
+        write_notification "$JOB_NAME" "critical" "$JOB_NAME failed" \
+            "$FAIL_REASON with exit code $EXEC_EXIT_CODE (engine: $ENGINE)" \
+            "$EXEC_EXIT_CODE" "unknown" "$EXEC_DURATION" "$OUTPUT_FILE" "" "$ENGINE" "{}"
+    fi
 
     exit 1
+fi
+
+if [ "$ATTEMPT" -gt 1 ]; then
+    log_success "Succeeded on attempt $ATTEMPT/$API_RETRIES after transient errors" | tee -a "$LOG_FILE"
 fi
 
 EXEC_END=$(date +%s)
@@ -770,6 +887,7 @@ COST="unknown"
 if command -v jq &>/dev/null; then
     RESPONSE=$(echo "$RESULT" | jq -r '.result // .response // ""' 2>/dev/null || echo "$RESULT")
     COST=$(echo "$RESULT" | jq -r '.total_cost_usd // .cost_usd // "unknown"' 2>/dev/null || echo "unknown")
+    MODEL_USAGE=$(echo "$RESULT" | jq -c '.modelUsage // {}' 2>/dev/null || echo '{}')
 
     # Check for max_turns failure (no .result field)
     SUBTYPE=$(echo "$RESULT" | jq -r '.subtype // ""' 2>/dev/null || echo "")
@@ -811,9 +929,13 @@ NOTIF_DETAILS=""
 if [ "$SEVERITY" != "info" ]; then
     NOTIF_DETAILS=$(extract_details "$RESPONSE")
 fi
-write_notification "$JOB_NAME" "$SEVERITY" "$NOTIF_TITLE" "$NOTIF_SUMMARY" \
-    "$EXEC_EXIT_CODE" "$COST" "$EXEC_DURATION" "$OUTPUT_FILE" "$NOTIF_DETAILS"
-log_info "Notification recorded: $SEVERITY (relay delivers)" | tee -a "$LOG_FILE"
+if [ "$SUPPRESS_NOTIF" != "true" ]; then
+    write_notification "$JOB_NAME" "$SEVERITY" "$NOTIF_TITLE" "$NOTIF_SUMMARY" \
+        "$EXEC_EXIT_CODE" "$COST" "$EXEC_DURATION" "$OUTPUT_FILE" "$NOTIF_DETAILS" "$ENGINE" "${MODEL_USAGE:-\{\}}"
+    log_info "Notification recorded: $SEVERITY (relay delivers)" | tee -a "$LOG_FILE"
+else
+    log_info "Notification suppressed (--suppress-notification)" | tee -a "$LOG_FILE"
+fi
 
 # Push metrics to Prometheus
 METRIC_SUCCESS=1
@@ -825,6 +947,28 @@ push_metrics "$JOB_NAME" "$ENGINE" "$MODEL" "$EXEC_DURATION" "$METRIC_COST" "$ME
 # Update latest symlink
 LATEST_FILE="$EXEC_LOG_DIR/latest-${JOB_NAME}.json"
 cp "$OUTPUT_FILE" "$LATEST_FILE"
+
+# Record session interaction if session_id provided
+if [ -n "$SESSION_ID" ]; then
+    SESSIONS_LIB="$JOBS_DIR/lib/sessions.sh"
+    if [ -f "$SESSIONS_LIB" ]; then
+        source "$SESSIONS_LIB"
+        # Extract the user's prompt from params
+        USER_PROMPT=$(echo "$PARAMS" | grep -oP 'prompt=\K.*' | head -1)
+        [ -z "$USER_PROMPT" ] && USER_PROMPT="(job: $JOB_NAME)"
+        # Append user request and agent response
+        session_append "$SESSION_ID" "user" "$USER_PROMPT" "$JOB_NAME"
+        # Truncate response for session storage (keep first 2000 chars)
+        SESSION_RESPONSE="${RESPONSE:0:2000}"
+        session_append "$SESSION_ID" "assistant" "$SESSION_RESPONSE" "$JOB_NAME"
+    fi
+fi
+
+# Quiet mode: output only JSON result and exit
+if [ "$QUIET" = "true" ]; then
+    echo "$RESULT"
+    exit 0
+fi
 
 log_success "Job completed: $JOB_NAME" | tee -a "$LOG_FILE"
 echo ""

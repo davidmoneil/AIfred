@@ -1,0 +1,21 @@
+# Persona: _template
+# Engine and execution configuration
+
+persona: _template
+
+engine:
+  default: claude-code    # claude-code | ollama | script
+  model: sonnet           # sonnet | haiku | opus
+  fallback: null          # e.g., ollama/qwen2.5:7b-instruct
+
+limits:
+  max_turns: 10
+  max_budget_usd: 2.00
+  timeout_minutes: 10
+
+output:
+  format: json
+  save_to: .claude/logs/headless/executions/
+
+session:
+  persist: false

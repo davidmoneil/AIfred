@@ -407,7 +407,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-User=davidmoneil
+User=your_username
 WorkingDirectory=${AIFRED_HOME:-$HOME/AIfred}
 ExecStart=${AIFRED_HOME:-$HOME/AIfred}/.claude/jobs/claude-scheduled.sh upgrade-discover
 StandardOutput=append:${AIFRED_HOME:-$HOME/AIfred}/.claude/logs/scheduled/systemd.log

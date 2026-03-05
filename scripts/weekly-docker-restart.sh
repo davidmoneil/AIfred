@@ -18,7 +18,7 @@ CHECK_INTERVAL=10
 # Webhook configuration
 WEBHOOK_URL="https://n8n.theklyx.space/webhook/51ef8abf-c108-4c17-8fd1-011a76f69adf"
 WEBHOOK_SECRET="ebbaafd30a9ed2631e90f8f90b68fef9e112ab622e9d039a"
-NOTIFICATION_EMAIL="davidmoneil@gmail.com"
+NOTIFICATION_EMAIL="${NOTIFICATION_EMAIL:-}"
 
 # Services to verify after restart
 declare -A SERVICES=(

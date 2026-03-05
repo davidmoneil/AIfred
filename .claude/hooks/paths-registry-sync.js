@@ -17,9 +17,10 @@ const PATHS_REGISTRY = path.join(process.cwd(), 'paths-registry.yaml');
 const EXTERNAL_SOURCES = path.join(process.cwd(), 'external-sources');
 
 // Patterns that suggest new external paths
+const HOME = process.env.HOME || '/tmp';
 const EXTERNAL_PATH_PATTERNS = [
-  /\/home\/davidmoneil\/Docker\/mydocker\//,
-  /\/home\/davidmoneil\/Code\//,
+  new RegExp(HOME.replace(/[.*+?${}()|[\]\\]/g, '\\$&') + '/Docker/'),
+  new RegExp(HOME.replace(/[.*+?${}()|[\]\\]/g, '\\$&') + '/Code/'),
   /\/mnt\/[^/]+\//,
   /\/opt\//,
   /~\/Docker\//,

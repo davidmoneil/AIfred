@@ -38,9 +38,9 @@
 4. **Identifies ready tasks**: Tasks with no unmet dependencies
 5. **Spawns agents** (up to 3 parallel):
    ```
-   Agent 1 -> T1.1: Database schema (stream: database)
-   Agent 2 -> T1.2: Environment config (stream: infra)
-   Agent 3 -> T1.3: Project scaffolding (stream: core)
+   Agent 1 → T1.1: Database schema (stream: database)
+   Agent 2 → T1.2: Environment config (stream: infra)
+   Agent 3 → T1.3: Project scaffolding (stream: core)
    ```
 6. **Coordinates completion**:
    - When Agent 1 completes T1.1, dependent tasks (T2.1, T2.2) become ready
@@ -53,19 +53,10 @@
 **What happens when you run `/parallel-dev:validate auth-system`**:
 
 1. **Detects project type** (JavaScript, Python, Go, Rust)
-2. **Runs Static Analysis**:
-   - Linting (eslint, ruff, golangci-lint)
-   - Type checking (tsc, mypy)
-   - Format checking (prettier, black)
-3. **Runs Tests**:
-   - Unit tests with coverage
-   - Integration tests if present
-4. **Verifies Build**:
-   - Production build succeeds
-   - Bundle size check
-5. **Reviews Acceptance Criteria**:
-   - Validator agent checks each criterion
-   - Provides evidence (file:line references)
+2. **Runs Static Analysis**: Linting, type checking, format checking
+3. **Runs Tests**: Unit tests with coverage, integration tests
+4. **Verifies Build**: Production build succeeds, bundle size check
+5. **Reviews Acceptance Criteria**: Validator agent checks each criterion
 6. **Generates Report** with pass/fail status
 
 **Auto-fix mode**: `/parallel-dev:validate auth-system --fix` attempts to fix formatting and simple lint issues automatically.
@@ -74,37 +65,16 @@
 
 ```bash
 User: "I want to build user authentication for my Express app"
-
-# Claude starts guided planning
 Claude: "I'll help you plan this. Let me ask some questions..."
 [Questions about OAuth vs password, JWT expiry, roles, etc.]
-
 User: [Answers questions]
-
-# Claude generates plan
 Claude: "Plan created at .claude/parallel-dev/plans/auth-system.md"
 
-# User reviews and approves
 /parallel-dev:plan-show auth-system
 /parallel-dev:plan-edit auth-system --approve
-
-# Decompose into tasks
 /parallel-dev:decompose auth-system
-# Shows: 15 tasks across 4 phases, critical path ~12h
-
-# Start execution
 /parallel-dev:start auth-system
-# Creates worktree, spawns agents, shows progress
-
-# User can monitor
 /parallel-dev:status
-# Shows: 45% complete (7/15 tasks), 3 agents active
-
-# Validate when complete
 /parallel-dev:validate auth-system
-# Shows: All checks passed, ready to merge
-
-# Merge to main
 /parallel-dev:merge auth-system
-# Merges, cleans up worktree, archives execution
 ```

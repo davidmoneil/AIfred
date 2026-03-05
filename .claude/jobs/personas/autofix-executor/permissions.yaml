@@ -1,0 +1,56 @@
+# Persona: autofix-executor
+# Tier: execute (read + write + edit files, close Beads tasks)
+# Purpose: Execute approved auto:ready tasks, modify files, close tasks on success.
+
+persona: autofix-executor
+tier: execute
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Write and Edit (for executing fixes)
+  - Write
+  - Edit
+  # Filesystem (full access for file operations)
+  - mcp__filesystem__read_text_file
+  - mcp__filesystem__read_file
+  - mcp__filesystem__list_directory
+  - mcp__filesystem__list_directory_with_sizes
+  - mcp__filesystem__directory_tree
+  - mcp__filesystem__get_file_info
+  - mcp__filesystem__search_files
+  - mcp__filesystem__write_file
+  - mcp__filesystem__edit_file
+  - mcp__filesystem__move_file
+  - mcp__filesystem__create_directory
+  # Git (read-only — no push, no commit)
+  - mcp__git__git_status
+  - mcp__git__git_log
+  - mcp__git__git_diff
+  - mcp__git__git_show
+
+denied_tools:
+  # No git write operations
+  - mcp__git__git_add
+  - mcp__git__git_commit
+  - mcp__git__git_create_branch
+  - mcp__git__git_checkout
+  # No web access
+  - WebFetch
+  - WebSearch
+  # No task spawning
+  - Task
+
+# Bash: wildcard allowed for bd commands, file ops, git stash.
+# Safety enforced by prompt constraints (no docker, no ssh, no push).
+allowed_bash:
+  - "*"
+
+pre_approved:
+  - "Read any file"
+  - "Write and edit files within explicitly listed paths"
+  - "Move and rename files within explicitly listed paths"
+  - "Run bd update, bd show, bd close commands"
+  - "Run git stash for checkpoints"

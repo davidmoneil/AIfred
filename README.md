@@ -130,16 +130,15 @@ Composable YAML layers that configure your entire AIfred installation:
 
 See [`profiles/README.md`](profiles/README.md) for full documentation.
 
-### Automation Hooks (43)
+### Automation Hooks (25 active + lib)
 
 | Category | Examples |
 |----------|---------|
-| **Security** | Branch protection, credential guard, compose validation |
+| **Security** | Branch protection, credential guard, compose validation, secret scanning |
 | **Document Protection** | Document guard with 4-tier protection, credential scanning, structural checks |
-| **Operations** | Docker health checks, port conflict detection, restart loop detection |
-| **Workflow** | Skill routing, planning detection, orchestration, context tracking, fabric suggestion |
-| **Validation** | Environment validation, network validation |
-| **Observability** | Audit logging, session tracking, documentation sync triggers |
+| **Operations** | Docker health checks, port conflict detection |
+| **Workflow** | Prompt dispatcher (tool guidance + project detection + task routing), skill routing, orchestration detection |
+| **Observability** | Audit logging, subagent dispatcher (activity + metrics), documentation sync |
 | **Task Management** | Beads actor identity, cross-project commit tracking |
 
 ### Slash Commands (63)
@@ -156,7 +155,7 @@ See [`profiles/README.md`](profiles/README.md) for full documentation.
 | **Development** | `/parallel-dev:plan`, `/parallel-dev:start`, `/parallel-dev:validate` |
 | **Browser** | `/browser` (optional — requires Playwright) |
 
-### Skills (10)
+### Skills (11)
 
 | Skill | Purpose |
 |-------|---------|
@@ -169,7 +168,7 @@ See [`profiles/README.md`](profiles/README.md) for full documentation.
 | **system-utilities** | Core CLI utilities: git sync, priority cleanup, history archival |
 | **upgrade** | Self-improvement: discover and apply updates automatically |
 | **fabric** | AI-powered text processing with local Ollama |
-| **orchestration** | Task orchestration with fresh-context execution |
+| **task-dashboard** | Formatted Beads task views with label categorization (zero-token) |
 
 ### Agents (13)
 
@@ -262,16 +261,18 @@ AIfred/
 │   ├── context/            # Knowledge base (37 files)
 │   ├── commands/           # Slash commands (63)
 │   ├── agents/             # Agent definitions (13)
-│   ├── hooks/              # Automation hooks (43)
-│   ├── skills/             # Workflow skills (10)
-│   ├── jobs/               # Headless Claude scheduled jobs
-│   │   ├── dispatcher.sh   # Master scheduler (cron)
-│   │   ├── executor.sh     # Per-job execution engine
-│   │   ├── personas/       # Safety tiers (investigator/analyst/troubleshooter)
-│   │   └── lib/            # Support libs (msgbus, relay, dashboard)
+│   ├── hooks/              # Automation hooks (25 + lib/shared.js)
+│   ├── skills/             # Workflow skills (11)
+│   ├── jobs/               # Headless automation framework
+│   │   ├── dispatcher.sh   # Master scheduler (cron, every 5 min)
+│   │   ├── executor.sh     # Persona-aware job runner
+│   │   ├── team-runner.py  # Multi-agent consensus orchestrator
+│   │   ├── registry.yaml   # Job definitions (schedules, budgets, prompts)
+│   │   ├── personas/       # 7 personas (investigator, analyst, researcher, troubleshooter, ...)
+│   │   └── lib/            # 12 support libs (msgbus, relay, dashboard, cost, watchdog)
 │   └── orchestration/      # Task orchestration configs
 ├── .opencode/              # OpenCode-specific configs
-├── scripts/                # CLI automation scripts (16+)
+├── scripts/                # CLI automation scripts (30)
 ├── knowledge/              # Documentation and reference
 ├── external-sources/       # Symlinks to external data
 ├── paths-registry.yaml     # Source of truth for all paths
@@ -286,11 +287,34 @@ AIfred/
 - **Git**
 - **Node.js** (for profile loader)
 - **Docker** (optional, for infrastructure features)
+- **Python 3** (for headless automation SQLite and team orchestration)
+- **yq** (for YAML parsing in headless jobs)
+- **jq** (for JSON parsing)
 - **Linux/macOS** (Windows experimental)
 
 ---
 
 ## Changelog
+
+### v3.0.0 (2026-03-05) -- Headless Automation Framework
+
+- **Full headless automation framework**: Autonomous Claude Code job execution via cron
+  - **Dispatcher** (1,040 lines): Schedule evaluation, pre-check gates, lock acquisition, retry with backoff
+  - **Executor** (983 lines): Persona-aware prompt building, engine routing (Claude/Ollama), transient error retry
+  - **Team Runner** (934 lines): Multi-agent consensus orchestration with parallel execution and HITL escalation
+  - **Message Bus**: SQLite-backed event store with threading, DND-aware delivery, and Telegram integration
+  - **7 personas**: investigator, analyst, researcher, troubleshooter, autofix-executor, task-investigator, _template
+  - **8 template jobs**: health-check, task-score, task-investigator, task-executor, weekly-cost-report, doc-sync-check, priority-review, ollama-test
+  - **Observability**: Terminal dashboard, cost tracking, dispatcher watchdog, weekly digest
+  - See [docs/headless-automation.md](docs/headless-automation.md) for full setup guide
+- **Task automation pipeline**: Autonomous Beads task processing with safety labels (auto:ready/candidate/blocked, risk:safe/moderate/destructive)
+- **Hook consolidation**: prompt-dispatcher.js (replaces prompt-enhancer + project-detector), subagent-dispatcher.js (replaces subagent-stop + metrics-collector), shared lib/shared.js utilities
+- **New skill**: task-dashboard — zero-token deterministic Beads task formatting
+- **New script**: scan-secrets.sh — pre-commit secret scanning (AWS, OpenAI, GitHub, Telegram patterns)
+- **Updated skills**: parallel-dev (config, workflows, troubleshooting), upgrade (analysis, implementation, scheduling)
+- **CLAUDE.md**: Added /tasks guidance, headless automation section, documentation routing
+- **Sanitization**: Cleaned remaining hardcoded personal references in hooks, patterns, and scripts
+- Total: 25 hooks, 11 skills, 14 agents, 7 personas, 30 scripts
 
 ### v1.2.0 (2026-02-13) -- Feature Sync from AIProjects
 

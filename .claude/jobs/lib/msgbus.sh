@@ -1,8 +1,8 @@
 #!/bin/bash
-# msgbus.sh - Unified message bus CLI for Headless Claude
+# msgbus.sh - Unified message bus CLI
 #
-# Append-only event store in messages.jsonl with sequential IDs,
-# threading (parent_id/thread_id), and jq-based queries.
+# SQLite-backed event store with sequential IDs (AUTOINCREMENT),
+# threading (parent_id/thread_id), and indexed queries.
 #
 # Usage:
 #   msgbus.sh send --type job_completed --source "headless:health-summary" \
@@ -23,39 +23,20 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
-MESSAGES_FILE="$JOBS_DIR/messages.jsonl"
-CURSOR_FILE="$JOBS_DIR/state/msgbus-cursor.txt"
-LOCK_FILE="$JOBS_DIR/state/msgbus-cursor.lock"
+JOBSDB="$SCRIPT_DIR/jobsdb.py"
+
+# Helper: run SQL
+_db() {
+    python3 "$JOBSDB" "$@"
+}
 
 # ============================================================================
 # Helpers
 # ============================================================================
 
-# Get next sequential ID (atomic via flock)
-next_id() {
-    local id
-    (
-        flock -w 5 200 || { echo "ERROR: Could not acquire cursor lock" >&2; exit 1; }
-        if [ ! -f "$CURSOR_FILE" ]; then
-            echo "0" > "$CURSOR_FILE"
-        fi
-        id=$(cat "$CURSOR_FILE")
-        id=$((id + 1))
-        echo "$id" > "$CURSOR_FILE"
-        echo "$id"
-    ) 200>"$LOCK_FILE"
-}
-
 # ISO 8601 UTC timestamp
 now_utc() {
     date -u +%Y-%m-%dT%H:%M:%SZ
-}
-
-# Ensure messages file exists
-ensure_store() {
-    mkdir -p "$(dirname "$MESSAGES_FILE")"
-    mkdir -p "$(dirname "$CURSOR_FILE")"
-    touch "$MESSAGES_FILE"
 }
 
 # ============================================================================
@@ -65,7 +46,7 @@ ensure_store() {
 # --- send ---
 # Write an event to the bus. Returns the event ID.
 cmd_send() {
-    local event_type="" source="" severity="info" data="{}" parent_id="null" deliver_after="" expires_at="null" job=""
+    local event_type="" source="" severity="info" data="{}" parent_id="" deliver_after="" expires_at="" job=""
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -90,10 +71,6 @@ cmd_send() {
         return 1
     fi
 
-    ensure_store
-
-    local id
-    id=$(next_id)
     local ts
     ts=$(now_utc)
 
@@ -104,18 +81,19 @@ cmd_send() {
     fi
 
     # Resolve expires_at
-    local exp="null"
-    if [ "$expires_at" != "null" ] && [ -n "$expires_at" ]; then
-        exp="\"$(resolve_time "$expires_at")\""
+    local exp=""
+    if [ -n "$expires_at" ]; then
+        exp=$(resolve_time "$expires_at")
     fi
 
     # Threading: if replying to a parent, inherit thread_id
-    local thread_id="null"
-    if [ "$parent_id" != "null" ]; then
-        # Look up parent's thread_id; if null, the parent is the thread root
+    local thread_id=""
+    if [ -n "$parent_id" ]; then
         local parent_thread
-        parent_thread=$(jq -r "select(.id == $parent_id) | .thread_id // .id" "$MESSAGES_FILE" 2>/dev/null | head -1)
-        if [ -n "$parent_thread" ] && [ "$parent_thread" != "null" ]; then
+        parent_thread=$(_db exec-scalar \
+            "SELECT COALESCE(thread_id, id) FROM events WHERE id = ?" \
+            "$parent_id")
+        if [ -n "$parent_thread" ]; then
             thread_id="$parent_thread"
         else
             thread_id="$parent_id"
@@ -124,40 +102,24 @@ cmd_send() {
 
     # Inject job into data if provided and not already present
     if [ -n "$job" ]; then
-        data=$(echo "$data" | jq --arg j "$job" '. + {job: $j}')
+        data=$(echo "$data" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+if 'job' not in d:
+    d['job'] = '$job'
+print(json.dumps(d))
+")
     fi
 
-    local record
-    record=$(jq -nc \
-        --argjson id "$id" \
-        --arg event_type "$event_type" \
-        --arg source "$source" \
-        --arg actor "$(whoami 2>/dev/null || echo executor)" \
-        --arg severity "$severity" \
-        --argjson parent_id "$parent_id" \
-        --argjson thread_id "$thread_id" \
-        --arg status "pending" \
-        --argjson data "$data" \
-        --arg created_at "$ts" \
-        --arg deliver_after "$da" \
-        --argjson expires_at "$exp" \
-        '{
-            id: $id,
-            event_type: $event_type,
-            source: $source,
-            actor: $actor,
-            severity: $severity,
-            parent_id: $parent_id,
-            thread_id: $thread_id,
-            status: $status,
-            data: $data,
-            created_at: $created_at,
-            deliver_after: $deliver_after,
-            expires_at: $expires_at
-        }')
+    local actor
+    actor=$(whoami 2>/dev/null || echo executor)
 
-    echo "$record" >> "$MESSAGES_FILE"
-    echo "$id"
+    # Insert and return the new ID (AUTOINCREMENT handles sequencing)
+    _db insert \
+        "INSERT INTO events (event_type, source, actor, severity, parent_id, thread_id, status, data, created_at, deliver_after, expires_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)" \
+        "$event_type" "$source" "$actor" "$severity" \
+        "${parent_id:-}" "${thread_id:-}" \
+        "$data" "$ts" "$da" "${exp:-}"
 }
 
 # --- reply ---
@@ -183,7 +145,8 @@ cmd_reply() {
 
     # Inherit severity from parent if not specified
     if [ -z "$severity" ]; then
-        severity=$(jq -r "select(.id == $parent_id) | .severity" "$MESSAGES_FILE" 2>/dev/null | head -1)
+        severity=$(_db exec-scalar \
+            "SELECT severity FROM events WHERE id = ?" "$parent_id")
         severity="${severity:-info}"
     fi
 
@@ -194,36 +157,47 @@ cmd_reply() {
 # --- query ---
 # Filter events by type, status, severity, job, since
 cmd_query() {
-    local filter="true"
+    local wheres=() params=()
 
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --type|-t) filter="$filter and .event_type == \"$2\""; shift 2 ;;
-            --status) filter="$filter and .status == \"$2\""; shift 2 ;;
-            --severity) filter="$filter and .severity == \"$2\""; shift 2 ;;
-            --job|-j) filter="$filter and (.data.job // \"\") == \"$2\""; shift 2 ;;
-            --since) filter="$filter and .created_at >= \"$2\""; shift 2 ;;
-            --id) filter="$filter and .id == $2"; shift 2 ;;
+            --type|-t) wheres+=("event_type = ?"); params+=("$2"); shift 2 ;;
+            --status) wheres+=("status = ?"); params+=("$2"); shift 2 ;;
+            --severity) wheres+=("severity = ?"); params+=("$2"); shift 2 ;;
+            --job|-j) wheres+=("json_extract(data, '$.job') = ?"); params+=("$2"); shift 2 ;;
+            --since) wheres+=("created_at >= ?"); params+=("$2"); shift 2 ;;
+            --id) wheres+=("id = ?"); params+=("$2"); shift 2 ;;
             --limit|-n) ;; # handled below
             *) echo "ERROR: Unknown query option: $1" >&2; return 1 ;;
         esac
     done
 
-    ensure_store
-    jq -c "select($filter)" "$MESSAGES_FILE"
+    local sql="SELECT id, event_type, source, actor, severity, parent_id, thread_id, status, data, created_at, deliver_after, expires_at FROM events"
+    if [ ${#wheres[@]} -gt 0 ]; then
+        local where_clause=""
+        for i in "${!wheres[@]}"; do
+            [ "$i" -gt 0 ] && where_clause="$where_clause AND "
+            where_clause="$where_clause${wheres[$i]}"
+        done
+        sql="$sql WHERE $where_clause"
+    fi
+    sql="$sql ORDER BY id"
+
+    _db exec "$sql" "${params[@]}"
 }
 
 # --- pending ---
 # Show undelivered messages where deliver_after <= now
 cmd_pending() {
-    ensure_store
     local now
     now=$(now_utc)
-    jq -c "select(.status == \"pending\" and .deliver_after <= \"$now\")" "$MESSAGES_FILE"
+    _db exec \
+        "SELECT id, event_type, source, actor, severity, parent_id, thread_id, status, data, created_at, deliver_after, expires_at FROM events WHERE status = 'pending' AND deliver_after <= ? ORDER BY id" \
+        "$now"
 }
 
 # --- deliver ---
-# Mark a message as delivered (append a delivery event)
+# Mark a message as delivered (append a delivery event + update original)
 cmd_deliver() {
     local msg_id="" delivered_by="relay"
 
@@ -240,50 +214,17 @@ cmd_deliver() {
         return 1
     fi
 
-    ensure_store
-
-    # Append a delivery event and update the original message status in-place
-    # Event sourcing: append a notification_delivered event
-    local id
-    id=$(next_id)
     local ts
     ts=$(now_utc)
 
-    local record
-    record=$(jq -nc \
-        --argjson id "$id" \
-        --arg event_type "notification_delivered" \
-        --arg source "relay:$delivered_by" \
-        --arg actor "$delivered_by" \
-        --arg severity "info" \
-        --argjson parent_id "$msg_id" \
-        --arg status "delivered" \
-        --arg created_at "$ts" \
-        --arg deliver_after "$ts" \
-        '{
-            id: $id,
-            event_type: $event_type,
-            source: $source,
-            actor: $actor,
-            severity: $severity,
-            parent_id: $parent_id,
-            thread_id: null,
-            status: $status,
-            data: {},
-            created_at: $created_at,
-            deliver_after: $deliver_after,
-            expires_at: null
-        }')
+    # Insert delivery event and update original status atomically
+    _db exec \
+        "INSERT INTO events (event_type, source, actor, severity, parent_id, thread_id, status, data, created_at, deliver_after, expires_at) VALUES ('notification_delivered', ?, ?, 'info', ?, NULL, 'delivered', '{}', ?, ?, NULL)" \
+        "relay:$delivered_by" "$delivered_by" "$msg_id" "$ts" "$ts"
 
-    echo "$record" >> "$MESSAGES_FILE"
-
-    # Also update original message status (sed in-place for the specific line)
-    # This is a pragmatic choice: we keep event sourcing purity (the delivery event)
-    # but also mark the original for efficient pending queries
-    local tmp
-    tmp=$(mktemp)
-    jq -c "if .id == $msg_id then .status = \"delivered\" else . end" "$MESSAGES_FILE" > "$tmp" \
-        && mv "$tmp" "$MESSAGES_FILE"
+    _db exec \
+        "UPDATE events SET status = 'delivered' WHERE id = ?" \
+        "$msg_id"
 }
 
 # --- thread ---
@@ -296,25 +237,21 @@ cmd_thread() {
         return 1
     fi
 
-    ensure_store
-
-    # Find the thread root: check if this message has a thread_id
+    # Find the thread root
     local thread_root
-    thread_root=$(jq -r "select(.id == $root_id) | .thread_id // \"null\"" "$MESSAGES_FILE" 2>/dev/null | head -1)
+    thread_root=$(_db exec-scalar \
+        "SELECT COALESCE(thread_id, id) FROM events WHERE id = ?" "$root_id")
+    thread_root="${thread_root:-$root_id}"
 
-    if [ "$thread_root" = "null" ] || [ -z "$thread_root" ]; then
-        # This message IS the root
-        thread_root="$root_id"
-    fi
-
-    # Return the root message + all messages in this thread
-    jq -c "select(.id == $thread_root or .thread_id == $thread_root)" "$MESSAGES_FILE"
+    # Return root + all messages in thread
+    _db exec \
+        "SELECT id, event_type, source, actor, severity, parent_id, thread_id, status, data, created_at, deliver_after, expires_at FROM events WHERE id = ? OR thread_id = ? ORDER BY id" \
+        "$thread_root" "$thread_root"
 }
 
 # --- state ---
-# Reconstruct current state summary: pending questions, undelivered messages, due reminders
+# Reconstruct current state summary
 cmd_state() {
-    ensure_store
     local now
     now=$(now_utc)
 
@@ -323,98 +260,98 @@ cmd_state() {
 
     # Pending questions
     local pending_q
-    pending_q=$(jq -c 'select(.event_type == "question_asked" and .status == "pending")' "$MESSAGES_FILE" 2>/dev/null | wc -l)
+    pending_q=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE event_type = 'question_asked' AND status = 'pending'")
     echo "Pending questions: $pending_q"
     if [ "$pending_q" -gt 0 ]; then
-        jq -r 'select(.event_type == "question_asked" and .status == "pending") | "  [\(.id)] \(.data.job // "unknown"): \(.data.question // .data.summary // "?")"' "$MESSAGES_FILE" 2>/dev/null
+        _db exec-raw \
+            "SELECT id, json_extract(data, '$.job'), COALESCE(json_extract(data, '$.question'), json_extract(data, '$.summary'), '?') FROM events WHERE event_type = 'question_asked' AND status = 'pending'" | \
+        while IFS=$'\t' read -r eid ejob equestion; do
+            echo "  [$eid] ${ejob:-unknown}: $equestion"
+        done
     fi
     echo ""
 
     # Undelivered messages ready now
     local undelivered
-    undelivered=$(jq -c "select(.status == \"pending\" and .deliver_after <= \"$now\")" "$MESSAGES_FILE" 2>/dev/null | wc -l)
+    undelivered=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE status = 'pending' AND deliver_after <= ?" "$now")
     echo "Undelivered (ready): $undelivered"
     echo ""
 
     # Due reminders
     local reminders
-    reminders=$(jq -c "select(.event_type == \"reminder_due\" and .status == \"pending\" and .deliver_after <= \"$now\")" "$MESSAGES_FILE" 2>/dev/null | wc -l)
+    reminders=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE event_type = 'reminder_due' AND status = 'pending' AND deliver_after <= ?" "$now")
     echo "Due reminders: $reminders"
     echo ""
 
     # Total events
     local total
-    total=$(wc -l < "$MESSAGES_FILE" 2>/dev/null || echo "0")
+    total=$(_db exec-scalar "SELECT COUNT(*) FROM events")
     echo "Total events: $total"
 
     # Last event
     if [ "$total" -gt 0 ]; then
-        local last
-        last=$(tail -1 "$MESSAGES_FILE" | jq -r '"  Last: [\(.id)] \(.event_type) from \(.source) at \(.created_at)"' 2>/dev/null)
-        echo "$last"
+        _db exec-raw \
+            "SELECT id, event_type, source, created_at FROM events ORDER BY id DESC LIMIT 1" | \
+        while IFS=$'\t' read -r eid etype esrc ecreated; do
+            echo "  Last: [$eid] $etype from $esrc at $ecreated"
+        done
     fi
 }
 
 # --- health ---
-# Check message bus health: stuck messages, file size, cursor integrity
+# Check message bus health
 cmd_health() {
-    ensure_store
     local now issues=0
     now=$(now_utc)
 
     echo "=== Message Bus Health ==="
     echo ""
 
-    # 1. File size check
+    # 1. Database size check
+    local db_path
+    db_path="$JOBS_DIR/state/jobs.db"
     local file_size_bytes=0
-    if [ -f "$MESSAGES_FILE" ]; then
-        file_size_bytes=$(stat -c%s "$MESSAGES_FILE" 2>/dev/null || echo "0")
+    if [ -f "$db_path" ]; then
+        file_size_bytes=$(stat -c%s "$db_path" 2>/dev/null || echo "0")
     fi
     local file_size_kb=$((file_size_bytes / 1024))
     local file_size_mb=$((file_size_bytes / 1048576))
     local total_events
-    total_events=$(wc -l < "$MESSAGES_FILE" 2>/dev/null || echo "0")
+    total_events=$(_db exec-scalar "SELECT COUNT(*) FROM events")
 
     if [ "$file_size_bytes" -gt 10485760 ]; then
-        echo "[!] Store size: ${file_size_mb}MB (${total_events} events) — consider archiving"
+        echo "[!] Store size: ${file_size_mb}MB (${total_events} events) -- consider archiving"
         issues=$((issues + 1))
     elif [ "$file_size_bytes" -gt 5242880 ]; then
-        echo "[~] Store size: ${file_size_mb}MB (${total_events} events) — growing"
+        echo "[~] Store size: ${file_size_mb}MB (${total_events} events) -- growing"
         issues=$((issues + 1))
     else
         echo "[ok] Store size: ${file_size_kb}KB (${total_events} events)"
     fi
 
-    # 2. Cursor integrity
-    if [ -f "$CURSOR_FILE" ]; then
-        local cursor_val
-        cursor_val=$(cat "$CURSOR_FILE" 2>/dev/null)
-        if [[ "$cursor_val" =~ ^[0-9]+$ ]]; then
-            echo "[ok] Cursor: $cursor_val (valid)"
-        else
-            echo "[!] Cursor: '$cursor_val' — NOT a valid integer"
-            issues=$((issues + 1))
-        fi
-    else
-        echo "[!] Cursor file missing: $CURSOR_FILE"
-        issues=$((issues + 1))
-    fi
+    # 2. AUTOINCREMENT integrity
+    local max_id
+    max_id=$(_db exec-scalar "SELECT COALESCE(MAX(id), 0) FROM events")
+    echo "[ok] Sequence: max_id=$max_id (AUTOINCREMENT)"
 
     # 3. Stuck pending messages (pending for >2 hours)
     local two_hours_ago
     two_hours_ago=$(date -u -d "-2 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
-    local stuck_count=0
-    local stuck_details=""
-    if [ "$total_events" -gt 0 ]; then
-        stuck_count=$(jq -c "select(.status == \"pending\" and .deliver_after <= \"$two_hours_ago\")" "$MESSAGES_FILE" 2>/dev/null | wc -l)
-        if [ "$stuck_count" -gt 0 ]; then
-            stuck_details=$(jq -r "select(.status == \"pending\" and .deliver_after <= \"$two_hours_ago\") | \"  [\(.id)] \(.event_type) \(.severity) since \(.created_at)\"" "$MESSAGES_FILE" 2>/dev/null)
-        fi
-    fi
+    local stuck_count
+    stuck_count=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE status = 'pending' AND deliver_after <= ?" "$two_hours_ago")
 
     if [ "$stuck_count" -gt 0 ]; then
         echo "[!] Stuck pending: $stuck_count messages older than 2h"
-        echo "$stuck_details"
+        _db exec-raw \
+            "SELECT id, event_type, severity, created_at FROM events WHERE status = 'pending' AND deliver_after <= ? ORDER BY id" \
+            "$two_hours_ago" | \
+        while IFS=$'\t' read -r eid etype esev ecreated; do
+            echo "  [$eid] $etype $esev since $ecreated"
+        done
         issues=$((issues + 1))
     else
         echo "[ok] No stuck messages"
@@ -423,27 +360,31 @@ cmd_health() {
     # 4. Unanswered questions (pending for >4 hours)
     local four_hours_ago
     four_hours_ago=$(date -u -d "-4 hours" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)
-    local stale_questions=0
-    if [ "$total_events" -gt 0 ]; then
-        stale_questions=$(jq -c "select(.event_type == \"question_asked\" and .status == \"pending\" and .created_at <= \"$four_hours_ago\")" "$MESSAGES_FILE" 2>/dev/null | wc -l)
-    fi
+    local stale_questions
+    stale_questions=$(_db exec-scalar \
+        "SELECT COUNT(*) FROM events WHERE event_type = 'question_asked' AND status = 'pending' AND created_at <= ?" "$four_hours_ago")
 
     if [ "$stale_questions" -gt 0 ]; then
         echo "[~] Unanswered questions: $stale_questions (>4h old)"
-        jq -r "select(.event_type == \"question_asked\" and .status == \"pending\" and .created_at <= \"$four_hours_ago\") | \"  [\(.id)] \(.data.job // \"?\"): \(.data.question // \"?\") (since \(.created_at))\"" "$MESSAGES_FILE" 2>/dev/null
+        _db exec-raw \
+            "SELECT id, json_extract(data, '$.job'), COALESCE(json_extract(data, '$.question'), '?'), created_at FROM events WHERE event_type = 'question_asked' AND status = 'pending' AND created_at <= ? ORDER BY id" \
+            "$four_hours_ago" | \
+        while IFS=$'\t' read -r eid ejob eq ecreated; do
+            echo "  [$eid] ${ejob:-?}: $eq (since $ecreated)"
+        done
         issues=$((issues + 1))
     else
         echo "[ok] No stale questions"
     fi
 
-    # 5. JSONL integrity (spot check: last line is valid JSON)
-    if [ "$total_events" -gt 0 ]; then
-        if tail -1 "$MESSAGES_FILE" | jq . > /dev/null 2>&1; then
-            echo "[ok] JSONL integrity: last record valid"
-        else
-            echo "[!] JSONL integrity: last record is INVALID JSON"
-            issues=$((issues + 1))
-        fi
+    # 5. SQLite integrity check
+    local integrity
+    integrity=$(_db pragma "PRAGMA integrity_check")
+    if [ "$integrity" = "ok" ]; then
+        echo "[ok] Database integrity: ok"
+    else
+        echo "[!] Database integrity: $integrity"
+        issues=$((issues + 1))
     fi
 
     # Summary
@@ -462,7 +403,6 @@ cmd_health() {
 # ============================================================================
 
 # Resolve relative time offsets to absolute ISO 8601 UTC timestamps
-# Supports: "+30min", "+1h", "+24h", "+7d", or absolute ISO timestamps
 resolve_time() {
     local input="$1"
 
@@ -496,7 +436,7 @@ resolve_time() {
 
 if [ $# -lt 1 ]; then
     cat << 'EOF'
-msgbus.sh - Headless Claude Message Bus
+msgbus.sh - Job Engine Message Bus
 
 USAGE:
     msgbus.sh <command> [options]
@@ -509,7 +449,7 @@ COMMANDS:
     deliver   Mark a message as delivered
     thread    Show full conversation thread
     state     Show current bus state summary
-    health    Check bus health (stuck messages, file size, cursor)
+    health    Check bus health (stuck messages, DB size, integrity)
 
 EXAMPLES:
     msgbus.sh send --type job_completed --source "headless:health" --severity info \

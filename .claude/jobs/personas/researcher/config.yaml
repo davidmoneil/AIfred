@@ -1,0 +1,21 @@
+# Persona: researcher
+# Autonomous research task execution
+
+persona: researcher
+
+engine:
+  default: claude-code
+  model: sonnet
+  fallback: null
+
+limits:
+  max_turns: 30
+  max_budget_usd: 10.00
+  timeout_minutes: 25
+
+output:
+  format: json
+  save_to: .claude/logs/headless/executions/
+
+session:
+  persist: false

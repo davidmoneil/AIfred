@@ -99,11 +99,11 @@ edit_message_text() {
 # Callback Data Parsing
 # ============================================================================
 
-# Find the most recent pending question for a job in the message bus
+# Find the oldest pending question for a job in the message bus (FIFO order)
 find_question_for_job() {
     local job="$1"
     "$MSGBUS" query --type question_asked --status pending --job "$job" 2>/dev/null \
-        | jq -r '.id' 2>/dev/null | tail -1
+        | jq -r '.id' 2>/dev/null | head -1
 }
 
 # Parse text patterns for action commands
@@ -161,11 +161,86 @@ process_callback_query() {
     message_id=$(echo "$update" | jq -r '.callback_query.message.message_id')
     original_text=$(echo "$update" | jq -r '.callback_query.message.text // ""')
 
+    log "Callback data: $callback_data"
+
+    # -- Autofix routing --
+    # Autofix callbacks use format: "autofix:<action>" or "autofix:approve:<task_id>"
+    if [[ "$callback_data" == autofix:* ]]; then
+        local autofix_action="${callback_data#autofix:}"
+        log "Autofix callback: action=$autofix_action"
+
+        case "$autofix_action" in
+            approve_all_safe)
+                # Find the autofix digest question in the bus
+                local digest_qid
+                digest_qid=$(find_question_for_job "task-digest")
+                if [ -z "$digest_qid" ] || [ "$digest_qid" = "null" ]; then
+                    answer_callback_query "$callback_query_id" "No pending digest found"
+                    log "WARNING: No pending task-digest question"
+                    return
+                fi
+                "$MSGBUS" reply --parent "$digest_qid" \
+                    --type question_answered \
+                    --source "telegram:callback" \
+                    --data "$(jq -nc '{answer: "approve_all_safe", job: "task-digest"}')" > /dev/null
+                answer_callback_query "$callback_query_id" "Approved all safe tasks"
+                edit_message_text "$chat_id" "$message_id" \
+                    "${original_text}
+
+Approved all safe $(date '+%H:%M')"
+                log "Autofix: approve_all_safe digest=$digest_qid"
+                ;;
+            skip_today)
+                local digest_qid
+                digest_qid=$(find_question_for_job "task-digest")
+                if [ -z "$digest_qid" ] || [ "$digest_qid" = "null" ]; then
+                    answer_callback_query "$callback_query_id" "No pending digest found"
+                    return
+                fi
+                "$MSGBUS" reply --parent "$digest_qid" \
+                    --type question_answered \
+                    --source "telegram:callback" \
+                    --data "$(jq -nc '{answer: "skip_today", job: "task-digest"}')" > /dev/null
+                answer_callback_query "$callback_query_id" "Skipped today"
+                edit_message_text "$chat_id" "$message_id" \
+                    "${original_text}
+
+Skipped $(date '+%H:%M')"
+                log "Autofix: skip_today"
+                ;;
+            approve:*)
+                local task_id="${autofix_action#approve:}"
+                local digest_qid
+                digest_qid=$(find_question_for_job "task-digest")
+                if [ -z "$digest_qid" ] || [ "$digest_qid" = "null" ]; then
+                    answer_callback_query "$callback_query_id" "No pending digest found"
+                    return
+                fi
+                "$MSGBUS" reply --parent "$digest_qid" \
+                    --type question_answered \
+                    --source "telegram:callback" \
+                    --data "$(jq -nc --arg tid "$task_id" '{answer: "approve_single", task_id: $tid, job: "task-digest"}')" > /dev/null
+                answer_callback_query "$callback_query_id" "Approved $task_id"
+                edit_message_text "$chat_id" "$message_id" \
+                    "${original_text}
+
+Approved $task_id $(date '+%H:%M')"
+                log "Autofix: approve single task=$task_id"
+                ;;
+            *)
+                answer_callback_query "$callback_query_id" "Unknown autofix action"
+                log "WARNING: Unknown autofix action=$autofix_action"
+                ;;
+        esac
+        return
+    fi
+
+    # -- Generic job:action routing --
     # Parse callback_data format: "job:action"
     job=$(echo "$callback_data" | cut -d: -f1)
     action=$(echo "$callback_data" | cut -d: -f2-)
 
-    log "Callback: job=$job action=$action"
+    log "Generic callback: job=$job action=$action"
 
     # Find the corresponding question in the bus
     local question_id
@@ -179,7 +254,7 @@ process_callback_query() {
 
     case "$action" in
         approve|deny|skip)
-            # Direct answer — write to bus
+            # Direct answer -- write to bus
             "$MSGBUS" reply --parent "$question_id" \
                 --type question_answered \
                 --source "telegram:callback" \
@@ -201,7 +276,7 @@ $(echo "$action" | sed 's/.*/\u&/') $(date '+%H:%M')"
 
 Waiting for text response..."
             # Store the pending "other" state so text handler knows which question
-            echo "$question_id" > "$STATE_DIR/telegram-awaiting-text.tmp"
+            echo "$question_id $(date +%s)" > "$STATE_DIR/telegram-awaiting-text.tmp"
             log "Awaiting text for: job=$job question=$question_id"
             ;;
         *)
@@ -230,8 +305,20 @@ process_text_message() {
         return
     fi
 
-    local question_id
-    question_id=$(cat "$awaiting_file")
+    local awaiting_content question_id awaiting_ts
+    awaiting_content=$(cat "$awaiting_file")
+    question_id=$(echo "$awaiting_content" | awk '{print $1}')
+    awaiting_ts=$(echo "$awaiting_content" | awk '{print $2}')
+
+    # TTL: expire after 30 minutes
+    local now
+    now=$(date +%s)
+    if [ -n "$awaiting_ts" ] && [ $((now - awaiting_ts)) -gt 1800 ]; then
+        log "WARNING: Awaiting-text expired (>30min) for question $question_id, discarding"
+        rm -f "$awaiting_file"
+        return
+    fi
+
     rm -f "$awaiting_file"
 
     if [ -z "$question_id" ]; then

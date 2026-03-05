@@ -1,7 +1,7 @@
 #!/bin/bash
 # weekly-digest.sh - Send weekly summary of headless job activity
 #
-# Queries the message bus for the past 7 days, counts successes/failures
+# Queries SQLite for the past 7 days, counts successes/failures
 # per job, and sends a single Telegram summary.
 #
 # Usage:
@@ -15,8 +15,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
-MSGSTORE="$JOBS_DIR/messages.jsonl"
+JOBSDB="$SCRIPT_DIR/jobsdb.py"
 SEND_TELEGRAM="$SCRIPT_DIR/send-telegram.sh"
+
+# SQLite helper
+_db() { python3 "$JOBSDB" "$@"; }
 
 # Defaults
 DAYS=7
@@ -30,24 +33,22 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ ! -f "$MSGSTORE" ]; then
-    echo "No message store found at $MSGSTORE"
-    exit 0
-fi
-
 # Calculate cutoff timestamp
 CUTOFF=$(date -u -d "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
 NOW_LOCAL=$(TZ="America/Denver" date '+%b %-d')
 START_LOCAL=$(TZ="America/Denver" date -d "$DAYS days ago" '+%b %-d')
 
-# Query all job_completed and job_failed events in the period
-EVENTS=$(jq -c "select(
-    (.event_type == \"job_completed\" or .event_type == \"job_failed\") and
-    .created_at >= \"$CUTOFF\"
-)" "$MSGSTORE" 2>/dev/null || true)
+# Query all job_completed and job_failed events in the period from SQLite
+EVENTS=$(_db exec-raw \
+    "SELECT json_extract(data, '$.job'), event_type, severity,
+            COALESCE(json_extract(data, '$.cost_usd'), '0')
+     FROM events
+     WHERE (event_type = 'job_completed' OR event_type = 'job_failed')
+       AND created_at >= ?
+     ORDER BY id" "$CUTOFF")
 
 if [ -z "$EVENTS" ]; then
-    MSG="📊 Weekly Digest ($START_LOCAL–$NOW_LOCAL)
+    MSG="Weekly Digest ($START_LOCAL-$NOW_LOCAL)
 
 No job activity in the past $DAYS days."
     if [ "$DRY_RUN" = "true" ]; then
@@ -64,12 +65,8 @@ fi
 declare -A JOB_TOTAL JOB_OK JOB_WARN JOB_FAIL
 TOTAL_COST=0
 
-while IFS= read -r event; do
-    [ -z "$event" ] && continue
-    job=$(echo "$event" | jq -r '.data.job // "unknown"')
-    etype=$(echo "$event" | jq -r '.event_type')
-    severity=$(echo "$event" | jq -r '.severity')
-    cost=$(echo "$event" | jq -r '.data.cost_usd // "0"')
+while IFS=$'\t' read -r job etype severity cost; do
+    [ -z "$job" ] && continue
 
     JOB_TOTAL[$job]=$(( ${JOB_TOTAL[$job]:-0} + 1 ))
 
@@ -82,7 +79,7 @@ while IFS= read -r event; do
     fi
 
     # Accumulate cost (integer cents to avoid float issues)
-    if [ "$cost" != "0" ] && [ "$cost" != "?" ] && [ "$cost" != "unknown" ]; then
+    if [ "$cost" != "0" ] && [ "$cost" != "?" ] && [ "$cost" != "unknown" ] && [ -n "$cost" ]; then
         cost_cents=$(echo "$cost" | awk '{printf "%d", $1 * 100}')
         TOTAL_COST=$((TOTAL_COST + cost_cents))
     fi
@@ -92,7 +89,7 @@ done <<< "$EVENTS"
 COST_DOLLARS=$(echo "$TOTAL_COST" | awk '{printf "%.2f", $1 / 100}')
 
 # Build message
-MSG="📊 Weekly Digest ($START_LOCAL–$NOW_LOCAL)
+MSG="Weekly Digest ($START_LOCAL-$NOW_LOCAL)
 "
 
 # Sort jobs alphabetically
@@ -104,12 +101,12 @@ for job in $(echo "${!JOB_TOTAL[@]}" | tr ' ' '\n' | sort); do
 
     line="$job: $total runs"
     if [ "$fail" -eq 0 ] && [ "$warn" -eq 0 ]; then
-        line="$line, all ✅"
+        line="$line, all ok"
     else
         parts=""
-        [ "$ok" -gt 0 ] && parts="$ok ✅"
-        [ "$warn" -gt 0 ] && parts="$parts $warn ⚠️"
-        [ "$fail" -gt 0 ] && parts="$parts $fail ❌"
+        [ "$ok" -gt 0 ] && parts="$ok ok"
+        [ "$warn" -gt 0 ] && parts="$parts $warn warn"
+        [ "$fail" -gt 0 ] && parts="$parts $fail fail"
         line="$line, $parts"
     fi
     MSG="$MSG

@@ -53,10 +53,11 @@
       },
       {
         "matcher": "Grep",
+        "_disabled": "lsp-redirector.js retired — LSP guidance now handled by prompt-dispatcher.js",
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/lsp-redirector.js\""
+            "command": "echo '{\"proceed\":true}'"
           }
         ]
       },
@@ -146,7 +147,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-enhancer.js\""
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-dispatcher.js\""
           },
           {
             "type": "command",
@@ -159,10 +160,6 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/planning-mode-detector.js\""
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/project-detector.js\""
           }
         ]
       }
@@ -182,11 +179,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent-stop.js\""
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/metrics-collector.js\""
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent-dispatcher.js\""
           }
         ]
       }
@@ -195,8 +188,9 @@
       {
         "hooks": [
           {
+            "_disabled": "session-tracker.js uses module.exports — needs stdin/stdout conversion",
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-tracker.js\""
+            "command": "echo '{\"proceed\":true}'"
           }
         ]
       }

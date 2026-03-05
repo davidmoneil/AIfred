@@ -15,8 +15,6 @@
 #
 # Cron entry:
 #   */5 * * * * ${PROJECT_DIR:-$PWD}/.claude/jobs/dispatcher.sh >> ${PROJECT_DIR:-$PWD}/.claude/logs/headless/dispatcher.log 2>&1
-#
-# Design: Obsidian 05-AI/Projects/Headless-Claude/
 
 set -euo pipefail
 
@@ -26,37 +24,25 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="${PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+JOBS_DIR="$SCRIPT_DIR"
 REGISTRY="$SCRIPT_DIR/registry.yaml"
 EXECUTOR="$SCRIPT_DIR/executor.sh"
 STATE_DIR="$SCRIPT_DIR/state"
 LOCKS_DIR="$STATE_DIR/locks"
-LAST_RUN_FILE="$STATE_DIR/last-run.json"
 QUEUE_FILE="$SCRIPT_DIR/queue.json"
-NOTIFICATIONS_FILE="$SCRIPT_DIR/notifications.jsonl"
+JOBSDB="$SCRIPT_DIR/lib/jobsdb.py"
+
+# Shared utilities (colors, logging, require_yq, reg_get)
+source "$SCRIPT_DIR/lib/common.sh"
 LOG_DIR="$PROJECT_DIR/.claude/logs/headless"
 DISPATCHER_LOCK="$LOCKS_DIR/dispatcher.lock"
 
-# Colors (only when interactive)
-if [ -t 1 ]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[1;33m'
-    BLUE='\033[0;34m'
-    CYAN='\033[0;36m'
-    NC='\033[0m'
-else
-    RED='' GREEN='' YELLOW='' BLUE='' CYAN='' NC=''
-fi
+# SQLite helper
+_db() { python3 "$JOBSDB" "$@"; }
 
 # ============================================================================
-# Functions
+# Functions (colors, logging, require_yq, reg_get loaded from lib/common.sh)
 # ============================================================================
-
-log() { echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
-log_info() { log "${BLUE}INFO${NC}: $1"; }
-log_success() { log "${GREEN}OK${NC}: $1"; }
-log_warning() { log "${YELLOW}WARN${NC}: $1"; }
-log_error() { log "${RED}ERROR${NC}: $1"; }
 
 show_help() {
     cat << 'EOF'
@@ -98,36 +84,20 @@ EXAMPLES:
 EOF
 }
 
-# Find yq binary
-require_yq() {
-    for yq_path in "yq" "$HOME/.local/bin/yq" "/usr/local/bin/yq" "/snap/bin/yq"; do
-        if command -v "$yq_path" &>/dev/null 2>&1 || [ -x "$yq_path" ]; then
-            echo "$yq_path"
-            return 0
-        fi
-    done
-    log_error "yq is required. Install: wget -qO ~/.local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && chmod +x ~/.local/bin/yq"
-    exit 1
-}
+# require_yq() — loaded from lib/common.sh
 
-# Ensure state directories exist
+# Ensure state directories and DB exist
 ensure_state() {
     mkdir -p "$STATE_DIR" "$LOCKS_DIR" "$LOG_DIR"
-    if [ ! -f "$LAST_RUN_FILE" ]; then
-        echo '{}' > "$LAST_RUN_FILE"
-    fi
+    _db init > /dev/null
 }
 
 # Get last run timestamp for a job (epoch seconds, 0 if never run)
 get_last_run() {
     local job="$1"
-    if [ ! -f "$LAST_RUN_FILE" ]; then
-        echo "0"
-        return
-    fi
     local ts
-    ts=$(jq -r --arg job "$job" '.[$job] // 0' "$LAST_RUN_FILE" 2>/dev/null || echo "0")
-    echo "$ts"
+    ts=$(_db exec-scalar "SELECT COALESCE(last_run, 0) FROM job_state WHERE job = ?" "$job")
+    echo "${ts:-0}"
 }
 
 # Update last run timestamp for a job
@@ -135,13 +105,70 @@ set_last_run() {
     local job="$1"
     local now
     now=$(date +%s)
-    local tmp
-    tmp=$(mktemp)
-    if [ -f "$LAST_RUN_FILE" ]; then
-        jq --arg job "$job" --argjson ts "$now" '.[$job] = $ts' "$LAST_RUN_FILE" > "$tmp" 2>/dev/null && mv "$tmp" "$LAST_RUN_FILE"
-    else
-        echo "{\"$job\": $now}" > "$LAST_RUN_FILE"
+    _db exec "INSERT INTO job_state (job, last_run) VALUES (?, ?) ON CONFLICT(job) DO UPDATE SET last_run = ?" "$job" "$now" "$now" > /dev/null
+}
+
+# Get failure state for a job (returns JSON or empty)
+get_failure_state() {
+    local job="$1"
+    _db exec "SELECT fail_count, last_failure FROM job_state WHERE job = ? AND fail_count > 0" "$job"
+}
+
+# Record a failure for a job
+record_failure() {
+    local job="$1"
+    local now
+    now=$(date +%s)
+    _db exec "INSERT INTO job_state (job, fail_count, last_failure) VALUES (?, 1, ?) ON CONFLICT(job) DO UPDATE SET fail_count = fail_count + 1, last_failure = ?" "$job" "$now" "$now" > /dev/null
+}
+
+# Clear failure state for a job (on success)
+clear_failure() {
+    local job="$1"
+    _db exec "UPDATE job_state SET fail_count = 0, last_failure = NULL WHERE job = ?" "$job" > /dev/null
+}
+
+# Check if a failed job is eligible for retry
+# Returns 0 if retry is due, 1 otherwise
+is_retry_due() {
+    local job="$1"
+
+    # Get failure state from DB
+    local fail_data
+    fail_data=$(_db exec-raw "SELECT fail_count, COALESCE(last_failure, 0) FROM job_state WHERE job = ?" "$job")
+    if [ -z "$fail_data" ]; then
+        return 1
     fi
+
+    local count last_failure
+    IFS=$'\t' read -r count last_failure <<< "$fail_data"
+    count="${count:-0}"
+    last_failure="${last_failure:-0}"
+
+    if [ "$count" -eq 0 ]; then
+        return 1
+    fi
+
+    local max_retries
+    max_retries=$(reg_get "$job" "max_retries" "1")
+    local backoff_hours
+    backoff_hours=$(reg_get "$job" "retry_backoff_hours" "1")
+
+    local now
+    now=$(date +%s)
+
+    # Exhausted retries — wait for next schedule window
+    if [ "$count" -ge "$max_retries" ]; then
+        return 1
+    fi
+
+    # Check backoff period
+    local backoff_secs=$((backoff_hours * 3600))
+    if [ "$now" -ge $((last_failure + backoff_secs)) ]; then
+        return 0
+    fi
+
+    return 1
 }
 
 # Acquire lock for a job. Returns 0 if acquired, 1 if already locked.
@@ -162,8 +189,14 @@ acquire_lock() {
         fi
     fi
 
-    echo $$ > "$lock_file"
-    return 0
+    # Atomic lock acquisition via noclobber
+    if (set -o noclobber; echo $$ > "$lock_file") 2>/dev/null; then
+        return 0
+    else
+        # noclobber failed — file was created between our check and write (race)
+        log_warning "Lock race detected for $job, skipping"
+        return 1
+    fi
 }
 
 # Release lock for a job
@@ -185,7 +218,11 @@ acquire_dispatcher_lock() {
             rm -f "$DISPATCHER_LOCK"
         fi
     fi
-    echo $$ > "$DISPATCHER_LOCK"
+    # Atomic lock acquisition via noclobber
+    if ! (set -o noclobber; echo $$ > "$DISPATCHER_LOCK") 2>/dev/null; then
+        log_warning "Dispatcher lock race — another instance started. Exiting."
+        exit 0
+    fi
 }
 
 release_dispatcher_lock() {
@@ -207,6 +244,12 @@ is_interval_due() {
     if [ "$now" -ge "$next_due" ]; then
         return 0
     fi
+
+    # Not due on schedule — but check if a retry is needed after failure
+    if is_retry_due "$job"; then
+        return 0
+    fi
+
     return 1
 }
 
@@ -240,6 +283,44 @@ is_weekly_due() {
     now=$(date +%s)
     local six_days=$((6 * 86400))
     if [ "$last_run" -gt $((now - six_days)) ]; then
+        # Already ran this week — but check if a retry is due after failure
+        if is_retry_due "$job"; then
+            return 0
+        fi
+        return 1
+    fi
+
+    return 0
+}
+
+# Check if a daily job is due
+# Usage: is_daily_due <job_name> <hour>
+is_daily_due() {
+    local job="$1"
+    local target_hour="$2"
+    local last_run
+    last_run=$(get_last_run "$job")
+
+    # Check if we're past the target hour
+    local current_hour
+    current_hour=$(date +%-H)
+
+    if [ "$current_hour" -lt "$target_hour" ]; then
+        return 1
+    fi
+
+    # Check if already run today (within last 14 hours)
+    # 14h window: a job scheduled at hour 0 runs at ~00:05, next check at 00:00
+    # next day is ~24h later, well past the 14h window. Meanwhile, a same-day
+    # re-check at hour 6 (6h later) is still within window and won't re-fire.
+    local now
+    now=$(date +%s)
+    local fourteen_hours=$((14 * 3600))
+    if [ "$last_run" -gt $((now - fourteen_hours)) ]; then
+        # Already ran today — but check if a retry is due after failure
+        if is_retry_due "$job"; then
+            return 0
+        fi
         return 1
     fi
 
@@ -251,22 +332,7 @@ get_job_names() {
     "$YQ" '.jobs | keys | .[]' "$REGISTRY" 2>/dev/null
 }
 
-# Read a value from registry for a job, falling back to defaults
-# Note: Uses explicit null check instead of yq's // operator,
-# because // treats 'false' as falsy and skips it.
-reg_get() {
-    local job="$1" key="$2" default="${3:-}"
-    local val
-    val=$("$YQ" ".jobs.${job}.${key}" "$REGISTRY" 2>/dev/null)
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        val=$("$YQ" ".defaults.${key}" "$REGISTRY" 2>/dev/null)
-    fi
-    if [ -z "$val" ] || [ "$val" = "null" ]; then
-        echo "$default"
-    else
-        echo "$val"
-    fi
-}
+# reg_get() — loaded from lib/common.sh
 
 # Check if a job is due based on its schedule
 is_job_due() {
@@ -303,6 +369,12 @@ is_job_due() {
             is_weekly_due "$job" "$day" "$hour"
             return $?
             ;;
+        daily)
+            local hour
+            hour=$("$YQ" ".jobs.${job}.schedule.hour // 0" "$REGISTRY" 2>/dev/null)
+            is_daily_due "$job" "$hour"
+            return $?
+            ;;
         on-demand)
             # On-demand jobs are never auto-scheduled
             return 1
@@ -312,6 +384,25 @@ is_job_due() {
             return 1
             ;;
     esac
+}
+
+# Run pre_check gate for a job. Returns 0 if check passes (or no pre_check defined),
+# returns 1 if check fails (job should be skipped).
+run_pre_check() {
+    local job="$1"
+    local pre_check
+    pre_check=$("$YQ" ".jobs.${job}.pre_check" "$REGISTRY" 2>/dev/null)
+
+    if [ -z "$pre_check" ] || [ "$pre_check" = "null" ]; then
+        return 0  # No pre_check defined, always pass
+    fi
+
+    # Run the pre_check command with a short timeout
+    if timeout 30 bash -c "$pre_check" >/dev/null 2>&1; then
+        return 0  # Changes detected, proceed with LLM
+    else
+        return 1  # No changes, skip LLM invocation
+    fi
 }
 
 # Run a job via executor.sh
@@ -330,11 +421,26 @@ run_job() {
     local start_time
     start_time=$(date +%s)
 
-    # Run executor in background, capture exit code
-    "$EXECUTOR" --job "$job" "${extra_args[@]}" 2>&1 | while IFS= read -r line; do
+    # Detect team jobs — route to team-runner.py instead of executor.sh
+    local runner="$EXECUTOR"
+    local is_team
+    is_team=$("$YQ" ".jobs.${job}.team" "$REGISTRY" 2>/dev/null)
+    if [ -n "$is_team" ] && [ "$is_team" != "null" ]; then
+        runner="$SCRIPT_DIR/team-runner.py"
+        log_info "Team job detected, using team-runner.py"
+    fi
+
+    # Run executor (or team-runner), capture exit code reliably via temp file
+    # (piping through while-loop loses PIPESTATUS in bash)
+    local tmp_output
+    tmp_output=$(mktemp)
+    "$runner" --job "$job" "${extra_args[@]}" > "$tmp_output" 2>&1
+    local exit_code=$?
+    # Display output with job prefix
+    while IFS= read -r line; do
         echo "  [$job] $line"
-    done
-    local exit_code=${PIPESTATUS[0]}
+    done < "$tmp_output"
+    rm -f "$tmp_output"
 
     local end_time
     end_time=$(date +%s)
@@ -343,8 +449,11 @@ run_job() {
     if [ "$exit_code" -eq 0 ]; then
         log_success "Job $job completed in ${duration}s"
         set_last_run "$job"
+        clear_failure "$job"
     else
         log_error "Job $job failed (exit code $exit_code) after ${duration}s"
+        record_failure "$job"
+        set_last_run "$job"  # Prevent immediate 5-min re-fire; retry after backoff
     fi
 
     release_lock "$job"
@@ -413,6 +522,11 @@ list_jobs() {
                 day=$("$YQ" ".jobs.${job}.schedule.day" "$REGISTRY" 2>/dev/null)
                 hour=$("$YQ" ".jobs.${job}.schedule.hour // 0" "$REGISTRY" 2>/dev/null)
                 schedule_desc="${day} ${hour}:00"
+                ;;
+            daily)
+                local hour
+                hour=$("$YQ" ".jobs.${job}.schedule.hour // 0" "$REGISTRY" 2>/dev/null)
+                schedule_desc="daily ${hour}:00"
                 ;;
             on-demand)
                 schedule_desc="on-demand"
@@ -518,6 +632,24 @@ check_due() {
     echo ""
 }
 
+# Query normalized event records from SQLite
+_normalize_events() {
+    _db exec "SELECT
+        CAST(id AS TEXT) as id,
+        created_at as timestamp,
+        json_extract(data, '$.job') as job,
+        severity,
+        COALESCE(json_extract(data, '$.title'), '') as title,
+        COALESCE(json_extract(data, '$.summary'), '') as summary,
+        COALESCE(json_extract(data, '$.exit_code'), 0) as exit_code,
+        COALESCE(json_extract(data, '$.cost_usd'), 'unknown') as cost_usd,
+        COALESCE(json_extract(data, '$.duration_secs'), 0) as duration_secs,
+        COALESCE(json_extract(data, '$.engine'), 'claude-code') as engine,
+        COALESCE(json_extract(data, '$.output_file'), '') as output_file,
+        CASE WHEN status = 'delivered' THEN 1 ELSE 0 END as acknowledged
+    FROM events WHERE event_type = 'job_completed' ORDER BY id"
+}
+
 # Show notification history with filtering
 show_history() {
     local limit="${1:-20}"
@@ -525,32 +657,36 @@ show_history() {
     local filter_severity="${3:-}"
     local filter_unack="${4:-false}"
 
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo "No notifications yet."
-        return
-    fi
-
     echo ""
     echo "Notification History"
     echo "===================="
 
-    # Build jq filter
-    local jq_filter="."
+    # Build SQL WHERE clause
+    local wheres=("event_type = 'job_completed'")
+    local params=()
     if [ -n "$filter_job" ]; then
-        jq_filter="$jq_filter | select(.job == \"$filter_job\")"
+        wheres+=("json_extract(data, '$.job') = ?")
+        params+=("$filter_job")
     fi
     if [ -n "$filter_severity" ]; then
-        jq_filter="$jq_filter | select(.severity == \"$filter_severity\")"
+        wheres+=("severity = ?")
+        params+=("$filter_severity")
     fi
     if [ "$filter_unack" = "true" ]; then
-        jq_filter="$jq_filter | select(.acknowledged == false)"
+        wheres+=("status != 'delivered' AND status != 'acknowledged'")
     fi
 
-    # Read JSONL, apply filters, take last N
-    local records
-    records=$(jq -s "[.[] | $jq_filter] | .[-${limit}:][]" "$NOTIFICATIONS_FILE" 2>/dev/null)
+    local where_clause=""
+    for i in "${!wheres[@]}"; do
+        [ "$i" -gt 0 ] && where_clause="$where_clause AND "
+        where_clause="$where_clause${wheres[$i]}"
+    done
 
-    if [ -z "$records" ]; then
+    # Get total count
+    local total
+    total=$(_db exec-scalar "SELECT COUNT(*) FROM events WHERE $where_clause" "${params[@]}")
+
+    if [ "$total" = "0" ]; then
         echo "  No matching notifications."
         echo ""
         return
@@ -560,9 +696,14 @@ show_history() {
     printf "%-10s %-20s %-22s %-9s %s\n" "SEVERITY" "TIMESTAMP" "JOB" "COST" "SUMMARY"
     printf "%-10s %-20s %-22s %-9s %s\n" "--------" "---------" "---" "----" "-------"
 
-    echo "$records" | jq -r '[.severity, .timestamp, .job, .cost_usd, .summary, .acknowledged, .id] | @tsv' 2>/dev/null | \
+    _db exec-raw "SELECT severity, created_at, json_extract(data, '$.job'),
+        COALESCE(json_extract(data, '$.cost_usd'), 'unknown'),
+        COALESCE(json_extract(data, '$.summary'), ''),
+        CASE WHEN status = 'delivered' OR status = 'acknowledged' THEN 1 ELSE 0 END,
+        id
+    FROM events WHERE $where_clause ORDER BY id DESC LIMIT ?" "${params[@]}" "$limit" | \
+    tac | \
     while IFS=$'\t' read -r sev ts job cost summary acked id; do
-        # Colorize severity
         local sev_display
         case "$sev" in
             critical) sev_display="${RED}CRITICAL${NC}" ;;
@@ -571,17 +712,12 @@ show_history() {
             *)        sev_display="$sev" ;;
         esac
 
-        # Format timestamp (strip seconds and timezone)
         local ts_short
         ts_short=$(echo "$ts" | sed 's/T/ /;s/:[0-9]*Z$//')
 
-        # Ack indicator
         local ack_mark=""
-        if [ "$acked" = "true" ]; then
-            ack_mark=" [ack]"
-        fi
+        [ "$acked" = "1" ] && ack_mark=" [ack]"
 
-        # Cost display
         local cost_display
         if [ "$cost" = "unknown" ]; then
             cost_display="--"
@@ -593,9 +729,6 @@ show_history() {
             "$sev_display" "$ts_short" "$job" "$cost_display" "$summary" "$ack_mark"
     done
 
-    # Show totals
-    local total
-    total=$(jq -s "[.[] | $jq_filter] | length" "$NOTIFICATIONS_FILE" 2>/dev/null || echo "0")
     echo ""
     echo "  Showing last $limit of $total matching notifications."
     echo ""
@@ -605,28 +738,15 @@ show_history() {
 ack_notification() {
     local target_id="$1"
 
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        log_error "No notifications file found."
-        return 1
-    fi
-
     # Check if ID exists
-    if ! grep -q "\"id\":\"$target_id\"" "$NOTIFICATIONS_FILE" 2>/dev/null; then
+    local exists
+    exists=$(_db exec-scalar "SELECT COUNT(*) FROM events WHERE id = ?" "$target_id")
+    if [ "$exists" = "0" ]; then
         log_error "Notification not found: $target_id"
         return 1
     fi
 
-    # Update the record in-place (rewrite file with acknowledged=true for matching ID)
-    local tmp
-    tmp=$(mktemp)
-    while IFS= read -r line; do
-        if echo "$line" | jq -e --arg id "$target_id" '.id == $id' &>/dev/null; then
-            echo "$line" | jq -c '.acknowledged = true'
-        else
-            echo "$line"
-        fi
-    done < "$NOTIFICATIONS_FILE" > "$tmp" && mv "$tmp" "$NOTIFICATIONS_FILE"
-
+    _db exec "UPDATE events SET status = 'acknowledged' WHERE id = ?" "$target_id" > /dev/null
     log_success "Acknowledged: $target_id"
 }
 
@@ -766,6 +886,7 @@ log_info "Dispatcher cycle starting"
 JOBS_RUN=0
 JOBS_SKIPPED=0
 JOBS_FAILED=0
+JOBS_GATED=0
 
 # Step 1: Process any answered queue questions first
 process_queue_answers
@@ -773,6 +894,13 @@ process_queue_answers
 # Step 2: Check each job's schedule
 while IFS= read -r job; do
     if is_job_due "$job" 2>/dev/null; then
+        # Run pre_check gate before invoking LLM
+        if ! run_pre_check "$job"; then
+            log_info "Job $job: pre_check gate — no changes detected, skipping LLM"
+            set_last_run "$job"  # Keep schedule on track
+            JOBS_GATED=$((JOBS_GATED + 1))
+            continue
+        fi
         if [ "$DRY_RUN" = "true" ]; then
             log_info "[DRY RUN] Would run: $job"
             JOBS_RUN=$((JOBS_RUN + 1))
@@ -790,9 +918,102 @@ done < <(get_job_names)
 
 # Summary
 if [ "$DRY_RUN" = "true" ]; then
-    log_info "Dispatch cycle complete (DRY RUN): $JOBS_RUN would run, $JOBS_SKIPPED not due"
+    log_info "Dispatch cycle complete (DRY RUN): $JOBS_RUN would run, $JOBS_SKIPPED not due, $JOBS_GATED gated"
 else
-    log_info "Dispatch cycle complete: $JOBS_RUN run, $JOBS_SKIPPED not due, $JOBS_FAILED failed"
+    log_info "Dispatch cycle complete: $JOBS_RUN run, $JOBS_SKIPPED not due, $JOBS_GATED gated, $JOBS_FAILED failed"
+
+    # Rotate old execution logs (30-day retention)
+    if [ -d "$LOG_DIR/executions" ]; then
+        OLD_LOG_COUNT=$(find "$LOG_DIR/executions" -type f -mtime +30 2>/dev/null | wc -l)
+        if [ "$OLD_LOG_COUNT" -gt 0 ]; then
+            find "$LOG_DIR/executions" -type f -mtime +30 -delete 2>/dev/null || true
+            log_info "Log rotation: cleaned $OLD_LOG_COUNT files older than 30 days from executions/"
+        fi
+    fi
+
+    # Pipeline stall detection (schedule-aware)
+    # Threshold scales with job schedule: interval jobs get 3x their interval,
+    # weekly jobs get 10 days, daily jobs get 3 days. On-demand jobs are skipped.
+    # Alerts are throttled to once per 24h via state file.
+    NOW_EPOCH=$(date +%s)
+    STALL_ALERT_FILE="$STATE_DIR/last-stall-alert"
+    STALL_COOLDOWN=86400  # 24 hours between stall alerts
+    STALE_JOBS=""
+
+    # Check cooldown — skip stall check if we alerted recently
+    LAST_STALL_ALERT=0
+    [ -f "$STALL_ALERT_FILE" ] && LAST_STALL_ALERT=$(cat "$STALL_ALERT_FILE" 2>/dev/null || echo "0")
+    STALL_ALERT_AGE=$((NOW_EPOCH - LAST_STALL_ALERT))
+
+    if [ "$STALL_ALERT_AGE" -gt "$STALL_COOLDOWN" ]; then
+        while IFS= read -r stall_job; do
+            stall_enabled=$(reg_get "$stall_job" "enabled" "true")
+            [ "$stall_enabled" = "false" ] && continue
+
+            # Skip on-demand/webhook jobs — they run when triggered, not on a schedule
+            stall_type=$(reg_get "$stall_job" "schedule.type" "")
+            [ "$stall_type" = "on-demand" ] && continue
+
+            stall_last_run=$(get_last_run "$stall_job")
+            [ "$stall_last_run" -eq 0 ] && continue  # Never run — not a stall
+
+            # Calculate schedule-aware threshold
+            stall_threshold=259200  # default 3 days
+            case "$stall_type" in
+                interval)
+                    stall_hours=$(reg_get "$stall_job" "schedule.every_hours" "24")
+                    stall_threshold=$(( stall_hours * 3600 * 3 ))  # 3x the interval
+                    ;;
+                weekly)
+                    stall_threshold=$((10 * 86400))  # 10 days for weekly jobs
+                    ;;
+                daily)
+                    stall_threshold=$((3 * 86400))   # 3 days for daily jobs
+                    ;;
+            esac
+
+            stall_age=$((NOW_EPOCH - stall_last_run))
+            if [ "$stall_age" -gt "$stall_threshold" ]; then
+                stall_days=$((stall_age / 86400))
+                STALE_JOBS="${STALE_JOBS}${stall_job} (${stall_days}d), "
+            fi
+        done < <(get_job_names)
+
+        if [ -n "$STALE_JOBS" ]; then
+            STALE_JOBS="${STALE_JOBS%, }"
+            log_warning "Pipeline stall detected: $STALE_JOBS"
+            MSGBUS="$SCRIPT_DIR/lib/msgbus.sh"
+            if [ -x "$MSGBUS" ]; then
+                "$MSGBUS" send --type "job_completed" \
+                    --source "headless:dispatcher" \
+                    --severity "warning" \
+                    --data "$(jq -nc \
+                        --arg job "dispatcher" \
+                        --arg title "Pipeline stall alert" \
+                        --arg sum "Stale jobs: $STALE_JOBS" \
+                        '{job:$job,title:$title,summary:$sum,exit_code:0,cost_usd:"0",duration_secs:0,output_file:""}')" \
+                    > /dev/null 2>&1 || true
+            fi
+            echo "$NOW_EPOCH" > "$STALL_ALERT_FILE"
+        fi
+    fi
+
+    # Failure alerting (check if any jobs failed this cycle)
+    if [ "$JOBS_FAILED" -gt 0 ]; then
+        MSGBUS="$SCRIPT_DIR/lib/msgbus.sh"
+        if [ -x "$MSGBUS" ]; then
+            "$MSGBUS" send --type "job_failed" \
+                --source "headless:dispatcher" \
+                --severity "warning" \
+                --data "$(jq -nc \
+                    --arg job "dispatcher" \
+                    --arg title "Dispatch cycle failures" \
+                    --arg sum "Jobs dispatch: $JOBS_FAILED job(s) failed this cycle" \
+                    --argjson failed "$JOBS_FAILED" \
+                    '{job:$job,title:$title,summary:$sum,exit_code:1,cost_usd:"0",duration_secs:0,output_file:"",failed_count:$failed}')" \
+                > /dev/null 2>&1 || true
+        fi
+    fi
 
     # Run message relay after dispatch cycle (delivers pending notifications)
     RELAY="$SCRIPT_DIR/lib/msg-relay.sh"
@@ -800,5 +1021,8 @@ else
         "$RELAY" 2>&1 | tee -a "$LOG_DIR/relay.log" || true
     fi
 fi
+
+# Touch heartbeat file so external watchdog can detect stalled dispatcher
+touch "$STATE_DIR/dispatcher-heartbeat" 2>/dev/null || true
 
 exit 0

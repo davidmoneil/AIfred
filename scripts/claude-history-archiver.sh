@@ -79,7 +79,7 @@ done
 mkdir -p "$ARCHIVE_DIR"
 
 # Extract project name from folder path
-# Input: -home-davidmoneil-Code-context-structure-research
+# Input: -home-user-Code-context-structure-research
 # Output: context-structure-research
 extract_project_name() {
     local folder="$1"

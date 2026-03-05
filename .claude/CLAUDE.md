@@ -24,7 +24,19 @@ The `project-detector` hook auto-registers GitHub URLs. For new projects: `/new-
 
 Use Beads (`bd`) for all tasks. **Claim before starting** (`bd update <id> --status in_progress --claim`), **close when done** (`bd close <id> --reason "..."`).
 
+**When asked about tasks** (open tasks, ready tasks, by domain, status, etc.), **use the `/tasks` skill** for standardized formatted output. Sub-commands: `/tasks`, `/tasks ready`, `/tasks domain <name>`, `/tasks project <name>`, `/tasks stats`.
+
+**CRITICAL — `/tasks` output rule**: The task dashboard produces pre-formatted markdown. After running the tool, output ONLY the tool's stdout. Do NOT add any text before or after — no summaries, no reformatting, no follow-up commentary.
+
 See @.claude/context/tools/beads-reference.md for full CLI reference, labels, and conventions.
+
+## Headless Automation
+
+AIfred includes a headless job framework for autonomous Claude Code execution. Jobs run on a schedule via cron, with persona-based permissions, cost controls, and optional Telegram notifications.
+
+Key components: dispatcher (scheduler), executor (persona-aware runner), team-runner (multi-agent consensus), message bus (event store + notifications).
+
+See @docs/headless-automation.md for setup guide, job authoring, and architecture.
 
 ## Orchestration
 
@@ -36,7 +48,7 @@ The `orchestration-detector` hook auto-scores prompt complexity and suggests orc
 
 **Automation routing**: For scheduling/cron decisions, see @.claude/context/patterns/automation-routing.md.
 
-**Documentation location**: Default to `.claude/context/` unless user says otherwise. Session artifacts go to the session notes area.
+**Documentation location**: Default to `.claude/context/` for project docs. Completed/historical content goes to `knowledge/archive/`, never `.claude/context/`.
 
 ## Complex Requests
 
@@ -74,6 +86,5 @@ When compacting, preserve: current Beads task IDs and status, file paths modifie
 - @.claude/context/session-state.md — Current work status
 - @.claude/context/_index.md — Find any context file
 - @.claude/context/tools/beads-reference.md — Beads CLI reference
-- @.claude/context/patterns/prompt-design-review.md — PARC design review
-- @.claude/context/telos/TELOS.md — Strategic goal alignment
+- @docs/headless-automation.md — Headless job framework setup
 - @paths-registry.yaml — Source of truth for all external paths

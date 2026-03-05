@@ -1,8 +1,7 @@
 #!/bin/bash
-# cost-report.sh - Aggregate headless job costs from notifications.jsonl
+# cost-report.sh - Aggregate headless job costs from SQLite
 #
-# Part of the Headless Claude system (Phase 3: Observability).
-# Deterministic bash script — no LLM costs to run.
+# Deterministic bash script -- no LLM costs to run.
 #
 # Usage:
 #   cost-report.sh                          # Daily costs, past 7 days
@@ -16,8 +15,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOBS_DIR="$(dirname "$SCRIPT_DIR")"
-NOTIFICATIONS_FILE="$JOBS_DIR/notifications.jsonl"
+JOBSDB="$SCRIPT_DIR/jobsdb.py"
 MSGBUS="$SCRIPT_DIR/msgbus.sh"
+
+# SQLite helper
+_db() { python3 "$JOBSDB" "$@"; }
 
 # Temp file for filtered data (cleaned up on exit)
 DATA_FILE=$(mktemp)
@@ -43,7 +45,7 @@ fi
 
 show_help() {
     cat << 'EOF'
-cost-report.sh - Headless Claude cost aggregation
+cost-report.sh - Job cost aggregation
 
 USAGE:
     cost-report.sh [OPTIONS]
@@ -66,28 +68,35 @@ EXAMPLES:
 EOF
 }
 
-# Load and filter notifications into DATA_FILE
+# Load and filter events from SQLite into DATA_FILE as flat JSONL
 load_notifications() {
     local engine_filter="${1:-}"
 
-    if [ ! -f "$NOTIFICATIONS_FILE" ]; then
-        echo "[]" > "$DATA_FILE"
-        return
+    local engine_clause=""
+    if [ -n "$engine_filter" ]; then
+        engine_clause="AND json_extract(data, '$.engine') = '$engine_filter'"
     fi
 
-    if [ -n "$engine_filter" ]; then
-        jq -s --arg eng "$engine_filter" '
-            [.[] | select(.engine == $eng)
-                 | select(has("cost_usd"))
-                 | select((.cost_usd | type) == "string")
-                 | select((.cost_usd == "unknown") | not)]
-        ' "$NOTIFICATIONS_FILE" > "$DATA_FILE" 2>/dev/null || echo "[]" > "$DATA_FILE"
-    else
-        jq -s '
-            [.[] | select(has("cost_usd"))
-                 | select((.cost_usd | type) == "string")
-                 | select((.cost_usd == "unknown") | not)]
-        ' "$NOTIFICATIONS_FILE" > "$DATA_FILE" 2>/dev/null || { echo "[]" > "$DATA_FILE"; }
+    _db exec \
+        "SELECT CAST(id AS TEXT) as id, created_at as timestamp,
+                json_extract(data, '$.job') as job, severity,
+                COALESCE(json_extract(data, '$.title'), '') as title,
+                COALESCE(json_extract(data, '$.summary'), '') as summary,
+                COALESCE(json_extract(data, '$.exit_code'), 0) as exit_code,
+                json_extract(data, '$.cost_usd') as cost_usd,
+                COALESCE(json_extract(data, '$.duration_secs'), 0) as duration_secs,
+                COALESCE(json_extract(data, '$.engine'), 'claude-code') as engine,
+                COALESCE(json_extract(data, '$.output_file'), '') as output_file
+         FROM events
+         WHERE event_type = 'job_completed'
+           AND json_extract(data, '$.cost_usd') IS NOT NULL
+           AND json_extract(data, '$.cost_usd') != 'unknown'
+           $engine_clause
+         ORDER BY id" > "$DATA_FILE" 2>/dev/null || true
+
+    # If no results, write empty array for jq compatibility
+    if [ ! -s "$DATA_FILE" ]; then
+        echo "" > "$DATA_FILE"
     fi
 }
 
@@ -97,7 +106,7 @@ aggregate_daily() {
     local cutoff
     cutoff=$(date -d "$days days ago" +%Y-%m-%d 2>/dev/null || date -v-${days}d +%Y-%m-%d 2>/dev/null)
 
-    jq -r --arg cutoff "$cutoff" '
+    jq -s --arg cutoff "$cutoff" '
         [.[] | select(.timestamp >= $cutoff)]
         | group_by(.timestamp[:10])
         | map({
@@ -127,7 +136,7 @@ aggregate_weekly() {
     local cutoff
     cutoff=$(date -d "$cutoff_days days ago" +%Y-%m-%d 2>/dev/null || date -v-${cutoff_days}d +%Y-%m-%d 2>/dev/null)
 
-    jq -r --arg cutoff "$cutoff" '
+    jq -s --arg cutoff "$cutoff" '
         [.[] | select(.timestamp >= $cutoff)]
         | group_by(.timestamp[:4] + "-W" + ((.timestamp[:10] | strptime("%Y-%m-%d") | strftime("%V"))))
         | map({
@@ -150,7 +159,7 @@ today_total() {
     local today
     today=$(date +%Y-%m-%d)
 
-    jq -r --arg today "$today" '
+    jq -s --arg today "$today" '
         [.[] | select(.timestamp[:10] == $today)]
         | {
             date: $today,
@@ -176,7 +185,7 @@ print_daily_report() {
     local total_cost
 
     echo ""
-    echo -e "${BOLD}Headless Claude Cost Report — Daily${NC}"
+    echo -e "${BOLD}Job Cost Report -- Daily${NC}"
     echo "===================================="
     echo ""
     printf "%-12s %10s %8s %s\n" "DATE" "COST" "RUNS" "ENGINES"
@@ -202,7 +211,7 @@ print_weekly_report() {
     local total_cost
 
     echo ""
-    echo -e "${BOLD}Headless Claude Cost Report — Weekly${NC}"
+    echo -e "${BOLD}Job Cost Report -- Weekly${NC}"
     echo "====================================="
     echo ""
     printf "%-12s %10s %8s %s\n" "WEEK" "COST" "RUNS" "ENGINES"
@@ -231,18 +240,16 @@ print_today_report() {
     count=$(echo "$today_data" | jq -r '.count' 2>/dev/null)
 
     echo ""
-    echo -e "${BOLD}Today's Headless Claude Costs${NC}"
+    echo -e "${BOLD}Today's Job Costs${NC}"
     echo "============================="
     echo ""
     echo -e "  Total: ${BOLD}\$${total}${NC} across ${count} runs"
     echo ""
 
-    # Engine breakdown
     echo "  By engine:"
     echo "$today_data" | jq -r '.by_engine[] |
         "    " + .engine + ": $" + (.cost | tostring | .[0:6]) + " (" + (.count | tostring) + " runs)"' 2>/dev/null
 
-    # Job breakdown
     echo ""
     echo "  By job:"
     echo "$today_data" | jq -r '.by_job[] |
@@ -260,7 +267,7 @@ check_threshold() {
     exceeded=$(echo "$total $threshold" | awk '{print ($1 > $2) ? "yes" : "no"}')
 
     if [ "$exceeded" = "yes" ]; then
-        local msg="Daily headless cost alert: \$${total} exceeds threshold \$${threshold}"
+        local msg="Daily job cost alert: \$${total} exceeds threshold \$${threshold}"
 
         if [ -x "$MSGBUS" ]; then
             "$MSGBUS" send --type cost_alert \
@@ -307,14 +314,14 @@ done
 if [ -z "$DAYS" ]; then
     case "$PERIOD" in
         daily)  DAYS=7 ;;
-        weekly) DAYS=4 ;;  # weeks, not days
+        weekly) DAYS=4 ;;
     esac
 fi
 
 # Load filtered data into temp file
 load_notifications "$ENGINE_FILTER"
 
-# Handle alert threshold (always checks today, can combine with other modes)
+# Handle alert threshold
 if [ -n "$ALERT_THRESHOLD" ]; then
     TODAY_DATA=$(today_total)
     check_threshold "$TODAY_DATA" "$ALERT_THRESHOLD" || true

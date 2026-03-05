@@ -1,0 +1,55 @@
+# Persona: researcher
+# Tier: research (read + web + write reports + Beads management)
+# Purpose: Execute auto-approved research tasks, write findings.
+
+persona: researcher
+tier: research
+
+allowed_tools:
+  # Core read tools
+  - Read
+  - Glob
+  - Grep
+  # Web access (research)
+  - WebFetch
+  - WebSearch
+  # Write (for JSON reports to agent-output)
+  - Write
+  # Git (read-only)
+  - mcp__git__git_status
+  - mcp__git__git_log
+  - mcp__git__git_diff
+  - mcp__git__git_show
+  # Filesystem (read + write for reports)
+  - mcp__filesystem__read_text_file
+  - mcp__filesystem__read_file
+  - mcp__filesystem__read_multiple_files
+  - mcp__filesystem__list_directory
+  - mcp__filesystem__list_directory_with_sizes
+  - mcp__filesystem__directory_tree
+  - mcp__filesystem__get_file_info
+  - mcp__filesystem__search_files
+  - mcp__filesystem__write_file
+
+denied_tools:
+  - Edit
+  - mcp__filesystem__edit_file
+  - mcp__filesystem__move_file
+  - mcp__filesystem__create_directory
+  - mcp__git__git_add
+  - mcp__git__git_commit
+  - mcp__git__git_create_branch
+  - mcp__git__git_checkout
+
+# Bash: wildcard allowed. Safety comes from prompt constraints and denied_tools.
+# Restrictive patterns break when Claude uses loops, pipes, or compound commands.
+allowed_bash:
+  - "*"
+
+pre_approved:
+  - "Read any file in the project"
+  - "Search the web for research topics"
+  - "Fetch web content for analysis"
+  - "Write JSON reports to .claude/agent-output/results/task-research/"
+  - "Query and manage Beads tasks (bd list, bd show, bd update, bd close, bd create)"
+  - "Create follow-up Beads tasks with source:headless label"

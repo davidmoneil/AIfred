@@ -1,6 +1,6 @@
-# Parallel-Dev: Configuration
+# Parallel-Dev: Configuration & Integration
 
-## Config File
+## Configuration
 
 `.claude/skills/parallel-dev/config.json`:
 
@@ -29,6 +29,15 @@
 | `autoCleanupWorktrees` | true | Remove worktrees after merge |
 | `agentModel` | sonnet | Model for implementation agents |
 | `planningModel` | opus | Model for planning (needs reasoning) |
+
+## Agents
+
+| Agent | Purpose | Spawned During |
+|-------|---------|----------------|
+| `parallel-dev-implementer` | Code implementation | Execution phase |
+| `parallel-dev-tester` | Test writing | Execution phase |
+| `parallel-dev-documenter` | Documentation | Execution phase |
+| `parallel-dev-validator` | QA validation | Validation phase |
 
 ## File Locations
 
@@ -59,8 +68,8 @@
 | Git worktrees | Isolation pattern from `worktree-shell-functions.md` |
 | Orchestration system | Task decomposition patterns |
 | Custom agents | Specialized execution agents |
-| Built-in subagents | Task tool for spawning |
 | Session management | State tracking across sessions |
+| Memory MCP | Plans stored for reference, lessons learned |
 
 ## Safety Guidelines
 

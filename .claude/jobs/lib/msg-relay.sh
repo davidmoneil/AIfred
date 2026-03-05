@@ -25,28 +25,15 @@ SEND_TELEGRAM="$SCRIPT_DIR/send-telegram.sh"
 LOG_DIR="$JOBS_DIR/../../.claude/logs/headless"
 RELAY_LOG="$LOG_DIR/relay.log"
 
-# Colors (for terminal output)
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# Shared utilities (colors, logging, require_yq, reg_get)
+source "$SCRIPT_DIR/common.sh"
 
 # ============================================================================
 # Helpers
 # ============================================================================
 
+# Override log() to tee to relay log
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$RELAY_LOG" 2>/dev/null; }
-
-require_yq() {
-    for yq_path in "yq" "$HOME/.local/bin/yq" "/usr/local/bin/yq" "/snap/bin/yq"; do
-        if command -v "$yq_path" &>/dev/null 2>&1 || [ -x "$yq_path" ]; then
-            echo "$yq_path"
-            return 0
-        fi
-    done
-    log "ERROR: yq is required"
-    exit 1
-}
 
 # ============================================================================
 # DND (Do Not Disturb) Logic
@@ -204,6 +191,15 @@ ${question}"
             echo "${emoji} <b>Reminder:</b> ${job}
 ${original_q}"
             ;;
+        notification)
+            local notif_summary
+            notif_summary=$(echo "$event" | jq -r '.data.summary // "No details"')
+            notif_summary=$(escape_html "$notif_summary")
+            local notif_source
+            notif_source=$(echo "$event" | jq -r '.source // "unknown"')
+            echo "${emoji} <b>${notif_source}</b>
+${notif_summary}"
+            ;;
         *)
             echo "${emoji} <b>${event_type}</b> — ${job}"
             ;;
@@ -295,7 +291,11 @@ fi
 DELIVERED=0
 QUEUED=0
 BYPASSED=0
-SILENCED=0
+DIGESTED=0
+
+# DND state tracking for transition detection
+DND_STATE_FILE="$JOBS_DIR/state/relay-dnd-state"
+mkdir -p "$(dirname "$DND_STATE_FILE")"
 
 # Check DND status once
 DND_ACTIVE=false
@@ -303,63 +303,173 @@ if is_quiet_hours; then
     DND_ACTIVE=true
 fi
 
-# Process each pending message
-while IFS= read -r event; do
-    [ -z "$event" ] && continue
+# Detect DND transition (was active last cycle, inactive now)
+DND_JUST_ENDED=false
+if [ "$DND_ACTIVE" = "false" ] && [ -f "$DND_STATE_FILE" ]; then
+    PREV_DND=$(cat "$DND_STATE_FILE" 2>/dev/null || echo "false")
+    if [ "$PREV_DND" = "true" ]; then
+        DND_JUST_ENDED=true
+    fi
+fi
 
-    msg_id=$(echo "$event" | jq -r '.id')
-    severity=$(echo "$event" | jq -r '.severity')
-    event_type=$(echo "$event" | jq -r '.event_type')
-    job=$(echo "$event" | jq -r '.data.job // "unknown"')
+# Save current DND state for next cycle
+echo "$DND_ACTIVE" > "$DND_STATE_FILE"
 
-    if [ "$DRY_RUN" = "true" ]; then
-        if [ "$severity" = "info" ] && [ "$event_type" != "question_asked" ]; then
-            echo "[DRY RUN] SILENT: [$msg_id] $event_type ($severity) for $job - info suppressed"
-            SILENCED=$((SILENCED + 1))
-        elif [ "$DND_ACTIVE" = "true" ] && ! severity_bypasses_dnd "$severity"; then
-            echo "[DRY RUN] QUEUED: [$msg_id] $event_type ($severity) for $job - DND active"
-            QUEUED=$((QUEUED + 1))
+# Count pending messages for digest decision
+PENDING_COUNT=$(echo "$PENDING" | grep -c '^{' || true)
+
+# ============================================================================
+# DND Digest Mode
+# ============================================================================
+# When DND just ended and there are >3 pending messages, send a single digest
+# instead of flooding Telegram with individual notifications.
+
+deliver_digest() {
+    local events="$1"
+
+    # Separate question_asked events (need individual delivery for buttons)
+    local questions=""
+    local digestible=""
+    local critical_count=0 warning_count=0 info_count=0
+    local job_list=""
+
+    while IFS= read -r event; do
+        [ -z "$event" ] && continue
+        local et sev job
+        et=$(echo "$event" | jq -r '.event_type')
+        sev=$(echo "$event" | jq -r '.severity')
+        job=$(echo "$event" | jq -r '.data.job // "unknown"')
+
+        if [ "$et" = "question_asked" ]; then
+            questions="${questions}${event}
+"
         else
-            echo "[DRY RUN] WOULD DELIVER: [$msg_id] $event_type ($severity) for $job"
-            DELIVERED=$((DELIVERED + 1))
+            digestible="${digestible}${event}
+"
+            case "$sev" in
+                critical) critical_count=$((critical_count + 1)) ;;
+                warning)  warning_count=$((warning_count + 1)) ;;
+                *)        info_count=$((info_count + 1)) ;;
+            esac
+            # Track unique job names
+            if ! echo "$job_list" | grep -qF "$job"; then
+                job_list="${job_list}${job}
+"
+            fi
         fi
-        continue
+    done <<< "$events"
+
+    # Build digest message
+    local digest_count=$((critical_count + warning_count + info_count))
+    if [ "$digest_count" -gt 0 ]; then
+        local digest_msg="📬 <b>${digest_count} notifications while you were away</b>
+"
+        if [ "$critical_count" -gt 0 ]; then
+            digest_msg="${digest_msg}
+👎 Critical: ${critical_count}"
+        fi
+        if [ "$warning_count" -gt 0 ]; then
+            digest_msg="${digest_msg}
+⚠️ Warning: ${warning_count}"
+        fi
+        if [ "$info_count" -gt 0 ]; then
+            digest_msg="${digest_msg}
+👍 Info: ${info_count}"
+        fi
+
+        # Add job breakdown
+        digest_msg="${digest_msg}
+
+<b>Jobs:</b>"
+        while IFS= read -r jname; do
+            [ -z "$jname" ] && continue
+            local jcount
+            jcount=$(echo "$digestible" | jq -r --arg j "$jname" 'select(.data.job == $j) | .data.job' 2>/dev/null | wc -l)
+            digest_msg="${digest_msg}
+• $(escape_html "$jname") (${jcount})"
+        done <<< "$job_list"
+
+        # Send the digest
+        if [ -x "$SEND_TELEGRAM" ]; then
+            "$SEND_TELEGRAM" --message "$digest_msg" --parse-mode "HTML" 2>/dev/null || true
+        fi
+
+        # Mark all digested events as delivered
+        while IFS= read -r event; do
+            [ -z "$event" ] && continue
+            local mid
+            mid=$(echo "$event" | jq -r '.id')
+            "$MSGBUS" deliver --id "$mid" --by relay-digest > /dev/null
+            DIGESTED=$((DIGESTED + 1))
+        done <<< "$digestible"
+        DELIVERED=$((DELIVERED + 1))  # Count digest as 1 delivery
+
+        log "Digest sent: $digest_count messages ($critical_count critical, $warning_count warning, $info_count info)"
     fi
 
-    # Silent delivery: info severity gets recorded but not sent to Telegram
-    # (questions always deliver regardless of severity)
-    if [ "$severity" = "info" ] && [ "$event_type" != "question_asked" ]; then
-        "$MSGBUS" deliver --id "$msg_id" --by relay-silent > /dev/null
-        log "Silent: [$msg_id] $event_type ($severity) for $job"
-        SILENCED=$((SILENCED + 1))
-        continue
-    fi
-
-    # DND check
-    if [ "$DND_ACTIVE" = "true" ]; then
-        if severity_bypasses_dnd "$severity"; then
-            log "DND bypass: [$msg_id] $event_type ($severity) for $job"
-            deliver_event "$event"
-            BYPASSED=$((BYPASSED + 1))
-            DELIVERED=$((DELIVERED + 1))
-        else
-            # Skip - stays pending, will be picked up when DND ends
-            QUEUED=$((QUEUED + 1))
-        fi
-    else
+    # Deliver question_asked events individually (need buttons)
+    while IFS= read -r event; do
+        [ -z "$event" ] && continue
         deliver_event "$event"
         DELIVERED=$((DELIVERED + 1))
-    fi
-done <<< "$PENDING"
+    done <<< "$questions"
+}
+
+# ============================================================================
+# Main delivery loop
+# ============================================================================
+
+# Use digest mode if DND just ended and >3 pending messages
+if [ "$DND_JUST_ENDED" = "true" ] && [ "$PENDING_COUNT" -gt 3 ] && [ "$DRY_RUN" = "false" ]; then
+    log "DND ended with $PENDING_COUNT pending messages — entering digest mode"
+    deliver_digest "$PENDING"
+else
+    # Normal per-message delivery
+    while IFS= read -r event; do
+        [ -z "$event" ] && continue
+
+        msg_id=$(echo "$event" | jq -r '.id')
+        severity=$(echo "$event" | jq -r '.severity')
+        event_type=$(echo "$event" | jq -r '.event_type')
+        job=$(echo "$event" | jq -r '.data.job // "unknown"')
+
+        if [ "$DRY_RUN" = "true" ]; then
+            if [ "$DND_ACTIVE" = "true" ] && ! severity_bypasses_dnd "$severity"; then
+                echo "[DRY RUN] QUEUED: [$msg_id] $event_type ($severity) for $job - DND active"
+                QUEUED=$((QUEUED + 1))
+            else
+                echo "[DRY RUN] WOULD DELIVER: [$msg_id] $event_type ($severity) for $job"
+                DELIVERED=$((DELIVERED + 1))
+            fi
+            continue
+        fi
+
+        # DND check (all severities except bypass list are held during quiet hours)
+        if [ "$DND_ACTIVE" = "true" ]; then
+            if severity_bypasses_dnd "$severity"; then
+                log "DND bypass: [$msg_id] $event_type ($severity) for $job"
+                deliver_event "$event"
+                BYPASSED=$((BYPASSED + 1))
+                DELIVERED=$((DELIVERED + 1))
+            else
+                # Skip - stays pending, will be picked up when DND ends
+                QUEUED=$((QUEUED + 1))
+            fi
+        else
+            deliver_event "$event"
+            DELIVERED=$((DELIVERED + 1))
+        fi
+    done <<< "$PENDING"
+fi
 
 # Log summary
 if [ "$DRY_RUN" = "true" ]; then
     echo ""
     echo "DND: $([ "$DND_ACTIVE" = "true" ] && echo "ACTIVE" || echo "INACTIVE")"
-    echo "Would deliver: $DELIVERED, Silent: $SILENCED, Queued: $QUEUED"
+    echo "Would deliver: $DELIVERED, Queued: $QUEUED"
 else
-    if [ "$DELIVERED" -gt 0 ] || [ "$QUEUED" -gt 0 ] || [ "$SILENCED" -gt 0 ]; then
-        log "Relay cycle: delivered=$DELIVERED silent=$SILENCED queued=$QUEUED bypassed=$BYPASSED dnd=$DND_ACTIVE"
+    if [ "$DELIVERED" -gt 0 ] || [ "$QUEUED" -gt 0 ] || [ "$DIGESTED" -gt 0 ]; then
+        log "Relay cycle: delivered=$DELIVERED queued=$QUEUED bypassed=$BYPASSED digested=$DIGESTED dnd=$DND_ACTIVE dnd_ended=$DND_JUST_ENDED"
     fi
 fi
 

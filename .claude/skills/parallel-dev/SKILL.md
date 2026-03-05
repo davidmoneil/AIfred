@@ -5,7 +5,7 @@ description: Autonomous parallel development with rigorous planning, execution, 
 category: development
 tags: [autonomous, parallel, planning, execution, validation, agents, worktrees]
 created: 2026-01-17
-updated: 2026-02-18
+updated: 2026-01-17
 context: fork
 agent: general-purpose
 model: opus
@@ -14,6 +14,8 @@ model: opus
 # Parallel Development Skill
 
 Build applications and features autonomously with rigorous planning, parallel agent execution, QA validation, and merge coordination - minimal user interaction after initial requirements gathering.
+
+---
 
 ## Overview
 
@@ -24,73 +26,133 @@ This skill provides **end-to-end autonomous development** by:
 - **Validation**: Automated QA checks (lint, test, build, acceptance criteria)
 - **Merge**: Conflict detection, resolution, and cleanup
 
-## When to Use
+**Value**: Develop features with minimal supervision after initial planning - Claude handles the implementation, testing, and integration autonomously.
+
+---
+
+## When to Use This Skill
+
+### Ideal Use Cases
 
 | Scenario | Example |
 |----------|---------|
 | Building a new feature | "Build user authentication with OAuth" |
 | Starting a full application | "Create a REST API for inventory management" |
 | Developing multiple features | "Add shopping cart, checkout, and payment" |
+| Documented project kickoff | "Build the app from this PRD" |
 | Parallel work streams | "Implement database, API, and frontend simultaneously" |
 
-**Not for**: Quick bug fixes, single file changes, research/exploration, simple refactors.
+### Trigger Phrases
+
+- "build out this application"
+- "develop this feature end-to-end"
+- "start parallel development"
+- "autonomous development of..."
+- "plan and build..."
+- "full development lifecycle for..."
+- `/parallel-dev` (explicit invocation)
+
+### When NOT to Use
+
+| Scenario | Use Instead |
+|----------|-------------|
+| Quick bug fix | Direct editing |
+| Single file change | Edit tool |
+| Research/exploration | Explore agent |
+| Simple refactor | feature-dev:code-architect |
+
+---
 
 ## Quick Actions
 
-| Need | Command |
-|------|---------|
-| Start planning | `/parallel-dev:plan <name>` |
-| View plan | `/parallel-dev:plan-show <name>` |
-| List plans | `/parallel-dev:plan-list` |
-| Approve plan | `/parallel-dev:plan-edit <name> --approve` |
-| Decompose | `/parallel-dev:decompose <name>` |
-| Start execution | `/parallel-dev:start <name>` |
-| Check progress | `/parallel-dev:status` |
-| Pause | `/parallel-dev:pause <name>` |
-| Resume | `/parallel-dev:resume <name>` |
-| Validate | `/parallel-dev:validate <name>` |
-| Check conflicts | `/parallel-dev:conflicts <name>` |
-| Merge | `/parallel-dev:merge <name>` |
+| Need | Action | Command |
+|------|--------|---------|
+| Start planning a feature | Guided planning session | `/parallel-dev:plan <name>` |
+| View existing plan | Display plan details | `/parallel-dev:plan-show <name>` |
+| List all plans | See all plans with status | `/parallel-dev:plan-list` |
+| Approve a plan | Mark ready for execution | `/parallel-dev:plan-edit <name> --approve` |
+| Break plan into tasks | Generate task decomposition | `/parallel-dev:decompose <name>` |
+| Start parallel execution | Begin autonomous work | `/parallel-dev:start <name>` |
+| Check progress | View execution status | `/parallel-dev:status` |
+| Pause execution | Gracefully pause agents | `/parallel-dev:pause <name>` |
+| Resume work | Continue after break | `/parallel-dev:resume <name>` |
+| Run QA validation | Lint, test, build checks | `/parallel-dev:validate <name>` |
+| Check for conflicts | Preview merge issues | `/parallel-dev:conflicts <name>` |
+| Merge to main | Complete and cleanup | `/parallel-dev:merge <name>` |
 
-## Workflow
+---
+
+## Complete Workflow
 
 ```
-PHASE 1: PLANNING         /parallel-dev:plan <name>
-  Questions -> Vision, Features, Technical, Constraints -> Plan file
-
-PHASE 2: APPROVAL          /parallel-dev:plan-show + plan-edit --approve
-  Review plan -> Adjust if needed -> Approve
-
-PHASE 3: DECOMPOSITION     /parallel-dev:decompose <name>
-  Break into phases -> Create tasks with dependencies -> Identify parallelization
-
-PHASE 4: EXECUTION          /parallel-dev:start <name>
-  Create worktree -> Spawn parallel agents (up to 3) -> Track progress
-
-PHASE 5: VALIDATION         /parallel-dev:validate <name>
-  Static analysis -> Tests -> Build -> Acceptance criteria -> Report
-
-PHASE 6: MERGE             /parallel-dev:merge <name>
-  Conflict check -> Merge -> Post-merge validation -> Cleanup
+┌─────────────────────────────────────────────────────────────────┐
+│                    PARALLEL-DEV WORKFLOW                         │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 1: PLANNING                                               │
+│  └─ /parallel-dev:plan <name>                                    │
+│     ├─ Vision & Goals questions                                  │
+│     ├─ Features & Scope questions                                │
+│     ├─ Technical Decisions questions                             │
+│     └─ Generates: plans/{name}.md                                │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 2: APPROVAL                                               │
+│  ├─ /parallel-dev:plan-show <name>  (review)                     │
+│  ├─ /parallel-dev:plan-edit <name>  (adjust if needed)           │
+│  └─ /parallel-dev:plan-edit <name> --approve                     │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 3: DECOMPOSITION                                          │
+│  └─ /parallel-dev:decompose <name>                               │
+│     ├─ Breaks into phases (Foundation, Core, Integration, Test)  │
+│     ├─ Creates tasks with dependencies                           │
+│     ├─ Identifies parallelization opportunities                  │
+│     └─ Generates: plans/{name}-tasks.yaml                        │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 4: EXECUTION                                              │
+│  └─ /parallel-dev:start <name>                                   │
+│     ├─ Creates worktree at ~/tmp/worktrees/{project}/{name}      │
+│     ├─ Creates feature branch: feature/{name}                    │
+│     ├─ Spawns parallel agents (up to 3 by default)               │
+│     │   ├─ Implementer agents (database, api, frontend)          │
+│     │   ├─ Tester agents                                         │
+│     │   └─ Documenter agents                                     │
+│     ├─ Tracks progress in executions/{name}/state.yaml           │
+│     └─ Continues until all tasks complete                        │
+│                                                                  │
+│  During execution:                                               │
+│  ├─ /parallel-dev:status         (monitor progress)              │
+│  ├─ /parallel-dev:pause <name>   (graceful pause)                │
+│  └─ /parallel-dev:resume <name>  (continue work)                 │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 5: VALIDATION                                             │
+│  └─ /parallel-dev:validate <name>                                │
+│     ├─ Static Analysis (lint, typecheck, format)                 │
+│     ├─ Testing (unit tests, integration tests, coverage)         │
+│     ├─ Build Verification (production build)                     │
+│     └─ Acceptance Criteria (verify each criterion)               │
+├─────────────────────────────────────────────────────────────────┤
+│  PHASE 6: MERGE                                                  │
+│  ├─ /parallel-dev:conflicts <name>  (preview conflicts)          │
+│  └─ /parallel-dev:merge <name>                                   │
+│     ├─ Merges feature branch to main                             │
+│     ├─ Runs post-merge validation                                │
+│     ├─ Pushes to remote                                          │
+│     ├─ Removes worktree                                          │
+│     ├─ Deletes feature branch                                    │
+│     └─ Archives execution                                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Agents
+---
 
-| Agent | Purpose | Phase |
-|-------|---------|-------|
-| `parallel-dev-implementer` | Code implementation | Execution |
-| `parallel-dev-tester` | Test writing | Execution |
-| `parallel-dev-documenter` | Documentation | Execution |
-| `parallel-dev-validator` | QA validation | Validation |
+## Reference Documentation
 
-## References
-
-- @references/detailed-workflows.md — Step-by-step planning, execution, and validation procedures
-- @references/configuration.md — Config JSON, file locations, templates, integration points, safety guidelines
+For detailed information, see the references/ directory:
+- @references/detailed-workflows.md — Planning, execution, validation step-by-step
+- @references/configuration.md — Config, agents, file locations, templates, integrations
 - @references/troubleshooting.md — Common issues and solutions
 
 ## Related
 
 - @.claude/commands/parallel-dev/README.md — Command reference
-- @.claude/context/patterns/agent-selection-pattern.md — When to use agents
+- @.claude/context/patterns/worktree-shell-functions.md — Worktree patterns
 - @.claude/orchestration/README.md — Task orchestration patterns
