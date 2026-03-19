@@ -1,0 +1,11 @@
+# ShellCheck project config for AIfred
+# See: https://www.shellcheck.net/wiki/
+
+# Allow sourcing files that can't be followed
+external-sources=true
+
+# Suppress common false positives in this project
+# SC2034: variable appears unused (many are used by sourcing scripts)
+# SC2155: declare and assign separately (stylistic, low risk)
+# SC1091: not following sourced file (external sources)
+disable=SC2034,SC2155,SC1091

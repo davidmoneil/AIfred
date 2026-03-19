@@ -1,0 +1,52 @@
+name: Validate
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  structural:
+    name: Structural Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install tools
+        run: |
+          pip install yamllint
+          sudo apt-get install -y shellcheck
+
+      - name: Run structural validation
+        run: ./tests/validate-structure.sh --verbose
+
+  functional:
+    name: Functional Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install bats
+        run: |
+          git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats
+          sudo /tmp/bats/install.sh /usr/local
+          rm -rf /tmp/bats
+
+      - name: Install tools
+        run: |
+          pip install yamllint
+          sudo apt-get install -y shellcheck jq
+
+      - name: Run functional tests
+        run: bats tests/functional/

@@ -1,0 +1,15 @@
+---
+extends: relaxed
+
+rules:
+  line-length:
+    max: 200
+    level: warning
+  truthy:
+    level: warning
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
