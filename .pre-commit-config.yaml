@@ -1,0 +1,11 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        name: gitleaks (detect new secrets in staged files)
+        # CRITICAL: AIfred is PUBLIC and historically leaked 8+ secrets via
+        # projects/project-aion/reports/*.txt and knowledge/notes/DuckDuckGo_MCP
+        # (AI session transcripts committed without secret scrubbing).
+        # Any new commits containing session transcripts or tool outputs must be
+        # scrubbed or caught here.
