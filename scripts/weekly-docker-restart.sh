@@ -15,10 +15,38 @@ LOG_FILE="$LOG_DIR/restart-$TIMESTAMP.log"
 MAX_WAIT=120  # seconds to wait for services
 CHECK_INTERVAL=10
 
-# Webhook configuration
-WEBHOOK_URL="https://n8n.theklyx.space/webhook/51ef8abf-c108-4c17-8fd1-011a76f69adf"
-WEBHOOK_SECRET="ebbaafd30a9ed2631e90f8f90b68fef9e112ab622e9d039a"
+# Webhook configuration — values MUST come from environment, never hardcoded.
+#
+# The previous version had the URL and secret hardcoded. Both were exposed
+# publicly in git history from 2025-12-30 until 2026-04-08, at which point the
+# secret was rotated in n8n and this file was refactored. See AIProjects
+# security-remediation-2026-04 T2.2 rotation record.
+#
+# Set these before invoking the script:
+#   export WEBHOOK_URL="https://n8n.theklyx.space/webhook/<fresh-uuid>"
+#   export WEBHOOK_SECRET="<fresh-openssl-rand-hex-24>"
+#
+# For cron, source a gitignored .env file next to this script:
+#   . "$(dirname "$0")/.env"
+#
+# In the long term these should come from the central SOPS vault at
+# ~/.secrets/jobs.env.enc (see T1.3 in the remediation plan).
+WEBHOOK_URL="${WEBHOOK_URL:-}"
+WEBHOOK_SECRET="${WEBHOOK_SECRET:-}"
 NOTIFICATION_EMAIL="${NOTIFICATION_EMAIL:-}"
+
+# Optional: auto-source a local .env if present (gitignored)
+_env_file="$(dirname "$0")/.env"
+if [ -z "$WEBHOOK_URL" ] && [ -f "$_env_file" ]; then
+    # shellcheck source=/dev/null
+    . "$_env_file"
+fi
+
+if [ -z "$WEBHOOK_URL" ] || [ -z "$WEBHOOK_SECRET" ]; then
+    echo "ERROR: WEBHOOK_URL and WEBHOOK_SECRET must be set in env or $_env_file" >&2
+    echo "       See script header comment for details." >&2
+    exit 1
+fi
 
 # Services to verify after restart
 declare -A SERVICES=(

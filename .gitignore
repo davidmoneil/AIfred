@@ -25,6 +25,12 @@ paths-registry.yaml
 .claude/config/active-profile.yaml
 .claude/config/profile-config.json
 
+# Secrets — never commit .env files anywhere
+.env
+**/.env
+!**/.env.example
+!**/.env.template
+
 # OS files
 .DS_Store
 Thumbs.db
