@@ -748,18 +748,20 @@ check_network() {
         fi
     fi
 
-    # Test a public endpoint with detailed error
-    PUBLIC_URL="https://n8n.theklyx.space"
+    # Test a public endpoint with detailed error.
+    # Set PUBLIC_HEALTHCHECK_URL in the script env to a real endpoint.
+    # Defaults to https://${PUBLIC_DOMAIN:-example.com} as a placeholder.
+    PUBLIC_URL="${PUBLIC_HEALTHCHECK_URL:-https://${PUBLIC_DOMAIN:-example.com}}"
     PUBLIC_RESP=$(curl -s -o /dev/null -w "%{http_code}|%{ssl_verify_result}" --connect-timeout 10 --max-time 15 "$PUBLIC_URL" 2>&1)
     PUBLIC_EXIT=$?
     HTTP_CODE=$(echo "$PUBLIC_RESP" | cut -d'|' -f1)
     SSL_RESULT=$(echo "$PUBLIC_RESP" | cut -d'|' -f2)
 
     if [[ $PUBLIC_EXIT -eq 0 ]] && [[ "$HTTP_CODE" =~ ^(200|301|302|401|403)$ ]]; then
-        pass "Public endpoints accessible (n8n.theklyx.space HTTP $HTTP_CODE)" "caddy_public"
+        pass "Public endpoints accessible (${PUBLIC_DOMAIN:-example.com} HTTP $HTTP_CODE)" "caddy_public"
     else
         if [[ $PUBLIC_EXIT -eq 6 ]]; then
-            fail "Public endpoint failed" "caddy_public" "DNS resolution failed for n8n.theklyx.space"
+            fail "Public endpoint failed" "caddy_public" "DNS resolution failed for ${PUBLIC_DOMAIN:-example.com}"
         elif [[ $PUBLIC_EXIT -eq 7 ]]; then
             fail "Public endpoint failed" "caddy_public" "Connection refused - Caddy not listening on 443 or port blocked"
         elif [[ $PUBLIC_EXIT -eq 28 ]]; then

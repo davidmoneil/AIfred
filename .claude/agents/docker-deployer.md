@@ -92,7 +92,7 @@ Deploy new Docker services systematically, following a 7-phase workflow that ens
 **External Systems**:
 - MediaServer (192.168.1.179): Plex, qBittorrent
 - Synology NAS (192.168.1.96): Storage, AudioBookShelf
-- Domain: *.theklyx.space (via Caddy)
+- Domain: *.example.com (via Caddy)
 
 **Established Patterns**:
 - MCP-first for Docker operations
@@ -215,7 +215,7 @@ PHASE 4: Caddy Integration (if external access)
 │   ├── OAuth2 protected (Google auth)
 │   └── LAN-only (IP restricted)
 ├── Generate Caddyfile Entry
-│   ├── Domain: [service].theklyx.space
+│   ├── Domain: [service].example.com
 │   ├── reverse_proxy directive
 │   │   ├── Container on caddy-network: container:port
 │   │   └── Host network service: localhost:port
@@ -231,7 +231,7 @@ PHASE 4: Caddy Integration (if external access)
 │   ├── Reload command: docker exec caddy caddy reload --config /etc/caddy/Caddyfile
 │   └── Verification steps
 └── DNS Note
-    └── Cloudflare DNS auto-handles *.theklyx.space
+    └── Cloudflare DNS auto-handles *.example.com
 
 PHASE 5: Backup Integration
 ├── Assess Backup Needs
@@ -312,7 +312,7 @@ PHASE 7: Deployment & Verification
 │   │   ├── Show validation errors to user
 │   │   ├── DO NOT reload Caddy (keeps working config)
 │   │   └── Mark Caddy config as manual step required
-│   ├── Test domain access (curl https://service.theklyx.space)
+│   ├── Test domain access (curl https://service.example.com)
 │   ├── Verify SSL certificate issued (automatic via Let's Encrypt)
 │   └── Test authentication flow if applicable
 ├── Integration Verification
@@ -382,7 +382,7 @@ networks:
 
 **Standard (built-in auth) - PREFERRED:**
 ```caddyfile
-service.theklyx.space {
+service.example.com {
     reverse_proxy service:port
 }
 ```
@@ -391,7 +391,7 @@ Examples: n8n, OpenWebUI, Plex, AudioBookShelf, Grafana
 
 **OAuth2 Protected - LEGACY PATTERN:**
 ```caddyfile
-service.theklyx.space {
+service.example.com {
     forward_auth oauth2-proxy:4180 {
         uri /oauth2/auth
         copy_headers X-Auth-Request-User X-Auth-Request-Email
@@ -404,7 +404,7 @@ Note: No current services use this pattern - all have built-in auth
 
 **LAN-Only:**
 ```caddyfile
-service.theklyx.space {
+service.example.com {
     @lan {
         remote_ip 192.168.1.0/24 10.0.0.0/8 172.16.0.0/12
     }
@@ -417,7 +417,7 @@ service.theklyx.space {
 
 **LAN Backend (host network Caddy):**
 ```caddyfile
-service.theklyx.space {
+service.example.com {
     reverse_proxy 192.168.1.X:port
 }
 ```
@@ -469,7 +469,7 @@ Always produce a structured deployment report:
 - **Data Volume**: [volume name]
 
 ### Access
-- **URL**: [https://service.theklyx.space]
+- **URL**: [https://service.example.com]
 - **Local**: [http://localhost:port]
 - **Auth**: [built-in / OAuth2 / LAN-only / none]
 
