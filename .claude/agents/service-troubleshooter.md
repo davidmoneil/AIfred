@@ -78,8 +78,10 @@ Diagnose infrastructure service problems methodically. You follow a consistent d
 
 ### Infrastructure Context
 
-**Environment**: AIServer (192.168.1.196) running Docker services
-**Key Services**:
+> Example topology — replace with yours when forking AIfred.
+
+**Environment**: Your Docker host (e.g. `192.168.1.10`) running Docker services
+**Example service inventory**:
 - **Automation**: n8n (5678), n8n_postgres (5432)
 - **AI/ML**: open-webui (3000), mcp-gateway
 - **Databases**: neo4j (7474/7687), postgres_pgvector (5434)
@@ -88,10 +90,10 @@ Diagnose infrastructure service problems methodically. You follow a consistent d
 - **Proxy**: caddy (80/443), oauth2-proxy (4180)
 - **Home**: homeassistant (8123), homepage (3080)
 
-**External Systems**:
-- MediaServer (192.168.1.179): Plex, qBittorrent
-- Synology NAS (192.168.1.96): Media storage, downloads
-- UDM Pro (192.168.1.1): Network gateway
+**Example external systems**:
+- Media host (e.g. `192.168.1.20`): Plex, qBittorrent
+- NAS (e.g. `192.168.1.30`): Media storage, downloads
+- Router / gateway (e.g. `192.168.1.1`)
 
 **Networks**:
 - `caddy-network`: External-facing services
@@ -348,7 +350,7 @@ Before completing your session:
 **Scenario 2**: "audiobooks returning 502"
 - Phase 1: Error (502), single service (audiobooks via Caddy)
 - Phase 2: Check Caddy (running), check upstream definition
-- Phase 3: Caddy is on bridge network, audiobooks on LAN (192.168.1.96)
+- Phase 3: Caddy is on bridge network, audiobooks on LAN (e.g. `192.168.1.30`)
 - Phase 4: Caddy using host network? Check Caddyfile upstream
 - Phase 5: Docker bridge can't reach LAN IPs
 - Phase 6: Known pattern - need host network for LAN backends

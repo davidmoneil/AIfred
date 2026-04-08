@@ -617,13 +617,24 @@ check_network() {
 
     subheader "Infrastructure Hosts"
 
-    declare -A HOSTS=(
-        ["AIServer"]="192.168.1.196"
-        ["MediaServer"]="192.168.1.179"
-        ["NAS-Primary"]="192.168.1.96"
-        ["NAS-Backup"]="192.168.1.100"
-        ["UDM-Pro"]="192.168.1.1"
-    )
+    # Infrastructure host map — customize for your network.
+    # Override by setting INFRA_HOSTS as a comma-separated list of name=ip pairs:
+    #   export INFRA_HOSTS="MyServer=192.168.1.10,MyNAS=192.168.1.20,Router=192.168.1.1"
+    # Or export it from scripts/config.sh which this script sources at startup.
+    declare -A HOSTS
+    if [ -n "${INFRA_HOSTS:-}" ]; then
+        IFS=',' read -ra _PAIRS <<< "$INFRA_HOSTS"
+        for _pair in "${_PAIRS[@]}"; do
+            HOSTS["${_pair%%=*}"]="${_pair#*=}"
+        done
+    else
+        # Example set — replace via INFRA_HOSTS env var
+        HOSTS=(
+            ["Server"]="192.168.1.10"
+            ["NAS"]="192.168.1.20"
+            ["Router"]="192.168.1.1"
+        )
+    fi
 
     for host in "${!HOSTS[@]}"; do
         ip="${HOSTS[$host]}"

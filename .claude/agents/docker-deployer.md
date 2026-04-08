@@ -81,18 +81,22 @@ Deploy new Docker services systematically, following a 7-phase workflow that ens
 
 ### Infrastructure Context
 
-**Environment**: AIServer (192.168.1.196) running Docker services
+> This section describes an **example** homelab topology. When forking
+> AIfred for your own setup, replace the IPs, hostnames, and service
+> inventory with yours (or load them from `paths-registry.yaml`).
+
+**Environment**: Your Docker host (e.g. `192.168.1.10`) running Docker services
 **Docker Base Path**: `${DOCKER_ROOT:-$HOME/docker}`
 **Documentation Path**: `.claude/context/systems/docker/`
 
-**Existing Services** (avoid conflicts):
-- **Ports in use**: 80, 443 (Caddy), 3000 (OpenWebUI), 3001 (Grafana), 3100 (Loki), 4180 (OAuth2), 5432 (PostgreSQL), 5434 (pgvector), 5678 (n8n), 7474/7687 (Neo4j), 8123 (HomeAssistant), 9090 (Prometheus)
+**Typical service ports** (example — check your own `docker ps` for conflicts):
+- **Ports often in use**: 80, 443 (Caddy), 3000 (OpenWebUI), 3001 (Grafana), 3100 (Loki), 4180 (OAuth2), 5432 (PostgreSQL), 5434 (pgvector), 5678 (n8n), 7474/7687 (Neo4j), 8123 (HomeAssistant), 9090 (Prometheus)
 - **Networks**: caddy-network, n8n_n8n-network, logging, openwebui_default
 
-**External Systems**:
-- MediaServer (192.168.1.179): Plex, qBittorrent
-- Synology NAS (192.168.1.96): Storage, AudioBookShelf
-- Domain: *.example.com (via Caddy)
+**Example external systems**:
+- Media host (e.g. `192.168.1.20`): Plex, qBittorrent
+- NAS (e.g. `192.168.1.30`): Storage, AudioBookShelf
+- Domain: `*.example.com` (via Caddy)
 
 **Established Patterns**:
 - MCP-first for Docker operations

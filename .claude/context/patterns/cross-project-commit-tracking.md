@@ -89,10 +89,11 @@ Tracks git commits across multiple projects during a Claude Code session, provid
 const PROJECT_MAPPINGS = [
   { pathPattern: new RegExp('^' + process.cwd()), name: 'hub', github: '<your-repo>', type: 'hub' },
   { pathPattern: /^\/home\/user\/docker/, name: 'docker', github: '<docker-repo>', type: 'infrastructure' },
-  { pathPattern: /^\/home\/davidmoneil\/Code\/grc-platform/, name: 'grc-platform', github: 'grc-platform', type: 'code' },
-  { pathPattern: /^\/home\/davidmoneil\/Code\/time-scheduler/, name: 'bishop-scheduler', github: 'time-scheduler', type: 'code' },
-  { pathPattern: /^\/home\/davidmoneil\/Code\/AIfred/, name: 'AIfred', github: 'AIfred', type: 'code' },
-  { pathPattern: /^\/home\/davidmoneil\/Code\/([^/]+)/, name: null, github: null, type: 'code' }, // Auto-detect
+  // Example named projects — replace with your own
+  { pathPattern: /^\/home\/user\/Code\/project-a/, name: 'project-a', github: 'project-a', type: 'code' },
+  { pathPattern: /^\/home\/user\/Code\/project-b/, name: 'project-b', github: 'project-b', type: 'code' },
+  // Auto-detect catchall for any other Code/* project
+  { pathPattern: /^\/home\/user\/Code\/([^/]+)/, name: null, github: null, type: 'code' },
 ];
 ```
 

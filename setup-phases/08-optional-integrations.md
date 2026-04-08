@@ -62,7 +62,7 @@ ollama list | grep -E "llama|qwen|mistral|gemma"
 
 Ask for the Ollama server URL:
 
-> **What is the Ollama server URL?** (e.g., `http://192.168.1.100:11434`)
+> **What is the Ollama server URL?** (e.g., `http://192.168.1.50:11434`)
 
 **Configure**:
 1. Set `OLLAMA_HOST` environment variable to the remote URL
