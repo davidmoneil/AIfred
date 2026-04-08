@@ -131,7 +131,7 @@ Deploy script:
 
 ### Access Control
 
-- Private key exists only on AIServer
+- Private key exists only on your primary host
 - Backups in secure locations (NAS, password manager)
 - Never commit plaintext `.env` files (gitignored by default)
 
