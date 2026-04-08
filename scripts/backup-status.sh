@@ -8,10 +8,10 @@
 
 set -uo pipefail
 
-# Configuration
-RESTIC_REPO="sftp:MediaServer:D:/Restic/AIServer-Backups"
-RESTIC_PASSWORD_FILE="${HOME}/.restic-password"
-SCRIPTS_DIR="${HOME}/Scripts"
+# Configuration — override via env or scripts/config.sh
+RESTIC_REPO="${RESTIC_REPO:-sftp:backup-host:D:/Restic/primary-backups}"
+RESTIC_PASSWORD_FILE="${RESTIC_PASSWORD_FILE:-${HOME}/.restic-password}"
+SCRIPTS_DIR="${SCRIPTS_DIR:-${HOME}/Scripts}"
 
 # Colors
 RED='\033[0;31m'
