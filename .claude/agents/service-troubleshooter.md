@@ -305,7 +305,7 @@ Observations:
 **Escalate to user (don't attempt fix)** when:
 - Requires credentials you don't have
 - Needs destructive action (delete data, reset config)
-- Involves external systems (MediaServer, NAS)
+- Involves external systems (e.g. media host, NAS)
 - Security-sensitive changes
 - Root cause is unclear after full diagnosis
 

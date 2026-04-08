@@ -247,7 +247,7 @@ PHASE 5: Backup Integration
 │   ├── All data in ${DOCKER_ROOT:-$HOME/docker}/ backed up automatically
 │   ├── Daily backup at 2 AM (systemd timer: restic-backup.timer)
 │   ├── Retention: 30d daily, 8w weekly, 12mo monthly, 5y yearly
-│   ├── Repository: MediaServer D:\Restic\AIServer-Backups
+│   ├── Repository: backup-host D:\Restic\primary-backups
 │   ├── Recovery: See .claude/context/systems/backup-strategy.md
 │   └── Standard deployments need NO additional backup config
 ├── Database Backup Scripts (If Database Present)
@@ -535,7 +535,7 @@ Observations:
 - Service requires secrets/API keys not provided
 - Port conflict detected with existing service
 - Significant resource requirements (>4GB RAM)
-- Service needs connection to external system (MediaServer, NAS)
+- Service needs connection to external systems (e.g. media host, NAS)
 - Multiple valid approaches exist
 
 **Safe to proceed without asking**:

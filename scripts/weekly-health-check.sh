@@ -164,8 +164,9 @@ check_backups() {
     # --- Restic Backups ---
     subheader "Restic Backup Repository"
 
-    export RESTIC_REPOSITORY="/mnt/backup_nas/AIServer/restic"
-    export RESTIC_PASSWORD_FILE="$HOME/.restic/aiserver-backup-password.txt"
+    # Restic configuration — override via env or scripts/config.sh
+    export RESTIC_REPOSITORY="${RESTIC_REPOSITORY:-/mnt/backup_nas/primary/restic}"
+    export RESTIC_PASSWORD_FILE="${RESTIC_PASSWORD_FILE:-$HOME/.restic/backup-password.txt}"
 
     if [[ -f "$RESTIC_PASSWORD_FILE" ]]; then
         if restic snapshots --latest 1 &>/dev/null; then
@@ -647,11 +648,13 @@ check_network() {
 
     subheader "SSH Connectivity"
 
-    # MediaServer SSH
-    SSH_ERR=$(ssh -o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=accept-new MediaServer "echo OK" 2>&1)
+    # SSH target — override via SSH_HEALTHCHECK_HOST env var. Defaults to
+    # a generic 'media-host' name which you can define in ~/.ssh/config.
+    SSH_HC_HOST="${SSH_HEALTHCHECK_HOST:-media-host}"
+    SSH_ERR=$(ssh -o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=accept-new "$SSH_HC_HOST" "echo OK" 2>&1)
     SSH_EXIT=$?
     if [[ $SSH_EXIT -eq 0 ]]; then
-        pass "SSH to MediaServer working" "ssh_mediaserver"
+        pass "SSH to $SSH_HC_HOST working" "ssh_host"
     else
         # Parse specific SSH error
         if echo "$SSH_ERR" | grep -qi "connection refused"; then
@@ -669,7 +672,7 @@ check_network() {
         else
             SSH_DETAIL="Error: ${SSH_ERR:0:100}"
         fi
-        warn "SSH to MediaServer failed" "ssh_mediaserver" "$SSH_DETAIL"
+        warn "SSH to $SSH_HC_HOST failed" "ssh_host" "$SSH_DETAIL"
     fi
 
     # UDM Pro SSH (if configured)
